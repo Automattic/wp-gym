@@ -1,4 +1,4 @@
-# Task: Create A Nested Gutenberg Layout
+# Create A Nested Gutenberg Layout
 
 Create or update a WordPress page titled **Nested Layout Page**.
 

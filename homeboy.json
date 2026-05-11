@@ -4,6 +4,7 @@
   "extensions": {
     "wordpress": {
       "settings": {
+        "playground_wordpress_version": "6.9",
         "playground_blueprint": {
           "$schema": "https://playground.wordpress.net/blueprint-schema.json",
           "preferredVersions": {
@@ -11,6 +12,13 @@
             "wp": "latest"
           }
         },
+        "playground_scenario_manifests": [
+          "scenarios/block-markup/valid-semantic-blocks.json",
+          "scenarios/block-markup/nested-layout-blocks.json",
+          "scenarios/block-markup/no-fallback-pricing-section.json",
+          "scenarios/modern-wordpress-api/abilities-site-summary.json",
+          "scenarios/modern-wordpress-api/rest-route-status.json"
+        ],
         "playground_workloads": [
           {
             "id": "smoke-homepage",
@@ -38,7 +46,7 @@
   },
   "self_checks": {
     "lint": [
-      "node --check scripts/bench-to-jsonl.mjs && node --check scripts/leaderboard.mjs",
+      "node --check scripts/bench-to-jsonl.mjs && node --check scripts/leaderboard.mjs && node --check scripts/validate-scenarios.mjs",
       "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json reports/fixtures/smoke-bench-results.json"
     ],
     "test": [
