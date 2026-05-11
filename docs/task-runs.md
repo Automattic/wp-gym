@@ -87,3 +87,38 @@ Private completion criteria stay in the scenario manifests and PHP checks. At a
 high level, the checks look for WordPress-native content structure, required user
 visible content, editable blocks instead of raw fallback markup, and the requested
 developer API surface with the expected output fields.
+
+## Live Data Machine Runs
+
+`.github/workflows/datamachine-live-run.yml` is the manual workflow for running
+selected tasks side by side through the Data Machine agent loop in WordPress
+Playground. The first matrix runs:
+
+- OpenAI `gpt-5.5` with `OPENAI_API_KEY`.
+- Anthropic `claude-opus-4-7` with `ANTHROPIC_API_KEY`.
+
+The workflow delegates the agent run, provider plugin setup, Homeboy result JSON,
+JSONL/leaderboard generation, transcript export, and replay bundle creation to
+Homeboy Extensions. `wp-rl` only resolves task prompts/checks into a provider and
+task matrix.
+
+The workflow uses the minimal Data Machine bundle from `bundles/datamachine-task-runner`
+with the slugs from `bundle-validator.json`:
+
+- Agent: `wordpress-task-runner`.
+- Pipeline: `wordpress-task-runner-pipeline`.
+- Flow: `wordpress-task-runner-flow`.
+
+To trigger the first live run:
+
+1. Open **Actions** -> **Data Machine Live Task Run**.
+2. Click **Run workflow**.
+3. Keep `task_set` as `first-live-run` to run the merged live task set, switch to
+   `smoke` for the smallest wiring check, or enter `task_ids` as a comma-separated
+   list such as `block-markup-no-fallback-pricing-section,modern-wordpress-api-abilities-site-summary`.
+4. Leave `dry_run` disabled for a live model run, or enable it to validate the
+   runner config without provider calls.
+5. Confirm repository secrets include `OPENAI_API_KEY` and `ANTHROPIC_API_KEY`.
+6. Download the per-model artifacts from the completed workflow run. Replay
+   bundle artifacts are named `wp-rl-replay-<task>-<provider-model>` when the
+   Homeboy runner emits them.
