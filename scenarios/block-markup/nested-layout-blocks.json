@@ -9,7 +9,7 @@
     "role": "grader"
   },
   "expected": {
-    "post_title": "WP RL Nested Layout",
+    "post_title": "Nested Layout Page",
     "required_blocks": [
       "core/group",
       "core/columns",

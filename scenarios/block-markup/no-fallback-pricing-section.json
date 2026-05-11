@@ -9,7 +9,7 @@
     "role": "grader"
   },
   "expected": {
-    "post_title": "WP RL Parseable Pricing Section",
+    "post_title": "Parseable Pricing Section",
     "required_blocks": [
       "core/cover",
       "core/heading",
