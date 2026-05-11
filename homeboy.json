@@ -46,8 +46,8 @@
   },
   "self_checks": {
     "lint": [
-      "node --check scripts/bench-to-jsonl.mjs && node --check scripts/leaderboard.mjs && node --check scripts/validate-scenarios.mjs",
-      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json reports/fixtures/smoke-bench-results.json"
+      "node --check scripts/validate-scenarios.mjs",
+      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json"
     ],
     "test": [
       "npm test"

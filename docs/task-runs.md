@@ -30,7 +30,8 @@ Each task should add:
 ## CI Run
 
 The GitHub Actions smoke workflow runs the same smoke task on pull requests and
-manual dispatch. It uploads:
+manual dispatch. Homeboy Extensions emits the derived files next to the Homeboy
+result JSON, and the workflow uploads:
 
 - The Homeboy result JSON.
 - JSONL rows for downstream aggregation.

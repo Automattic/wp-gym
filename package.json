@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "node --check scripts/bench-to-jsonl.mjs && node --check scripts/leaderboard.mjs && node --check scripts/validate-scenarios.mjs",
+    "lint": "node --check scripts/validate-scenarios.mjs",
     "validate": "node scripts/validate-scenarios.mjs",
-    "verify": "node scripts/bench-to-jsonl.mjs reports/fixtures/smoke-bench-results.json reports/generated/smoke-results.jsonl && node scripts/leaderboard.mjs reports/generated/smoke-results.jsonl reports/generated/leaderboard.md",
+    "verify": "npm run validate",
     "test": "npm run validate && npm run verify"
   }
 }

@@ -15,6 +15,8 @@ jobs:
 
       - name: Run Homeboy Playground smoke task
         uses: Extra-Chill/homeboy-action@v2
+        env:
+          HOMEBOY_PLAYGROUND_RESULTS_ARTIFACT_DIR: homeboy-ci-results
         with:
           component: wp-rl
           extension: wordpress
@@ -23,18 +25,6 @@ jobs:
           iterations: 1
           args: --ignore-baseline --setting-json playground_scenario_manifests=[]
 
-      - name: Publish JSONL and leaderboard
-        if: always()
-        run: |
-          mkdir -p reports/generated
-          if [ -s homeboy-ci-results/bench.json ]; then
-            node scripts/bench-to-jsonl.mjs homeboy-ci-results/bench.json reports/generated/results.jsonl
-            node scripts/leaderboard.mjs reports/generated/results.jsonl reports/generated/leaderboard.md
-          else
-            printf '# wp-rl Leaderboard\n\nNo Homeboy result was available.\n' > reports/generated/leaderboard.md
-            : > reports/generated/results.jsonl
-          fi
-
       - name: Upload task artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -42,6 +32,6 @@ jobs:
           name: wp-rl-smoke-task
           path: |
             homeboy-ci-results/bench.json
-            reports/generated/results.jsonl
-            reports/generated/leaderboard.md
+            homeboy-ci-results/results.jsonl
+            homeboy-ci-results/leaderboard.md
           if-no-files-found: warn

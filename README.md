@@ -13,7 +13,8 @@ Prompts are written as ordinary user or developer requests. WordPress quality
 criteria live in task metadata and PHP checks, so review happens against final
 WordPress state instead of chat transcripts.
 
-Use the Node script in `scripts/` for the local manifest and PHP syntax check.
+Use `npm run validate` for the local manifest and PHP syntax check.
 
 The smoke workflow in `.github/workflows/playground-smoke.yml` exercises the
-Playground path and publishes machine-readable artifacts for maintainers.
+Playground path and uploads the artifacts emitted by Homeboy Extensions for
+maintainers.

@@ -7,8 +7,8 @@
   "check": "checks/smoke-homepage.php",
   "artifacts": {
     "homeboy_results": "homeboy-ci-results/bench.json",
-    "jsonl": "reports/generated/results.jsonl",
-    "leaderboard": "reports/generated/leaderboard.md"
+    "jsonl": "homeboy-ci-results/results.jsonl",
+    "leaderboard": "homeboy-ci-results/leaderboard.md"
   },
   "completion": {
     "max_score": 1,
