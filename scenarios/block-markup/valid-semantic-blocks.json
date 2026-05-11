@@ -9,7 +9,7 @@
     "role": "grader"
   },
   "expected": {
-    "post_title": "WP RL Valid Block Markup",
+    "post_title": "Cookout Block Markup",
     "required_blocks": [
       "core/heading",
       "core/paragraph",

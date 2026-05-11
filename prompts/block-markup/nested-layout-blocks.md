@@ -1,6 +1,6 @@
 # Task: Create A Nested Gutenberg Layout
 
-Create or update a WordPress page titled **WP RL Nested Layout**.
+Create or update a WordPress page titled **Nested Layout Page**.
 
 The final `post_content` must be valid Gutenberg block markup with correct block
 nesting. Use block comments and inner blocks that WordPress can parse.
@@ -12,5 +12,6 @@ Layout requirements:
 - Inside the Columns block, exactly two Column blocks.
 - Each Column block must contain a Heading block and a Paragraph block.
 
-Success means the saved page parses as `core/group > core/columns > core/column`
-nested blocks. A visually similar blob of HTML does not pass.
+When you're finished, the saved page should parse as
+`core/group > core/columns > core/column` nested blocks. Avoid visually similar
+raw HTML that skips the requested block structure.

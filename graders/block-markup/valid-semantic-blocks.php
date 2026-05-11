@@ -3,7 +3,7 @@
 require_once __DIR__ . '/grader-common.php';
 
 return static function (): array {
-	$title = 'WP RL Valid Block Markup';
+	$title = 'Cookout Block Markup';
 	$post  = wp_rl_find_post_by_title( $title );
 
 	if ( null === $post ) {
