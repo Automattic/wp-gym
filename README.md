@@ -31,3 +31,6 @@ uses `task-sets/first-live-run.json`.
 The smoke workflow in `.github/workflows/playground-smoke.yml` exercises the
 Playground path and uploads the artifacts emitted by Homeboy Extensions for
 maintainers.
+
+Manual side-by-side Data Machine runs are documented in `docs/task-runs.md` and
+live in `.github/workflows/datamachine-live-run.yml`.

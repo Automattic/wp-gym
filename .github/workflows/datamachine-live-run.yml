@@ -1,0 +1,224 @@
+name: Data Machine Live Task Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_set:
+        description: Task set to run when task_ids is empty.
+        required: true
+        default: first-live-run
+        type: choice
+        options:
+          - first-live-run
+          - smoke
+          - all
+          - custom
+      task_ids:
+        description: Optional comma-separated task IDs. Overrides task_set.
+        required: false
+        default: ""
+        type: string
+      bundle_ref:
+        description: Optional wp-rl ref containing bundles/datamachine-task-runner.
+        required: false
+        default: ""
+        type: string
+      dry_run:
+        description: Build the runner config without making live model calls.
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  resolve-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve task and provider matrix
+        id: matrix
+        env:
+          TASK_SET: ${{ inputs.task_set }}
+          TASK_IDS: ${{ inputs.task_ids }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const root = process.cwd();
+
+          function readJson(file) {
+            return JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
+          }
+
+          function readText(file) {
+            return fs.readFileSync(path.join(root, file), 'utf8').trim();
+          }
+
+          function resolveFrom(baseFile, candidate) {
+            if (!candidate) {
+              return '';
+            }
+            return path.normalize(path.join(path.dirname(baseFile), candidate)).replace(/\\/g, '/');
+          }
+
+          function taskSetScenarioIds(taskSetFile) {
+            const taskSet = readJson(taskSetFile);
+            const ids = [];
+            for (const scenarioFile of taskSet.scenario_manifests || []) {
+              const scenarioPath = resolveFrom(taskSetFile, scenarioFile);
+              const scenario = readJson(scenarioPath);
+              ids.push(scenario.id);
+            }
+            for (const task of taskSet.tasks || []) {
+              if (task.scenario_id && !ids.includes(task.scenario_id)) {
+                ids.push(task.scenario_id);
+              }
+            }
+            return ids;
+          }
+
+          const homeboy = readJson('homeboy.json');
+          const scenarioFiles = homeboy.extensions.wordpress.settings.playground_scenario_manifests || [];
+          const tasks = new Map();
+
+          const smoke = readJson('tasks/smoke-homepage/manifest.json');
+          tasks.set(smoke.id, {
+            id: smoke.id,
+            label: smoke.label,
+            promptFile: smoke.prompt,
+            graderFile: smoke.check,
+            maxTurns: 8,
+            stepBudget: 12,
+            timeBudgetMs: 600000,
+          });
+
+          for (const scenarioFile of scenarioFiles) {
+            const scenario = readJson(scenarioFile);
+            const promptFile = resolveFrom(scenarioFile, scenario.prompt_file || scenario.prompt);
+            const graderFile = resolveFrom(scenarioFile, scenario.grader_file || scenario.grader);
+            tasks.set(scenario.id, {
+              id: scenario.id,
+              label: scenario.label || scenario.id,
+              promptFile,
+              graderFile,
+              maxTurns: Number(scenario.limits?.max_turns || 12),
+              stepBudget: Number(scenario.limits?.step_budget || 16),
+              timeBudgetMs: Number(scenario.limits?.time_budget_ms || 600000),
+            });
+          }
+
+          const explicitIds = (process.env.TASK_IDS || '')
+            .split(',')
+            .map((id) => id.trim())
+            .filter(Boolean);
+          if (process.env.TASK_SET === 'custom' && explicitIds.length === 0) {
+            throw new Error('task_ids is required when task_set is custom.');
+          }
+          const selectedIds = explicitIds.length > 0
+            ? explicitIds
+            : process.env.TASK_SET === 'all'
+              ? [...tasks.keys()]
+              : process.env.TASK_SET === 'smoke'
+                ? ['smoke-homepage']
+                : taskSetScenarioIds(`task-sets/${process.env.TASK_SET}.json`);
+
+          const providers = [
+            {
+              provider: 'openai',
+              model: 'gpt-5.5',
+              label: 'openai-gpt-5-5',
+              providerPlugin: '{}',
+            },
+            {
+              provider: 'anthropic',
+              model: 'claude-opus-4-7',
+              label: 'anthropic-claude-opus-4-7',
+              providerPlugin: JSON.stringify({
+                repo: 'WordPress/ai-provider-for-anthropic',
+                ref: 'trunk',
+                path: '.',
+                register_function: 'WordPress\\AnthropicAiProvider\\register_provider',
+                credentials: {
+                  connectors_ai_anthropic_api_key: 'PROVIDER_SECRET_1',
+                },
+              }),
+            },
+          ];
+
+          const include = [];
+          for (const taskId of selectedIds) {
+            const task = tasks.get(taskId);
+            if (!task) {
+              throw new Error(`Unknown task ID: ${taskId}`);
+            }
+            const prompt = readText(task.promptFile);
+            const workloadRunAfter = task.graderFile
+              ? JSON.stringify([{ type: 'php', file: task.graderFile }])
+              : '[]';
+            for (const provider of providers) {
+              include.push({
+                task_id: task.id,
+                task_label: task.label,
+                provider: provider.provider,
+                model: provider.model,
+                provider_label: provider.label,
+                provider_plugin: provider.providerPlugin,
+                prompt,
+                workload_run_after: workloadRunAfter,
+                max_turns: task.maxTurns,
+                step_budget: task.stepBudget,
+                time_budget_ms: task.timeBudgetMs,
+                artifact_suffix: `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-'),
+              });
+            }
+          }
+
+          const matrix = JSON.stringify({ include });
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${matrix}\n`);
+          NODE
+
+  live-run:
+    needs: resolve-matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.resolve-matrix.outputs.matrix) }}
+    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
+    with:
+      bundle_path: bundles/datamachine-task-runner
+      bundle_ref: ${{ inputs.bundle_ref }}
+      bundle_validator_spec: bundle-validator.json
+      agent_slug: wordpress-task-runner
+      pipeline_slug: wordpress-task-runner-pipeline
+      flow_slug: wordpress-task-runner-flow
+      target_repo: chubes4/wp-rl
+      prompt: ${{ matrix.prompt }}
+      provider: ${{ matrix.provider }}
+      model: ${{ matrix.model }}
+      provider_plugin: ${{ matrix.provider_plugin }}
+      success_requires_pr: false
+      dry_run: ${{ inputs.dry_run }}
+      max_turns: ${{ matrix.max_turns }}
+      step_budget: ${{ matrix.step_budget }}
+      time_budget_ms: ${{ matrix.time_budget_ms }}
+      workload_run_after: ${{ matrix.workload_run_after }}
+      engine_data_outputs: |
+        {
+          "task_id": "metadata.engine_data.task_id",
+          "job_status": "metadata.job_status"
+        }
+      transcript_artifact_name: wp-rl-transcript-${{ matrix.artifact_suffix }}
+      replay_bundle_artifact_name: wp-rl-replay-${{ matrix.artifact_suffix }}
+    secrets:
+      HOMEBOY_APP_ID: ${{ secrets.HOMEBOY_APP_ID }}
+      HOMEBOY_APP_PRIVATE_KEY: ${{ secrets.HOMEBOY_APP_PRIVATE_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      PROVIDER_SECRET_1: ${{ secrets.ANTHROPIC_API_KEY }}
