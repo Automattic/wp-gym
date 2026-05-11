@@ -32,23 +32,20 @@ if (files.length < 2) {
 
 for (const file of files) {
 	const manifest = JSON.parse(await readFile(path.join(root, file), 'utf8'));
+	const manifestDir = path.dirname(file);
 
-	for (const field of ['id', 'label', 'prompt', 'grader']) {
+	for (const field of ['id', 'label', 'prompt_file', 'grader_file']) {
 		if (!manifest[field]) {
 			throw new Error(`${file} is missing ${field}`);
 		}
 	}
 
-	if (!existsSync(path.join(root, manifest.prompt))) {
-		throw new Error(`${file} prompt does not exist: ${manifest.prompt}`);
+	if (!existsSync(path.join(root, manifestDir, manifest.prompt_file))) {
+		throw new Error(`${file} prompt does not exist: ${manifest.prompt_file}`);
 	}
 
-	if (!manifest.grader.file || !existsSync(path.join(root, manifest.grader.file))) {
-		throw new Error(`${file} checker does not exist: ${manifest.grader.file}`);
-	}
-
-	if (manifest.grader.role !== 'grader') {
-		throw new Error(`${file} grader.role must be grader`);
+	if (!existsSync(path.join(root, manifestDir, manifest.grader_file))) {
+		throw new Error(`${file} checker does not exist: ${manifest.grader_file}`);
 	}
 }
 
@@ -56,7 +53,7 @@ const phpFiles = [
 	path.join('graders', 'block-markup', 'grader-common.php'),
 	...files.map(async (file) => {
 		const manifest = JSON.parse(await readFile(path.join(root, file), 'utf8'));
-		return manifest.grader.file;
+		return path.join(path.dirname(file), manifest.grader_file);
 	}),
 ];
 

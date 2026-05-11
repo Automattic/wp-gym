@@ -2,14 +2,8 @@
   "id": "site-building-community-garden",
   "label": "Neighborhood community garden site",
   "issue": "https://github.com/chubes4/wp-rl/issues/13",
-  "prompt": "prompts/site-building/community-garden.md",
-  "prompt_file": "prompts/site-building/community-garden.md",
-  "grader_file": "graders/site-building/community-garden.php",
-  "grader": {
-    "type": "php",
-    "file": "graders/site-building/community-garden.php",
-    "role": "grader"
-  },
+  "prompt_file": "../../prompts/site-building/community-garden.md",
+  "grader_file": "../../graders/site-building/community-garden.php",
   "tags": ["wordpress", "site-building", "natural-prompt", "quality-criteria"],
   "limits": {
     "max_turns": 10,
@@ -28,7 +22,7 @@
       "homepage_set",
       "navigation_created",
       "template_parts_seen",
-      "semantic_content_quality"
+      "required_pages_or_sections"
     ]
   }
 }

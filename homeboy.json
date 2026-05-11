@@ -5,6 +5,13 @@
     "wordpress": {
       "settings": {
         "playground_wordpress_version": "6.9",
+        "playground_blueprint": {
+          "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+          "preferredVersions": {
+            "php": "8.3",
+            "wp": "latest"
+          }
+        },
         "playground_scenario_manifests": [
           "scenarios/block-markup/valid-semantic-blocks.json",
           "scenarios/block-markup/nested-layout-blocks.json",
@@ -12,8 +19,39 @@
           "scenarios/site-building/community-garden.json",
           "scenarios/modern-wordpress-api/abilities-site-summary.json",
           "scenarios/modern-wordpress-api/rest-route-status.json"
-        ]
+        ],
+        "playground_workloads": [
+          {
+            "id": "smoke-homepage",
+            "label": "Smoke homepage task wiring",
+            "run": [
+              {
+                "type": "php",
+                "file": "tasks/smoke-homepage/setup.php"
+              },
+              {
+                "type": "php",
+                "file": "checks/smoke-homepage.php"
+              }
+            ],
+            "metadata": {
+              "task_manifest": "tasks/smoke-homepage/manifest.json",
+              "prompt": "prompts/smoke-homepage.md",
+              "blueprint": "blueprints/smoke-homepage.json"
+            }
+          }
+        ],
+        "bench_warmup_iterations": 0
       }
     }
+  },
+  "self_checks": {
+    "lint": [
+      "node --check scripts/validate-scenarios.mjs",
+      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json"
+    ],
+    "test": [
+      "npm test"
+    ]
   }
 }

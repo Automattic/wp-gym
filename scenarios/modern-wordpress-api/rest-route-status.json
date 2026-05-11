@@ -2,14 +2,8 @@
   "id": "modern-wordpress-api-rest-route-status",
   "label": "Public read-only site status REST endpoint",
   "issue": "https://github.com/chubes4/wp-rl/issues/3",
-  "prompt": "prompts/modern-wordpress-api/rest-route-status.md",
-  "prompt_file": "prompts/modern-wordpress-api/rest-route-status.md",
-  "grader_file": "graders/modern-wordpress-api/rest-route-status.php",
-  "grader": {
-    "type": "php",
-    "file": "graders/modern-wordpress-api/rest-route-status.php",
-    "role": "grader"
-  },
+  "prompt_file": "../../prompts/modern-wordpress-api/rest-route-status.md",
+  "grader_file": "../../graders/modern-wordpress-api/rest-route-status.php",
   "tags": ["wordpress", "rest-api", "plugin-api", "modern-api"],
   "limits": {
     "max_turns": 8,

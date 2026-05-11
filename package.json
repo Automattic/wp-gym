@@ -1,0 +1,11 @@
+{
+  "name": "wp-rl",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "node --check scripts/validate-scenarios.mjs",
+    "validate": "node scripts/validate-scenarios.mjs",
+    "verify": "npm run validate",
+    "test": "npm run validate && npm run verify"
+  }
+}
