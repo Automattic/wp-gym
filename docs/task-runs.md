@@ -37,5 +37,7 @@ result JSON, and the workflow uploads:
 - JSONL rows for downstream aggregation.
 - A Markdown leaderboard for quick review.
 
-This path intentionally uses Homeboy Extensions directly. Data Machine can be a
-future model or agent provider, but the core task-run path does not require it.
+This path intentionally keeps task definitions separate from the agent loop.
+Homeboy Extensions owns the disposable WordPress runtime and artifact shape; an
+agent loop such as Data Machine can drive the same tasks without changing the
+task corpus.
