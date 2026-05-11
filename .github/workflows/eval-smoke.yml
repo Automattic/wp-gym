@@ -1,0 +1,48 @@
+name: Eval Smoke
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Homeboy Playground smoke eval
+        uses: Extra-Chill/homeboy-action@v2
+        with:
+          component: wp-rl
+          extension: wordpress
+          extension-source: https://github.com/Extra-Chill/homeboy-extensions
+          commands: bench
+          scenario: smoke-homepage
+          iterations: 1
+          args: --ignore-baseline
+
+      - name: Publish JSONL and leaderboard
+        if: always()
+        run: |
+          mkdir -p reports/generated
+          if [ -s homeboy-ci-results/bench.json ]; then
+            node scripts/bench-to-jsonl.mjs homeboy-ci-results/bench.json reports/generated/results.jsonl
+            node scripts/leaderboard.mjs reports/generated/results.jsonl reports/generated/leaderboard.md
+          else
+            printf '# wp-rl Leaderboard\n\nNo Homeboy bench result was available.\n' > reports/generated/leaderboard.md
+            : > reports/generated/results.jsonl
+          fi
+
+      - name: Upload eval artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wp-rl-smoke-eval
+          path: |
+            homeboy-ci-results/bench.json
+            reports/generated/results.jsonl
+            reports/generated/leaderboard.md
+          if-no-files-found: warn

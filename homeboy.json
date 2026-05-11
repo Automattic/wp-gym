@@ -1,0 +1,49 @@
+{
+  "id": "wp-rl",
+  "name": "wp-rl",
+  "extensions": {
+    "wordpress": {
+      "settings": {
+        "playground_blueprint": {
+          "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+          "preferredVersions": {
+            "php": "8.3",
+            "wp": "latest"
+          }
+        },
+        "playground_workloads": [
+          {
+            "id": "smoke-homepage",
+            "label": "Smoke homepage eval wiring",
+            "run": [
+              {
+                "type": "php",
+                "file": "scenarios/smoke-homepage/setup.php"
+              },
+              {
+                "type": "php",
+                "file": "graders/smoke-homepage.php",
+                "role": "grader"
+              }
+            ],
+            "metadata": {
+              "scenario_manifest": "scenarios/smoke-homepage/manifest.json",
+              "prompt": "prompts/smoke-homepage.md",
+              "blueprint": "blueprints/smoke-homepage.json"
+            }
+          }
+        ],
+        "bench_warmup_iterations": 0
+      }
+    }
+  },
+  "self_checks": {
+    "lint": [
+      "node --check scripts/bench-to-jsonl.mjs && node --check scripts/leaderboard.mjs",
+      "jq empty homeboy.json scenarios/smoke-homepage/manifest.json blueprints/smoke-homepage.json reports/fixtures/smoke-bench-results.json"
+    ],
+    "test": [
+      "npm test"
+    ]
+  }
+}

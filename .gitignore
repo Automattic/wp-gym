@@ -1,0 +1,7 @@
+/homeboy-ci-results/
+/reports/generated/
+/.pg-bench-result*.txt
+/.pg-bench-results*.json
+/.homeboy/
+/.ci/
+node_modules/

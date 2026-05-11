@@ -1,0 +1,9 @@
+{
+  "name": "wp-rl",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "node --check scripts/bench-to-jsonl.mjs && node --check scripts/leaderboard.mjs",
+    "test": "node scripts/bench-to-jsonl.mjs reports/fixtures/smoke-bench-results.json reports/generated/smoke-results.jsonl && node scripts/leaderboard.mjs reports/generated/smoke-results.jsonl reports/generated/leaderboard.md"
+  }
+}
