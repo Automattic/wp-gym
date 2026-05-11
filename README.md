@@ -10,7 +10,8 @@ Current coverage includes:
 - A smoke task that keeps the Playground automation wired up.
 
 Prompts are written as ordinary user or developer requests. WordPress quality
-criteria live in task metadata and PHP checks, so review happens against final
+criteria, such as parseable content, fallback blocks, required APIs, or reward
+details, live in task metadata and PHP checks, so review happens against final
 WordPress state instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.

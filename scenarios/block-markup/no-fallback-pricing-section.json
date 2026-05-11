@@ -1,11 +1,11 @@
 {
   "id": "block-markup-no-fallback-pricing-section",
-  "label": "Parseable pricing section without fallback blocks",
+  "label": "Simple pricing page",
   "issue": "https://github.com/chubes4/wp-rl/issues/2",
   "prompt_file": "../../prompts/block-markup/no-fallback-pricing-section.md",
   "grader_file": "../../graders/block-markup/no-fallback-pricing-section.php",
   "expected": {
-    "post_title": "Parseable Pricing Section",
+    "post_title": "Simple Pricing Page",
     "required_blocks": [
       "core/cover",
       "core/heading",
