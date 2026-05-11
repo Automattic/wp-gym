@@ -1,0 +1,17 @@
+{
+  "name": "WordPress Task Runner Pipeline",
+  "schema_version": 1,
+  "slug": "wordpress-task-runner-pipeline",
+  "steps": [
+    {
+      "step_config": {
+        "execution_order": 0,
+        "label": "Complete WordPress task",
+        "step_type": "ai",
+        "system_prompt": "You are working inside the current WordPress Playground site. Complete the supplied WordPress task in this site. Use the available WordPress tools and APIs to make the requested changes. Keep the work focused on the request, preserve normal WordPress editing semantics, and summarize what changed when finished."
+      },
+      "step_position": 0,
+      "step_type": "ai"
+    }
+  ]
+}
