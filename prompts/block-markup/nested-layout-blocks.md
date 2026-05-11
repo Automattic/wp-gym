@@ -1,17 +1,9 @@
-# Create A Nested Gutenberg Layout
+# Create A Two-Column Services Page
 
-Create or update a WordPress page titled **Nested Layout Page**.
+Can you create or update a WordPress page titled **Nested Layout Page** with a
+simple two-column services layout?
 
-The final `post_content` must be valid Gutenberg block markup with correct block
-nesting. Use block comments and inner blocks that WordPress can parse.
+Please include two service columns inside one shared section. Each column should
+have a short heading and a paragraph describing the service.
 
-Layout requirements:
-
-- A top-level Group block.
-- Inside the Group block, a Columns block.
-- Inside the Columns block, exactly two Column blocks.
-- Each Column block must contain a Heading block and a Paragraph block.
-
-When you're finished, the saved page should parse as
-`core/group > core/columns > core/column` nested blocks. Avoid visually similar
-raw HTML that skips the requested block structure.
+Keep the layout clean and easy for a site owner to edit later.

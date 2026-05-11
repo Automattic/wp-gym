@@ -1,0 +1,37 @@
+name: Playground Smoke
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Homeboy Playground smoke task
+        uses: Extra-Chill/homeboy-action@v2
+        env:
+          HOMEBOY_PLAYGROUND_RESULTS_ARTIFACT_DIR: homeboy-ci-results
+        with:
+          component: wp-rl
+          extension: wordpress
+          extension-source: https://github.com/Extra-Chill/homeboy-extensions
+          commands: bench
+          iterations: 1
+          args: --ignore-baseline --setting-json playground_scenario_manifests=[]
+
+      - name: Upload task artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wp-rl-smoke-task
+          path: |
+            homeboy-ci-results/bench.json
+            homeboy-ci-results/results.jsonl
+            homeboy-ci-results/leaderboard.md
+          if-no-files-found: warn

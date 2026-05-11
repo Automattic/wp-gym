@@ -2,12 +2,8 @@
   "id": "block-markup-valid-semantic-blocks",
   "label": "Valid semantic Gutenberg blocks",
   "issue": "https://github.com/chubes4/wp-rl/issues/2",
-  "prompt": "prompts/block-markup/valid-semantic-blocks.md",
-  "grader": {
-    "type": "php",
-    "file": "graders/block-markup/valid-semantic-blocks.php",
-    "role": "grader"
-  },
+  "prompt_file": "../../prompts/block-markup/valid-semantic-blocks.md",
+  "grader_file": "../../graders/block-markup/valid-semantic-blocks.php",
   "expected": {
     "post_title": "Cookout Block Markup",
     "required_blocks": [
