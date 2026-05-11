@@ -1,0 +1,26 @@
+{
+  "id": "block-markup-no-fallback-pricing-section",
+  "label": "Parseable pricing section without fallback blocks",
+  "issue": "https://github.com/chubes4/wp-rl/issues/2",
+  "prompt": "prompts/block-markup/no-fallback-pricing-section.md",
+  "grader": {
+    "type": "php",
+    "file": "graders/block-markup/no-fallback-pricing-section.php",
+    "role": "grader"
+  },
+  "expected": {
+    "post_title": "WP RL Parseable Pricing Section",
+    "required_blocks": [
+      "core/cover",
+      "core/heading",
+      "core/paragraph",
+      "core/columns",
+      "core/column",
+      "core/buttons",
+      "core/button"
+    ],
+    "forbidden_blocks": [
+      "core/html"
+    ]
+  }
+}

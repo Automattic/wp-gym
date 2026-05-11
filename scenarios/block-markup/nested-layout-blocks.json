@@ -1,0 +1,24 @@
+{
+  "id": "block-markup-nested-layout-blocks",
+  "label": "Nested Gutenberg layout blocks",
+  "issue": "https://github.com/chubes4/wp-rl/issues/2",
+  "prompt": "prompts/block-markup/nested-layout-blocks.md",
+  "grader": {
+    "type": "php",
+    "file": "graders/block-markup/nested-layout-blocks.php",
+    "role": "grader"
+  },
+  "expected": {
+    "post_title": "WP RL Nested Layout",
+    "required_blocks": [
+      "core/group",
+      "core/columns",
+      "core/column",
+      "core/heading",
+      "core/paragraph"
+    ],
+    "forbidden_blocks": [
+      "core/html"
+    ]
+  }
+}
