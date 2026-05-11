@@ -14,20 +14,19 @@
         "playground_workloads": [
           {
             "id": "smoke-homepage",
-            "label": "Smoke homepage eval wiring",
+            "label": "Smoke homepage task wiring",
             "run": [
               {
                 "type": "php",
-                "file": "scenarios/smoke-homepage/setup.php"
+                "file": "tasks/smoke-homepage/setup.php"
               },
               {
                 "type": "php",
-                "file": "graders/smoke-homepage.php",
-                "role": "grader"
+                "file": "checks/smoke-homepage.php"
               }
             ],
             "metadata": {
-              "scenario_manifest": "scenarios/smoke-homepage/manifest.json",
+              "task_manifest": "tasks/smoke-homepage/manifest.json",
               "prompt": "prompts/smoke-homepage.md",
               "blueprint": "blueprints/smoke-homepage.json"
             }
@@ -40,10 +39,10 @@
   "self_checks": {
     "lint": [
       "node --check scripts/bench-to-jsonl.mjs && node --check scripts/leaderboard.mjs",
-      "jq empty homeboy.json scenarios/smoke-homepage/manifest.json blueprints/smoke-homepage.json reports/fixtures/smoke-bench-results.json"
+      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json reports/fixtures/smoke-bench-results.json"
     ],
     "test": [
-      "npm test"
+      "npm run verify"
     ]
   }
 }

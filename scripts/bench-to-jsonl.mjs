@@ -21,7 +21,7 @@ const rows = scenarios
     const metadata = scenario.metadata || {};
     return {
       component_id: componentId,
-      scenario_id: scenario.id,
+      task_id: metadata.task_id || scenario.id,
       source: scenario.source || 'unknown',
       iterations: scenario.iterations || results.iterations || 0,
       success: metadata.success ?? (metrics.success_mean === undefined ? null : metrics.success_mean >= 1),

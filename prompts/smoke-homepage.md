@@ -1,11 +1,9 @@
-# Smoke Homepage
+# Create A Homepage Draft
 
-Create a published WordPress page containing the exact text:
+Please create a published WordPress page titled `Smoke Page` containing this exact text:
 
 ```text
-wp-rl smoke eval ready
+A fresh WordPress page is ready to review.
 ```
 
-Success means the page exists and stores the expected block content in post
-content. This is a wiring scenario for the eval harness, not a model-quality
-benchmark.
+Use a normal paragraph block for the page content.

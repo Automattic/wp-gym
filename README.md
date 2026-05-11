@@ -1,49 +1,49 @@
 # wp-rl
 
-Playground-backed WordPress reinforcement-learning and model evaluation scenarios.
+Playground-backed WordPress task runs.
 
-`wp-rl` is a small scenario repository. It keeps scenario manifests, prompts,
-Playground blueprints, graders, and result publishing glue in one place while the
-actual WordPress sandbox comes from Homeboy Extensions.
+`wp-rl` is a small WordPress task repository. It keeps task manifests, prompts,
+Playground blueprints, completion checks, and result publishing glue in one place
+while the WordPress sandbox comes from Homeboy Extensions.
 
 ## Structure
 
 ```text
 blueprints/   WordPress Playground starting states
+checks/       WordPress completion checks
 docs/         Contributor and workflow docs
-graders/      PHP graders that run inside Playground
 prompts/      Model-facing task prompts
 reports/      Result fixtures and generated local artifacts
-scenarios/    Scenario manifests and metadata
 scripts/      Local result conversion helpers
+tasks/        Task manifests and setup files
 ```
 
-## First Eval Path
+## First Task Run
 
-Run the smoke scenario through Homeboy's WordPress Playground bench runner:
+Run the smoke task through Homeboy's WordPress Playground runner:
 
 ```bash
-homeboy bench wp-rl --path . --extension wordpress --scenario smoke-homepage --iterations 1
+homeboy bench wp-rl --path . --extension wordpress --iterations 1
 ```
 
-The scenario is declared in `homeboy.json` and backed by:
+The task is declared in `homeboy.json` and backed by:
 
-- `scenarios/smoke-homepage/manifest.json`
 - `blueprints/smoke-homepage.json`
+- `tasks/smoke-homepage/manifest.json`
 - `prompts/smoke-homepage.md`
-- `graders/smoke-homepage.php`
+- `checks/smoke-homepage.php`
 
-GitHub Actions runs the same scenario on pull requests and uploads the Homeboy
-bench result, JSONL rows, and Markdown leaderboard when available.
+GitHub Actions runs the same task on pull requests and uploads the Homeboy
+result, JSONL rows, and Markdown leaderboard when available.
 
 ## Local Artifact Conversion
 
-Convert a Homeboy bench result to JSONL and leaderboard output:
+Convert a Homeboy result to JSONL and leaderboard output:
 
 ```bash
 node scripts/bench-to-jsonl.mjs homeboy-ci-results/bench.json reports/generated/results.jsonl
 node scripts/leaderboard.mjs reports/generated/results.jsonl reports/generated/leaderboard.md
 ```
 
-Use `npm test` to validate the artifact helpers against the checked-in smoke
-fixture without booting Playground.
+Use `npm run verify` to validate the artifact helpers against the checked-in
+smoke fixture without booting Playground.

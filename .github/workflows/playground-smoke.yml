@@ -1,4 +1,4 @@
-name: Eval Smoke
+name: Playground Smoke
 
 on:
   pull_request:
@@ -13,14 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Homeboy Playground smoke eval
+      - name: Run Homeboy Playground smoke task
         uses: Extra-Chill/homeboy-action@v2
         with:
           component: wp-rl
           extension: wordpress
           extension-source: https://github.com/Extra-Chill/homeboy-extensions
           commands: bench
-          scenario: smoke-homepage
           iterations: 1
           args: --ignore-baseline
 
@@ -32,15 +31,15 @@ jobs:
             node scripts/bench-to-jsonl.mjs homeboy-ci-results/bench.json reports/generated/results.jsonl
             node scripts/leaderboard.mjs reports/generated/results.jsonl reports/generated/leaderboard.md
           else
-            printf '# wp-rl Leaderboard\n\nNo Homeboy bench result was available.\n' > reports/generated/leaderboard.md
+            printf '# wp-rl Leaderboard\n\nNo Homeboy result was available.\n' > reports/generated/leaderboard.md
             : > reports/generated/results.jsonl
           fi
 
-      - name: Upload eval artifacts
+      - name: Upload task artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wp-rl-smoke-eval
+          name: wp-rl-smoke-task
           path: |
             homeboy-ci-results/bench.json
             reports/generated/results.jsonl

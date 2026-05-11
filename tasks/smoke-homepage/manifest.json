@@ -1,16 +1,16 @@
 {
   "id": "smoke-homepage",
-  "label": "Smoke homepage eval wiring",
-  "description": "Creates a page in WordPress Playground and grades whether the expected block content exists.",
+  "label": "Smoke homepage task wiring",
+  "description": "Creates a page in WordPress Playground and checks whether the expected block content exists.",
   "prompt": "prompts/smoke-homepage.md",
   "blueprint": "blueprints/smoke-homepage.json",
-  "grader": "graders/smoke-homepage.php",
+  "check": "checks/smoke-homepage.php",
   "artifacts": {
     "homeboy_results": "homeboy-ci-results/bench.json",
     "jsonl": "reports/generated/results.jsonl",
     "leaderboard": "reports/generated/leaderboard.md"
   },
-  "reward": {
+  "completion": {
     "max_score": 1,
     "checks": [
       {

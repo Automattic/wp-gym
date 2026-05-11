@@ -19,7 +19,7 @@ const rows = text
 const lines = [
   '# wp-rl Leaderboard',
   '',
-  '| Rank | Scenario | Success | Reward | Grade | p95 ms |',
+  '| Rank | Task | Success | Score | Grade | p95 ms |',
   '| ---: | --- | --- | ---: | ---: | ---: |',
 ];
 
@@ -27,7 +27,7 @@ rows.forEach((row, index) => {
   const grade = row.grade_score === null || row.grade_max_score === null
     ? ''
     : `${row.grade_score}/${row.grade_max_score}`;
-  lines.push(`| ${index + 1} | ${row.scenario_id} | ${row.success === true ? 'yes' : 'no'} | ${row.reward ?? ''} | ${grade} | ${row.p95_ms ?? ''} |`);
+  lines.push(`| ${index + 1} | ${row.task_id} | ${row.success === true ? 'yes' : 'no'} | ${row.reward ?? ''} | ${grade} | ${row.p95_ms ?? ''} |`);
 });
 
 if (rows.length === 0) {

@@ -1,9 +1,9 @@
 <?php
 
 return static function (): array {
-    $page = get_page_by_title('Smoke Eval', OBJECT, 'page');
+    $page = get_page_by_title('Smoke Page', OBJECT, 'page');
     $has_page = $page instanceof WP_Post;
-    $has_content = $has_page && str_contains($page->post_content, 'wp-rl smoke eval ready');
+    $has_content = $has_page && str_contains($page->post_content, 'A fresh WordPress page is ready to review.');
 
     $checks = [
         [
@@ -32,7 +32,7 @@ return static function (): array {
             'checks' => $checks,
         ],
         'metadata' => [
-            'scenario_id' => 'smoke-homepage',
+            'task_id' => 'smoke-homepage',
         ],
     ];
 };
