@@ -1,4 +1,4 @@
-# Task: Create Valid Semantic Gutenberg Markup
+# Create Valid Semantic Gutenberg Markup
 
 Create or update a WordPress page titled **Cookout Block Markup**.
 

@@ -1,4 +1,4 @@
-# Task: Create A Parseable Pricing Section
+# Create A Parseable Pricing Section
 
 Create or update a WordPress page titled **Parseable Pricing Section**.
 

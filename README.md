@@ -1,17 +1,12 @@
-# wp-rl
-Playground-backed WordPress task scenarios
+# WordPress Practice Tasks
 
-## Gutenberg Block-Markup Tasks
+This repository contains small WordPress implementation requests for disposable
+Playground sites.
 
-The first task scenarios live in `scenarios/block-markup/`. Each manifest points to a
-user request in `prompts/block-markup/` and a Playground PHP checker.
+Current coverage includes:
 
-The task harness inspects final WordPress state, not transcript claims. An agent
-should create or update the page title named in the prompt. The checker then
-finds that page and parses `post_content` with WordPress block APIs.
+- Gutenberg block markup that WordPress can parse as real blocks.
+- Small plugins that use current WordPress API surfaces, including the Abilities
+  API and REST API.
 
-Run the local manifest/PHP syntax check with:
-
-```sh
-node scripts/validate-scenarios.mjs
-```
+Use the Node script in `scripts/` for the local manifest and PHP syntax check.
