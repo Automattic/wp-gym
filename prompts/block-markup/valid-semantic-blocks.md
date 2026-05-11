@@ -1,7 +1,7 @@
-# Build A Cookout Planning Page
+# Build A Neighborhood Cookout Page
 
-Can you create or update a WordPress page titled **Cookout Block Markup** for a
-small neighborhood summer cookout?
+Can you create or update a WordPress page titled **Neighborhood Cookout Plan**
+for a small neighborhood summer cookout?
 
 Please include:
 
@@ -10,4 +10,5 @@ Please include:
 - A three-item preparation list.
 - A call-to-action button labeled `View menu`.
 
-Keep it simple and ready for a site owner to edit later.
+Keep the page structure clean enough that a non-technical WordPress editor can
+open it later and adjust each section without editing code.

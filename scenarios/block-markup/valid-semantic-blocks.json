@@ -1,11 +1,11 @@
 {
   "id": "block-markup-valid-semantic-blocks",
-  "label": "Valid semantic Gutenberg blocks",
+  "label": "Neighborhood cookout page",
   "issue": "https://github.com/chubes4/wp-rl/issues/2",
   "prompt_file": "../../prompts/block-markup/valid-semantic-blocks.md",
   "grader_file": "../../graders/block-markup/valid-semantic-blocks.php",
   "expected": {
-    "post_title": "Cookout Block Markup",
+    "post_title": "Neighborhood Cookout Plan",
     "required_blocks": [
       "core/heading",
       "core/paragraph",

@@ -3,7 +3,7 @@
 require_once __DIR__ . '/grader-common.php';
 
 return static function (): array {
-	$title = 'Nested Layout Page';
+	$title = 'Community Services Overview';
 	$post  = wp_rl_find_post_by_title( $title );
 
 	if ( null === $post ) {
