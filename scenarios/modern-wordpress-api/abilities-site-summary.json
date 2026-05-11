@@ -1,0 +1,24 @@
+{
+  "id": "modern-wordpress-api-abilities-site-summary",
+  "label": "Provider-friendly site summary ability",
+  "issue": "https://github.com/chubes4/wp-rl/issues/3",
+  "prompt": "prompts/modern-wordpress-api/abilities-site-summary.md",
+  "prompt_file": "prompts/modern-wordpress-api/abilities-site-summary.md",
+  "grader_file": "graders/modern-wordpress-api/abilities-site-summary.php",
+  "grader": {
+    "type": "php",
+    "file": "graders/modern-wordpress-api/abilities-site-summary.php",
+    "role": "grader"
+  },
+  "tags": ["wordpress", "abilities-api", "modern-api"],
+  "limits": {
+    "max_turns": 8,
+    "step_budget": 12,
+    "time_budget_ms": 600000
+  },
+  "expected": {
+    "ability": "site-tools/site-summary",
+    "category": "site-tools",
+    "required_output_keys": ["site_name", "post_count"]
+  }
+}

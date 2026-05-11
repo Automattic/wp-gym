@@ -1,0 +1,18 @@
+{
+  "id": "wp-rl",
+  "name": "wp-rl",
+  "extensions": {
+    "wordpress": {
+      "settings": {
+        "playground_wordpress_version": "6.9",
+        "playground_scenario_manifests": [
+          "scenarios/block-markup/valid-semantic-blocks.json",
+          "scenarios/block-markup/nested-layout-blocks.json",
+          "scenarios/block-markup/no-fallback-pricing-section.json",
+          "scenarios/modern-wordpress-api/abilities-site-summary.json",
+          "scenarios/modern-wordpress-api/rest-route-status.json"
+        ]
+      }
+    }
+  }
+}
