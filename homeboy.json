@@ -42,7 +42,7 @@
       "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json reports/fixtures/smoke-bench-results.json"
     ],
     "test": [
-      "npm run verify"
+      "npm test"
     ]
   }
 }
