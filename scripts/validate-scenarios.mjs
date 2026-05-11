@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const scenarioRoot = path.join(root, 'scenarios');
+const taskSetRoot = path.join(root, 'task-sets');
 
 async function listScenarioFiles(dir, relativeDir = 'scenarios') {
 	const entries = await readdir(dir, { withFileTypes: true });
@@ -25,6 +26,7 @@ async function listScenarioFiles(dir, relativeDir = 'scenarios') {
 }
 
 const files = await listScenarioFiles(scenarioRoot);
+const scenarioIdsByManifest = new Map();
 
 if (files.length < 2) {
 	throw new Error(`Expected at least 2 scenario manifests, found ${files.length}`);
@@ -33,6 +35,7 @@ if (files.length < 2) {
 for (const file of files) {
 	const manifest = JSON.parse(await readFile(path.join(root, file), 'utf8'));
 	const manifestDir = path.dirname(file);
+	scenarioIdsByManifest.set(file, manifest.id);
 
 	for (const field of ['id', 'label', 'prompt_file', 'grader_file']) {
 		if (!manifest[field]) {
@@ -46,6 +49,50 @@ for (const file of files) {
 
 	if (!existsSync(path.join(root, manifestDir, manifest.grader_file))) {
 		throw new Error(`${file} checker does not exist: ${manifest.grader_file}`);
+	}
+}
+
+async function listTaskSetFiles() {
+	if (!existsSync(taskSetRoot)) {
+		return [];
+	}
+
+	const entries = await readdir(taskSetRoot, { withFileTypes: true });
+
+	return entries
+		.filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+		.map((entry) => path.join('task-sets', entry.name))
+		.sort();
+}
+
+const taskSetFiles = await listTaskSetFiles();
+
+for (const file of taskSetFiles) {
+	const manifest = JSON.parse(await readFile(path.join(root, file), 'utf8'));
+	const manifestDir = path.dirname(file);
+	const taskScenarioIds = new Set((manifest.tasks ?? []).map((task) => task.scenario_id));
+
+	for (const field of ['id', 'label', 'scenario_manifests']) {
+		if (!manifest[field]) {
+			throw new Error(`${file} is missing ${field}`);
+		}
+	}
+
+	if (!Array.isArray(manifest.scenario_manifests) || manifest.scenario_manifests.length < 1) {
+		throw new Error(`${file} must include at least one scenario manifest`);
+	}
+
+	for (const scenarioManifest of manifest.scenario_manifests) {
+		const resolvedScenarioManifest = path.relative(root, path.join(root, manifestDir, scenarioManifest));
+
+		if (!existsSync(path.join(root, resolvedScenarioManifest))) {
+			throw new Error(`${file} references missing scenario manifest: ${scenarioManifest}`);
+		}
+
+		const scenarioId = scenarioIdsByManifest.get(resolvedScenarioManifest);
+		if (!taskScenarioIds.has(scenarioId)) {
+			throw new Error(`${file} is missing task metadata for scenario: ${scenarioId}`);
+		}
 	}
 }
 
@@ -64,4 +111,4 @@ for (const phpFile of await Promise.all(phpFiles)) {
 	}
 }
 
-console.log(`Validated ${files.length} scenario manifests.`);
+console.log(`Validated ${files.length} scenario manifests and ${taskSetFiles.length} task sets.`);

@@ -48,7 +48,7 @@
   "self_checks": {
     "lint": [
       "node --check scripts/validate-scenarios.mjs",
-      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json"
+      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json task-sets/first-live-run.json"
     ],
     "test": [
       "npm test"

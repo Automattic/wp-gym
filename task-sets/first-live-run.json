@@ -1,0 +1,28 @@
+{
+  "id": "first-live-run",
+  "label": "First live side-by-side task set",
+  "issue": "https://github.com/chubes4/wp-rl/issues/18",
+  "description": "A small, stable set of WordPress tasks for the first live side-by-side run.",
+  "scenario_manifests": [
+    "../scenarios/site-building/community-garden.json",
+    "../scenarios/block-markup/no-fallback-pricing-section.json",
+    "../scenarios/modern-wordpress-api/abilities-site-summary.json"
+  ],
+  "tasks": [
+    {
+      "scenario_id": "site-building-community-garden",
+      "role": "site-building",
+      "summary": "Build a welcoming Marshside Community Garden site with core visitor information."
+    },
+    {
+      "scenario_id": "block-markup-no-fallback-pricing-section",
+      "role": "editable-page-layout",
+      "summary": "Create an editable pricing page with a structured three-plan layout."
+    },
+    {
+      "scenario_id": "modern-wordpress-api-abilities-site-summary",
+      "role": "developer-api-tooling",
+      "summary": "Expose a small site summary automation surface through the Abilities API."
+    }
+  ]
+}

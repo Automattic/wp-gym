@@ -25,6 +25,9 @@ instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.
 
+Stable task set manifests live in `task-sets/`. The first live side-by-side run
+uses `task-sets/first-live-run.json`.
+
 The smoke workflow in `.github/workflows/playground-smoke.yml` exercises the
 Playground path and uploads the artifacts emitted by Homeboy Extensions for
 maintainers.
