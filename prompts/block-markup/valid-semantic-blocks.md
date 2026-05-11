@@ -1,18 +1,13 @@
-# Create Valid Semantic Gutenberg Markup
+# Build A Cookout Planning Page
 
-Create or update a WordPress page titled **Cookout Block Markup**.
+Can you create or update a WordPress page titled **Cookout Block Markup** for a
+small neighborhood summer cookout?
 
-The final `post_content` must be valid Gutenberg block markup that parses through
-WordPress block APIs. Use real blocks, not superficial HTML.
+Please include:
 
-Content requirements:
+- A section heading that says `Summer Cookout Plan`.
+- A short paragraph describing the cookout.
+- A three-item preparation list.
+- A call-to-action button labeled `View menu`.
 
-- An H2 heading with the text `Summer Cookout Plan`.
-- A paragraph describing a small neighborhood cookout.
-- A list with exactly three preparation items.
-- A Buttons block containing one Button block labeled `View menu`.
-
-When you're finished, WordPress should parse the saved page content into
-`core/heading`, `core/paragraph`, `core/list`, `core/list-item`, `core/buttons`,
-and `core/button` blocks, with no fallback/raw HTML block and no `core/html`
-block.
+Keep it simple and ready for a site owner to edit later.

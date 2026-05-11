@@ -5,13 +5,13 @@ Playground sites.
 
 Current coverage includes:
 
-- Gutenberg block markup that WordPress can parse as real blocks.
-- Small plugins that use current WordPress API surfaces, including the Abilities
-  API and REST API.
+- Realistic page-building requests that a site owner might ask for.
+- Developer requests for small plugins that expose WordPress data to other tools.
 - A smoke task that proves the Playground task-run wiring and artifact output.
 
-Prompts are written as ordinary user requests. The task harness inspects final
-WordPress state, not transcript claims.
+Prompts are written as ordinary user or developer requests. WordPress quality
+criteria live in task metadata and PHP checks, so the task harness can inspect
+final WordPress state without telling the agent exactly what is being measured.
 
 Use the Node script in `scripts/` for the local manifest and PHP syntax check:
 

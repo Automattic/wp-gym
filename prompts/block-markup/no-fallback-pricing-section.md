@@ -1,19 +1,15 @@
-# Create A Parseable Pricing Section
+# Build A Pricing Section
 
-Create or update a WordPress page titled **Parseable Pricing Section**.
+Can you create or update a WordPress page titled **Parseable Pricing Section**
+with a polished pricing section for a small service business?
 
-Build a small pricing section using valid Gutenberg blocks. Avoid raw HTML and
-avoid markup that WordPress turns into fallback/freeform content.
+Please include:
 
-Content requirements:
+- A strong visual section wrapper.
+- A heading that says `Choose Your Plan`.
+- A short introductory paragraph.
+- Three side-by-side plan cards.
+- Each plan card should include a plan name, one sentence of description, and a
+  button.
 
-- A Cover block for the section wrapper.
-- A Heading block with `Choose Your Plan`.
-- A short Paragraph block below the heading.
-- A Columns block with exactly three Column blocks.
-- Each Column block must include a plan name, one sentence of description, and a
-  Button block.
-
-When you're finished, WordPress should parse the saved page into real Cover,
-Heading, Paragraph, Columns, Column, Buttons, and Button blocks, with no
-fallback/raw HTML block and no `core/html` block.
+Make the content easy for the business owner to revise in the editor.
