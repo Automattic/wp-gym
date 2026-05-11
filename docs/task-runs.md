@@ -46,8 +46,8 @@ node scripts/leaderboard.mjs reports/generated/results.jsonl reports/generated/l
 
 ## CI Run
 
-`.github/workflows/playground-smoke.yml` runs the same smoke task on pull
-requests and manual dispatch. It uploads:
+The GitHub Actions smoke workflow runs the same smoke task on pull requests and
+manual dispatch. It uploads:
 
 - The Homeboy result JSON.
 - JSONL rows for downstream aggregation.
