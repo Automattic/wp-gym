@@ -2,23 +2,41 @@
 
 Playground-backed WordPress task runs.
 
-`wp-rl` is a small WordPress task repository. It keeps task manifests, prompts,
-Playground blueprints, completion checks, and result publishing glue in one place
-while the WordPress sandbox comes from Homeboy Extensions.
+`wp-rl` is a small WordPress task repository. It keeps task manifests, ordinary
+user-request prompts, Playground starting states, WordPress completion checks,
+and result publishing glue in one place while the sandbox comes from Homeboy
+Extensions.
 
 ## Structure
 
 ```text
 blueprints/   WordPress Playground starting states
-checks/       WordPress completion checks
+checks/       Smoke task completion checks
 docs/         Contributor and workflow docs
-prompts/      Model-facing task prompts
+graders/      Block-markup task completion checks
+prompts/      Model-facing user requests
 reports/      Result fixtures and generated local artifacts
-scripts/      Local result conversion helpers
-tasks/        Task manifests and setup files
+scenarios/    Block-markup task manifests
+scripts/      Local validation and result conversion helpers
+tasks/        Smoke task manifest and setup files
 ```
 
-## First Task Run
+## Block-Markup Tasks
+
+The block-markup tasks live in `scenarios/block-markup/`. Each manifest points to
+a user request in `prompts/block-markup/` and a Playground PHP checker.
+
+The task harness inspects final WordPress state, not transcript claims. An agent
+should create or update the page title named in the prompt. The checker then
+finds that page and parses `post_content` with WordPress block APIs.
+
+Run the local manifest/PHP syntax check with:
+
+```sh
+node scripts/validate-scenarios.mjs
+```
+
+## Smoke Task Run
 
 Run the smoke task through Homeboy's WordPress Playground runner:
 
@@ -26,7 +44,7 @@ Run the smoke task through Homeboy's WordPress Playground runner:
 homeboy bench wp-rl --path . --extension wordpress --iterations 1
 ```
 
-The task is declared in `homeboy.json` and backed by:
+The smoke task is declared in `homeboy.json` and backed by:
 
 - `blueprints/smoke-homepage.json`
 - `tasks/smoke-homepage/manifest.json`
