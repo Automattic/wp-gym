@@ -9,6 +9,7 @@
           "scenarios/block-markup/valid-semantic-blocks.json",
           "scenarios/block-markup/nested-layout-blocks.json",
           "scenarios/block-markup/no-fallback-pricing-section.json",
+          "scenarios/site-building/community-garden.json",
           "scenarios/modern-wordpress-api/abilities-site-summary.json",
           "scenarios/modern-wordpress-api/rest-route-status.json"
         ]
