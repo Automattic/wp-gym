@@ -21,7 +21,7 @@ jobs:
           extension-source: https://github.com/Extra-Chill/homeboy-extensions
           commands: bench
           iterations: 1
-          args: --ignore-baseline
+          args: --ignore-baseline --setting-json playground_scenario_manifests=[]
 
       - name: Publish JSONL and leaderboard
         if: always()
