@@ -41,3 +41,32 @@ This path intentionally keeps task definitions separate from the agent loop.
 Homeboy Extensions owns the disposable WordPress runtime and artifact shape; an
 agent loop such as Data Machine can drive the same tasks without changing the
 task corpus.
+
+## Data Machine Bundle
+
+The minimal Data Machine bundle lives at `bundles/datamachine-task-runner`. It
+contains one agent, one manual flow, and one AI pipeline step. The bundle prompt
+queue is intentionally empty; the Homeboy Extensions runner injects the selected
+task prompt at run time from the task manifest or prompt file.
+
+Use the reusable workflow with the bundle slugs from `bundle-validator.json`:
+
+```yaml
+jobs:
+  run-wp-rl-task:
+    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
+    with:
+      bundle_path: bundles/datamachine-task-runner
+      bundle_validator_spec: bundle-validator.json
+      agent_slug: wordpress-task-runner
+      pipeline_slug: wordpress-task-runner-pipeline
+      flow_slug: wordpress-task-runner-flow
+      target_repo: chubes4/wp-rl
+      prompt: ${{ inputs.prompt }}
+      success_requires_pr: false
+    secrets: inherit
+```
+
+The workflow should resolve `prompt` from the selected task's prompt file. Setup
+and completion checks stay in the Playground workload around the agent run, so
+the agent only sees the ordinary WordPress user or developer request.

@@ -1,0 +1,20 @@
+{
+  "bundle_dir": "bundles/datamachine-task-runner",
+  "bundle_slug": "wordpress-task-runner",
+  "agent_slug": "wordpress-task-runner",
+  "agent_label": "WordPress Task Runner",
+  "expected_pipelines": ["wordpress-task-runner-pipeline"],
+  "expected_flows": ["wordpress-task-runner-flow"],
+  "memory_files": ["SOUL.md", "MEMORY.md"],
+  "flow_assertions": {
+    "wordpress-task-runner-flow": {
+      "pipeline_slug": "wordpress-task-runner-pipeline",
+      "completion_assertions_empty": true
+    }
+  },
+  "pipeline_assertions": {
+    "wordpress-task-runner-pipeline": {
+      "system_prompt_must_contain": "current WordPress Playground site"
+    }
+  }
+}

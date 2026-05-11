@@ -1,0 +1,18 @@
+{
+  "max_items": [],
+  "name": "WordPress Task Runner Flow",
+  "pipeline_slug": "wordpress-task-runner-pipeline",
+  "schedule": "manual",
+  "schema_version": 1,
+  "slug": "wordpress-task-runner-flow",
+  "steps": [
+    {
+      "disabled_tools": [],
+      "handler_configs": [],
+      "prompt_queue": [],
+      "queue_mode": "static",
+      "step_position": 0,
+      "step_type": "ai"
+    }
+  ]
+}
