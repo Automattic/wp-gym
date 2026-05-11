@@ -1,9 +1,9 @@
-# Create A Site Status REST Endpoint
+# Add A Site Status Endpoint
 
-Can you create and activate a small WordPress plugin that exposes a public,
-read-only REST API endpoint for basic site status?
+I need a small self-contained WordPress plugin that adds a public read-only site
+status endpoint at `/wp-json/site-tools/v1/status`.
 
-The endpoint should be available at `/wp-json/site-tools/v1/status` and return:
+The endpoint should return:
 
 - `ok`, confirming the site is reachable.
 - `site_name`, with the current site name.
