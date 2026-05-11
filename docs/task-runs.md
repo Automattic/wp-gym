@@ -70,3 +70,20 @@ jobs:
 The workflow should resolve `prompt` from the selected task's prompt file. Setup
 and completion checks stay in the Playground workload around the agent run, so
 the agent only sees the ordinary WordPress user or developer request.
+
+## First Live Task Set
+
+The first live side-by-side task set is `task-sets/first-live-run.json`. It pins
+three existing scenario manifests so the run can be repeated without relying on
+the broader scenario directory order.
+
+Selected tasks:
+
+- `site-building-community-garden`: Marshside Community Garden site-building request.
+- `block-markup-no-fallback-pricing-section`: editable pricing page layout request.
+- `modern-wordpress-api-abilities-site-summary`: developer request for a site summary automation surface.
+
+Private completion criteria stay in the scenario manifests and PHP checks. At a
+high level, the checks look for WordPress-native content structure, required user
+visible content, editable blocks instead of raw fallback markup, and the requested
+developer API surface with the expected output fields.
