@@ -1,12 +1,9 @@
-# Create A Site Summary Ability
+# Add A Site Summary Automation Hook
 
-Can you create and activate a small WordPress plugin that lets other tools ask
-for a basic site summary through the WordPress Abilities API?
+I’m wiring a WordPress site into an automation tool and need a tiny plugin that
+exposes a callable site summary action named `site-tools/site-summary`.
 
-The summary should include:
-
-- The current site name.
-- The number of published posts.
-
-Please keep the plugin self-contained and safe to run on a temporary WordPress
-site.
+The plugin should be self-contained and safe to activate on a temporary site. The
+automation action should be easy to discover under a `site-tools` grouping and
+should return a compact summary with the current site name and the number of
+published posts.
