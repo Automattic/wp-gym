@@ -19,7 +19,7 @@ on:
         default: ""
         type: string
       bundle_ref:
-        description: Optional wp-rl ref containing bundles/datamachine-task-runner.
+        description: Optional wp-gym ref containing bundles/datamachine-task-runner.
         required: false
         default: ""
         type: string
@@ -222,8 +222,8 @@ jobs:
                 success_requires_pr: Boolean(task.usesWorkspace),
                 runner_workspace: task.usesWorkspace ? JSON.stringify({
                   enabled: true,
-                  repo: 'wp-rl',
-                  clone_url: 'https://github.com/chubes4/wp-rl.git',
+                  repo: 'wp-gym',
+                  clone_url: 'https://github.com/chubes4/wp-gym.git',
                   from: process.env.GITHUB_REF_NAME || 'main',
                   branch_prefix: `agent-runs/${branchSlug}`,
                   expose_to_agent: true,
@@ -257,7 +257,7 @@ jobs:
       agent_slug: wordpress-task-runner
       pipeline_slug: wordpress-task-runner-pipeline
       flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
+      target_repo: chubes4/wp-gym
       prompt: ${{ matrix.prompt }}
       provider: ${{ matrix.provider }}
       model: ${{ matrix.model }}
@@ -276,8 +276,8 @@ jobs:
           "task_id": "metadata.engine_data.task_id",
           "job_status": "metadata.job_status"
         }
-      transcript_artifact_name: wp-rl-transcript-${{ matrix.artifact_suffix }}
-      replay_bundle_artifact_name: wp-rl-replay-${{ matrix.artifact_suffix }}
+      transcript_artifact_name: wp-gym-transcript-${{ matrix.artifact_suffix }}
+      replay_bundle_artifact_name: wp-gym-replay-${{ matrix.artifact_suffix }}
     secrets:
       HOMEBOY_APP_ID: ${{ secrets.HOMEBOY_APP_ID }}
       HOMEBOY_APP_PRIVATE_KEY: ${{ secrets.HOMEBOY_APP_PRIVATE_KEY }}

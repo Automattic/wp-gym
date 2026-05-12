@@ -1,6 +1,6 @@
 {
-  "id": "wp-rl",
-  "name": "wp-rl",
+  "id": "wp-gym",
+  "name": "wp-gym",
   "extensions": {
     "wordpress": {
       "settings": {

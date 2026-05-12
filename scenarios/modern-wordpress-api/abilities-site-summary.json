@@ -1,7 +1,7 @@
 {
   "id": "modern-wordpress-api-abilities-site-summary",
   "label": "Provider-friendly site summary ability",
-  "issue": "https://github.com/chubes4/wp-rl/issues/3",
+  "issue": "https://github.com/chubes4/wp-gym/issues/3",
   "prompt_file": "../../prompts/modern-wordpress-api/abilities-site-summary.md",
   "grader_file": "../../graders/modern-wordpress-api/abilities-site-summary.php",
   "tags": ["wordpress", "abilities-api", "modern-api"],

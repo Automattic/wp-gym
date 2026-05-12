@@ -1,7 +1,7 @@
 {
   "id": "block-markup-nested-layout-blocks",
   "label": "Two-service overview page",
-  "issue": "https://github.com/chubes4/wp-rl/issues/2",
+  "issue": "https://github.com/chubes4/wp-gym/issues/2",
   "prompt_file": "../../prompts/block-markup/nested-layout-blocks.md",
   "grader_file": "../../graders/block-markup/nested-layout-blocks.php",
   "expected": {

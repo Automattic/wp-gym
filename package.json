@@ -1,5 +1,5 @@
 {
-  "name": "wp-rl",
+  "name": "wp-gym",
   "private": true,
   "type": "module",
   "scripts": {

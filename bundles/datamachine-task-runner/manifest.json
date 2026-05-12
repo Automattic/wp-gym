@@ -24,7 +24,7 @@
   "bundle_slug": "wordpress-task-runner",
   "bundle_version": "1",
   "exported_at": "2026-05-11T00:00:00+00:00",
-  "exported_by": "wp-rl",
+  "exported_by": "wp-gym",
   "included": {
     "auth_refs": [],
     "extensions": [],

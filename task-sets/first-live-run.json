@@ -1,7 +1,7 @@
 {
   "id": "first-live-run",
   "label": "First live side-by-side task set",
-  "issue": "https://github.com/chubes4/wp-rl/issues/18",
+  "issue": "https://github.com/chubes4/wp-gym/issues/18",
   "description": "A small, stable set of WordPress tasks for the first live side-by-side run.",
   "scenario_manifests": [
     "../scenarios/site-building/community-garden.json",
