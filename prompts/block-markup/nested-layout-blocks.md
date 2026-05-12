@@ -14,4 +14,4 @@ Content requirements:
   copy.
 
 Make the page easy for a WordPress site owner to rearrange or edit visually in
-the editor.
+the block editor.

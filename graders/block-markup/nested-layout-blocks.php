@@ -75,6 +75,7 @@ return static function (): array {
 			'max_score' => 0.1,
 			'message'   => ! wp_rl_has_fallback_block( $blocks ) ? 'No fallback/freeform or HTML block detected.' : 'Detected fallback/freeform content or core/html.',
 		),
+		wp_rl_check_no_shortcodes( $post->post_content ),
 	);
 
 	return wp_rl_grade( $checks );

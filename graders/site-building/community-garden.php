@@ -47,6 +47,7 @@ return static function (): array {
 		)
 	);
 	$core_html_blocks  = count( array_filter( $block_names, static fn( string $name ): bool => 'core/html' === $name ) );
+	$shortcodes        = wp_rl_shortcode_matches( $content );
 	$fallback_blocks   = count(
 		array_filter(
 			$flat_blocks,
@@ -100,10 +101,10 @@ return static function (): array {
 		),
 		array(
 			'id'        => 'no_fallback_or_raw_html',
-			'passed'    => 0 === $fallback_blocks && 0 === $core_html_blocks,
-			'score'     => 0 === $fallback_blocks && 0 === $core_html_blocks ? 0.15 : 0,
+			'passed'    => 0 === $fallback_blocks && 0 === $core_html_blocks && empty( $shortcodes ),
+			'score'     => 0 === $fallback_blocks && 0 === $core_html_blocks && empty( $shortcodes ) ? 0.15 : 0,
 			'max_score' => 0.15,
-			'message'   => 'Fallback blocks: ' . $fallback_blocks . '; core/html blocks: ' . $core_html_blocks . '.',
+			'message'   => 'Fallback blocks: ' . $fallback_blocks . '; core/html blocks: ' . $core_html_blocks . '; shortcodes: ' . count( $shortcodes ) . '.',
 		),
 		array(
 			'id'        => 'navigation_created',

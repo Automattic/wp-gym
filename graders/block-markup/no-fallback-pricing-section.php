@@ -52,6 +52,7 @@ return static function (): array {
 			'max_score' => 0.2,
 			'message'   => ! wp_rl_has_fallback_block( $blocks ) ? 'No fallback/freeform or HTML block detected.' : 'Detected fallback/freeform content or core/html.',
 		),
+		wp_rl_check_no_shortcodes( $post->post_content ),
 		array(
 			'id'        => 'expected_heading_text',
 			'passed'    => false !== strpos( $post->post_content, 'Choose Your Plan' ),

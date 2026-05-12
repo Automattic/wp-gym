@@ -62,6 +62,28 @@ function wp_rl_has_fallback_block( array $blocks ): bool {
 	return false;
 }
 
+function wp_rl_shortcode_matches( string $content ): array {
+	if ( '' === trim( $content ) ) {
+		return array();
+	}
+
+	preg_match_all( '/\[(?!\[|\/)([A-Za-z][A-Za-z0-9_-]*)(?:\s[^\]]*)?\]/', $content, $matches );
+
+	return array_values( array_unique( $matches[1] ?? array() ) );
+}
+
+function wp_rl_check_no_shortcodes( string $content ): array {
+	$shortcodes = wp_rl_shortcode_matches( $content );
+
+	return array(
+		'id'        => 'no_shortcodes',
+		'passed'    => empty( $shortcodes ),
+		'score'     => empty( $shortcodes ) ? 0.1 : 0,
+		'max_score' => 0.1,
+		'message'   => empty( $shortcodes ) ? 'No shortcode markup detected.' : 'Detected shortcode-like markup: ' . implode( ', ', $shortcodes ),
+	);
+}
+
 function wp_rl_check_required_blocks( array $blocks, array $required_blocks ): array {
 	$names   = wp_rl_block_names( $blocks );
 	$missing = array_values( array_diff( $required_blocks, $names ) );
