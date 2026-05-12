@@ -216,6 +216,10 @@ jobs:
       step_budget: ${{ matrix.step_budget }}
       time_budget_ms: ${{ matrix.time_budget_ms }}
       workload_run_after: ${{ matrix.workload_run_after }}
+      artifact_export_config: |
+        {
+          "branch_template": "agent-artifacts/{agent_slug}-{run_id}-{provider}-{model}-{job_id}"
+        }
       engine_data_outputs: |
         {
           "task_id": "metadata.engine_data.task_id",
