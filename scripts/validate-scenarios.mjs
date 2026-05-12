@@ -98,6 +98,7 @@ for (const file of taskSetFiles) {
 
 const phpFiles = [
 	path.join('graders', 'block-markup', 'grader-common.php'),
+	path.join('graders', 'modern-wordpress-api', 'grader-common.php'),
 	...files.map(async (file) => {
 		const manifest = JSON.parse(await readFile(path.join(root, file), 'utf8'));
 		return path.join(path.dirname(file), manifest.grader_file);

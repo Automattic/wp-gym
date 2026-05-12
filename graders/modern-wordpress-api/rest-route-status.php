@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/grader-common.php';
+
 return function (): array {
 	$checks = array();
 
@@ -12,8 +14,8 @@ return function (): array {
 	$checks[]         = array(
 		'id'        => 'route_registered',
 		'passed'    => $route_registered,
-		'score'     => $route_registered ? 0.25 : 0,
-		'max_score' => 0.25,
+		'score'     => $route_registered ? 0.225 : 0,
+		'max_score' => 0.225,
 		'message'   => $route_registered ? 'REST route /site-tools/v1/status is registered.' : 'Expected REST route /site-tools/v1/status.',
 	);
 
@@ -29,8 +31,8 @@ return function (): array {
 	$checks[] = array(
 		'id'        => 'permission_callback_present',
 		'passed'    => $has_permission_callback,
-		'score'     => $has_permission_callback ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $has_permission_callback ? 0.18 : 0,
+		'max_score' => 0.18,
 		'message'   => $has_permission_callback ? 'GET handler has an explicit permission callback.' : 'Expected a callable permission_callback on the GET handler.',
 	);
 
@@ -48,8 +50,8 @@ return function (): array {
 	$checks[]  = array(
 		'id'        => 'status_200',
 		'passed'    => $status_ok,
-		'score'     => $status_ok ? 0.15 : 0,
-		'max_score' => 0.15,
+		'score'     => $status_ok ? 0.135 : 0,
+		'max_score' => 0.135,
 		'message'   => $status_ok ? 'Route returned HTTP 200.' : 'Expected REST request to return HTTP 200.',
 	);
 
@@ -57,8 +59,8 @@ return function (): array {
 	$checks[] = array(
 		'id'        => 'ok_flag_true',
 		'passed'    => $ok_flag,
-		'score'     => $ok_flag ? 0.1 : 0,
-		'max_score' => 0.1,
+		'score'     => $ok_flag ? 0.09 : 0,
+		'max_score' => 0.09,
 		'message'   => $ok_flag ? 'Response ok flag is true.' : 'Expected response data ok=true.',
 	);
 
@@ -68,8 +70,8 @@ return function (): array {
 	$checks[]          = array(
 		'id'        => 'site_name_matches',
 		'passed'    => $site_name_matches,
-		'score'     => $site_name_matches ? 0.15 : 0,
-		'max_score' => 0.15,
+		'score'     => $site_name_matches ? 0.135 : 0,
+		'max_score' => 0.135,
 		'message'   => $site_name_matches ? 'Response returned the current site name.' : 'Expected site_name to match get_bloginfo( name ).',
 	);
 
@@ -80,10 +82,12 @@ return function (): array {
 	$checks[]            = array(
 		'id'        => 'post_count_matches',
 		'passed'    => $post_count_matches,
-		'score'     => $post_count_matches ? 0.15 : 0,
-		'max_score' => 0.15,
+		'score'     => $post_count_matches ? 0.135 : 0,
+		'max_score' => 0.135,
 		'message'   => $post_count_matches ? 'Response returned the published post count.' : 'Expected post_count to match wp_count_posts( post )->publish.',
 	);
+
+	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata();
 
 	$score = min( 1, round( array_sum( array_column( $checks, 'score' ) ), 6 ) );
 

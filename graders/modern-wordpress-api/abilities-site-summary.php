@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/grader-common.php';
+
 return function (): array {
 	$checks = array();
 
@@ -7,8 +9,8 @@ return function (): array {
 	$checks[]      = array(
 		'id'        => 'abilities_api_available',
 		'passed'    => $api_available,
-		'score'     => $api_available ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $api_available ? 0.18 : 0,
+		'max_score' => 0.18,
 		'message'   => $api_available ? 'Abilities API is available.' : 'Expected WordPress Abilities API functions to exist.',
 	);
 
@@ -25,8 +27,8 @@ return function (): array {
 	$checks[]            = array(
 		'id'        => 'category_registered',
 		'passed'    => $category_registered,
-		'score'     => $category_registered ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $category_registered ? 0.18 : 0,
+		'max_score' => 0.18,
 		'message'   => $category_registered ? 'Category site-tools is registered.' : 'Expected ability category site-tools.',
 	);
 
@@ -35,8 +37,8 @@ return function (): array {
 	$checks[]           = array(
 		'id'        => 'ability_registered',
 		'passed'    => $ability_registered,
-		'score'     => $ability_registered ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $ability_registered ? 0.18 : 0,
+		'max_score' => 0.18,
 		'message'   => $ability_registered ? 'Ability site-tools/site-summary is registered.' : 'Expected ability site-tools/site-summary.',
 	);
 
@@ -51,8 +53,8 @@ return function (): array {
 	$checks[]          = array(
 		'id'        => 'site_name_matches',
 		'passed'    => $site_name_matches,
-		'score'     => $site_name_matches ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $site_name_matches ? 0.18 : 0,
+		'max_score' => 0.18,
 		'message'   => $site_name_matches ? 'Ability returned the current site name.' : 'Expected site_name to match get_bloginfo( name ).',
 	);
 
@@ -63,10 +65,12 @@ return function (): array {
 	$checks[]            = array(
 		'id'        => 'post_count_matches',
 		'passed'    => $post_count_matches,
-		'score'     => $post_count_matches ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $post_count_matches ? 0.18 : 0,
+		'max_score' => 0.18,
 		'message'   => $post_count_matches ? 'Ability returned the published post count.' : 'Expected post_count to match wp_count_posts( post )->publish.',
 	);
+
+	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata();
 
 	$score = min( 1, round( array_sum( array_column( $checks, 'score' ) ), 6 ) );
 
