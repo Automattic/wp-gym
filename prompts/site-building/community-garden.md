@@ -10,4 +10,4 @@ Please build a welcoming site that feels ready for local neighbors. It should in
 - Volunteer opportunities.
 - Contact details for questions.
 
-Use friendly copy, clear calls to action, and navigation that makes the important information easy to find. Build the pages with normal WordPress editor blocks so the garden organizer can revise the copy and layout visually later.
+Use friendly copy, clear calls to action, and navigation that makes the important information easy to find. Make the pages easy for the garden organizer to revise visually later.

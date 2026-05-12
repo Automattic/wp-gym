@@ -10,5 +10,6 @@ Please include:
 - A three-item preparation list.
 - A call-to-action button labeled `View menu`.
 
-Keep the page structure clean enough that a non-technical WordPress editor can
-open it later and adjust each section visually without editing code.
+Make the heading, paragraph, preparation list, and call-to-action independently
+editable in the WordPress visual editor so a non-technical editor can revise the
+page later.
