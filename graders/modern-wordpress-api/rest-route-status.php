@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/grader-common.php';
+
 return function (): array {
 	$checks = array();
 
@@ -12,8 +14,8 @@ return function (): array {
 	$checks[]         = array(
 		'id'        => 'route_registered',
 		'passed'    => $route_registered,
-		'score'     => $route_registered ? 0.25 : 0,
-		'max_score' => 0.25,
+		'score'     => $route_registered ? 0.2 : 0,
+		'max_score' => 0.2,
 		'message'   => $route_registered ? 'REST route /site-tools/v1/status is registered.' : 'Expected REST route /site-tools/v1/status.',
 	);
 
@@ -29,8 +31,8 @@ return function (): array {
 	$checks[] = array(
 		'id'        => 'permission_callback_present',
 		'passed'    => $has_permission_callback,
-		'score'     => $has_permission_callback ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $has_permission_callback ? 0.15 : 0,
+		'max_score' => 0.15,
 		'message'   => $has_permission_callback ? 'GET handler has an explicit permission callback.' : 'Expected a callable permission_callback on the GET handler.',
 	);
 
@@ -83,6 +85,10 @@ return function (): array {
 		'score'     => $post_count_matches ? 0.15 : 0,
 		'max_score' => 0.15,
 		'message'   => $post_count_matches ? 'Response returned the published post count.' : 'Expected post_count to match wp_count_posts( post )->publish.',
+	);
+
+	$checks[] = wp_gym_modern_api_plugin_author_supported_check(
+		array( '/site-tools/v1/status', 'site-tools/v1/status' )
 	);
 
 	$score = min( 1, round( array_sum( array_column( $checks, 'score' ) ), 6 ) );
