@@ -10,3 +10,8 @@ The plugin should be self-contained and safe to activate on a fresh site. The
 automation action should be easy to discover under a `site-tools` grouping and
 should return a compact summary with the current site name and the number of
 published posts.
+
+The target runtime includes the WordPress Abilities API. Register the ability
+category during `wp_abilities_api_categories_init`, and register the callable
+ability during `wp_abilities_api_init`, so other tools can discover and execute
+it reliably after WordPress finishes loading.
