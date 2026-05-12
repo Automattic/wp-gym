@@ -172,6 +172,17 @@ jobs:
                 {
                   step_type: 'ai',
                   merge: {
+                    enabled_tools: [
+                      'workspace_show',
+                      'workspace_ls',
+                      'workspace_read',
+                      'workspace_grep',
+                      'workspace_write',
+                      'workspace_edit',
+                      'workspace_apply_patch',
+                      'workspace_git_status',
+                      'wordpress_runtime_ls',
+                    ],
                     completion_assertions: {
                       complete_when_any: [
                         {
