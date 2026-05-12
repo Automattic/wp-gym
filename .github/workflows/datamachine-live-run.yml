@@ -259,6 +259,7 @@ jobs:
                   from: process.env.GITHUB_REF_NAME || 'main',
                   branch_prefix: `agent-runs/${branchSlug}`,
                   agent_alias: 'current-project',
+                  agent_root: '.agent-workspace/current-project',
                   expose_to_agent: true,
                   capture_changes: true,
                   commit_message: `feat: complete ${task.id}`,
