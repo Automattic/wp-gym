@@ -194,6 +194,7 @@ jobs:
     uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@fix-private-bundle-repo-clone
     with:
       bundle_path: bundles/datamachine-task-runner
+      homeboy_extensions_ref: fix-private-bundle-repo-clone
       bundle_ref: ${{ inputs.bundle_ref }}
       bundle_validator_spec: bundle-validator.json
       agent_slug: wordpress-task-runner
