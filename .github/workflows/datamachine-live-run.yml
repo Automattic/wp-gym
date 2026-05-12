@@ -30,7 +30,6 @@ on:
         type: boolean
 
 permissions:
-  actions: read
   contents: write
   pull-requests: write
   issues: write
@@ -205,7 +204,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.resolve-matrix.outputs.matrix) }}
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
+    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@fix-datamachine-ci-startup
     with:
       bundle_path: bundles/datamachine-task-runner
       bundle_ref: ${{ inputs.bundle_ref }}
