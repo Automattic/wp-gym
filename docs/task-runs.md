@@ -3,7 +3,22 @@
 `wp-gym` uses Homeboy Extensions WordPress Playground workloads as the default
 execution substrate. The repository supplies ordinary user/developer requests,
 task metadata, and private completion checks; Homeboy supplies the disposable
-WordPress runtime and CI-friendly artifacts.
+WordPress runtime, Data Machine runner, generated code PRs, and replay artifacts.
+
+The prototype loop is:
+
+1. `wp-gym` selects a task and model matrix.
+2. Homeboy starts a disposable WordPress Playground runtime.
+3. Data Machine runs the task prompt through the selected model.
+4. The model edits only the isolated `current-project` workspace alias.
+5. Hidden PHP checks grade the finished WordPress state after the agent stops.
+6. The runner opens one pull request per task/model with the generated files and
+   a report body containing task, model, workflow, score, checks, changed files,
+   tool summary, and replay/artifact links.
+
+The generated PR body is the canonical review report for the prototype. Workflow
+artifacts remain available for replay and debugging, but reviewers should not
+need to download them to understand whether a model passed or failed the task.
 
 ## Prompt Shape
 
@@ -105,21 +120,22 @@ Playground. The first matrix runs:
 - Anthropic `claude-opus-4-7` with `ANTHROPIC_API_KEY`.
 
 The workflow delegates the agent run, provider plugin setup, Homeboy result JSON,
-JSONL/leaderboard generation, transcript export, and replay bundle creation to
-Homeboy Extensions. `wp-gym` only resolves task prompts/checks into a provider and
-task matrix.
+workspace capture, generated PR creation, transcript export, replay bundle
+creation, and final PR summary refresh to Homeboy Extensions. `wp-gym` only
+resolves task prompts/checks into a provider and task matrix.
 
-Runner-owned artifact PRs use Homeboy Extensions' data-driven artifact export
-templates. `wp-gym` supplies task IDs, task labels, providers, and models as
-template values, opts into full job artifact JSON, and leaves result/check/tool/
-review tables to the reusable runner so each model/task PR is reviewable without
-teaching the agent about GitHub.
+Runner-owned PRs use Homeboy Extensions' data-driven artifact export templates.
+For workspace-backed tasks, the runner captures the edited workspace branch,
+opens a PR from that branch, then refreshes the PR summary after hidden grading
+finishes. This keeps the model-facing task prompt clean while making the GitHub
+PR identify the task, provider/model, workflow run, result, score, failed checks,
+changed workspace branch, generated files, tool summary, and artifact/replay
+links.
 
-For workspace-backed tasks, the runner workspace fallback PR template is expected
-to use the same artifact context as artifact PRs. That keeps the task prompt clean
-while making the GitHub PR identify the task, provider/model, workflow run, result
-summary, failed checks, changed workspace branch, and artifact/replay links when
-the runner provides them.
+PR comments are not required for the prototype. Comments are useful for adding a
+Homeboy report to a human-authored PR, but here the generated PR is itself the
+evidence artifact. The PR body is intentionally stable and complete enough to
+share directly.
 
 The workflow uses the minimal Data Machine bundle from `bundles/datamachine-task-runner`
 with the slugs from `bundle-validator.json`:
@@ -138,6 +154,33 @@ To trigger the first live run:
 4. Leave `dry_run` disabled for a live model run, or enable it to validate the
    runner config without provider calls.
 5. Confirm repository secrets include `OPENAI_API_KEY` and `ANTHROPIC_API_KEY`.
-6. Download the per-model artifacts from the completed workflow run. Replay
+6. Review the generated PRs. Each task/model that wrote workspace changes should
+   have its own PR with the result summary and hidden-grade checks in the body.
+7. Use workflow artifacts only when deeper replay/debugging is needed. Replay
    bundle artifacts are named `wp-gym-replay-<task>-<provider-model>` when the
    Homeboy runner emits them.
+
+## Generated PR Body
+
+The generated PR body is designed to be readable without opening CI logs. A clean
+prototype PR should include:
+
+- Task label and scenario ID.
+- Provider and model.
+- Workflow run URL.
+- Success, reward, and score.
+- Full hidden-grade check table with pass/fail, score, max score, and message.
+- Changed workspace branch and file count.
+- Links or paths for generated files and replay/job artifacts.
+- Tool execution summary.
+
+The PR title should include the task ID, provider/model, and result label, for
+example:
+
+```text
+[wp-gym] failed - modern-wordpress-api-abilities-site-summary - openai/gpt-5.5
+```
+
+Generated PRs are review artifacts. Merge only intentionally accepted task
+outputs; close failed or exploratory generated PRs after preserving the workflow
+and PR links as evidence.

@@ -4,6 +4,13 @@ WP Gym contains small WordPress implementation requests for disposable Playgroun
 sites. It is a WordPress Playground environment for training and evaluating
 agents on real WordPress tasks.
 
+The current prototype runs the same WordPress task side by side across multiple
+models, lets each model edit an isolated project workspace, and opens a separate
+runner-owned pull request for each model's output. Those generated PRs are the
+primary review surface: their bodies identify the task and model, link to the
+workflow run, show the hidden grading result, list failed checks, summarize tool
+usage, and point to replay artifacts.
+
 The prompt files should read like normal requests from WordPress users or
 developers. They describe the desired outcome, not the internal quality checks or
 the exact implementation path.
