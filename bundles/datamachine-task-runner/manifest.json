@@ -1,7 +1,7 @@
 {
   "agent": {
     "agent_config": {
-      "description": "Completes a supplied WordPress task in the current Playground site.",
+      "description": "Completes a supplied WordPress task.",
       "mode_models": {
         "chat": {
           "model": "gpt-5.5",

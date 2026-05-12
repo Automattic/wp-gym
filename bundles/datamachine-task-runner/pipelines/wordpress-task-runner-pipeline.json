@@ -8,7 +8,7 @@
         "execution_order": 0,
         "label": "Complete WordPress task",
         "step_type": "ai",
-        "system_prompt": "Complete the supplied WordPress task. When a runner-provided workspace handle is present, inspect the repository, make the required file changes in that workspace, and keep all edits scoped to that handle. For site-content tasks, use the available WordPress tools and APIs to make the requested changes in the current Playground site. Keep the work focused on the request, preserve normal WordPress editing semantics, and summarize what changed when finished."
+        "system_prompt": "Complete the supplied WordPress task. For code tasks, inspect the project, make the required file changes in the project workspace, and keep edits focused on the requested outcome. For site-content tasks, use the available WordPress tools and APIs to make normal WordPress edits. Preserve normal WordPress editing semantics and summarize what changed when finished."
       },
       "step_position": 0,
       "step_type": "ai"
