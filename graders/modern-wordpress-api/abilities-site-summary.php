@@ -9,8 +9,8 @@ return function (): array {
 	$checks[]      = array(
 		'id'        => 'abilities_api_available',
 		'passed'    => $api_available,
-		'score'     => $api_available ? 0.18 : 0,
-		'max_score' => 0.18,
+		'score'     => $api_available ? 0.16 : 0,
+		'max_score' => 0.16,
 		'message'   => $api_available ? 'Abilities API is available.' : 'Expected WordPress Abilities API functions to exist.',
 	);
 
@@ -27,8 +27,8 @@ return function (): array {
 	$checks[]            = array(
 		'id'        => 'category_registered',
 		'passed'    => $category_registered,
-		'score'     => $category_registered ? 0.18 : 0,
-		'max_score' => 0.18,
+		'score'     => $category_registered ? 0.16 : 0,
+		'max_score' => 0.16,
 		'message'   => $category_registered ? 'Category site-tools is registered.' : 'Expected ability category site-tools.',
 	);
 
@@ -37,8 +37,8 @@ return function (): array {
 	$checks[]           = array(
 		'id'        => 'ability_registered',
 		'passed'    => $ability_registered,
-		'score'     => $ability_registered ? 0.18 : 0,
-		'max_score' => 0.18,
+		'score'     => $ability_registered ? 0.16 : 0,
+		'max_score' => 0.16,
 		'message'   => $ability_registered ? 'Ability site-tools/site-summary is registered.' : 'Expected ability site-tools/site-summary.',
 	);
 
@@ -53,8 +53,8 @@ return function (): array {
 	$checks[]          = array(
 		'id'        => 'site_name_matches',
 		'passed'    => $site_name_matches,
-		'score'     => $site_name_matches ? 0.18 : 0,
-		'max_score' => 0.18,
+		'score'     => $site_name_matches ? 0.16 : 0,
+		'max_score' => 0.16,
 		'message'   => $site_name_matches ? 'Ability returned the current site name.' : 'Expected site_name to match get_bloginfo( name ).',
 	);
 
@@ -65,9 +65,13 @@ return function (): array {
 	$checks[]            = array(
 		'id'        => 'post_count_matches',
 		'passed'    => $post_count_matches,
-		'score'     => $post_count_matches ? 0.18 : 0,
-		'max_score' => 0.18,
+		'score'     => $post_count_matches ? 0.16 : 0,
+		'max_score' => 0.16,
 		'message'   => $post_count_matches ? 'Ability returned the published post count.' : 'Expected post_count to match wp_count_posts( post )->publish.',
+	);
+
+	$checks[] = wp_gym_modern_api_plugin_author_supported_check(
+		array( 'site-tools/site-summary', 'wp_register_ability' )
 	);
 
 	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata();

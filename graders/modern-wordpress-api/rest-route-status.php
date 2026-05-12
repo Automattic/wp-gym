@@ -14,8 +14,8 @@ return function (): array {
 	$checks[]         = array(
 		'id'        => 'route_registered',
 		'passed'    => $route_registered,
-		'score'     => $route_registered ? 0.225 : 0,
-		'max_score' => 0.225,
+		'score'     => $route_registered ? 0.18 : 0,
+		'max_score' => 0.18,
 		'message'   => $route_registered ? 'REST route /site-tools/v1/status is registered.' : 'Expected REST route /site-tools/v1/status.',
 	);
 
@@ -31,8 +31,8 @@ return function (): array {
 	$checks[] = array(
 		'id'        => 'permission_callback_present',
 		'passed'    => $has_permission_callback,
-		'score'     => $has_permission_callback ? 0.18 : 0,
-		'max_score' => 0.18,
+		'score'     => $has_permission_callback ? 0.135 : 0,
+		'max_score' => 0.135,
 		'message'   => $has_permission_callback ? 'GET handler has an explicit permission callback.' : 'Expected a callable permission_callback on the GET handler.',
 	);
 
@@ -85,6 +85,12 @@ return function (): array {
 		'score'     => $post_count_matches ? 0.135 : 0,
 		'max_score' => 0.135,
 		'message'   => $post_count_matches ? 'Response returned the published post count.' : 'Expected post_count to match wp_count_posts( post )->publish.',
+	);
+
+	$checks[] = wp_gym_modern_api_plugin_author_supported_check(
+		array( '/site-tools/v1/status', 'site-tools/v1/status' ),
+		null,
+		0.09
 	);
 
 	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata();
