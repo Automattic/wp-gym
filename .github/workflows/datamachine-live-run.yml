@@ -168,21 +168,21 @@ jobs:
               : '[]';
             for (const provider of providers) {
               const branchSlug = `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-');
+              const workspaceTools = [
+                'workspace_show',
+                'workspace_ls',
+                'workspace_read',
+                'workspace_grep',
+                'workspace_write',
+                'workspace_edit',
+                'workspace_apply_patch',
+                'workspace_git_status',
+                'wordpress_runtime_ls',
+              ];
               const pipelineStepPatches = task.usesWorkspace ? JSON.stringify([
                 {
                   step_type: 'ai',
                   merge: {
-                    enabled_tools: [
-                      'workspace_show',
-                      'workspace_ls',
-                      'workspace_read',
-                      'workspace_grep',
-                      'workspace_write',
-                      'workspace_edit',
-                      'workspace_apply_patch',
-                      'workspace_git_status',
-                      'wordpress_runtime_ls',
-                    ],
                     completion_assertions: {
                       complete_when_any: [
                         {
@@ -199,6 +199,14 @@ jobs:
                         },
                       ],
                     },
+                  },
+                },
+              ]) : '[]';
+              const flowStepPatches = task.usesWorkspace ? JSON.stringify([
+                {
+                  step_type: 'ai',
+                  merge: {
+                    enabled_tools: workspaceTools,
                   },
                 },
               ]) : '[]';
@@ -223,6 +231,7 @@ jobs:
                   commit_message: `feat: complete ${task.id}`,
                 }) : '{}',
                 pipeline_step_patches: pipelineStepPatches,
+                flow_step_patches: flowStepPatches,
                 max_turns: task.maxTurns,
                 step_budget: task.stepBudget,
                 time_budget_ms: task.timeBudgetMs,
@@ -256,6 +265,7 @@ jobs:
       success_requires_pr: ${{ matrix.success_requires_pr }}
       runner_workspace: ${{ matrix.runner_workspace }}
       pipeline_step_patches: ${{ matrix.pipeline_step_patches }}
+      flow_step_patches: ${{ matrix.flow_step_patches }}
       dry_run: ${{ inputs.dry_run }}
       max_turns: ${{ matrix.max_turns }}
       step_budget: ${{ matrix.step_budget }}
