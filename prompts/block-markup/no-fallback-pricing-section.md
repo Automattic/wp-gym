@@ -13,5 +13,5 @@ landing-page section and be easy for the business owner to revise later.
 - Each plan card should include a plan name, one sentence of description, and a
   button.
 
-Keep the content structured as normal WordPress editor blocks so the site owner
-can edit the heading, plan copy, and buttons visually later.
+Make the heading, plan copy, cards, and buttons independently editable in the
+WordPress visual editor so the owner can revise the section later.

@@ -13,5 +13,5 @@ Content requirements:
 - Each service summary needs its own heading and one paragraph of explanatory
   copy.
 
-Make the page easy for a WordPress site owner to rearrange or edit visually in
-the block editor.
+Make the introduction and both service summaries easy for a WordPress site owner
+to rearrange or revise visually later.
