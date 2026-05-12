@@ -35,38 +35,15 @@ permissions:
   issues: write
 
 jobs:
-  resolve-tasks:
+  resolve-matrix:
     runs-on: ubuntu-latest
     outputs:
-      smoke: ${{ steps.tasks.outputs.smoke }}
-      smoke_prompt: ${{ steps.tasks.outputs.smoke_prompt }}
-      smoke_workload_run_after: ${{ steps.tasks.outputs.smoke_workload_run_after }}
-      smoke_max_turns: ${{ steps.tasks.outputs.smoke_max_turns }}
-      smoke_step_budget: ${{ steps.tasks.outputs.smoke_step_budget }}
-      smoke_time_budget_ms: ${{ steps.tasks.outputs.smoke_time_budget_ms }}
-      community_garden: ${{ steps.tasks.outputs.community_garden }}
-      community_garden_prompt: ${{ steps.tasks.outputs.community_garden_prompt }}
-      community_garden_workload_run_after: ${{ steps.tasks.outputs.community_garden_workload_run_after }}
-      community_garden_max_turns: ${{ steps.tasks.outputs.community_garden_max_turns }}
-      community_garden_step_budget: ${{ steps.tasks.outputs.community_garden_step_budget }}
-      community_garden_time_budget_ms: ${{ steps.tasks.outputs.community_garden_time_budget_ms }}
-      pricing_section: ${{ steps.tasks.outputs.pricing_section }}
-      pricing_section_prompt: ${{ steps.tasks.outputs.pricing_section_prompt }}
-      pricing_section_workload_run_after: ${{ steps.tasks.outputs.pricing_section_workload_run_after }}
-      pricing_section_max_turns: ${{ steps.tasks.outputs.pricing_section_max_turns }}
-      pricing_section_step_budget: ${{ steps.tasks.outputs.pricing_section_step_budget }}
-      pricing_section_time_budget_ms: ${{ steps.tasks.outputs.pricing_section_time_budget_ms }}
-      abilities_site_summary: ${{ steps.tasks.outputs.abilities_site_summary }}
-      abilities_site_summary_prompt: ${{ steps.tasks.outputs.abilities_site_summary_prompt }}
-      abilities_site_summary_workload_run_after: ${{ steps.tasks.outputs.abilities_site_summary_workload_run_after }}
-      abilities_site_summary_max_turns: ${{ steps.tasks.outputs.abilities_site_summary_max_turns }}
-      abilities_site_summary_step_budget: ${{ steps.tasks.outputs.abilities_site_summary_step_budget }}
-      abilities_site_summary_time_budget_ms: ${{ steps.tasks.outputs.abilities_site_summary_time_budget_ms }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve selected tasks
-        id: tasks
+      - name: Resolve task and provider matrix
+        id: matrix
         env:
           TASK_SET: ${{ inputs.task_set }}
           TASK_IDS: ${{ inputs.task_ids }}
@@ -93,10 +70,6 @@ jobs:
             return path.normalize(path.join(path.dirname(baseFile), candidate)).replace(/\\/g, '/');
           }
 
-          function output(name, value) {
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, `${name}<<EOF\n${value}\nEOF\n`);
-          }
-
           function taskSetScenarioIds(taskSetFile) {
             const taskSet = readJson(taskSetFile);
             const ids = [];
@@ -113,45 +86,35 @@ jobs:
             return ids;
           }
 
-          const taskConfigs = [
-            {
-              key: 'smoke',
-              id: 'smoke-homepage',
-              promptFile: 'prompts/smoke-homepage.md',
-              graderFile: 'checks/smoke-homepage.php',
-              maxTurns: 8,
-              stepBudget: 12,
-              timeBudgetMs: 600000,
-            },
-            {
-              key: 'community_garden',
-              id: 'site-building-community-garden',
-              scenarioFile: 'scenarios/site-building/community-garden.json',
-            },
-            {
-              key: 'pricing_section',
-              id: 'block-markup-no-fallback-pricing-section',
-              scenarioFile: 'scenarios/block-markup/no-fallback-pricing-section.json',
-            },
-            {
-              key: 'abilities_site_summary',
-              id: 'modern-wordpress-api-abilities-site-summary',
-              scenarioFile: 'scenarios/modern-wordpress-api/abilities-site-summary.json',
-            },
-          ].map((task) => {
-            if (!task.scenarioFile) {
-              return task;
-            }
-            const scenario = readJson(task.scenarioFile);
-            return {
-              ...task,
-              promptFile: resolveFrom(task.scenarioFile, scenario.prompt_file || scenario.prompt),
-              graderFile: resolveFrom(task.scenarioFile, scenario.grader_file || scenario.grader),
+          const homeboy = readJson('homeboy.json');
+          const scenarioFiles = homeboy.extensions.wordpress.settings.playground_scenario_manifests || [];
+          const tasks = new Map();
+
+          const smoke = readJson('tasks/smoke-homepage/manifest.json');
+          tasks.set(smoke.id, {
+            id: smoke.id,
+            label: smoke.label,
+            promptFile: smoke.prompt,
+            graderFile: smoke.check,
+            maxTurns: 8,
+            stepBudget: 12,
+            timeBudgetMs: 600000,
+          });
+
+          for (const scenarioFile of scenarioFiles) {
+            const scenario = readJson(scenarioFile);
+            const promptFile = resolveFrom(scenarioFile, scenario.prompt_file || scenario.prompt);
+            const graderFile = resolveFrom(scenarioFile, scenario.grader_file || scenario.grader);
+            tasks.set(scenario.id, {
+              id: scenario.id,
+              label: scenario.label || scenario.id,
+              promptFile,
+              graderFile,
               maxTurns: Number(scenario.limits?.max_turns || 12),
               stepBudget: Number(scenario.limits?.step_budget || 16),
               timeBudgetMs: Number(scenario.limits?.time_budget_ms || 600000),
-            };
-          });
+            });
+          }
 
           const explicitIds = (process.env.TASK_IDS || '')
             .split(',')
@@ -163,31 +126,71 @@ jobs:
           const selectedIds = explicitIds.length > 0
             ? explicitIds
             : process.env.TASK_SET === 'all'
-              ? taskConfigs.map((task) => task.id)
+              ? [...tasks.keys()]
               : process.env.TASK_SET === 'smoke'
                 ? ['smoke-homepage']
                 : taskSetScenarioIds(`task-sets/${process.env.TASK_SET}.json`);
 
+          const providers = [
+            {
+              provider: 'openai',
+              model: 'gpt-5.5',
+              label: 'openai-gpt-5-5',
+              providerPlugin: '{}',
+            },
+            {
+              provider: 'anthropic',
+              model: 'claude-opus-4-7',
+              label: 'anthropic-claude-opus-4-7',
+              providerPlugin: JSON.stringify({
+                repo: 'WordPress/ai-provider-for-anthropic',
+                ref: 'trunk',
+                path: '.',
+                register_function: 'WordPress\\AnthropicAiProvider\\register_provider',
+                credentials: {
+                  connectors_ai_anthropic_api_key: 'PROVIDER_SECRET_1',
+                },
+              }),
+            },
+          ];
+
+          const include = [];
           for (const taskId of selectedIds) {
-            if (!taskConfigs.some((task) => task.id === taskId)) {
-              throw new Error(`This workflow does not have an explicit job for task ID: ${taskId}`);
+            const task = tasks.get(taskId);
+            if (!task) {
+              throw new Error(`Unknown task ID: ${taskId}`);
+            }
+            const prompt = readText(task.promptFile);
+            const workloadRunAfter = task.graderFile
+              ? JSON.stringify([{ type: 'php', file: task.graderFile }])
+              : '[]';
+            for (const provider of providers) {
+              include.push({
+                task_id: task.id,
+                task_label: task.label,
+                provider: provider.provider,
+                model: provider.model,
+                provider_label: provider.label,
+                provider_plugin: provider.providerPlugin,
+                prompt,
+                workload_run_after: workloadRunAfter,
+                max_turns: task.maxTurns,
+                step_budget: task.stepBudget,
+                time_budget_ms: task.timeBudgetMs,
+                artifact_suffix: `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-'),
+              });
             }
           }
 
-          for (const task of taskConfigs) {
-            const enabled = selectedIds.includes(task.id) ? 'true' : 'false';
-            output(task.key, enabled);
-            output(`${task.key}_prompt`, readText(task.promptFile));
-            output(`${task.key}_workload_run_after`, JSON.stringify([{ type: 'php', file: task.graderFile }]));
-            output(`${task.key}_max_turns`, String(task.maxTurns));
-            output(`${task.key}_step_budget`, String(task.stepBudget));
-            output(`${task.key}_time_budget_ms`, String(task.timeBudgetMs));
-          }
+          const matrix = JSON.stringify({ include });
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${matrix}\n`);
           NODE
 
-  smoke-openai:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.smoke == 'true'
+  live-run:
+    needs: resolve-matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.resolve-matrix.outputs.matrix) }}
     uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
     with:
       bundle_path: bundles/datamachine-task-runner
@@ -197,210 +200,25 @@ jobs:
       pipeline_slug: wordpress-task-runner-pipeline
       flow_slug: wordpress-task-runner-flow
       target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.smoke_prompt }}
-      provider: openai
-      model: gpt-5.5
+      prompt: ${{ matrix.prompt }}
+      provider: ${{ matrix.provider }}
+      model: ${{ matrix.model }}
+      provider_plugin: ${{ matrix.provider_plugin }}
       success_requires_pr: false
       dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.smoke_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.smoke_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.smoke_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.smoke_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-smoke-homepage-openai-gpt-5-5
-      replay_bundle_artifact_name: wp-rl-replay-smoke-homepage-openai-gpt-5-5
+      max_turns: ${{ matrix.max_turns }}
+      step_budget: ${{ matrix.step_budget }}
+      time_budget_ms: ${{ matrix.time_budget_ms }}
+      workload_run_after: ${{ matrix.workload_run_after }}
+      engine_data_outputs: |
+        {
+          "task_id": "metadata.engine_data.task_id",
+          "job_status": "metadata.job_status"
+        }
+      transcript_artifact_name: wp-rl-transcript-${{ matrix.artifact_suffix }}
+      replay_bundle_artifact_name: wp-rl-replay-${{ matrix.artifact_suffix }}
     secrets:
+      HOMEBOY_APP_ID: ${{ secrets.HOMEBOY_APP_ID }}
+      HOMEBOY_APP_PRIVATE_KEY: ${{ secrets.HOMEBOY_APP_PRIVATE_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
-  smoke-anthropic:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.smoke == 'true'
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
-    with:
-      bundle_path: bundles/datamachine-task-runner
-      bundle_ref: ${{ inputs.bundle_ref }}
-      bundle_validator_spec: bundle-validator.json
-      agent_slug: wordpress-task-runner
-      pipeline_slug: wordpress-task-runner-pipeline
-      flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.smoke_prompt }}
-      provider: anthropic
-      model: claude-opus-4-7
-      provider_plugin: '{"repo":"WordPress/ai-provider-for-anthropic","ref":"trunk","path":".","register_function":"WordPress\\AnthropicAiProvider\\register_provider","credentials":{"connectors_ai_anthropic_api_key":"PROVIDER_SECRET_1"}}'
-      success_requires_pr: false
-      dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.smoke_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.smoke_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.smoke_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.smoke_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-smoke-homepage-anthropic-claude-opus-4-7
-      replay_bundle_artifact_name: wp-rl-replay-smoke-homepage-anthropic-claude-opus-4-7
-    secrets:
-      PROVIDER_SECRET_1: ${{ secrets.ANTHROPIC_API_KEY }}
-
-  community-garden-openai:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.community_garden == 'true'
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
-    with:
-      bundle_path: bundles/datamachine-task-runner
-      bundle_ref: ${{ inputs.bundle_ref }}
-      bundle_validator_spec: bundle-validator.json
-      agent_slug: wordpress-task-runner
-      pipeline_slug: wordpress-task-runner-pipeline
-      flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.community_garden_prompt }}
-      provider: openai
-      model: gpt-5.5
-      success_requires_pr: false
-      dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.community_garden_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.community_garden_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.community_garden_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.community_garden_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-site-building-community-garden-openai-gpt-5-5
-      replay_bundle_artifact_name: wp-rl-replay-site-building-community-garden-openai-gpt-5-5
-    secrets:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
-  community-garden-anthropic:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.community_garden == 'true'
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
-    with:
-      bundle_path: bundles/datamachine-task-runner
-      bundle_ref: ${{ inputs.bundle_ref }}
-      bundle_validator_spec: bundle-validator.json
-      agent_slug: wordpress-task-runner
-      pipeline_slug: wordpress-task-runner-pipeline
-      flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.community_garden_prompt }}
-      provider: anthropic
-      model: claude-opus-4-7
-      provider_plugin: '{"repo":"WordPress/ai-provider-for-anthropic","ref":"trunk","path":".","register_function":"WordPress\\AnthropicAiProvider\\register_provider","credentials":{"connectors_ai_anthropic_api_key":"PROVIDER_SECRET_1"}}'
-      success_requires_pr: false
-      dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.community_garden_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.community_garden_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.community_garden_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.community_garden_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-site-building-community-garden-anthropic-claude-opus-4-7
-      replay_bundle_artifact_name: wp-rl-replay-site-building-community-garden-anthropic-claude-opus-4-7
-    secrets:
-      PROVIDER_SECRET_1: ${{ secrets.ANTHROPIC_API_KEY }}
-
-  pricing-section-openai:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.pricing_section == 'true'
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
-    with:
-      bundle_path: bundles/datamachine-task-runner
-      bundle_ref: ${{ inputs.bundle_ref }}
-      bundle_validator_spec: bundle-validator.json
-      agent_slug: wordpress-task-runner
-      pipeline_slug: wordpress-task-runner-pipeline
-      flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.pricing_section_prompt }}
-      provider: openai
-      model: gpt-5.5
-      success_requires_pr: false
-      dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.pricing_section_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.pricing_section_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.pricing_section_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.pricing_section_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-block-markup-no-fallback-pricing-section-openai-gpt-5-5
-      replay_bundle_artifact_name: wp-rl-replay-block-markup-no-fallback-pricing-section-openai-gpt-5-5
-    secrets:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
-  pricing-section-anthropic:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.pricing_section == 'true'
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
-    with:
-      bundle_path: bundles/datamachine-task-runner
-      bundle_ref: ${{ inputs.bundle_ref }}
-      bundle_validator_spec: bundle-validator.json
-      agent_slug: wordpress-task-runner
-      pipeline_slug: wordpress-task-runner-pipeline
-      flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.pricing_section_prompt }}
-      provider: anthropic
-      model: claude-opus-4-7
-      provider_plugin: '{"repo":"WordPress/ai-provider-for-anthropic","ref":"trunk","path":".","register_function":"WordPress\\AnthropicAiProvider\\register_provider","credentials":{"connectors_ai_anthropic_api_key":"PROVIDER_SECRET_1"}}'
-      success_requires_pr: false
-      dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.pricing_section_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.pricing_section_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.pricing_section_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.pricing_section_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-block-markup-no-fallback-pricing-section-anthropic-claude-opus-4-7
-      replay_bundle_artifact_name: wp-rl-replay-block-markup-no-fallback-pricing-section-anthropic-claude-opus-4-7
-    secrets:
-      PROVIDER_SECRET_1: ${{ secrets.ANTHROPIC_API_KEY }}
-
-  abilities-site-summary-openai:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.abilities_site_summary == 'true'
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
-    with:
-      bundle_path: bundles/datamachine-task-runner
-      bundle_ref: ${{ inputs.bundle_ref }}
-      bundle_validator_spec: bundle-validator.json
-      agent_slug: wordpress-task-runner
-      pipeline_slug: wordpress-task-runner-pipeline
-      flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.abilities_site_summary_prompt }}
-      provider: openai
-      model: gpt-5.5
-      success_requires_pr: false
-      dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.abilities_site_summary_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.abilities_site_summary_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.abilities_site_summary_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.abilities_site_summary_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-modern-wordpress-api-abilities-site-summary-openai-gpt-5-5
-      replay_bundle_artifact_name: wp-rl-replay-modern-wordpress-api-abilities-site-summary-openai-gpt-5-5
-    secrets:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
-  abilities-site-summary-anthropic:
-    needs: resolve-tasks
-    if: needs.resolve-tasks.outputs.abilities_site_summary == 'true'
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
-    with:
-      bundle_path: bundles/datamachine-task-runner
-      bundle_ref: ${{ inputs.bundle_ref }}
-      bundle_validator_spec: bundle-validator.json
-      agent_slug: wordpress-task-runner
-      pipeline_slug: wordpress-task-runner-pipeline
-      flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-rl
-      prompt: ${{ needs.resolve-tasks.outputs.abilities_site_summary_prompt }}
-      provider: anthropic
-      model: claude-opus-4-7
-      provider_plugin: '{"repo":"WordPress/ai-provider-for-anthropic","ref":"trunk","path":".","register_function":"WordPress\\AnthropicAiProvider\\register_provider","credentials":{"connectors_ai_anthropic_api_key":"PROVIDER_SECRET_1"}}'
-      success_requires_pr: false
-      dry_run: ${{ inputs.dry_run }}
-      max_turns: ${{ fromJson(needs.resolve-tasks.outputs.abilities_site_summary_max_turns) }}
-      step_budget: ${{ fromJson(needs.resolve-tasks.outputs.abilities_site_summary_step_budget) }}
-      time_budget_ms: ${{ fromJson(needs.resolve-tasks.outputs.abilities_site_summary_time_budget_ms) }}
-      workload_run_after: ${{ needs.resolve-tasks.outputs.abilities_site_summary_workload_run_after }}
-      engine_data_outputs: '{"task_id":"metadata.engine_data.task_id","job_status":"metadata.job_status"}'
-      transcript_artifact_name: wp-rl-transcript-modern-wordpress-api-abilities-site-summary-anthropic-claude-opus-4-7
-      replay_bundle_artifact_name: wp-rl-replay-modern-wordpress-api-abilities-site-summary-anthropic-claude-opus-4-7
-    secrets:
       PROVIDER_SECRET_1: ${{ secrets.ANTHROPIC_API_KEY }}
