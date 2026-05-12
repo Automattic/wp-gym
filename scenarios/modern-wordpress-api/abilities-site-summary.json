@@ -6,7 +6,7 @@
   "grader_file": "../../graders/modern-wordpress-api/abilities-site-summary.php",
   "tags": ["wordpress", "abilities-api", "modern-api"],
   "limits": {
-    "max_turns": 8,
+    "max_turns": 25,
     "step_budget": 12,
     "time_budget_ms": 600000
   },
