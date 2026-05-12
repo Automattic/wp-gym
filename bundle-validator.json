@@ -14,7 +14,7 @@
   },
   "pipeline_assertions": {
     "wordpress-task-runner-pipeline": {
-      "system_prompt_must_contain": "runner-provided workspace handle"
+      "system_prompt_must_contain": "project workspace"
     }
   }
 }

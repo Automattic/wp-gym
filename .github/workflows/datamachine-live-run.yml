@@ -258,6 +258,7 @@ jobs:
                   clone_url: 'https://github.com/chubes4/wp-gym.git',
                   from: process.env.GITHUB_REF_NAME || 'main',
                   branch_prefix: `agent-runs/${branchSlug}`,
+                  agent_alias: 'current-project',
                   expose_to_agent: true,
                   capture_changes: true,
                   commit_message: `feat: complete ${task.id}`,
