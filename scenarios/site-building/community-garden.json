@@ -18,6 +18,7 @@
       "valid_blocks",
       "invalid_blocks",
       "core_html_blocks",
+      "shortcodes_count",
       "fallback_blocks_count",
       "homepage_set",
       "navigation_created",

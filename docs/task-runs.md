@@ -17,6 +17,11 @@ code can verify that the saved WordPress content remains editable and complete. 
 developer can ask for a REST endpoint path and response fields, while the review
 code can verify route registration details and permission handling.
 
+For editable content and site-building tasks, prefer hidden checks that reward
+Gutenberg block structure over shortcode markup. The agent-facing request should
+ask for content the site owner can revise in the WordPress editor; the private
+criteria should verify registered blocks and flag shortcode-like markup.
+
 ## Task Contract
 
 Each task should add:
@@ -86,7 +91,9 @@ Selected tasks:
 Private completion criteria stay in the scenario manifests and PHP checks. At a
 high level, the checks look for WordPress-native content structure, required user
 visible content, editable blocks instead of raw fallback markup, and the requested
-developer API surface with the expected output fields.
+developer API surface with the expected output fields. Shortcode-like markup is
+treated as a quality failure for editable content tasks because it hides structure
+from the block editor.
 
 ## Live Data Machine Runs
 

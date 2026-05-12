@@ -16,6 +16,9 @@
     ],
     "forbidden_blocks": [
       "core/html"
+    ],
+    "forbidden_markup": [
+      "shortcodes"
     ]
   }
 }

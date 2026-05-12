@@ -11,4 +11,4 @@ Please include:
 - A call-to-action button labeled `View menu`.
 
 Keep the page structure clean enough that a non-technical WordPress editor can
-open it later and adjust each section without editing code.
+open it later and adjust each section visually without editing code.
