@@ -96,6 +96,7 @@ jobs:
             label: smoke.label,
             promptFile: smoke.prompt,
             graderFile: smoke.check,
+            usesWorkspace: false,
             maxTurns: 8,
             stepBudget: 12,
             timeBudgetMs: 600000,
@@ -176,7 +177,7 @@ jobs:
                 provider_plugin: provider.providerPlugin,
                 prompt,
                 workload_run_after: workloadRunAfter,
-                success_requires_pr: task.usesWorkspace,
+                success_requires_pr: Boolean(task.usesWorkspace),
                 runner_workspace: task.usesWorkspace ? JSON.stringify({
                   enabled: true,
                   repo: 'wp-rl',
