@@ -81,7 +81,7 @@ jobs:
       agent_slug: wordpress-task-runner
       pipeline_slug: wordpress-task-runner-pipeline
       flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-gym
+      target_repo: Automattic/wp-gym
       prompt: ${{ inputs.prompt }}
       success_requires_pr: false
     secrets: inherit
