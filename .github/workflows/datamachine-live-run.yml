@@ -115,6 +115,7 @@ jobs:
               label: scenario.label || scenario.id,
               promptFile,
               graderFile,
+              usesWorkspace: scenario.id.startsWith('modern-wordpress-api-'),
               maxTurns: Number(scenario.limits?.max_turns || 12),
               stepBudget: Number(scenario.limits?.step_budget || 16),
               timeBudgetMs: Number(scenario.limits?.time_budget_ms || 600000),
@@ -170,6 +171,7 @@ jobs:
               ? JSON.stringify([{ type: 'php', file: task.graderFile }])
               : '[]';
             for (const provider of providers) {
+              const branchSlug = `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-');
               include.push({
                 task_id: task.id,
                 task_label: task.label,
@@ -179,10 +181,21 @@ jobs:
                 provider_plugin: provider.providerPlugin,
                 prompt,
                 workload_run_after: workloadRunAfter,
+                success_requires_pr: task.usesWorkspace,
+                runner_workspace: task.usesWorkspace ? JSON.stringify({
+                  enabled: true,
+                  repo: 'wp-rl',
+                  clone_url: 'https://github.com/chubes4/wp-rl.git',
+                  from: process.env.GITHUB_REF_NAME || 'main',
+                  branch_prefix: `agent-runs/${branchSlug}`,
+                  expose_to_agent: true,
+                  capture_changes: true,
+                  commit_message: `feat: complete ${task.id}`,
+                }) : '{}',
                 max_turns: task.maxTurns,
                 step_budget: task.stepBudget,
                 time_budget_ms: task.timeBudgetMs,
-                artifact_suffix: `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-'),
+                artifact_suffix: branchSlug,
               });
             }
           }
@@ -210,7 +223,8 @@ jobs:
       provider: ${{ matrix.provider }}
       model: ${{ matrix.model }}
       provider_plugin: ${{ matrix.provider_plugin }}
-      success_requires_pr: false
+      success_requires_pr: ${{ matrix.success_requires_pr }}
+      runner_workspace: ${{ matrix.runner_workspace }}
       dry_run: ${{ inputs.dry_run }}
       max_turns: ${{ matrix.max_turns }}
       step_budget: ${{ matrix.step_budget }}
