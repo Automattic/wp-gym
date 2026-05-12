@@ -1,47 +1,12 @@
 <?php
 
+require_once __DIR__ . '/grader-common.php';
+
 return function (): array {
 	$checks = array();
 
-	$read_plugin_source = static function (): string {
-		$root = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : ( defined( 'ABSPATH' ) ? ABSPATH . 'wp-content/plugins' : '' );
-		if ( '' === $root || ! is_dir( $root ) ) {
-			return '';
-		}
-
-		$source = '';
-		$stack  = array( $root );
-		while ( $stack ) {
-			$dir     = array_pop( $stack );
-			$entries = scandir( $dir );
-			if ( false === $entries ) {
-				continue;
-			}
-
-			foreach ( $entries as $entry ) {
-				if ( '.' === $entry || '..' === $entry ) {
-					continue;
-				}
-
-				$path = $dir . DIRECTORY_SEPARATOR . $entry;
-				if ( is_dir( $path ) ) {
-					$stack[] = $path;
-					continue;
-				}
-
-				if ( '.php' === substr( $path, -4 ) ) {
-					$contents = file_get_contents( $path );
-					if ( false !== $contents ) {
-						$source .= "\n" . $contents;
-					}
-				}
-			}
-		}
-
-		return $source;
-	};
-
-	$plugin_source                = $read_plugin_source();
+	$candidate_files              = wp_gym_modern_api_candidate_plugin_files( array( 'site-tools/site-summary', 'wp_register_ability' ) );
+	$plugin_source                = wp_gym_modern_api_file_contents( $candidate_files );
 	$uses_category_lifecycle      = str_contains( $plugin_source, 'wp_abilities_api_categories_init' );
 	$uses_ability_lifecycle       = str_contains( $plugin_source, 'wp_abilities_api_init' );
 	$uses_unprefixed_lifecycle    = (bool) preg_match( "/add_action\s*\(\s*['\"]abilities_api_init['\"]/", $plugin_source );
