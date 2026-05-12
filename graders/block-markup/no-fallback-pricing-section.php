@@ -4,14 +4,14 @@ require_once __DIR__ . '/grader-common.php';
 
 return static function (): array {
 	$title = 'Simple Pricing Page';
-	$post  = wp_rl_find_post_by_title( $title );
+	$post  = wp_gym_find_post_by_title( $title );
 
 	if ( null === $post ) {
-		return wp_rl_missing_post_grade( $title );
+		return wp_gym_missing_post_grade( $title );
 	}
 
 	$blocks       = parse_blocks( $post->post_content );
-	$names        = wp_rl_block_names( $blocks );
+	$names        = wp_gym_block_names( $blocks );
 	$column_count = count( array_filter( $names, static fn( $name ) => 'core/column' === $name ) );
 	$button_count = count( array_filter( $names, static fn( $name ) => 'core/button' === $name ) );
 
@@ -30,7 +30,7 @@ return static function (): array {
 			'max_score' => 0.15,
 			'message'   => has_blocks( $post->post_content ) ? 'Content uses Gutenberg block comments.' : 'Content does not use Gutenberg block comments.',
 		),
-		wp_rl_check_required_blocks( $blocks, array( 'core/cover', 'core/heading', 'core/paragraph', 'core/columns', 'core/column', 'core/buttons', 'core/button' ) ),
+		wp_gym_check_required_blocks( $blocks, array( 'core/cover', 'core/heading', 'core/paragraph', 'core/columns', 'core/column', 'core/buttons', 'core/button' ) ),
 		array(
 			'id'        => 'three_pricing_columns',
 			'passed'    => 3 === $column_count,
@@ -47,12 +47,12 @@ return static function (): array {
 		),
 		array(
 			'id'        => 'no_fallback_or_html_blocks',
-			'passed'    => ! wp_rl_has_fallback_block( $blocks ),
-			'score'     => ! wp_rl_has_fallback_block( $blocks ) ? 0.2 : 0,
+			'passed'    => ! wp_gym_has_fallback_block( $blocks ),
+			'score'     => ! wp_gym_has_fallback_block( $blocks ) ? 0.2 : 0,
 			'max_score' => 0.2,
-			'message'   => ! wp_rl_has_fallback_block( $blocks ) ? 'No fallback/freeform or HTML block detected.' : 'Detected fallback/freeform content or core/html.',
+			'message'   => ! wp_gym_has_fallback_block( $blocks ) ? 'No fallback/freeform or HTML block detected.' : 'Detected fallback/freeform content or core/html.',
 		),
-		wp_rl_check_no_shortcodes( $post->post_content ),
+		wp_gym_check_no_shortcodes( $post->post_content ),
 		array(
 			'id'        => 'expected_heading_text',
 			'passed'    => false !== strpos( $post->post_content, 'Choose Your Plan' ),
@@ -62,5 +62,5 @@ return static function (): array {
 		),
 	);
 
-	return wp_rl_grade( $checks );
+	return wp_gym_grade( $checks );
 };

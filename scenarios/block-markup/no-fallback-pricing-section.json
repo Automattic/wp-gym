@@ -1,7 +1,7 @@
 {
   "id": "block-markup-no-fallback-pricing-section",
   "label": "Simple pricing page",
-  "issue": "https://github.com/chubes4/wp-rl/issues/2",
+  "issue": "https://github.com/chubes4/wp-gym/issues/2",
   "prompt_file": "../../prompts/block-markup/no-fallback-pricing-section.md",
   "grader_file": "../../graders/block-markup/no-fallback-pricing-section.php",
   "expected": {

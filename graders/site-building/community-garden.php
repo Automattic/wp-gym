@@ -38,8 +38,8 @@ return static function (): array {
 		$blocks = array_merge( $blocks, parse_blocks( $post->post_content ) );
 	}
 
-	$flat_blocks       = wp_rl_flatten_blocks( $blocks );
-	$block_names       = wp_rl_block_names( $blocks );
+	$flat_blocks       = wp_gym_flatten_blocks( $blocks );
+	$block_names       = wp_gym_block_names( $blocks );
 	$invalid_blocks    = array_values(
 		array_filter(
 			$block_names,
@@ -47,7 +47,7 @@ return static function (): array {
 		)
 	);
 	$core_html_blocks  = count( array_filter( $block_names, static fn( string $name ): bool => 'core/html' === $name ) );
-	$shortcodes        = wp_rl_shortcode_matches( $content );
+	$shortcodes        = wp_gym_shortcode_matches( $content );
 	$fallback_blocks   = count(
 		array_filter(
 			$flat_blocks,
@@ -122,5 +122,5 @@ return static function (): array {
 		),
 	);
 
-	return wp_rl_grade( $checks );
+	return wp_gym_grade( $checks );
 };

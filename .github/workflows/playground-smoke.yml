@@ -18,7 +18,7 @@ jobs:
         env:
           HOMEBOY_PLAYGROUND_RESULTS_ARTIFACT_DIR: homeboy-ci-results
         with:
-          component: wp-rl
+          component: wp-gym
           extension: wordpress
           extension-source: https://github.com/Extra-Chill/homeboy-extensions
           commands: bench
@@ -29,7 +29,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wp-rl-smoke-task
+          name: wp-gym-smoke-task
           path: |
             homeboy-ci-results/bench.json
             homeboy-ci-results/results.jsonl

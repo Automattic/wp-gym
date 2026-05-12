@@ -4,10 +4,10 @@ require_once __DIR__ . '/grader-common.php';
 
 return static function (): array {
 	$title = 'Community Services Overview';
-	$post  = wp_rl_find_post_by_title( $title );
+	$post  = wp_gym_find_post_by_title( $title );
 
 	if ( null === $post ) {
-		return wp_rl_missing_post_grade( $title );
+		return wp_gym_missing_post_grade( $title );
 	}
 
 	$blocks       = parse_blocks( $post->post_content );
@@ -33,7 +33,7 @@ return static function (): array {
 				array_filter(
 					$columns,
 					static function ( $column ): bool {
-						$names = wp_rl_block_names( $column['innerBlocks'] ?? array() );
+						$names = wp_gym_block_names( $column['innerBlocks'] ?? array() );
 						return in_array( 'core/heading', $names, true ) && in_array( 'core/paragraph', $names, true );
 					}
 				)
@@ -60,7 +60,7 @@ return static function (): array {
 			'max_score' => 0.15,
 			'message'   => has_blocks( $post->post_content ) ? 'Content uses Gutenberg block comments.' : 'Content does not use Gutenberg block comments.',
 		),
-		wp_rl_check_required_blocks( $blocks, array( 'core/group', 'core/columns', 'core/column', 'core/heading', 'core/paragraph' ) ),
+		wp_gym_check_required_blocks( $blocks, array( 'core/group', 'core/columns', 'core/column', 'core/heading', 'core/paragraph' ) ),
 		array(
 			'id'        => 'expected_group_columns_nesting',
 			'passed'    => $nested_ok,
@@ -70,13 +70,13 @@ return static function (): array {
 		),
 		array(
 			'id'        => 'no_fallback_or_html_blocks',
-			'passed'    => ! wp_rl_has_fallback_block( $blocks ),
-			'score'     => ! wp_rl_has_fallback_block( $blocks ) ? 0.1 : 0,
+			'passed'    => ! wp_gym_has_fallback_block( $blocks ),
+			'score'     => ! wp_gym_has_fallback_block( $blocks ) ? 0.1 : 0,
 			'max_score' => 0.1,
-			'message'   => ! wp_rl_has_fallback_block( $blocks ) ? 'No fallback/freeform or HTML block detected.' : 'Detected fallback/freeform content or core/html.',
+			'message'   => ! wp_gym_has_fallback_block( $blocks ) ? 'No fallback/freeform or HTML block detected.' : 'Detected fallback/freeform content or core/html.',
 		),
-		wp_rl_check_no_shortcodes( $post->post_content ),
+		wp_gym_check_no_shortcodes( $post->post_content ),
 	);
 
-	return wp_rl_grade( $checks );
+	return wp_gym_grade( $checks );
 };

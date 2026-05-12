@@ -1,7 +1,8 @@
-# WordPress Practice Tasks
+# WP Gym
 
-This repository contains small WordPress implementation requests for disposable
-Playground sites.
+WP Gym contains small WordPress implementation requests for disposable Playground
+sites. It is a WordPress Playground environment for training and evaluating
+agents on real WordPress tasks.
 
 The prompt files should read like normal requests from WordPress users or
 developers. They describe the desired outcome, not the internal quality checks or

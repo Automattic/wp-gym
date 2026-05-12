@@ -1,7 +1,7 @@
 {
   "id": "block-markup-valid-semantic-blocks",
   "label": "Neighborhood cookout page",
-  "issue": "https://github.com/chubes4/wp-rl/issues/2",
+  "issue": "https://github.com/chubes4/wp-gym/issues/2",
   "prompt_file": "../../prompts/block-markup/valid-semantic-blocks.md",
   "grader_file": "../../graders/block-markup/valid-semantic-blocks.php",
   "expected": {

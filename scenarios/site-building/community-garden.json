@@ -1,7 +1,7 @@
 {
   "id": "site-building-community-garden",
   "label": "Neighborhood community garden site",
-  "issue": "https://github.com/chubes4/wp-rl/issues/13",
+  "issue": "https://github.com/chubes4/wp-gym/issues/13",
   "prompt_file": "../../prompts/site-building/community-garden.md",
   "grader_file": "../../graders/site-building/community-garden.php",
   "tags": ["wordpress", "site-building", "natural-prompt", "quality-criteria"],

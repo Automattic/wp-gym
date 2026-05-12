@@ -1,6 +1,6 @@
 <?php
 
-function wp_rl_find_post_by_title( string $title ): ?WP_Post {
+function wp_gym_find_post_by_title( string $title ): ?WP_Post {
 	$posts = get_posts(
 		array(
 			'post_type'      => array( 'page', 'post' ),
@@ -21,32 +21,32 @@ function wp_rl_find_post_by_title( string $title ): ?WP_Post {
 	return null;
 }
 
-function wp_rl_flatten_blocks( array $blocks ): array {
+function wp_gym_flatten_blocks( array $blocks ): array {
 	$flat = array();
 
 	foreach ( $blocks as $block ) {
 		$flat[] = $block;
 		if ( ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
-			$flat = array_merge( $flat, wp_rl_flatten_blocks( $block['innerBlocks'] ) );
+			$flat = array_merge( $flat, wp_gym_flatten_blocks( $block['innerBlocks'] ) );
 		}
 	}
 
 	return $flat;
 }
 
-function wp_rl_block_names( array $blocks ): array {
+function wp_gym_block_names( array $blocks ): array {
 	return array_values(
 		array_filter(
 			array_map(
 				static fn( $block ) => is_array( $block ) ? ( $block['blockName'] ?? null ) : null,
-				wp_rl_flatten_blocks( $blocks )
+				wp_gym_flatten_blocks( $blocks )
 			)
 		)
 	);
 }
 
-function wp_rl_has_fallback_block( array $blocks ): bool {
-	foreach ( wp_rl_flatten_blocks( $blocks ) as $block ) {
+function wp_gym_has_fallback_block( array $blocks ): bool {
+	foreach ( wp_gym_flatten_blocks( $blocks ) as $block ) {
 		$block_name = $block['blockName'] ?? null;
 		$inner_html = trim( (string) ( $block['innerHTML'] ?? '' ) );
 
@@ -62,7 +62,7 @@ function wp_rl_has_fallback_block( array $blocks ): bool {
 	return false;
 }
 
-function wp_rl_shortcode_matches( string $content ): array {
+function wp_gym_shortcode_matches( string $content ): array {
 	if ( '' === trim( $content ) ) {
 		return array();
 	}
@@ -72,8 +72,8 @@ function wp_rl_shortcode_matches( string $content ): array {
 	return array_values( array_unique( $matches[1] ?? array() ) );
 }
 
-function wp_rl_check_no_shortcodes( string $content ): array {
-	$shortcodes = wp_rl_shortcode_matches( $content );
+function wp_gym_check_no_shortcodes( string $content ): array {
+	$shortcodes = wp_gym_shortcode_matches( $content );
 
 	return array(
 		'id'        => 'no_shortcodes',
@@ -84,8 +84,8 @@ function wp_rl_check_no_shortcodes( string $content ): array {
 	);
 }
 
-function wp_rl_check_required_blocks( array $blocks, array $required_blocks ): array {
-	$names   = wp_rl_block_names( $blocks );
+function wp_gym_check_required_blocks( array $blocks, array $required_blocks ): array {
+	$names   = wp_gym_block_names( $blocks );
 	$missing = array_values( array_diff( $required_blocks, $names ) );
 
 	return array(
@@ -97,7 +97,7 @@ function wp_rl_check_required_blocks( array $blocks, array $required_blocks ): a
 	);
 }
 
-function wp_rl_grade( array $checks ): array {
+function wp_gym_grade( array $checks ): array {
 	$max_score = 0.0;
 	$score     = 0.0;
 
@@ -120,8 +120,8 @@ function wp_rl_grade( array $checks ): array {
 	);
 }
 
-function wp_rl_missing_post_grade( string $title ): array {
-	return wp_rl_grade(
+function wp_gym_missing_post_grade( string $title ): array {
+	return wp_gym_grade(
 		array(
 			array(
 				'id'        => 'target_post_exists',
