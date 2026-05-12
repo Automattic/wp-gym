@@ -15,7 +15,7 @@ function wp_gym_modern_api_existing_directories( array $directories ): array {
 	return array_values( $existing );
 }
 
-function wp_gym_modern_api_project_roots(): array {
+function wp_gym_modern_api_submitted_project_roots(): array {
 	$cwd = getcwd();
 
 	$roots = array(
@@ -26,8 +26,23 @@ function wp_gym_modern_api_project_roots(): array {
 	return wp_gym_modern_api_existing_directories( $roots );
 }
 
-function wp_gym_modern_api_files_with_content( array $roots, callable $matches, array $extensions = array( 'php', 'txt', 'md' ) ): array {
-	$matched_files = array();
+function wp_gym_modern_api_normalize_extensions( array $extensions ): array {
+	$normalized = array();
+
+	foreach ( $extensions as $extension ) {
+		$extension = ltrim( strtolower( (string) $extension ), '.' );
+		if ( '' !== $extension ) {
+			$normalized[ $extension ] = $extension;
+		}
+	}
+
+	return array_values( $normalized );
+}
+
+function wp_gym_modern_api_submitted_project_files( array $extensions = array( 'php', 'txt', 'md' ) ): array {
+	$roots      = wp_gym_modern_api_submitted_project_roots();
+	$extensions = wp_gym_modern_api_normalize_extensions( $extensions );
+	$files      = array();
 
 	foreach ( $roots as $root ) {
 		$iterator = new RecursiveIteratorIterator(
@@ -40,22 +55,69 @@ function wp_gym_modern_api_files_with_content( array $roots, callable $matches, 
 			}
 
 			$extension = strtolower( $file->getExtension() );
-			if ( ! in_array( $extension, $extensions, true ) ) {
+			if ( ! empty( $extensions ) && ! in_array( $extension, $extensions, true ) ) {
 				continue;
 			}
 
 			$pathname = $file->getPathname();
-			$content  = file_get_contents( $pathname );
-			if ( false !== $content && $matches( $pathname, $content ) ) {
-				$matched_files[] = $pathname;
-			}
+			$files[ $pathname ] = $pathname;
+		}
+	}
+
+	return array_values( $files );
+}
+
+function wp_gym_modern_api_read_file( string $path ): string {
+	$content = is_readable( $path ) && is_file( $path ) ? file_get_contents( $path ) : false;
+
+	return false === $content ? '' : $content;
+}
+
+function wp_gym_modern_api_submitted_files_matching( callable $matches, array $extensions = array( 'php', 'txt', 'md' ) ): array {
+	$matched_files = array();
+
+	foreach ( wp_gym_modern_api_submitted_project_files( $extensions ) as $path ) {
+		$content = wp_gym_modern_api_read_file( $path );
+		if ( '' !== $content && $matches( $path, $content ) ) {
+			$matched_files[] = $path;
 		}
 	}
 
 	return array_values( array_unique( $matched_files ) );
 }
 
-function wp_gym_modern_api_relative_paths( array $files, array $roots ): array {
+function wp_gym_modern_api_file_contains_needles( string $content, array $needles ): bool {
+	foreach ( $needles as $needle ) {
+		if ( is_string( $needle ) && '' !== $needle && false !== strpos( $content, $needle ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function wp_gym_modern_api_submitted_files_containing( array $needles, array $extensions = array( 'php' ) ): array {
+	return wp_gym_modern_api_submitted_files_matching(
+		static fn( string $path, string $content ): bool => wp_gym_modern_api_file_contains_needles( $content, $needles ),
+		$extensions
+	);
+}
+
+function wp_gym_modern_api_submitted_source( array $needles = array(), array $extensions = array( 'php' ) ): string {
+	$files = empty( $needles )
+		? wp_gym_modern_api_submitted_project_files( $extensions )
+		: wp_gym_modern_api_submitted_files_containing( $needles, $extensions );
+	$source = '';
+
+	foreach ( $files as $path ) {
+		$source .= "\n" . wp_gym_modern_api_read_file( $path );
+	}
+
+	return $source;
+}
+
+function wp_gym_modern_api_relative_paths( array $files ): array {
+	$roots = wp_gym_modern_api_submitted_project_roots();
 	$paths = array();
 
 	foreach ( $files as $file ) {
@@ -74,65 +136,96 @@ function wp_gym_modern_api_relative_paths( array $files, array $roots ): array {
 	return $paths;
 }
 
-function wp_gym_modern_api_is_candidate_submission_file( string $path, array $roots ): bool {
-	$relative_paths = wp_gym_modern_api_relative_paths( array( $path ), $roots );
-	$relative_path  = str_replace( '\\', '/', $relative_paths[0] ?? $path );
-	$first_segment  = strtok( $relative_path, '/' );
+function wp_gym_modern_api_plugin_headers_from_file( string $path ): array {
+	$content = wp_gym_modern_api_read_file( $path );
 
-	$ignored_segments = array(
-		'.git',
-		'.github',
-		'.claude',
-		'.opencode',
-		'node_modules',
-		'vendor',
-		'bundles',
-		'docs',
-		'graders',
-		'prompts',
-		'scenarios',
-		'scripts',
-		'task-sets',
-	);
+	if ( '' === $content || ! preg_match( '#/\*\*(.*?)\*/|/\*(.*?)\*/#s', $content, $comment_match ) ) {
+		return array();
+	}
 
-	return false === $first_segment || ! in_array( $first_segment, $ignored_segments, true );
+	$comment = $comment_match[1] ?? $comment_match[2] ?? '';
+	$headers = array();
+
+	foreach ( array( 'Plugin Name', 'Author', 'Version', 'Requires at least', 'Tested up to' ) as $header ) {
+		if ( preg_match( '/^[ \t*#@]*' . preg_quote( $header, '/' ) . '\s*:\s*(.+)$/mi', $comment, $matches ) ) {
+			$headers[ $header ] = trim( $matches[1] );
+		}
+	}
+
+	return $headers;
 }
 
-function wp_gym_modern_api_candidate_plugin_files( array $needles ): array {
-	$roots = wp_gym_modern_api_project_roots();
+function wp_gym_modern_api_plugin_author_supported_check( array $needles, ?string $allowed_author = null, float $max_score = 0.1 ): array {
+	$unsupported = array();
+	$allowed     = is_string( $allowed_author ) ? trim( $allowed_author ) : '';
+	$files       = wp_gym_modern_api_submitted_files_containing( $needles, array( 'php' ) );
 
-	return wp_gym_modern_api_files_with_content(
-		$roots,
-		static function ( string $path, string $content ) use ( $needles, $roots ): bool {
-			if ( ! wp_gym_modern_api_is_candidate_submission_file( $path, $roots ) ) {
-				return false;
-			}
+	foreach ( $files as $path ) {
+		$headers = wp_gym_modern_api_plugin_headers_from_file( $path );
+		$author  = trim( (string) ( $headers['Author'] ?? '' ) );
 
-			foreach ( $needles as $needle ) {
-				if ( is_string( $needle ) && '' !== $needle && false !== strpos( $content, $needle ) ) {
+		if ( '' === $author ) {
+			continue;
+		}
+
+		if ( '' !== $allowed && 0 === strcasecmp( $allowed, $author ) ) {
+			continue;
+		}
+
+		$name          = trim( (string) ( $headers['Plugin Name'] ?? basename( $path ) ) );
+		$unsupported[] = sprintf( '%s (%s)', $name, $author );
+	}
+
+	$passed = empty( $unsupported );
+
+	return array(
+		'id'        => 'plugin_author_supported',
+		'passed'    => $passed,
+		'score'     => $passed ? $max_score : 0,
+		'max_score' => $max_score,
+		'message'   => $passed
+			? 'Relevant submitted plugin headers omit author metadata or use the scenario-provided author.'
+			: 'Relevant submitted plugin headers include unsupported author metadata: ' . implode( ', ', $unsupported ),
+	);
+}
+
+function wp_gym_check_no_speculative_plugin_packaging_metadata( array $options = array() ): array {
+	$allow_readme = (bool) ( $options['allow_readme'] ?? false );
+
+	$readme_files = $allow_readme
+		? array()
+		: wp_gym_modern_api_submitted_files_matching(
+			static fn( string $path, string $content ): bool => 'readme.txt' === strtolower( basename( $path ) ),
+			array( 'txt' )
+		);
+
+	$metadata_files = wp_gym_modern_api_submitted_files_matching(
+		static function ( string $path, string $content ): bool {
+			$patterns = array(
+				'/^\s*(?:Tested up to|Requires at least|Stable tag|Contributors|Donate link|Tags)\s*:/mi',
+				'/^\s*\*\s*(?:Tested up to|Requires at least)\s*:/mi',
+			);
+
+			foreach ( $patterns as $pattern ) {
+				if ( preg_match( $pattern, $content ) ) {
 					return true;
 				}
 			}
 
 			return false;
 		},
-		array( 'php' )
+		array( 'php', 'txt', 'md' )
 	);
-}
 
-function wp_gym_modern_api_file_contents( array $files ): string {
-	$source = '';
+	$flagged_files = array_values( array_unique( array_merge( $readme_files, $metadata_files ) ) );
+	$passed        = empty( $flagged_files );
+	$paths         = wp_gym_modern_api_relative_paths( $flagged_files );
 
-	foreach ( $files as $file ) {
-		if ( ! is_readable( $file ) || ! is_file( $file ) ) {
-			continue;
-		}
-
-		$contents = file_get_contents( $file );
-		if ( false !== $contents ) {
-			$source .= "\n" . $contents;
-		}
-	}
-
-	return $source;
+	return array(
+		'id'        => 'no_speculative_plugin_packaging_metadata',
+		'passed'    => $passed,
+		'score'     => $passed ? 0.1 : 0,
+		'max_score' => 0.1,
+		'message'   => $passed ? 'No speculative plugin packaging metadata detected.' : 'Detected unsupported plugin packaging metadata in submitted files: ' . implode( ', ', $paths ),
+	);
 }

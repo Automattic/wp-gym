@@ -110,9 +110,16 @@ Homeboy Extensions. `wp-gym` only resolves task prompts/checks into a provider a
 task matrix.
 
 Runner-owned artifact PRs use Homeboy Extensions' data-driven artifact export
-templates. `wp-gym` supplies task IDs and labels as template values, opts into full
-job artifact JSON, and leaves result/check/tool/review tables to the reusable
-runner so each model/task PR is reviewable without teaching the agent about GitHub.
+templates. `wp-gym` supplies task IDs, task labels, providers, and models as
+template values, opts into full job artifact JSON, and leaves result/check/tool/
+review tables to the reusable runner so each model/task PR is reviewable without
+teaching the agent about GitHub.
+
+For workspace-backed tasks, the runner workspace fallback PR template is expected
+to use the same artifact context as artifact PRs. That keeps the task prompt clean
+while making the GitHub PR identify the task, provider/model, workflow run, result
+summary, failed checks, changed workspace branch, and artifact/replay links when
+the runner provides them.
 
 The workflow uses the minimal Data Machine bundle from `bundles/datamachine-task-runner`
 with the slugs from `bundle-validator.json`:

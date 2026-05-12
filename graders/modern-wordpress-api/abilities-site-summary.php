@@ -5,8 +5,7 @@ require_once __DIR__ . '/grader-common.php';
 return function (): array {
 	$checks = array();
 
-	$candidate_files              = wp_gym_modern_api_candidate_plugin_files( array( 'site-tools/site-summary', 'wp_register_ability' ) );
-	$plugin_source                = wp_gym_modern_api_file_contents( $candidate_files );
+	$plugin_source                = wp_gym_modern_api_submitted_source( array( 'site-tools/site-summary', 'wp_register_ability' ) );
 	$uses_category_lifecycle      = str_contains( $plugin_source, 'wp_abilities_api_categories_init' );
 	$uses_ability_lifecycle       = str_contains( $plugin_source, 'wp_abilities_api_init' );
 	$uses_unprefixed_lifecycle    = (bool) preg_match( "/add_action\s*\(\s*['\"]abilities_api_init['\"]/", $plugin_source );
@@ -19,8 +18,8 @@ return function (): array {
 	$checks[]      = array(
 		'id'        => 'abilities_api_available',
 		'passed'    => $api_available,
-		'score'     => $api_available ? 0.1 : 0,
-		'max_score' => 0.1,
+		'score'     => $api_available ? 0.08 : 0,
+		'max_score' => 0.08,
 		'message'   => $api_available ? 'Abilities API is available.' : 'Expected WordPress Abilities API functions to exist.',
 	);
 
@@ -51,24 +50,24 @@ return function (): array {
 	$checks[] = array(
 		'id'        => 'abilities_api_lifecycle',
 		'passed'    => $lifecycle_hooks_ok,
-		'score'     => $lifecycle_hooks_ok ? 0.1 : 0,
-		'max_score' => 0.1,
+		'score'     => $lifecycle_hooks_ok ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $lifecycle_message,
 	);
 
 	$checks[]            = array(
 		'id'        => 'category_registered',
 		'passed'    => $category_registered,
-		'score'     => $category_registered ? 0.15 : 0,
-		'max_score' => 0.15,
+		'score'     => $category_registered ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $category_registered ? 'Category site-tools is registered.' : 'Expected wp_register_ability_category( site-tools, ... ) during wp_abilities_api_categories_init.',
 	);
 
 	$checks[]           = array(
 		'id'        => 'ability_registered',
 		'passed'    => $ability_registered,
-		'score'     => $ability_registered ? 0.15 : 0,
-		'max_score' => 0.15,
+		'score'     => $ability_registered ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $ability_registered ? 'Ability site-tools/site-summary is registered.' : 'Expected wp_register_ability( site-tools/site-summary, ... ) during wp_abilities_api_init.',
 	);
 
@@ -83,8 +82,8 @@ return function (): array {
 	$checks[]          = array(
 		'id'        => 'site_name_matches',
 		'passed'    => $site_name_matches,
-		'score'     => $site_name_matches ? 0.15 : 0,
-		'max_score' => 0.15,
+		'score'     => $site_name_matches ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $site_name_matches ? 'Ability returned the current site name.' : 'Expected output key site_name to match get_bloginfo( name ); key name is not accepted.',
 	);
 
@@ -95,8 +94,8 @@ return function (): array {
 	$checks[]            = array(
 		'id'        => 'post_count_matches',
 		'passed'    => $post_count_matches,
-		'score'     => $post_count_matches ? 0.15 : 0,
-		'max_score' => 0.15,
+		'score'     => $post_count_matches ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $post_count_matches ? 'Ability returned the published post count.' : 'Expected output key post_count to match wp_count_posts( post )->publish; key published_posts is not accepted.',
 	);
 
@@ -107,10 +106,16 @@ return function (): array {
 	$checks[]           = array(
 		'id'        => 'exact_output_shape',
 		'passed'    => $exact_output_shape,
-		'score'     => $exact_output_shape ? 0.2 : 0,
-		'max_score' => 0.2,
+		'score'     => $exact_output_shape ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $exact_output_shape ? 'Ability returned exactly site_name and post_count.' : 'Expected ability output to contain exactly site_name and post_count, with no renamed or extra fields.',
 	);
+
+	$checks[] = wp_gym_modern_api_plugin_author_supported_check(
+		array( 'site-tools/site-summary', 'wp_register_ability' )
+	);
+
+	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata();
 
 	$score = min( 1, round( array_sum( array_column( $checks, 'score' ) ), 6 ) );
 
