@@ -23,6 +23,11 @@ on:
         required: false
         default: ""
         type: string
+      homeboy_extensions_ref:
+        description: Optional Extra-Chill/homeboy-extensions ref for runner scripts.
+        required: false
+        default: main
+        type: string
       dry_run:
         description: Build the runner config without making live model calls.
         required: true
@@ -194,6 +199,7 @@ jobs:
     uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
     with:
       bundle_path: bundles/datamachine-task-runner
+      homeboy_extensions_ref: ${{ inputs.homeboy_extensions_ref }}
       bundle_ref: ${{ inputs.bundle_ref }}
       bundle_validator_spec: bundle-validator.json
       agent_slug: wordpress-task-runner
