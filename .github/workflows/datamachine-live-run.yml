@@ -204,7 +204,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.resolve-matrix.outputs.matrix) }}
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@98f4d5d41096d5311febf2948209511333147971
+    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@d85cf42691ea8f6c08d2c1bf9edb18fd709a3870
     with:
       bundle_path: bundles/datamachine-task-runner
       bundle_ref: ${{ inputs.bundle_ref }}
