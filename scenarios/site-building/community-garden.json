@@ -25,5 +25,24 @@
       "template_parts_seen",
       "required_pages_or_sections"
     ]
+  },
+  "probes": {
+    "behavioral_fingerprints": [
+      {
+        "id": "design_style_fingerprint",
+        "type": "rendered_site_design",
+        "reward_weight": 0,
+        "description": "Capture style, layout, and visual motif fingerprints for cross-run analysis without affecting the hidden reward.",
+        "dimensions": [
+          "font_families",
+          "color_palette",
+          "css_variables",
+          "layout_patterns",
+          "visual_motifs",
+          "gradients",
+          "animations"
+        ]
+      }
+    ]
   }
 }

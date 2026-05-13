@@ -37,6 +37,29 @@ Gutenberg block structure over shortcode markup. The agent-facing request should
 ask for content the site owner can revise in the WordPress editor; the private
 criteria should verify registered blocks and flag shortcode-like markup.
 
+## Reward And Fingerprints
+
+Hidden PHP graders own the reward. Their `checks` array should contain the hard
+task criteria that decide `success`, `reward`, and `grade.score`: required content,
+registered WordPress blocks, valid API contracts, permission handling, and other
+behavior the model was actually asked to produce.
+
+Failed checks should also expose stable failure identifiers:
+
+- `failure_reason` on each failed check.
+- `failure_reasons` on the top-level result as the unique set of failed reasons.
+
+Failure reasons are diagnostic labels, not extra scoring inputs. They let reports
+compare failure modes across models without parsing human messages or changing
+reward math.
+
+Behavioral fingerprints are separate from rewards. They capture run shape for
+analysis, such as prompt/bundle/tool-policy hashes from the runner or rendered
+site design fingerprints declared in scenario `probes`. A fingerprint can explain
+why two successful runs look different, reveal repeated visual tropes, or support
+future corpus design work, but it should have `reward_weight: 0` until it is
+promoted into an explicit hidden check.
+
 ## Task Contract
 
 Each task should add:
@@ -45,6 +68,7 @@ Each task should add:
 - A prompt with the model-facing user or developer request.
 - A Playground blueprint when the task needs a custom WordPress starting state.
 - A PHP completion check with the private WordPress quality criteria.
+- Optional zero-weight `probes` for behavioral fingerprints.
 - A `homeboy.json` `playground_workloads` entry that wires setup and completion checks.
 
 ## CI Run

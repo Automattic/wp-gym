@@ -117,16 +117,5 @@ return function (): array {
 
 	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata();
 
-	$score = min( 1, round( array_sum( array_column( $checks, 'score' ) ), 6 ) );
-
-	return array(
-		'success' => $score >= 1.0,
-		'reward'  => $score,
-		'done'    => true,
-		'grade'   => array(
-			'score'     => $score,
-			'max_score' => 1,
-			'checks'    => $checks,
-		),
-	);
+	return wp_gym_modern_api_grade( $checks );
 };

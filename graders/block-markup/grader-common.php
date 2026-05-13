@@ -97,7 +97,61 @@ function wp_gym_check_required_blocks( array $blocks, array $required_blocks ): 
 	);
 }
 
+function wp_gym_failure_reason_for_check( array $check ): string {
+	$id = (string) ( $check['id'] ?? '' );
+
+	$reasons = array(
+		'target_post_exists'             => 'missing_target_content',
+		'content_has_blocks'             => 'missing_block_markup',
+		'required_blocks_present'        => 'missing_required_blocks',
+		'three_pricing_columns'          => 'layout_structure_mismatch',
+		'buttons_for_plans'              => 'missing_required_cta',
+		'expected_group_columns_nesting' => 'layout_structure_mismatch',
+		'no_fallback_or_html_blocks'     => 'raw_html_or_fallback_block',
+		'no_fallback_or_raw_html'        => 'raw_html_or_fallback_block',
+		'no_shortcodes'                  => 'shortcode_markup',
+		'expected_heading_text'          => 'missing_required_text',
+		'used_block_theme'               => 'missing_block_theme',
+		'theme_json_present'             => 'missing_theme_json',
+		'homepage_set'                   => 'homepage_not_set',
+		'required_pages_or_sections'     => 'missing_required_content',
+		'valid_blocks'                   => 'invalid_block',
+		'navigation_created'             => 'missing_navigation',
+		'template_parts_seen'            => 'missing_template_part',
+	);
+
+	return $reasons[ $id ] ?? $id;
+}
+
+function wp_gym_normalize_checks( array $checks ): array {
+	foreach ( $checks as &$check ) {
+		if ( ! is_array( $check ) || ! empty( $check['passed'] ) || ! empty( $check['failure_reason'] ) ) {
+			continue;
+		}
+
+		$check['failure_reason'] = wp_gym_failure_reason_for_check( $check );
+	}
+	unset( $check );
+
+	return $checks;
+}
+
+function wp_gym_failure_reasons( array $checks ): array {
+	$reasons = array();
+
+	foreach ( $checks as $check ) {
+		if ( ! is_array( $check ) || ! empty( $check['passed'] ) || empty( $check['failure_reason'] ) ) {
+			continue;
+		}
+
+		$reasons[] = (string) $check['failure_reason'];
+	}
+
+	return array_values( array_unique( $reasons ) );
+}
+
 function wp_gym_grade( array $checks ): array {
+	$checks    = wp_gym_normalize_checks( $checks );
 	$max_score = 0.0;
 	$score     = 0.0;
 
@@ -109,10 +163,11 @@ function wp_gym_grade( array $checks ): array {
 	$reward = $max_score > 0 ? $score / $max_score : 0;
 
 	return array(
-		'success' => $reward >= 1.0,
-		'reward'  => $reward,
-		'done'    => true,
-		'grade'   => array(
+		'success'         => $reward >= 1.0,
+		'reward'          => $reward,
+		'done'            => true,
+		'failure_reasons' => wp_gym_failure_reasons( $checks ),
+		'grade'           => array(
 			'score'     => $score,
 			'max_score' => $max_score,
 			'checks'    => $checks,
