@@ -6,7 +6,7 @@
   "grader_file": "../../graders/site-building/community-garden.php",
   "tags": ["wordpress", "site-building", "natural-prompt", "quality-criteria"],
   "rules": {
-    "general": ["wordpress_block_theme_site", "wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
+    "general": ["wordpress_block_theme_site", "wordpress_editable_blocks", "no_raw_html_or_shortcodes", "production_build_when_assets_change"],
     "task_specific": ["homepage_set", "community_garden_content", "navigation_created", "template_parts_seen"]
   },
   "limits": {
