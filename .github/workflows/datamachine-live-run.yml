@@ -229,6 +229,13 @@ jobs:
                   '',
                   '{result_table}',
                   '',
+                  '## Eval Reproducibility',
+                  '- **Canonical result schema:** `metadata.eval_artifact` in the Homeboy result JSON.',
+                  '- **Input fingerprints:** `metadata.fingerprints` in the Homeboy result JSON.',
+                  '- **Prompt fingerprint:** `metadata.fingerprints.prompt.sha256`.',
+                  '- **Bundle fingerprint:** `metadata.fingerprints.bundle.sha256`.',
+                  '- **Tool policy fingerprint:** `metadata.fingerprints.tool_policy.sha256`.',
+                  '',
                   '## Grade Checks',
                   '{checks_table}',
                   '',
@@ -330,7 +337,12 @@ jobs:
       engine_data_outputs: |
         {
           "task_id": "metadata.engine_data.task_id",
-          "job_status": "metadata.job_status"
+          "job_status": "metadata.job_status",
+          "eval_artifact": "metadata.eval_artifact",
+          "fingerprints": "metadata.fingerprints",
+          "prompt_sha256": "metadata.fingerprints.prompt.sha256",
+          "bundle_sha256": "metadata.fingerprints.bundle.sha256",
+          "tool_policy_sha256": "metadata.fingerprints.tool_policy.sha256"
         }
       transcript_artifact_name: wp-gym-transcript-${{ matrix.artifact_suffix }}
       replay_bundle_artifact_name: wp-gym-replay-${{ matrix.artifact_suffix }}
