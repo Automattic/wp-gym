@@ -50,6 +50,22 @@ for (const file of files) {
 	if (!existsSync(path.join(root, manifestDir, manifest.grader_file))) {
 		throw new Error(`${file} checker does not exist: ${manifest.grader_file}`);
 	}
+
+	if (!manifest.rules || Array.isArray(manifest.rules) || typeof manifest.rules !== 'object') {
+		throw new Error(`${file} must declare rules as an object`);
+	}
+
+	for (const field of ['general', 'task_specific']) {
+		if (!Array.isArray(manifest.rules[field]) || manifest.rules[field].length < 1) {
+			throw new Error(`${file} rules.${field} must include at least one rule id`);
+		}
+
+		for (const rule of manifest.rules[field]) {
+			if (typeof rule !== 'string' || !/^[a-z0-9_]+$/.test(rule)) {
+				throw new Error(`${file} rules.${field} entries must be snake_case strings`);
+			}
+		}
+	}
 }
 
 async function listTaskSetFiles() {

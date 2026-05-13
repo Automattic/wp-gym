@@ -5,6 +5,10 @@
   "prompt_file": "../../prompts/site-building/community-garden.md",
   "grader_file": "../../graders/site-building/community-garden.php",
   "tags": ["wordpress", "site-building", "natural-prompt", "quality-criteria"],
+  "rules": {
+    "general": ["wordpress_block_theme_site", "wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
+    "task_specific": ["homepage_set", "community_garden_content", "navigation_created", "template_parts_seen"]
+  },
   "limits": {
     "max_turns": 10,
     "step_budget": 16,

@@ -4,6 +4,10 @@
   "issue": "https://github.com/chubes4/wp-gym/issues/2",
   "prompt_file": "../../prompts/block-markup/valid-semantic-blocks.md",
   "grader_file": "../../graders/block-markup/valid-semantic-blocks.php",
+  "rules": {
+    "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
+    "task_specific": ["required_semantic_blocks", "expected_heading_text"]
+  },
   "expected": {
     "post_title": "Neighborhood Cookout Plan",
     "required_blocks": [

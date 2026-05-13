@@ -4,6 +4,10 @@
   "issue": "https://github.com/chubes4/wp-gym/issues/2",
   "prompt_file": "../../prompts/block-markup/no-fallback-pricing-section.md",
   "grader_file": "../../graders/block-markup/no-fallback-pricing-section.php",
+  "rules": {
+    "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
+    "task_specific": ["three_pricing_columns", "buttons_for_plans", "expected_heading_text"]
+  },
   "expected": {
     "post_title": "Simple Pricing Page",
     "required_blocks": [

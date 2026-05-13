@@ -60,6 +60,28 @@ why two successful runs look different, reveal repeated visual tropes, or suppor
 future corpus design work, but it should have `reward_weight: 0` until it is
 promoted into an explicit hidden check.
 
+Scenario manifests also declare rule policy separately from the grader code:
+
+```json
+{
+  "rules": {
+    "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
+    "task_specific": ["required_semantic_blocks"]
+  }
+}
+```
+
+General rules are reusable WordPress expectations that can apply to many tasks,
+such as editable block output, no raw HTML/shortcodes, production build parity,
+WordPress docs standards, and no speculative plugin packaging metadata. Task
+specific rules describe the scenario's private contract, such as required blocks,
+REST route shape, or Abilities API lifecycle behavior.
+
+The manifest declarations are policy labels. Hidden graders and Homeboy runner
+checks still produce the actual pass/fail evidence and `failure_reason` values.
+Homeboy preserves the rule policy under `metadata.eval_artifact.rules` so reports
+can group failures by general versus task-specific expectations.
+
 ## Task Contract
 
 Each task should add:
@@ -68,6 +90,7 @@ Each task should add:
 - A prompt with the model-facing user or developer request.
 - A Playground blueprint when the task needs a custom WordPress starting state.
 - A PHP completion check with the private WordPress quality criteria.
+- Reusable `rules.general` and scenario-specific `rules.task_specific` labels.
 - Optional zero-weight `probes` for behavioral fingerprints.
 - A `homeboy.json` `playground_workloads` entry that wires setup and completion checks.
 

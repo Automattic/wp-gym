@@ -5,6 +5,10 @@
   "prompt_file": "../../prompts/modern-wordpress-api/rest-route-status.md",
   "grader_file": "../../graders/modern-wordpress-api/rest-route-status.php",
   "tags": ["wordpress", "rest-api", "plugin-api", "modern-api"],
+  "rules": {
+    "general": ["wordpress_docs_standards", "no_speculative_plugin_packaging", "supported_plugin_author_metadata"],
+    "task_specific": ["route_registered", "permission_callback_present", "exact_rest_output_shape"]
+  },
   "limits": {
     "max_turns": 25,
     "step_budget": 12,
