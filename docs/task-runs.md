@@ -82,6 +82,13 @@ checks still produce the actual pass/fail evidence and `failure_reason` values.
 Homeboy preserves the rule policy under `metadata.eval_artifact.rules` so reports
 can group failures by general versus task-specific expectations.
 
+Homeboy also evaluates known general rules into
+`metadata.eval_artifact.general_rule_results`. The first executable layer maps
+grader failure reasons to general rules and checks production-build parity from
+workspace evidence: `production_build_when_assets_change` passes when no buildable
+assets changed, and reports `production_build_not_run` when CSS/JS/theme assets
+changed without attached production-build evidence.
+
 ## Task Contract
 
 Each task should add:
