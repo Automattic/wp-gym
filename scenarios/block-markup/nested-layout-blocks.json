@@ -4,6 +4,10 @@
   "issue": "https://github.com/chubes4/wp-gym/issues/2",
   "prompt_file": "../../prompts/block-markup/nested-layout-blocks.md",
   "grader_file": "../../graders/block-markup/nested-layout-blocks.php",
+  "rules": {
+    "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
+    "task_specific": ["required_nested_layout_blocks"]
+  },
   "expected": {
     "post_title": "Community Services Overview",
     "required_blocks": [

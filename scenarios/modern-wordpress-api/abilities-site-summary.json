@@ -5,6 +5,10 @@
   "prompt_file": "../../prompts/modern-wordpress-api/abilities-site-summary.md",
   "grader_file": "../../graders/modern-wordpress-api/abilities-site-summary.php",
   "tags": ["wordpress", "abilities-api", "modern-api"],
+  "rules": {
+    "general": ["wordpress_docs_standards", "no_speculative_plugin_packaging", "supported_plugin_author_metadata"],
+    "task_specific": ["abilities_api_lifecycle", "ability_registered", "exact_output_shape"]
+  },
   "limits": {
     "max_turns": 25,
     "step_budget": 12,
