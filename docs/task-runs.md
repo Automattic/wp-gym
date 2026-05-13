@@ -132,6 +132,16 @@ PR identify the task, provider/model, workflow run, result, score, failed checks
 changed workspace branch, generated files, tool summary, and artifact/replay
 links.
 
+Homeboy Extensions also emits runner-owned reproducibility metadata in each
+result. `wp-gym` projects the canonical eval envelope and fingerprints into the
+workflow `engine_data_json` output so downstream reports can compare runs without
+parsing the full Homeboy result JSON:
+
+- `metadata.eval_artifact`: versioned canonical eval result envelope.
+- `metadata.fingerprints.prompt.sha256`: model-facing task prompt fingerprint.
+- `metadata.fingerprints.bundle.sha256`: Data Machine bundle fingerprint.
+- `metadata.fingerprints.tool_policy.sha256`: enabled-tools and runner-policy fingerprint.
+
 PR comments are not required for the prototype. Comments are useful for adding a
 Homeboy report to a human-authored PR, but here the generated PR is itself the
 evidence artifact. The PR body is intentionally stable and complete enough to
@@ -169,6 +179,8 @@ prototype PR should include:
 - Provider and model.
 - Workflow run URL.
 - Success, reward, and score.
+- Canonical eval artifact and input fingerprint locations in the Homeboy result
+  JSON.
 - Full hidden-grade check table with pass/fail, score, max score, and message.
 - Changed workspace branch and file count.
 - Links or paths for generated files and replay/job artifacts.
