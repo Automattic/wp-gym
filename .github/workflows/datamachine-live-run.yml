@@ -26,13 +26,17 @@ on:
       dry_run:
         description: Build the runner config without making live model calls.
         required: true
-        default: false
+        default: true
         type: boolean
 
 permissions:
   contents: write
   pull-requests: write
   issues: write
+
+concurrency:
+  group: wp-gym-live-${{ github.ref }}-${{ inputs.task_set }}-${{ inputs.task_ids }}
+  cancel-in-progress: false
 
 jobs:
   resolve-matrix:
@@ -42,291 +46,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install validation dependencies
+        run: npm ci
+
       - name: Resolve task and provider matrix
         id: matrix
         env:
           TASK_SET: ${{ inputs.task_set }}
           TASK_IDS: ${{ inputs.task_ids }}
         run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-
-          const root = process.cwd();
-
-          function readJson(file) {
-            return JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
-          }
-
-          function readText(file) {
-            return fs.readFileSync(path.join(root, file), 'utf8').trim();
-          }
-
-          function resolveFrom(baseFile, candidate) {
-            if (!candidate) {
-              return '';
-            }
-            return path.normalize(path.join(path.dirname(baseFile), candidate)).replace(/\\/g, '/');
-          }
-
-          function taskSetScenarioIds(taskSetFile) {
-            const taskSet = readJson(taskSetFile);
-            const ids = [];
-            for (const scenarioFile of taskSet.scenario_manifests || []) {
-              const scenarioPath = resolveFrom(taskSetFile, scenarioFile);
-              const scenario = readJson(scenarioPath);
-              ids.push(scenario.id);
-            }
-            for (const task of taskSet.tasks || []) {
-              if (task.scenario_id && !ids.includes(task.scenario_id)) {
-                ids.push(task.scenario_id);
-              }
-            }
-            return ids;
-          }
-
-          const homeboy = readJson('homeboy.json');
-          const scenarioFiles = homeboy.extensions.wordpress.settings.playground_scenario_manifests || [];
-          const tasks = new Map();
-
-          const smoke = readJson('tasks/smoke-homepage/manifest.json');
-          tasks.set(smoke.id, {
-            id: smoke.id,
-            label: smoke.label,
-            promptFile: smoke.prompt,
-            graderFile: smoke.check,
-            usesWorkspace: false,
-            maxTurns: 8,
-            stepBudget: 12,
-            timeBudgetMs: 600000,
-            rules: {},
-            generalRules: [],
-            taskRules: [],
-            probes: {},
-          });
-
-          for (const scenarioFile of scenarioFiles) {
-            const scenario = readJson(scenarioFile);
-            const promptFile = resolveFrom(scenarioFile, scenario.prompt_file || scenario.prompt);
-            const graderFile = resolveFrom(scenarioFile, scenario.grader_file || scenario.grader);
-            tasks.set(scenario.id, {
-              id: scenario.id,
-              label: scenario.label || scenario.id,
-              promptFile,
-              graderFile,
-              usesWorkspace: scenario.id.startsWith('modern-wordpress-api-'),
-              maxTurns: Number(scenario.limits?.max_turns || 12),
-              stepBudget: Number(scenario.limits?.step_budget || 16),
-              timeBudgetMs: Number(scenario.limits?.time_budget_ms || 600000),
-              rules: scenario.rules || {},
-              generalRules: scenario.general_rules || scenario.rules?.general || [],
-              taskRules: scenario.task_rules || scenario.rules?.task_specific || [],
-              probes: scenario.probes || {},
-            });
-          }
-
-          const explicitIds = (process.env.TASK_IDS || '')
-            .split(',')
-            .map((id) => id.trim())
-            .filter(Boolean);
-          if (process.env.TASK_SET === 'custom' && explicitIds.length === 0) {
-            throw new Error('task_ids is required when task_set is custom.');
-          }
-          const selectedIds = explicitIds.length > 0
-            ? explicitIds
-            : process.env.TASK_SET === 'all'
-              ? [...tasks.keys()]
-              : process.env.TASK_SET === 'smoke'
-                ? ['smoke-homepage']
-                : taskSetScenarioIds(`task-sets/${process.env.TASK_SET}.json`);
-
-          const providers = [
-            {
-              provider: 'openai',
-              model: 'gpt-5.5',
-              label: 'openai-gpt-5-5',
-              providerPlugin: '{}',
-            },
-            {
-              provider: 'anthropic',
-              model: 'claude-opus-4-7',
-              label: 'anthropic-claude-opus-4-7',
-              providerPlugin: JSON.stringify({
-                repo: 'WordPress/ai-provider-for-anthropic',
-                ref: 'trunk',
-                path: '.',
-                register_function: 'WordPress\\AnthropicAiProvider\\register_provider',
-                credentials: {
-                  connectors_ai_anthropic_api_key: 'PROVIDER_SECRET_1',
-                },
-              }),
-            },
-          ];
-
-          const include = [];
-          for (const taskId of selectedIds) {
-            const task = tasks.get(taskId);
-            if (!task) {
-              throw new Error(`Unknown task ID: ${taskId}`);
-            }
-            const prompt = readText(task.promptFile);
-            const workloadRunAfter = task.graderFile
-              ? JSON.stringify([{ type: 'php', file: task.graderFile }])
-              : '[]';
-            for (const provider of providers) {
-              const branchSlug = `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-');
-              const workspaceTools = [
-                'workspace_show',
-                'workspace_ls',
-                'workspace_read',
-                'workspace_grep',
-                'workspace_write',
-                'workspace_edit',
-                'workspace_apply_patch',
-                'workspace_git_status',
-                'wordpress_runtime_ls',
-              ];
-              const pipelineStepPatches = task.usesWorkspace ? JSON.stringify([
-                {
-                  step_type: 'ai',
-                  merge: {
-                    completion_assertions: {
-                      complete_when_any: [
-                        {
-                          name: 'workspace_write_path',
-                          tools: [{ name: 'workspace_write' }],
-                        },
-                        {
-                          name: 'workspace_edit_path',
-                          tools: [{ name: 'workspace_edit' }],
-                        },
-                        {
-                          name: 'workspace_patch_path',
-                          tools: [{ name: 'workspace_apply_patch' }],
-                        },
-                      ],
-                    },
-                  },
-                },
-              ]) : '[]';
-              const flowStepPatches = task.usesWorkspace ? JSON.stringify([
-                {
-                  step_type: 'ai',
-                  merge: {
-                    enabled_tools: workspaceTools,
-                  },
-                },
-              ]) : '[]';
-              const artifactExportConfig = JSON.stringify({
-                include_job_artifacts: true,
-                pr_title_template: `[wp-gym] {result_label} - {task_id} - {provider}/{model}`,
-                pr_body_template: [
-                  '## wp-gym Live Run',
-                  '- **Task:** {task_label}',
-                  '- **Task ID:** `{task_id}`',
-                  '- **Provider:** `{provider}`',
-                  '- **Model:** `{model}`',
-                  '- **Agent:** `{agent_slug}`',
-                  '- **Workflow:** {workflow_run_url}',
-                  '',
-                  '## Result',
-                  '- **Success:** `{success}`',
-                  '- **Reward:** `{reward}`',
-                  '- **Score:** `{grade_score}` / `{grade_max_score}`',
-                  '',
-                  '{result_table}',
-                  '',
-                  '## Eval Reproducibility',
-                  '- **Canonical result schema:** `metadata.eval_artifact` in the Homeboy result JSON.',
-                  '- **Input fingerprints:** `metadata.fingerprints` in the Homeboy result JSON.',
-                  '- **Prompt fingerprint:** `metadata.fingerprints.prompt.sha256`.',
-                  '- **Bundle fingerprint:** `metadata.fingerprints.bundle.sha256`.',
-                  '- **Tool policy fingerprint:** `metadata.fingerprints.tool_policy.sha256`.',
-                  '- **Rule policy:** `metadata.eval_artifact.rules`.',
-                  '- **Behavioral probes:** `metadata.eval_artifact.probes`.',
-                  '',
-                  '## Grade Checks',
-                  '{checks_table}',
-                  '',
-                  '## General Rule Results',
-                  '{general_rules_table}',
-                  '',
-                  '## Changed Files',
-                  '- **Workspace changed:** {workspace_changed}',
-                  '- **Changed file count:** `{changed_file_count}`',
-                  '- **Workspace branch:** `{workspace_branch}`',
-                  '- **Workspace handle:** `{workspace_handle}`',
-                  '- **File list:** Review the PR **Files changed** tab for the runner workspace branch.',
-                  '',
-                  '## Artifacts and Replay',
-                  '{links_table}',
-                  '',
-                  '## Tool Summary',
-                  '{tools_table}',
-                ].join('\n'),
-                pr_template_values: {
-                  task_id: task.id,
-                  task_label: task.label,
-                  provider: provider.provider,
-                  model: provider.model,
-                  model_label: `${provider.provider}/${provider.model}`,
-                },
-                pr_template_paths: {
-                  success: 'run.success',
-                  reward: 'run.reward',
-                  grade_score: 'run.grade.score',
-                  grade_max_score: 'run.grade.max_score',
-                  changed_file_count: 'run.runner_workspace_capture.status.dirty',
-                  job_status: 'run.job_status',
-                  transcript_session_id: 'run.transcript_session_id',
-                },
-              });
-              include.push({
-                task_id: task.id,
-                task_label: task.label,
-                provider: provider.provider,
-                model: provider.model,
-                provider_label: provider.label,
-                provider_plugin: provider.providerPlugin,
-                prompt,
-                workload_run_after: workloadRunAfter,
-                rules: JSON.stringify(task.rules),
-                general_rules: JSON.stringify(task.generalRules),
-                task_rules: JSON.stringify(task.taskRules),
-                probes: JSON.stringify(task.probes),
-                success_requires_pr: Boolean(task.usesWorkspace),
-                runner_workspace: task.usesWorkspace ? JSON.stringify({
-                  enabled: true,
-                  repo: 'wp-gym',
-                  clone_url: 'https://github.com/chubes4/wp-gym.git',
-                  from: process.env.GITHUB_REF_NAME || 'main',
-                  branch_prefix: `agent-runs/${branchSlug}`,
-                  agent_alias: 'current-project',
-                  agent_root: '.agent-workspace/current-project',
-                  expose_to_agent: true,
-                  capture_changes: true,
-                  commit_message: `feat: complete ${task.id}`,
-                }) : '{}',
-                pipeline_step_patches: pipelineStepPatches,
-                flow_step_patches: flowStepPatches,
-                artifact_export_config: artifactExportConfig,
-                max_turns: task.maxTurns,
-                step_budget: task.stepBudget,
-                time_budget_ms: task.timeBudgetMs,
-                artifact_suffix: branchSlug,
-              });
-            }
-          }
-
-          const matrix = JSON.stringify({ include });
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${matrix}\n`);
-          NODE
+          npm run verify
+          node scripts/resolve-live-run-matrix.mjs
 
   live-run:
     needs: resolve-matrix
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix: ${{ fromJson(needs.resolve-matrix.outputs.matrix) }}
     uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
     with:
@@ -336,7 +77,7 @@ jobs:
       agent_slug: wordpress-task-runner
       pipeline_slug: wordpress-task-runner-pipeline
       flow_slug: wordpress-task-runner-flow
-      target_repo: chubes4/wp-gym
+      target_repo: Automattic/wp-gym
       prompt: ${{ matrix.prompt }}
       provider: ${{ matrix.provider }}
       model: ${{ matrix.model }}

@@ -1,7 +1,8 @@
 {
+  "schema_version": 1,
   "id": "site-building-community-garden",
   "label": "Neighborhood community garden site",
-  "issue": "https://github.com/chubes4/wp-gym/issues/13",
+  "issue": "https://github.com/Automattic/wp-gym/issues/13",
   "prompt_file": "../../prompts/site-building/community-garden.md",
   "grader_file": "../../graders/site-building/community-garden.php",
   "tags": ["wordpress", "site-building", "natural-prompt", "quality-criteria"],
@@ -14,6 +15,44 @@
     "step_budget": 16,
     "time_budget_ms": 900000
   },
+  "environment": {
+    "action_mode": "wordpress",
+    "uses_workspace": false,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": ["prompt", "wordpress_runtime", "block_editor", "rendered_site"],
+    "allowed_tools": [],
+    "writable_roots": [],
+    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "workspace_template": null,
+    "completion_policy": {
+      "type": "agent_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 10,
+      "step_budget": 16,
+      "time_budget_ms": 900000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [0, 1]
+  },
+  "calibration": {
+    "status": "demo",
+    "benchmark_scope": "demo",
+    "difficulty_band": "uncalibrated",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": ["topic_keyword_stuffing", "minimal_page_shell"],
+    "task_contract_level": "wordpress_state_diagnostic",
+    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty"]
+  },
+  "expected_artifacts": ["wordpress_state", "rendered_site", "grader_result"],
   "expected": {
     "required_topics": ["plots", "events", "volunteer", "contact"],
     "quality_criteria": [

@@ -1,7 +1,8 @@
 {
+  "schema_version": 1,
   "id": "modern-wordpress-api-rest-route-status",
   "label": "Public read-only site status REST endpoint",
-  "issue": "https://github.com/chubes4/wp-gym/issues/3",
+  "issue": "https://github.com/Automattic/wp-gym/issues/3",
   "prompt_file": "../../prompts/modern-wordpress-api/rest-route-status.md",
   "grader_file": "../../graders/modern-wordpress-api/rest-route-status.php",
   "tags": ["wordpress", "rest-api", "plugin-api", "modern-api"],
@@ -14,6 +15,54 @@
     "step_budget": 12,
     "time_budget_ms": 600000
   },
+  "environment": {
+    "action_mode": "workspace",
+    "uses_workspace": true,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": ["prompt", "workspace_tree", "wordpress_runtime"],
+    "allowed_tools": [
+      "workspace_show",
+      "workspace_ls",
+      "workspace_read",
+      "workspace_grep",
+      "workspace_write",
+      "workspace_edit",
+      "workspace_apply_patch",
+      "workspace_git_status",
+      "wordpress_runtime_ls"
+    ],
+    "writable_roots": ["plugins/"],
+    "hidden_paths": ["graders/", "scenarios/", "prompts/", "checks/", "task-sets/", ".github/", "docs/", "scripts/"],
+    "workspace_template": "starter-workspaces/modern-wordpress-api",
+    "completion_policy": {
+      "type": "explicit_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 25,
+      "step_budget": 12,
+      "time_budget_ms": 600000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [0, 1]
+  },
+  "calibration": {
+    "status": "pilot",
+    "benchmark_scope": "pilot",
+    "difficulty_band": "uncalibrated",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": ["hard_coded_clean_site_state", "extra_output_fields"],
+    "task_contract_level": "workspace_diff_diagnostic",
+    "benchmark_blockers": ["workspace_diff_diagnostic_only", "missing_baseline_results", "uncalibrated_difficulty"]
+  },
+  "expected_artifacts": ["workspace_diff", "plugin_files", "grader_result"],
   "expected": {
     "route": "/site-tools/v1/status",
     "method": "GET",

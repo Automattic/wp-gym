@@ -14,8 +14,8 @@ return function (): array {
 	$checks[]         = array(
 		'id'        => 'route_registered',
 		'passed'    => $route_registered,
-		'score'     => $route_registered ? 0.18 : 0,
-		'max_score' => 0.18,
+		'score'     => $route_registered ? 0.16 : 0,
+		'max_score' => 0.16,
 		'message'   => $route_registered ? 'REST route /site-tools/v1/status is registered.' : 'Expected REST route /site-tools/v1/status.',
 	);
 
@@ -31,8 +31,8 @@ return function (): array {
 	$checks[] = array(
 		'id'        => 'permission_callback_present',
 		'passed'    => $has_permission_callback,
-		'score'     => $has_permission_callback ? 0.135 : 0,
-		'max_score' => 0.135,
+		'score'     => $has_permission_callback ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $has_permission_callback ? 'GET handler has an explicit permission callback.' : 'Expected a callable permission_callback on the GET handler.',
 	);
 
@@ -50,8 +50,8 @@ return function (): array {
 	$checks[]  = array(
 		'id'        => 'status_200',
 		'passed'    => $status_ok,
-		'score'     => $status_ok ? 0.135 : 0,
-		'max_score' => 0.135,
+		'score'     => $status_ok ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $status_ok ? 'Route returned HTTP 200.' : 'Expected REST request to return HTTP 200.',
 	);
 
@@ -59,8 +59,8 @@ return function (): array {
 	$checks[] = array(
 		'id'        => 'ok_flag_true',
 		'passed'    => $ok_flag,
-		'score'     => $ok_flag ? 0.09 : 0,
-		'max_score' => 0.09,
+		'score'     => $ok_flag ? 0.08 : 0,
+		'max_score' => 0.08,
 		'message'   => $ok_flag ? 'Response ok flag is true.' : 'Expected response data ok=true.',
 	);
 
@@ -70,8 +70,8 @@ return function (): array {
 	$checks[]          = array(
 		'id'        => 'site_name_matches',
 		'passed'    => $site_name_matches,
-		'score'     => $site_name_matches ? 0.135 : 0,
-		'max_score' => 0.135,
+		'score'     => $site_name_matches ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $site_name_matches ? 'Response returned the current site name.' : 'Expected site_name to match get_bloginfo( name ).',
 	);
 
@@ -82,9 +82,21 @@ return function (): array {
 	$checks[]            = array(
 		'id'        => 'post_count_matches',
 		'passed'    => $post_count_matches,
-		'score'     => $post_count_matches ? 0.135 : 0,
-		'max_score' => 0.135,
+		'score'     => $post_count_matches ? 0.12 : 0,
+		'max_score' => 0.12,
 		'message'   => $post_count_matches ? 'Response returned the published post count.' : 'Expected post_count to match wp_count_posts( post )->publish.',
+	);
+
+	$result_keys        = is_array( $data ) ? array_keys( $data ) : array();
+	$expected_keys      = array( 'ok', 'post_count', 'site_name' );
+	sort( $result_keys );
+	$exact_output_shape = $expected_keys === $result_keys;
+	$checks[]           = array(
+		'id'        => 'exact_output_shape',
+		'passed'    => $exact_output_shape,
+		'score'     => $exact_output_shape ? 0.12 : 0,
+		'max_score' => 0.12,
+		'message'   => $exact_output_shape ? 'Response returned exactly ok, site_name, and post_count.' : 'Expected response data to contain exactly ok, site_name, and post_count, with no renamed or extra fields.',
 	);
 
 	$checks[] = wp_gym_modern_api_plugin_author_supported_check(
@@ -93,7 +105,7 @@ return function (): array {
 		0.09
 	);
 
-	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata();
+	$checks[] = wp_gym_check_no_speculative_plugin_packaging_metadata( array( 'max_score' => 0.09 ) );
 
 	return wp_gym_modern_api_grade( $checks );
 };
