@@ -302,6 +302,8 @@ function artifactExportConfig(task, provider, metadata) {
 			'- **File list:** Review the PR **Files changed** tab for the runner workspace branch.',
 			'',
 			'## Artifacts and Replay',
+			'- **Episode replay:** Homeboy exports an `episode_jsonl` artifact with action rows and terminal grader evidence.',
+			'- **Replay bundle:** Homeboy exports the sealed replay bundle and artifact hashes.',
 			'{links_table}',
 			'',
 			'## Tool Summary',

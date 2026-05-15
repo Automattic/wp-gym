@@ -191,6 +191,7 @@ function wp_gym_modern_api_plugin_author_supported_check( array $needles, ?strin
 
 function wp_gym_check_no_speculative_plugin_packaging_metadata( array $options = array() ): array {
 	$allow_readme = (bool) ( $options['allow_readme'] ?? false );
+	$max_score    = (float) ( $options['max_score'] ?? 0.1 );
 
 	$readme_files = $allow_readme
 		? array()
@@ -224,8 +225,8 @@ function wp_gym_check_no_speculative_plugin_packaging_metadata( array $options =
 	return array(
 		'id'        => 'no_speculative_plugin_packaging_metadata',
 		'passed'    => $passed,
-		'score'     => $passed ? 0.1 : 0,
-		'max_score' => 0.1,
+		'score'     => $passed ? $max_score : 0,
+		'max_score' => $max_score,
 		'message'   => $passed ? 'No speculative plugin packaging metadata detected.' : 'Detected unsupported plugin packaging metadata in submitted files: ' . implode( ', ', $paths ),
 	);
 }
@@ -284,11 +285,14 @@ function wp_gym_modern_api_grade( array $checks ): array {
 	$score  = min( 1, round( array_sum( array_column( $checks, 'score' ) ), 6 ) );
 
 	return array(
-		'success'         => $score >= 1.0,
-		'reward'          => $score,
-		'done'            => true,
-		'failure_reasons' => wp_gym_modern_api_failure_reasons( $checks ),
-		'grade'           => array(
+		'success'           => $score >= 1.0,
+		'reward'            => $score,
+		'done'              => true,
+		'terminated'        => true,
+		'truncated'         => false,
+		'truncation_reason' => null,
+		'failure_reasons'   => wp_gym_modern_api_failure_reasons( $checks ),
+		'grade'             => array(
 			'score'     => $score,
 			'max_score' => 1,
 			'checks'    => $checks,
