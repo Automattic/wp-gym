@@ -33,10 +33,10 @@ instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.
 
-Use `npm run local:check` to validate the episode schemas and run the first
-local `WPGym` smoke path. The initial local runner is intentionally narrow: it
-supports a `wp_cli` action subset for creating/listing posts, records a trace,
-and grades the resulting WordPress state with the existing PHP graders.
+Use `npm run local:check` to validate the episode schemas. `wp_cli` actions are
+contracts for the upstream Playground runner: Homeboy Extensions exposes the
+real agent-facing `run_wp_cli` tool through `WP_CLI::runcommand()` when runner
+config enables `enable_wp_cli_tool`.
 
 Stable task set manifests live in `task-sets/`. The first live side-by-side run
 uses `task-sets/first-live-run.json`.
