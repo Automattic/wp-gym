@@ -5,3 +5,4 @@
 /.homeboy/
 /.ci/
 node_modules/
+/.wp-gym-local/

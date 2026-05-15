@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/observation.schema.json",
+  "title": "WP Gym observation",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": ["type", "command", "status", "stdout", "stderr"],
+      "properties": {
+        "type": { "const": "command_result" },
+        "command": { "type": "string", "minLength": 1 },
+        "status": { "type": "integer" },
+        "stdout": { "type": "string" },
+        "stderr": { "type": "string" },
+        "error": { "type": ["string", "null"] },
+        "wp_state": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

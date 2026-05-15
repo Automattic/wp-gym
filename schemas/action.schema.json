@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/action.schema.json",
+  "title": "WP Gym action",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": ["type", "command"],
+      "properties": {
+        "type": { "const": "wp_cli" },
+        "command": { "type": "string", "minLength": 1 },
+        "timeout_ms": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

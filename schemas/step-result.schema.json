@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/step-result.schema.json",
+  "title": "WP Gym step result",
+  "type": "object",
+  "required": ["action", "observation", "reward", "done", "info"],
+  "properties": {
+    "action": { "$ref": "action.schema.json" },
+    "observation": { "$ref": "observation.schema.json" },
+    "reward": { "type": ["number", "null"] },
+    "done": { "type": "boolean" },
+    "info": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

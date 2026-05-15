@@ -33,6 +33,11 @@ instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.
 
+Use `npm run local:check` to validate the episode schemas and run the first
+local `WPGym` smoke path. The initial local runner is intentionally narrow: it
+supports a `wp_cli` action subset for creating/listing posts, records a trace,
+and grades the resulting WordPress state with the existing PHP graders.
+
 Stable task set manifests live in `task-sets/`. The first live side-by-side run
 uses `task-sets/first-live-run.json`.
 
