@@ -1,13 +1,52 @@
 {
+  "schema_version": 1,
   "id": "block-markup-valid-semantic-blocks",
   "label": "Neighborhood cookout page",
-  "issue": "https://github.com/chubes4/wp-gym/issues/2",
+  "issue": "https://github.com/Automattic/wp-gym/issues/2",
   "prompt_file": "../../prompts/block-markup/valid-semantic-blocks.md",
   "grader_file": "../../graders/block-markup/valid-semantic-blocks.php",
   "rules": {
     "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
     "task_specific": ["required_semantic_blocks", "expected_heading_text"]
   },
+  "environment": {
+    "action_mode": "wordpress",
+    "uses_workspace": false,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": ["prompt", "wordpress_runtime", "block_editor"],
+    "allowed_tools": [],
+    "writable_roots": [],
+    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "workspace_template": null,
+    "completion_policy": {
+      "type": "agent_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 12,
+      "step_budget": 16,
+      "time_budget_ms": 600000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [0, 1]
+  },
+  "calibration": {
+    "status": "demo",
+    "benchmark_scope": "demo",
+    "difficulty_band": "uncalibrated",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": ["keyword_stuffing", "shallow_block_validity"],
+    "task_contract_level": "wordpress_state_diagnostic",
+    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty"]
+  },
+  "expected_artifacts": ["wordpress_state", "grader_result"],
   "expected": {
     "post_title": "Neighborhood Cookout Plan",
     "required_blocks": [

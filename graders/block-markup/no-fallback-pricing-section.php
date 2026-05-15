@@ -2,6 +2,47 @@
 
 require_once __DIR__ . '/grader-common.php';
 
+if ( ! function_exists( 'wp_gym_pricing_block_html' ) ) {
+	function wp_gym_pricing_block_html( array $block ): string {
+		$html = (string) ( $block['innerHTML'] ?? '' );
+
+		foreach ( (array) ( $block['innerBlocks'] ?? array() ) as $inner_block ) {
+			if ( is_array( $inner_block ) ) {
+				$html .= ' ' . wp_gym_pricing_block_html( $inner_block );
+			}
+		}
+
+		return $html;
+	}
+}
+
+if ( ! function_exists( 'wp_gym_count_meaningful_pricing_columns' ) ) {
+	function wp_gym_count_meaningful_pricing_columns( array $blocks ): int {
+		$count = 0;
+
+		foreach ( wp_gym_flatten_blocks( $blocks ) as $block ) {
+			if ( 'core/column' !== ( $block['blockName'] ?? null ) ) {
+				continue;
+			}
+
+			$inner_blocks = (array) ( $block['innerBlocks'] ?? array() );
+			$inner_names  = wp_gym_block_names( $inner_blocks );
+			$text         = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( wp_gym_pricing_block_html( $block ) ) ) );
+
+			if (
+				in_array( 'core/heading', $inner_names, true ) &&
+				in_array( 'core/paragraph', $inner_names, true ) &&
+				in_array( 'core/button', $inner_names, true ) &&
+				strlen( $text ) >= 40
+			) {
+				$count++;
+			}
+		}
+
+		return $count;
+	}
+}
+
 return static function (): array {
 	$title = 'Simple Pricing Page';
 	$post  = wp_gym_find_post_by_title( $title );
@@ -14,6 +55,7 @@ return static function (): array {
 	$names        = wp_gym_block_names( $blocks );
 	$column_count = count( array_filter( $names, static fn( $name ) => 'core/column' === $name ) );
 	$button_count = count( array_filter( $names, static fn( $name ) => 'core/button' === $name ) );
+	$plan_columns = wp_gym_count_meaningful_pricing_columns( $blocks );
 
 	$checks = array(
 		array(
@@ -44,6 +86,13 @@ return static function (): array {
 			'score'     => $button_count >= 3 ? 0.1 : 0,
 			'max_score' => 0.1,
 			'message'   => 'Expected at least three core/button blocks; found ' . $button_count . '.',
+		),
+		array(
+			'id'        => 'plan_columns_have_meaningful_content',
+			'passed'    => 3 === $plan_columns,
+			'score'     => 3 === $plan_columns ? 0.2 : 0,
+			'max_score' => 0.2,
+			'message'   => 'Expected each pricing column to include an editable plan heading, descriptive paragraph, and button; found ' . $plan_columns . ' complete plan columns.',
 		),
 		array(
 			'id'        => 'no_fallback_or_html_blocks',

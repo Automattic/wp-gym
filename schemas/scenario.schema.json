@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/scenario.schema.json",
+  "title": "WP Gym scenario manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "label",
+    "prompt_file",
+    "grader_file",
+    "rules",
+    "environment",
+    "reward_spec",
+    "calibration",
+    "expected_artifacts"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "label": { "type": "string", "minLength": 1 },
+    "prompt_file": { "type": "string", "minLength": 1 },
+    "grader_file": { "type": "string", "minLength": 1 },
+    "rules": {
+      "type": "object",
+      "required": ["general", "task_specific"],
+      "properties": {
+        "general": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "task_specific": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "action_mode",
+        "uses_workspace",
+        "reset_fixture",
+        "observation_channels",
+        "allowed_tools",
+        "writable_roots",
+        "hidden_paths",
+        "workspace_template",
+        "completion_policy",
+        "termination_policy",
+        "truncation_policy"
+      ],
+      "properties": {
+        "action_mode": { "enum": ["wordpress", "workspace"] },
+        "uses_workspace": { "type": "boolean" },
+        "reset_fixture": { "type": "string", "minLength": 1 },
+        "observation_channels": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "allowed_tools": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "writable_roots": { "type": "array", "items": { "type": "string" } },
+        "hidden_paths": { "type": "array", "items": { "type": "string" } },
+        "workspace_template": { "type": ["string", "null"] },
+        "completion_policy": {
+          "type": "object",
+          "required": ["type"],
+          "properties": { "type": { "type": "string", "minLength": 1 } },
+          "additionalProperties": true
+        },
+        "termination_policy": {
+          "type": "object",
+          "required": ["type"],
+          "properties": { "type": { "type": "string", "minLength": 1 } },
+          "additionalProperties": true
+        },
+        "truncation_policy": {
+          "type": "object",
+          "required": ["type", "max_turns", "step_budget", "time_budget_ms"],
+          "properties": {
+            "type": { "type": "string", "minLength": 1 },
+            "max_turns": { "type": "integer", "minimum": 1 },
+            "step_budget": { "type": "integer", "minimum": 1 },
+            "time_budget_ms": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "reward_spec": {
+      "type": "object",
+      "required": ["type", "success_threshold", "reward_range"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "success_threshold": { "type": "number", "minimum": 0 },
+        "reward_range": {
+          "type": "array",
+          "prefixItems": [{ "type": "number" }, { "type": "number" }],
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "additionalProperties": true
+    },
+    "calibration": {
+      "type": "object",
+      "required": [
+        "status",
+        "benchmark_scope",
+        "difficulty_band",
+        "headline_score_eligible",
+        "baseline_result_sets",
+        "known_shortcuts",
+        "task_contract_level",
+        "benchmark_blockers"
+      ],
+      "properties": {
+        "status": { "enum": ["demo", "pilot", "calibrating", "benchmark_ready", "excluded"] },
+        "benchmark_scope": { "enum": ["demo", "pilot", "calibration", "benchmark", "excluded"] },
+        "difficulty_band": { "enum": ["uncalibrated", "smoke", "easy", "medium", "hard"] },
+        "headline_score_eligible": { "type": "boolean" },
+        "baseline_result_sets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "known_shortcuts": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "task_contract_level": {
+          "enum": ["wordpress_state_diagnostic", "workspace_diff_diagnostic", "benchmark_replay"]
+        },
+        "benchmark_blockers": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "expected_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+    }
+  },
+  "additionalProperties": true
+}

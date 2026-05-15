@@ -1,8 +1,20 @@
 {
   "id": "first-live-run",
   "label": "First live side-by-side task set",
-  "issue": "https://github.com/chubes4/wp-gym/issues/18",
+  "issue": "https://github.com/Automattic/wp-gym/issues/18",
   "description": "A small, stable set of WordPress tasks for the first live side-by-side run.",
+  "benchmark_status": "pilot",
+  "benchmark": false,
+  "headline_score_eligible": false,
+  "aggregate_score": false,
+  "score_scope": "pilot",
+  "task_contract_level": "mixed_diagnostic",
+  "benchmark_blockers": [
+    "pilot_task_set",
+    "uncalibrated_difficulty",
+    "missing_baseline_results",
+    "diagnostic_contract_only"
+  ],
   "scenario_manifests": [
     "../scenarios/site-building/community-garden.json",
     "../scenarios/block-markup/no-fallback-pricing-section.json",
