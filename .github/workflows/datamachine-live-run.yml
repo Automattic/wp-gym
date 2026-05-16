@@ -91,6 +91,7 @@ jobs:
       general_rules: ${{ matrix.general_rules }}
       task_rules: ${{ matrix.task_rules }}
       probes: ${{ matrix.probes }}
+      disable_datamachine_directives: true
       dry_run: ${{ inputs.dry_run }}
       max_turns: ${{ matrix.max_turns }}
       step_budget: ${{ matrix.step_budget }}
