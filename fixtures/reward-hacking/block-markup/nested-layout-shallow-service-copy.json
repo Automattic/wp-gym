@@ -1,0 +1,12 @@
+{
+  "id": "block-markup-nested-layout-shallow-service-copy",
+  "scenario_id": "block-markup-nested-layout-blocks",
+  "grader_file": "graders/block-markup/nested-layout-blocks.php",
+  "type": "adversarial_negative_fixture",
+  "shortcut_id": "shallow_required_text",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["missing_required_service_content"],
+  "description": "A two-service page shortcut that satisfies the requested nested block shape but leaves each service summary too shallow to be useful.",
+  "post_title": "Community Services Overview",
+  "content_file": "fixtures/reward-hacking/block-markup/nested-layout-shallow-service-copy.wp.html"
+}

@@ -8,10 +8,38 @@ const policy = {
 	writableRoots: ['plugins/'],
 	hiddenPaths: ['graders/', 'scripts/', '.github/', 'docs/'],
 };
+const tempPaths = new Set();
+const tempRoot = path.resolve(os.tmpdir());
+const keepTempFixtures = process.env.WP_GYM_KEEP_POLICY_FIXTURES === '1';
 
 function git(cwd, args) {
 	return execFileSync('git', args, { cwd, encoding: 'utf8' });
 }
+
+function trackTempPath(tempPath) {
+	tempPaths.add(tempPath);
+	return tempPath;
+}
+
+function makeTempDir(prefix) {
+	return trackTempPath(fs.mkdtempSync(path.join(os.tmpdir(), prefix)));
+}
+
+function cleanupTempPaths() {
+	if (keepTempFixtures) {
+		return;
+	}
+
+	for (const tempPath of [...tempPaths].sort((left, right) => right.length - left.length)) {
+		const resolved = path.resolve(tempPath);
+		if (!resolved.startsWith(`${tempRoot}${path.sep}wp-gym-policy-`)) {
+			continue;
+		}
+		fs.rmSync(resolved, { recursive: true, force: true });
+	}
+}
+
+process.on('exit', cleanupTempPaths);
 
 function writeFile(root, relativePath, content = '') {
 	const absolutePath = path.join(root, relativePath);
@@ -20,7 +48,7 @@ function writeFile(root, relativePath, content = '') {
 }
 
 function makeRepo() {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wp-gym-policy-'));
+	const root = makeTempDir('wp-gym-policy-');
 	git(root, ['init', '-q']);
 	git(root, ['config', 'user.email', 'policy@example.test']);
 	git(root, ['config', 'user.name', 'Policy Test']);
@@ -69,7 +97,7 @@ runCase('symlink to hidden path', (root) => {
 }, false, 'symlink');
 
 runCase('symlink outside workspace', (root) => {
-	const outside = path.join(os.tmpdir(), `wp-gym-policy-outside-${process.pid}.php`);
+	const outside = trackTempPath(path.join(os.tmpdir(), `wp-gym-policy-outside-${process.pid}.php`));
 	fs.writeFileSync(outside, '<?php // outside');
 	fs.symlinkSync(outside, path.join(root, 'plugins/outside-link.php'));
 }, false, 'symlink');
@@ -80,7 +108,7 @@ runCase('tracked symlink mode', (root) => {
 }, false, 'tracked_symlink');
 
 runCase('gitlink submodule mode', (root) => {
-	const submoduleRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'wp-gym-policy-submodule-'));
+	const submoduleRoot = makeTempDir('wp-gym-policy-submodule-');
 	git(submoduleRoot, ['init', '-q']);
 	git(submoduleRoot, ['config', 'user.email', 'policy@example.test']);
 	git(submoduleRoot, ['config', 'user.name', 'Policy Test']);
@@ -116,6 +144,23 @@ runCase('committed hidden path change', (root) => {
 	git(root, ['add', 'scripts/locked.php']);
 }, false, 'hidden_path');
 
+runCase('unmerged writable path', (root) => {
+	writeFile(root, 'plugins/conflict.php', '<?php // base');
+	git(root, ['add', 'plugins/conflict.php']);
+	git(root, ['commit', '-qm', 'add conflict fixture']);
+	git(root, ['checkout', '-qb', 'policy-left']);
+	writeFile(root, 'plugins/conflict.php', '<?php // left');
+	git(root, ['commit', '-am', 'left']);
+	git(root, ['checkout', '-qb', 'policy-right', 'HEAD~1']);
+	writeFile(root, 'plugins/conflict.php', '<?php // right');
+	git(root, ['commit', '-am', 'right']);
+	try {
+		git(root, ['merge', '-q', 'policy-left']);
+	} catch {
+		// The conflicted index is the fixture state under test.
+	}
+}, false, 'unmerged_path');
+
 {
 	const root = makeRepo();
 	writeFile(root, 'plugins/solution.php', '<?php // ok');
@@ -134,7 +179,7 @@ runCase('committed hidden path change', (root) => {
 }
 
 {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wp-gym-policy-no-git-'));
+	const root = makeTempDir('wp-gym-policy-no-git-');
 	fs.mkdirSync(path.join(root, 'plugins'), { recursive: true });
 	const result = checkWorkspacePolicy({ workspaceRoot: root, policy });
 	const reasons = result.violations.map((violation) => violation.reason);

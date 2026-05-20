@@ -44,6 +44,7 @@ function parseGitStatusZ(output) {
 				indexMode: parts[4],
 				worktreeMode: parts[5],
 				ignored: false,
+				unmerged: false,
 			});
 			continue;
 		}
@@ -63,9 +64,26 @@ function parseGitStatusZ(output) {
 						indexMode: parts[4],
 						worktreeMode: parts[5],
 						ignored: false,
+						unmerged: false,
 					});
 				}
 			}
+			continue;
+		}
+
+		if (field.startsWith('u ')) {
+			const parts = field.split(' ');
+			const status = parts[1];
+			const pathValue = parts.slice(10).join(' ');
+			entries.push({
+				status,
+				path: normalizeRelativePath(pathValue, 'git status path'),
+				headMode: parts[4],
+				indexMode: parts[5],
+				worktreeMode: parts[6],
+				ignored: false,
+				unmerged: true,
+			});
 			continue;
 		}
 
@@ -77,6 +95,7 @@ function parseGitStatusZ(output) {
 				indexMode: null,
 				worktreeMode: null,
 				ignored: field.startsWith('! '),
+				unmerged: false,
 			});
 		}
 	}
@@ -329,6 +348,10 @@ export function checkWorkspacePolicy({ workspaceRoot, manifest = null, policy = 
 
 		if (entry.ignored) {
 			addViolation(violations, { path: relativePath, reason: 'ignored_path', status: entry.status });
+		}
+
+		if (entry.unmerged) {
+			addViolation(violations, { path: relativePath, reason: 'unmerged_path', status: entry.status });
 		}
 
 		for (const mode of [entry.headMode, entry.indexMode, entry.worktreeMode]) {

@@ -51,11 +51,24 @@ function wp_gym_fixture_block_name( string $name ): string {
 	return str_contains( $name, '/' ) ? $name : 'core/' . $name;
 }
 
+function wp_gym_fixture_append_freeform_block( array &$blocks, string $html ): void {
+	if ( '' === trim( $html ) ) {
+		return;
+	}
+
+	$blocks[] = array(
+		'blockName'   => null,
+		'innerHTML'   => $html,
+		'innerBlocks' => array(),
+	);
+}
+
 function parse_blocks( string $content ): array {
 	preg_match_all( '/<!--\s+(\/)?wp:([a-z0-9-]+(?:\/[a-z0-9-]+)?)(?:\s+[^>]*)?-->/', $content, $matches, PREG_OFFSET_CAPTURE );
 
 	$root  = array();
 	$stack = array();
+	$cursor = 0;
 
 	foreach ( $matches[0] as $index => $match ) {
 		$is_close = '/' === $matches[1][ $index ][0];
@@ -63,6 +76,10 @@ function parse_blocks( string $content ): array {
 		$offset   = $match[1];
 
 		if ( ! $is_close ) {
+			if ( empty( $stack ) ) {
+				wp_gym_fixture_append_freeform_block( $root, substr( $content, $cursor, $offset - $cursor ) );
+			}
+
 			$stack[] = array(
 				'blockName'    => $name,
 				'innerHTML'    => '',
@@ -85,6 +102,7 @@ function parse_blocks( string $content ): array {
 			$stack[ $parent_index ]['innerBlocks'][] = $block;
 		} else {
 			$root[] = $block;
+			$cursor = $offset + strlen( $match[0] );
 		}
 	}
 
@@ -98,8 +116,11 @@ function parse_blocks( string $content ): array {
 			$stack[ $parent_index ]['innerBlocks'][] = $block;
 		} else {
 			$root[] = $block;
+			$cursor = strlen( $content );
 		}
 	}
+
+	wp_gym_fixture_append_freeform_block( $root, substr( $content, $cursor ) );
 
 	return $root;
 }

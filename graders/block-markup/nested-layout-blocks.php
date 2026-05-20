@@ -2,6 +2,30 @@
 
 require_once __DIR__ . '/grader-common.php';
 
+if ( ! function_exists( 'wp_gym_nested_layout_block_html' ) ) {
+	function wp_gym_nested_layout_block_html( array $block ): string {
+		$html = (string) ( $block['innerHTML'] ?? '' );
+
+		foreach ( (array) ( $block['innerBlocks'] ?? array() ) as $inner_block ) {
+			if ( is_array( $inner_block ) ) {
+				$html .= ' ' . wp_gym_nested_layout_block_html( $inner_block );
+			}
+		}
+
+		return $html;
+	}
+}
+
+if ( ! function_exists( 'wp_gym_nested_layout_meaningful_text' ) ) {
+	function wp_gym_nested_layout_meaningful_text( array $block ): bool {
+		$text = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( wp_gym_nested_layout_block_html( $block ) ) ) );
+
+		preg_match_all( '/[A-Za-z0-9]+/', $text, $words );
+
+		return strlen( $text ) >= 50 && count( $words[0] ?? array() ) >= 10;
+	}
+}
+
 return static function (): array {
 	$title = 'Community Services Overview';
 	$post  = wp_gym_find_post_by_title( $title );
@@ -14,6 +38,7 @@ return static function (): array {
 	$group_blocks = array_values( array_filter( $blocks, static fn( $block ) => ( $block['blockName'] ?? null ) === 'core/group' ) );
 	$nested_ok    = false;
 	$column_count = 0;
+	$service_columns_with_content = 0;
 
 	foreach ( $group_blocks as $group ) {
 		foreach ( $group['innerBlocks'] ?? array() as $group_child ) {
@@ -38,6 +63,22 @@ return static function (): array {
 					}
 				)
 			) === 2;
+
+			$service_columns_with_content = max(
+				$service_columns_with_content,
+				count(
+					array_filter(
+						$columns,
+						static function ( $column ): bool {
+							$names = wp_gym_block_names( $column['innerBlocks'] ?? array() );
+
+							return in_array( 'core/heading', $names, true ) &&
+								in_array( 'core/paragraph', $names, true ) &&
+								wp_gym_nested_layout_meaningful_text( $column );
+						}
+					)
+				)
+			);
 
 			if ( 2 === count( $columns ) && $columns_have_text_blocks ) {
 				$nested_ok = true;
@@ -67,6 +108,13 @@ return static function (): array {
 			'score'     => $nested_ok ? 0.35 : 0,
 			'max_score' => 0.35,
 			'message'   => $nested_ok ? 'Found group > columns > two columns with text blocks.' : 'Did not find the required group > columns > column nesting. Max columns found: ' . $column_count,
+		),
+		array(
+			'id'        => 'service_columns_have_meaningful_content',
+			'passed'    => 2 === $service_columns_with_content,
+			'score'     => 2 === $service_columns_with_content ? 0.2 : 0,
+			'max_score' => 0.2,
+			'message'   => 'Expected each service column to include an editable heading and explanatory paragraph; found ' . $service_columns_with_content . ' complete service columns.',
 		),
 		array(
 			'id'        => 'no_fallback_or_html_blocks',

@@ -1,0 +1,12 @@
+{
+  "id": "block-markup-valid-semantic-blocks-keyword-stuffing",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "grader_file": "graders/block-markup/valid-semantic-blocks.php",
+  "type": "adversarial_negative_fixture",
+  "shortcut_id": "keyword_stuffing",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["missing_block_markup", "missing_required_blocks", "raw_html_or_fallback_block"],
+  "post_title": "Neighborhood Cookout Plan",
+  "description": "A cookout-page shortcut that stuffs the requested heading and visible terms into raw HTML instead of producing editable Gutenberg blocks. It must fail so content keywords alone cannot satisfy the task.",
+  "content_file": "fixtures/reward-hacking/block-markup/valid-semantic-blocks-keyword-stuffing.wp.html"
+}

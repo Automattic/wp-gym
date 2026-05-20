@@ -37,6 +37,10 @@ function normalizePath(value) {
 	return value.replace(/\\/g, '/');
 }
 
+function artifactHasUriScheme(value) {
+	return /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
+}
+
 function resolveFrom(baseFile, candidate) {
 	return normalizePath(path.relative(root, path.resolve(root, path.dirname(baseFile), candidate)));
 }
@@ -47,6 +51,15 @@ function sha256(content) {
 
 async function fileSha256(relativePath) {
 	return sha256(await readFile(path.join(root, relativePath)));
+}
+
+async function readJsonArtifact(file, label, artifactPath) {
+	const safeArtifactPath = assertLocalArtifactPath(file, label, artifactPath);
+	try {
+		return JSON.parse(await readFile(path.join(root, safeArtifactPath), 'utf8'));
+	} catch {
+		fail('artifact_json_invalid', `${file} ${label} must be valid JSON: ${artifactPath}`);
+	}
 }
 
 async function listJsonFiles(dir, relativeDir) {
@@ -94,6 +107,14 @@ function assertHash(value, label) {
 	assert(typeof value === 'string' && hashPattern.test(value), `${label} must match sha256:<64 lowercase hex>`);
 }
 
+function assertAttestationHash(value, label) {
+	assert(
+		typeof value === 'string' && hashPattern.test(value),
+		'attestation_hash_missing',
+		`${label} must be a non-null sha256:<64 lowercase hex> for replayable workspace audit`
+	);
+}
+
 function assertArrayEqual(actual, expected, label) {
 	assert(Array.isArray(actual), `${label} must be an array`);
 	assert(Array.isArray(expected), `${label} expected value must be an array`);
@@ -103,26 +124,7 @@ function assertArrayEqual(actual, expected, label) {
 	);
 }
 
-function localArtifactPaths(artifacts) {
-	const paths = [];
-	if (!artifacts || typeof artifacts !== 'object' || Array.isArray(artifacts)) {
-		return paths;
-	}
-
-	for (const value of Object.values(artifacts)) {
-		if (typeof value !== 'string' || value.length === 0) {
-			continue;
-		}
-		if (/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) {
-			continue;
-		}
-		paths.push(value);
-	}
-
-	return paths;
-}
-
-function localArtifactEntries(artifacts) {
+function artifactEntries(artifacts) {
 	const entries = [];
 	if (!artifacts || typeof artifacts !== 'object' || Array.isArray(artifacts)) {
 		return entries;
@@ -132,18 +134,33 @@ function localArtifactEntries(artifacts) {
 		if (typeof value !== 'string' || value.length === 0) {
 			continue;
 		}
-		if (/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) {
-			continue;
-		}
 		entries.push([key, value]);
 	}
 
 	return entries;
 }
 
+function localArtifactPaths(artifacts) {
+	const paths = [];
+
+	for (const [, value] of artifactEntries(artifacts)) {
+		if (artifactHasUriScheme(value)) {
+			continue;
+		}
+		paths.push(value);
+	}
+
+	return paths;
+}
+
 function assertLocalArtifactPath(file, label, artifactPath) {
 	const normalized = normalizePath(artifactPath);
 	const isWindowsAbsolutePath = /^[A-Za-z]:\//.test(normalized);
+	assert(
+		!artifactHasUriScheme(normalized),
+		'artifact_path_remote',
+		`${file} ${label} must be a repo-relative local path for offline audit: ${artifactPath}`
+	);
 	assert(
 		!path.isAbsolute(normalized) &&
 			!isWindowsAbsolutePath &&
@@ -212,17 +229,42 @@ function gradeTotals(checks) {
 	};
 }
 
+function assertTerminalGradeArtifact(file, gradeArtifact, episode) {
+	assert(
+		gradeArtifact && typeof gradeArtifact === 'object' && !Array.isArray(gradeArtifact),
+		'grade_artifact_mismatch',
+		`${file} terminal grader result artifact must be a JSON object`
+	);
+	assert(
+		gradeArtifact.success === episode.result.success,
+		'grade_artifact_mismatch',
+		`${file} terminal grader result artifact success must match result.success`
+	);
+	assertClose(gradeArtifact.reward, episode.result.reward, 'grade_artifact_mismatch', `${file} terminal grader result artifact reward`);
+	assert(
+		gradeArtifact.grade && typeof gradeArtifact.grade === 'object' && !Array.isArray(gradeArtifact.grade),
+		'grade_artifact_mismatch',
+		`${file} terminal grader result artifact grade must be a JSON object`
+	);
+	assertClose(gradeArtifact.grade.score, episode.result.grade.score, 'grade_artifact_mismatch', `${file} terminal grader result artifact grade.score`);
+	assertClose(gradeArtifact.grade.max_score, episode.result.grade.max_score, 'grade_artifact_mismatch', `${file} terminal grader result artifact grade.max_score`);
+}
+
+function terminalGradeArtifactPath(step) {
+	return step.artifacts?.grade_json || step.artifacts?.grader_result;
+}
+
 async function validateArtifactHashes(file, artifacts, artifactHashes, label) {
 	const hashes = artifactHashes || {};
 
-	for (const [key, artifactPath] of localArtifactEntries(artifacts)) {
-		const safeArtifactPath = assertLocalArtifactPath(file, `${label}.${key}`, artifactPath);
+	for (const [key, artifactPath] of artifactEntries(artifacts)) {
 		assert(
 			Object.hasOwn(hashes, key),
 			'artifact_hash_missing',
 			`${file} ${label}.${key} must declare artifact_hashes.${key}`
 		);
 		assertHash(hashes[key], `${file} ${label}.artifact_hashes.${key}`);
+		const safeArtifactPath = assertLocalArtifactPath(file, `${label}.${key}`, artifactPath);
 		assert(
 			hashes[key] === await fileSha256(safeArtifactPath),
 			'artifact_hash_mismatch',
@@ -262,6 +304,10 @@ async function validateEpisode(file, episode, scenarios, validateSchema) {
 	assertArrayEqual(episode.environment.allowed_tools, environment.allowed_tools, `${file} environment.allowed_tools`);
 	assertArrayEqual(episode.environment.writable_roots, environment.writable_roots, `${file} environment.writable_roots`);
 	assertArrayEqual(episode.environment.hidden_paths, environment.hidden_paths, `${file} environment.hidden_paths`);
+	if (environment.action_mode === 'workspace') {
+		assertAttestationHash(episode.provenance.tool_policy_sha256, `${file} provenance.tool_policy_sha256`);
+		assertAttestationHash(episode.provenance.bundle_sha256, `${file} provenance.bundle_sha256`);
+	}
 
 	const [minReward, maxReward] = scenario.manifest.reward_spec.reward_range;
 	assert(episode.result.reward >= minReward && episode.result.reward <= maxReward, `${file} result.reward must be within scenario reward_range`);
@@ -351,6 +397,14 @@ async function validateEpisode(file, episode, scenarios, validateSchema) {
 			[...episode.result.failure_reasons].sort(),
 			`${file} terminal grader failure_reasons`
 		);
+		const gradeArtifactPath = terminalGradeArtifactPath(terminalGraderStep);
+		assert(
+			typeof gradeArtifactPath === 'string' && gradeArtifactPath.length > 0,
+			'terminal_grade_artifact_missing',
+			`${file} terminal grader step must include artifacts.grade_json or artifacts.grader_result for offline audit`
+		);
+		const gradeArtifact = await readJsonArtifact(file, 'terminal grader result artifact', gradeArtifactPath);
+		assertTerminalGradeArtifact(file, gradeArtifact, episode);
 	}
 }
 
