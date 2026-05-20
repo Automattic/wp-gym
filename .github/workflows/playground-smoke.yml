@@ -13,6 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Run no-model validation gate
+        run: |
+          npm ci
+          npm test
+
       - name: Run Homeboy Playground smoke task
         uses: Extra-Chill/homeboy-action@v2
         env:

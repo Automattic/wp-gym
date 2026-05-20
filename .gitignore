@@ -5,3 +5,4 @@
 /.homeboy/
 /.ci/
 node_modules/
+.remote-artifacts/

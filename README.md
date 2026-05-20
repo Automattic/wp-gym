@@ -41,7 +41,7 @@ instead of chat transcripts.
 
 Use `npm test` for the no-model gate: manifest/schema checks, live matrix
 semantics, episode fixture validation, workspace policy fixtures, executable
-reward-hacking fixtures, and PHP syntax checks. Use
+reward-hacking fixtures, and PHP-backed grader fixture execution. Use
 `npm run matrix:live-run -- --check` to verify that the live Data Machine
 task/provider matrix resolves from scenario metadata without making model calls.
 
