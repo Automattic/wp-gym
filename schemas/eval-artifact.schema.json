@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/eval-artifact.schema.json",
+  "title": "WP Gym eval artifact projection",
+  "description": "Versioned wp-gym projection from generic Sandbox Runtime artifacts plus runner, scenario, task-set, and grader metadata.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "projection",
+    "status",
+    "runtime",
+    "runner",
+    "scenario",
+    "task_set",
+    "grader",
+    "reports"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "projection": {
+      "type": "object",
+      "required": ["name", "issue", "created_at"],
+      "properties": {
+        "name": { "const": "wp-gym-eval-artifact" },
+        "issue": { "const": "https://github.com/Automattic/wp-gym/issues/88" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": true
+    },
+    "status": {
+      "type": "object",
+      "required": ["outcome", "failure_class"],
+      "properties": {
+        "outcome": { "enum": ["passed", "failed", "errored"] },
+        "failure_class": {
+          "enum": ["none", "runtime_failure", "agent_failure", "grader_failure", "task_failure"]
+        },
+        "failure_reason": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" },
+        "message": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "runtime": {
+      "type": "object",
+      "description": "References and normalized identifiers from generic Sandbox Runtime artifacts. These fields are projected by wp-gym; wp-codebox does not emit eval metadata.",
+      "required": ["artifact_bundle", "references"],
+      "properties": {
+        "artifact_bundle": {
+          "type": "object",
+          "required": ["id", "schema_version"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "schema_version": { "type": ["string", "integer"], "minLength": 1 },
+            "created_at": { "type": ["string", "null"], "format": "date-time" },
+            "runtime_id": { "type": ["string", "null"] },
+            "environment_id": { "type": ["string", "null"] }
+          },
+          "additionalProperties": true
+        },
+        "references": {
+          "type": "object",
+          "properties": {
+            "events": { "$ref": "#/$defs/artifact_reference_array" },
+            "commands": { "$ref": "#/$defs/artifact_reference_array" },
+            "observations": { "$ref": "#/$defs/artifact_reference_array" },
+            "mounts": { "$ref": "#/$defs/artifact_reference_array" },
+            "patches": { "$ref": "#/$defs/artifact_reference_array" },
+            "packages": { "$ref": "#/$defs/artifact_reference_array" },
+            "screenshots": { "$ref": "#/$defs/artifact_reference_array" },
+            "transcript": { "$ref": "#/$defs/artifact_reference_array" },
+            "replay_bundle": { "$ref": "#/$defs/artifact_reference_array" }
+          },
+          "additionalProperties": true
+        },
+        "source_fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/source_field" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "runner": {
+      "type": "object",
+      "required": ["provider", "model", "workflow"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 },
+        "agent_slug": { "type": ["string", "null"] },
+        "bundle_sha256": { "$ref": "#/$defs/sha256_or_null" },
+        "tool_policy_sha256": { "$ref": "#/$defs/sha256_or_null" },
+        "workflow": {
+          "type": "object",
+          "properties": {
+            "run_id": { "type": ["string", "integer", "null"] },
+            "run_url": { "type": ["string", "null"] },
+            "job_id": { "type": ["string", "integer", "null"] }
+          },
+          "additionalProperties": true
+        },
+        "source_fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/source_field" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "scenario": {
+      "type": "object",
+      "required": ["id", "label", "task_family", "prompt_sha256", "rules"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "label": { "type": "string", "minLength": 1 },
+        "task_family": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "prompt_sha256": { "$ref": "#/$defs/sha256" },
+        "rules": {
+          "type": "object",
+          "required": ["general", "task_specific"],
+          "properties": {
+            "general": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9_]+$" } },
+            "task_specific": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9_]+$" } }
+          },
+          "additionalProperties": true
+        },
+        "source_fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/source_field" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "task_set": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "label": { "type": ["string", "null"] },
+        "source_path": { "type": ["string", "null"] },
+        "source_fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/source_field" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "grader": {
+      "type": "object",
+      "required": ["success", "reward", "grade", "checks", "failure_reasons"],
+      "properties": {
+        "success": { "type": "boolean" },
+        "reward": { "type": "number" },
+        "grade": {
+          "type": "object",
+          "required": ["score"],
+          "properties": {
+            "score": { "type": "number" },
+            "max_score": { "type": ["number", "null"] }
+          },
+          "additionalProperties": true
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "passed"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "passed": { "type": "boolean" },
+              "score": { "type": ["number", "null"] },
+              "max_score": { "type": ["number", "null"] },
+              "failure_reason": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" },
+              "message": { "type": ["string", "null"] }
+            },
+            "additionalProperties": true
+          }
+        },
+        "failure_reasons": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "general_rule_results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["rule", "passed"],
+            "properties": {
+              "rule": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+              "passed": { "type": "boolean" },
+              "failure_reason": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "source_fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/source_field" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "reports": {
+      "type": "object",
+      "properties": {
+        "pull_request_url": { "type": ["string", "null"] },
+        "workflow_run_url": { "type": ["string", "null"] },
+        "result_json": { "$ref": "#/$defs/artifact_reference_array" },
+        "replay": { "$ref": "#/$defs/artifact_reference_array" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "artifact_reference_array": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "path_or_url"],
+        "properties": {
+          "kind": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "path_or_url": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "#/$defs/sha256_or_null" },
+          "source_field": { "type": ["string", "null"] }
+        },
+        "additionalProperties": true
+      }
+    },
+    "source_field": {
+      "type": "object",
+      "required": ["target", "source"],
+      "properties": {
+        "target": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "owner": { "enum": ["sandbox-runtime", "runner", "wp-gym"] }
+      },
+      "additionalProperties": true
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sha256_or_null": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

@@ -196,6 +196,13 @@ parsing the full Homeboy result JSON:
 - `metadata.fingerprints.bundle.sha256`: Data Machine bundle fingerprint.
 - `metadata.fingerprints.tool_policy.sha256`: enabled-tools and runner-policy fingerprint.
 
+The versioned eval artifact projection is documented in
+`docs/eval-artifact-projection.md` and defined by
+`schemas/eval-artifact.schema.json`. Per issue
+[#88](https://github.com/Automattic/wp-gym/issues/88), Sandbox Runtime artifacts
+remain generic and `wp-gym` adds the eval-specific scenario, task-set, model,
+grader, and failure-class metadata.
+
 PR comments are not required for the prototype. Comments are useful for adding a
 Homeboy report to a human-authored PR, but here the generated PR is itself the
 evidence artifact. The PR body is intentionally stable and complete enough to
