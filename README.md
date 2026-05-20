@@ -33,6 +33,11 @@ instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.
 
+The `wp-gym` adapter boundary for consuming `wp-codebox` / Sandbox Runtime is
+documented in `docs/sandbox-runtime-adapter-contract.md`. Sandbox Runtime remains
+the generic isolated WordPress runtime substrate; `wp-gym` owns scenario, trace,
+grader, reward, and eval artifact semantics.
+
 Stable task set manifests live in `task-sets/`. The first live side-by-side run
 uses `task-sets/first-live-run.json`.
 
