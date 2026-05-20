@@ -42,3 +42,6 @@ maintainers.
 
 Manual side-by-side Data Machine runs are documented in `docs/task-runs.md` and
 live in `.github/workflows/datamachine-live-run.yml`.
+
+The hidden grader handoff from Sandbox Runtime or `wp-codebox` artifacts into
+`wp-gym` PHP graders is documented in `docs/grader-handoff.md`.
