@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "wordpress-investigation-homepage-source-diagnosis",
+  "label": "Diagnose why the homepage shows latest posts",
+  "issue": "https://github.com/Automattic/wp-gym/issues/49",
+  "prompt_file": "../../prompts/wordpress-investigation/homepage-source-diagnosis.md",
+  "grader_file": "../../graders/wordpress-investigation/homepage-source-diagnosis.php",
+  "tags": ["wordpress", "investigation", "wp-cli", "site-state", "homepage"],
+  "rules": {
+    "general": ["evidence_backed_wordpress_answer", "bounded_wp_cli_inspection"],
+    "task_specific": ["homepage_option_diagnosis", "static_front_page_remediation"]
+  },
+  "limits": {
+    "max_turns": 8,
+    "step_budget": 8,
+    "time_budget_ms": 420000
+  },
+  "environment": {
+    "action_mode": "wordpress",
+    "uses_workspace": false,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": ["prompt", "wordpress_runtime", "terminal_actions"],
+    "allowed_tools": ["run_wp_cli"],
+    "writable_roots": [],
+    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/", "docs/", "scripts/"],
+    "workspace_template": null,
+    "completion_policy": {
+      "type": "agent_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 8,
+      "step_budget": 8,
+      "time_budget_ms": 420000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [0, 1]
+  },
+  "calibration": {
+    "status": "pilot",
+    "benchmark_scope": "pilot",
+    "difficulty_band": "easy",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": ["guessing_clean_site_defaults", "answer_without_tool_evidence"],
+    "task_contract_level": "wordpress_state_diagnostic",
+    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results"]
+  },
+  "expected_artifacts": ["wordpress_state", "tool_summary", "final_response", "grader_result"],
+  "expected": {
+    "challenge_type": "operational_diagnosis",
+    "required_options": ["show_on_front", "page_on_front"],
+    "required_evidence": ["wp_cli_usage", "option_values", "remediation"],
+    "hidden_criteria": [
+      "final answer identifies that show_on_front is posts/latest posts",
+      "final answer reports page_on_front as unset or zero",
+      "final answer explains that a static page requires setting show_on_front=page and selecting page_on_front",
+      "episode evidence shows WP-CLI was used"
+    ]
+  }
+}
