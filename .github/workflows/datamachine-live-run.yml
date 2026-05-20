@@ -95,6 +95,8 @@ jobs:
       runner_workspace: ${{ matrix.runner_workspace }}
       pipeline_step_patches: ${{ matrix.pipeline_step_patches }}
       flow_step_patches: ${{ matrix.flow_step_patches }}
+      enable_terminal_actions: ${{ matrix.enable_terminal_actions }}
+      wp_cli_tool_name: ${{ matrix.wp_cli_tool_name }}
       artifact_export_config: ${{ matrix.artifact_export_config }}
       rules: ${{ matrix.rules }}
       general_rules: ${{ matrix.general_rules }}

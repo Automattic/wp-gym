@@ -29,7 +29,8 @@
       "workspace_edit",
       "workspace_apply_patch",
       "workspace_git_status",
-      "wordpress_runtime_ls"
+      "wordpress_runtime_ls",
+      "run_wp_cli"
     ],
     "writable_roots": ["plugins/"],
     "hidden_paths": ["graders/", "scenarios/", "prompts/", "checks/", "task-sets/", ".github/", "docs/", "scripts/"],
