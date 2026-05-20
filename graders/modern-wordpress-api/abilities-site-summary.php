@@ -3,7 +3,7 @@
 require_once __DIR__ . '/grader-common.php';
 
 return function (): array {
-	$checks = array();
+	$checks = array( wp_gym_modern_api_workspace_policy_check() );
 
 	$plugin_source                = wp_gym_modern_api_submitted_source( array( 'site-tools/site-summary', 'wp_register_ability' ) );
 	$uses_category_lifecycle      = str_contains( $plugin_source, 'wp_abilities_api_categories_init' );

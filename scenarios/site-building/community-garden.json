@@ -50,7 +50,7 @@
     "baseline_result_sets": [],
     "known_shortcuts": ["topic_keyword_stuffing", "minimal_page_shell"],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty"]
+    "benchmark_blockers": ["missing_action_replay", "missing_baseline_results", "uncalibrated_difficulty"]
   },
   "expected_artifacts": ["wordpress_state", "rendered_site", "grader_result"],
   "expected": {

@@ -3,7 +3,7 @@
 require_once __DIR__ . '/grader-common.php';
 
 return function (): array {
-	$checks = array();
+	$checks = array( wp_gym_modern_api_workspace_policy_check() );
 
 	if ( function_exists( 'rest_get_server' ) ) {
 		rest_get_server();

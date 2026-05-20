@@ -13,7 +13,8 @@
     "pilot_task_set",
     "uncalibrated_difficulty",
     "missing_baseline_results",
-    "diagnostic_contract_only"
+    "missing_runner_attestation",
+    "missing_non_workspace_action_replay"
   ],
   "scenario_manifests": [
     "../scenarios/site-building/community-garden.json",

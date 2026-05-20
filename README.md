@@ -4,6 +4,14 @@ WP Gym contains small WordPress implementation requests for disposable Playgroun
 sites. It is a WordPress Playground environment for training and evaluating
 agents on real WordPress tasks.
 
+The current repository is an evaluation harness and task corpus, not yet a
+Gymnasium-style `reset`/`step` Python package or a benchmark-ready RL suite.
+Scenario manifests declare the episode contract that the runner consumes: reset
+fixture, observation channels, allowed tools, writable roots, hidden paths,
+completion policy, truncation budgets, reward spec, calibration status, and
+expected artifacts. Those fields are validated locally and documented by
+`schemas/scenario.schema.json`.
+
 The current prototype runs the same WordPress task side by side across multiple
 models, lets each model edit an isolated project workspace, and opens a separate
 runner-owned pull request for each model's output. Those generated PRs are the
@@ -31,10 +39,18 @@ criteria, such as parseable content, fallback blocks, or required APIs, live in
 task metadata and PHP checks, so review happens against final WordPress state
 instead of chat transcripts.
 
-Use `npm run validate` for the local manifest and PHP syntax check.
+Use `npm test` for the no-model gate: manifest/schema checks, live matrix
+semantics, episode fixture validation, workspace policy fixtures, executable
+reward-hacking fixtures, and PHP syntax checks. Use
+`npm run matrix:live-run -- --check` to verify that the live Data Machine
+task/provider matrix resolves from scenario metadata without making model calls.
 
 Stable task set manifests live in `task-sets/`. The first live side-by-side run
-uses `task-sets/first-live-run.json`.
+uses `task-sets/first-live-run.json`, which is currently a mixed pilot run and
+not a headline benchmark. Scenario `calibration.status` must be promoted with
+baseline results and adversarial fixtures before a task is benchmark-ready.
+`BENCHMARK_MODE=1` intentionally rejects the current task set so pilot/demo rows
+cannot be accidentally reported as benchmark scores.
 
 The smoke workflow in `.github/workflows/playground-smoke.yml` exercises the
 Playground path and uploads the artifacts emitted by Homeboy Extensions for
