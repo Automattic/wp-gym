@@ -1,0 +1,58 @@
+{
+    "job_id": 1,
+    "status": "failed - empty_data_packet_returned",
+    "agent_id": 2,
+    "agent_slug": "wordpress-task-runner",
+    "required_tool_names": [],
+    "satisfied_tool_names": [],
+    "successful_tool_calls": [
+        {
+            "tool_name": "workspace_show",
+            "success": true,
+            "turn_count": 1
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 1
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 2
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 3
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 4
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 5
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 6
+        },
+        {
+            "tool_name": "workspace_write",
+            "success": true,
+            "turn_count": 8
+        },
+        {
+            "tool_name": "workspace_write",
+            "success": true,
+            "turn_count": 8
+        }
+    ],
+    "transcript": null,
+    "agent_memory_artifacts": [],
+    "daily_memory_artifacts": []
+}
