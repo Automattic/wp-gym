@@ -26,6 +26,9 @@ return static function (): array {
         'success' => $score >= 1,
         'reward' => $score,
         'done' => true,
+        'terminated' => true,
+        'truncated' => false,
+        'truncation_reason' => null,
         'grade' => [
             'max_score' => 1,
             'score' => $score,

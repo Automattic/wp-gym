@@ -9,7 +9,7 @@
           "$schema": "https://playground.wordpress.net/blueprint-schema.json",
           "preferredVersions": {
             "php": "8.3",
-            "wp": "latest"
+            "wp": "6.9"
           }
         },
         "playground_scenario_manifests": [
@@ -46,10 +46,15 @@
     }
   },
   "self_checks": {
-    "lint": [
-      "node --check scripts/validate-scenarios.mjs",
-      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json task-sets/first-live-run.json"
-    ],
+        "lint": [
+            "node --check scripts/validate-scenarios.mjs",
+            "node --check scripts/resolve-live-run-matrix.mjs",
+            "node --check scripts/validate-episode-fixtures.mjs",
+            "node --check scripts/check-workspace-policy.mjs",
+            "node --check scripts/test-workspace-policy.mjs",
+            "node --check scripts/validate-reward-fixtures.mjs",
+            "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json schemas/scenario.schema.json schemas/episode-result.schema.json fixtures/episode-results/valid/modern-api-pass.json fixtures/episode-results/invalid/artifact-hash-mismatch.json fixtures/episode-results/invalid/artifact-path-traversal.json fixtures/episode-results/invalid/grade-sum-mismatch.json fixtures/episode-results/invalid/missing-replay-artifact.json fixtures/episode-results/invalid/missing-terminal-grader.json fixtures/episode-results/invalid/unauthorized-agent-tool.json fixtures/episode-results/invalid/unknown-actor.json fixtures/episode-results/artifacts/modern-api-pass/grade.json fixtures/reward-hacking/block-markup/no-fallback-pricing-empty-skeleton.json fixtures/reward-hacking/block-markup/no-fallback-pricing-meaningful-content.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json task-sets/first-live-run.json"
+        ],
     "test": [
       "npm test"
     ]

@@ -5,6 +5,11 @@ execution substrate. The repository supplies ordinary user/developer requests,
 task metadata, and private completion checks; Homeboy supplies the disposable
 WordPress runtime, Data Machine runner, generated code PRs, and replay artifacts.
 
+`wp-gym` is currently a terminal-grader evaluation harness, not a full
+Gymnasium-compatible RL package. The repo-owned contract is the scenario
+manifest plus the episode result schema. A future `reset`/`step` facade should be
+built on top of those sealed contracts rather than replacing them.
+
 The prototype loop is:
 
 1. `wp-gym` selects a task and model matrix.
@@ -98,6 +103,10 @@ Each task should add:
 - A Playground blueprint when the task needs a custom WordPress starting state.
 - A PHP completion check with the private WordPress quality criteria.
 - Reusable `rules.general` and scenario-specific `rules.task_specific` labels.
+- An `environment` contract matching `schemas/scenario.schema.json`: reset
+  fixture, observation channels, allowed tools, writable roots, hidden paths,
+  workspace template, completion policy, and truncation policy.
+- A `reward_spec` and `expected_artifacts` list.
 - Optional zero-weight `probes` for behavioral fingerprints.
 - A `homeboy.json` `playground_workloads` entry that wires setup and completion checks.
 
@@ -151,6 +160,15 @@ The first live side-by-side task set is `task-sets/first-live-run.json`. It pins
 three existing scenario manifests so the run can be repeated without relying on
 the broader scenario directory order.
 
+This task set is a mixed pilot, not a headline benchmark. The current site and
+block-markup rows are useful for live-run coverage, but they are not
+benchmark-eligible until their WordPress action surface, calibration baselines,
+and adversarial reward fixtures are represented in the manifests and artifacts.
+The task set declares `benchmark: false`, `aggregate_score: false`, and
+`score_scope: "pilot"`. Matrix checks pass for pilot runs, but
+`BENCHMARK_MODE=1 TASK_SET=first-live-run node scripts/resolve-live-run-matrix.mjs --check`
+must fail closed until those blockers are removed.
+
 Selected tasks:
 
 - `site-building-community-garden`: Marshside Community Garden site-building request.
@@ -196,6 +214,11 @@ parsing the full Homeboy result JSON:
 - `metadata.fingerprints.bundle.sha256`: Data Machine bundle fingerprint.
 - `metadata.fingerprints.tool_policy.sha256`: enabled-tools and runner-policy fingerprint.
 
+`schemas/episode-result.schema.json` defines the repo-owned episode row shape
+that downstream JSONL exports should satisfy. The generated PR body remains a
+human review surface; it should not be the only machine-readable evaluation
+record.
+
 PR comments are not required for the prototype. Comments are useful for adding a
 Homeboy report to a human-authored PR, but here the generated PR is itself the
 evidence artifact. The PR body is intentionally stable and complete enough to
@@ -215,8 +238,8 @@ To trigger the first live run:
 3. Keep `task_set` as `first-live-run` to run the merged live task set, switch to
    `smoke` for the smallest wiring check, or enter `task_ids` as a comma-separated
    list such as `block-markup-no-fallback-pricing-section,modern-wordpress-api-abilities-site-summary`.
-4. Leave `dry_run` disabled for a live model run, or enable it to validate the
-   runner config without provider calls.
+4. Leave `dry_run` enabled to validate the runner config without provider calls,
+   or explicitly disable it for a paid live model run.
 5. Confirm repository secrets include `OPENAI_API_KEY` and `ANTHROPIC_API_KEY`.
 6. Review the generated PRs. Each task/model that wrote workspace changes should
    have its own PR with the result summary and hidden-grade checks in the body.

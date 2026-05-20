@@ -44,7 +44,7 @@
     "baseline_result_sets": [],
     "known_shortcuts": ["empty_block_skeleton", "keyword_and_block_count_stuffing"],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty", "known_reward_shortcut"]
+    "benchmark_blockers": ["missing_action_replay", "missing_baseline_results", "uncalibrated_difficulty", "known_reward_shortcut"]
   },
   "expected_artifacts": ["wordpress_state", "grader_result"],
   "expected": {

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/episode-result.schema.json",
+  "title": "WP Gym episode result",
+  "type": "object",
+  "required": ["schema_version", "scenario", "environment", "steps", "result", "provenance", "artifacts", "artifact_hashes"],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "scenario": {
+      "type": "object",
+      "required": ["id", "manifest_sha256", "prompt_sha256", "grader_sha256", "reset_hash"],
+      "properties": {
+        "id": { "type": "string" },
+        "manifest_sha256": { "type": "string" },
+        "prompt_sha256": { "type": "string" },
+        "grader_sha256": { "type": "string" },
+        "seed": { "type": ["integer", "null"] },
+        "reset_hash": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "environment": {
+      "type": "object",
+      "required": ["action_mode", "observation_channels", "allowed_tools", "writable_roots", "hidden_paths"],
+      "properties": {
+        "action_mode": { "type": "string" },
+        "observation_channels": { "type": "array", "items": { "type": "string" } },
+        "allowed_tools": { "type": "array", "items": { "type": "string" } },
+        "writable_roots": { "type": "array", "items": { "type": "string" } },
+        "hidden_paths": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["index", "actor", "observation", "action", "result", "reward", "failure_reasons", "artifacts", "provenance"],
+        "properties": {
+          "index": { "type": "integer", "minimum": 0 },
+          "actor": { "type": "string" },
+          "observation": {
+            "type": "object",
+            "required": ["reset_hash"],
+            "properties": {
+              "reset_hash": { "type": "string" }
+            },
+            "additionalProperties": true
+          },
+          "action": {
+            "type": "object",
+            "required": ["tool"],
+            "properties": {
+              "tool": { "type": "string" },
+              "args_sha256": { "type": ["string", "null"] }
+            },
+            "additionalProperties": true
+          },
+          "result": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string" },
+              "workspace_diff_sha256": { "type": ["string", "null"] }
+            },
+            "additionalProperties": true
+          },
+          "reward": { "type": "number" },
+          "failure_reasons": { "type": "array", "items": { "type": "string" } },
+          "artifacts": { "type": "object" },
+          "artifact_hashes": {
+            "type": "object",
+            "additionalProperties": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          },
+          "provenance": { "type": "object" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": ["success", "reward", "terminated", "truncated", "truncation_reason", "failure_reasons", "grade"],
+      "properties": {
+        "success": { "type": "boolean" },
+        "reward": { "type": "number" },
+        "terminated": { "type": "boolean" },
+        "truncated": { "type": "boolean" },
+        "truncation_reason": { "type": ["string", "null"] },
+        "failure_reasons": { "type": "array", "items": { "type": "string" } },
+        "grade": {
+          "type": "object",
+          "required": ["score", "max_score", "checks"],
+          "properties": {
+            "score": { "type": "number" },
+            "max_score": { "type": "number" },
+            "checks": { "type": "array" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["wp_gym_ref", "runner_ref", "wordpress_version", "php_version"],
+      "properties": {
+        "wp_gym_ref": { "type": "string" },
+        "runner_ref": { "type": "string" },
+        "wordpress_version": { "type": "string" },
+        "php_version": { "type": "string" },
+        "provider": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] },
+        "tool_policy_sha256": { "type": ["string", "null"] },
+        "bundle_sha256": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "artifacts": {
+      "type": "object",
+      "required": ["transcript", "replay_bundle", "episode_jsonl"],
+      "properties": {
+        "transcript": { "type": "string", "minLength": 1 },
+        "replay_bundle": { "type": "string", "minLength": 1 },
+        "workspace_diff": { "type": ["string", "null"] },
+        "episode_jsonl": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "artifact_hashes": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+    }
+  },
+  "additionalProperties": true
+}

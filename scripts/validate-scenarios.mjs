@@ -9,6 +9,7 @@ const scenarioRoot = path.join(root, 'scenarios');
 const taskSetRoot = path.join(root, 'task-sets');
 const requiredRepoFiles = [
 	'schemas/scenario.schema.json',
+	'schemas/episode-result.schema.json',
 	'scripts/resolve-live-run-matrix.mjs',
 	'starter-workspaces/modern-wordpress-api',
 ];
