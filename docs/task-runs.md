@@ -89,6 +89,13 @@ workspace evidence: `production_build_when_assets_change` passes when no buildab
 assets changed, and reports `production_build_not_run` when CSS/JS/theme assets
 changed without attached production-build evidence.
 
+The grader handoff from Sandbox Runtime or `wp-codebox` artifacts into hidden
+`wp-gym` PHP graders is documented in
+[`docs/grader-handoff.md`](grader-handoff.md). That contract treats hidden grader
+files and model-hidden inputs as `wp-gym`/runner policy, preserves the existing
+`success`, `reward`, `grade.checks`, and `failure_reasons` result shape, and keeps
+runtime failures, agent failures, grader failures, and task failures distinct.
+
 ## Task Contract
 
 Each task should add:
