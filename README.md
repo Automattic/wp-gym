@@ -29,6 +29,7 @@ Current task areas include:
 - Natural site-building requests with hidden WordPress-native quality criteria.
 - Realistic page-building requests that a site owner might ask for.
 - Visual-builder diagnostics for Elementor-style page state and builder-compatible edits.
+- Content migration requests that import local media attachments into WordPress.
 - Site-understanding requests that organize WordPress entities and relationships.
 - Developer requests for small plugins that expose WordPress data to other tools.
 - A smoke task that keeps the Playground automation wired up.

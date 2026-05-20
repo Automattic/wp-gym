@@ -37,6 +37,14 @@ Gutenberg block structure over shortcode markup. The agent-facing request should
 ask for content the site owner can revise in the WordPress editor; the private
 criteria should verify registered blocks and flag shortcode-like markup.
 
+For content migration and media import tasks, prompts can point to source packages
+provided in the task workspace. Manifests should declare the allowed import
+surfaces through `environment.allowed_tools`; WP-CLI, REST API, filesystem staging,
+and browser/UI flows are all acceptable when the scenario enables the required
+tools. Hidden graders should verify final WordPress state separately for content,
+attachment posts, local files, featured image metadata, and stale remote media
+URLs.
+
 ## Reward And Fingerprints
 
 Hidden PHP graders own the reward. Their `checks` array should contain the hard
@@ -173,6 +181,20 @@ visible content, editable blocks instead of raw fallback markup, and the request
 developer API surface with the expected output fields. Shortcode-like markup is
 treated as a quality failure for editable content tasks because it hides structure
 from the block editor.
+
+## WordPress Investigation Task Set
+
+The `wordpress-investigation` task set starts the issue #49 investigation family.
+These tasks are non-mutating WordPress debugging requests: the model should inspect
+the live site with WP-CLI, keep queries bounded to the requested state, and return
+an evidence-backed answer rather than code changes. Hidden graders can read the
+final response and runner tool artifacts to check that the answer cites the actual
+WordPress state and that WP-CLI was used.
+
+The first task, `wordpress-investigation-homepage-source-diagnosis`, asks why a
+fresh site's homepage is showing latest posts instead of a static page. The hidden
+criteria check for the current `show_on_front` and `page_on_front` option values,
+the diagnosis, the static-homepage remediation, and WP-CLI evidence.
 
 ## Live Data Machine Runs
 
