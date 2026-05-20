@@ -524,9 +524,10 @@ function checkExpectedShape(matrix, selectedTasks) {
 	const explicitIds = explicitTaskIds();
 	const expectedByTaskSet = {
 		'first-live-run': { rows: 6, workspaceRows: 2 },
+		'visual-builder': { rows: 2, workspaceRows: 0 },
 		smoke: { rows: 2, workspaceRows: 0 },
 		'wordpress-investigation': { rows: 2, workspaceRows: 0 },
-		all: { rows: 20, workspaceRows: 6 },
+		all: { rows: 22, workspaceRows: 6 },
 	};
 	const expected = explicitIds.length === 0 ? expectedByTaskSet[taskSet] : null;
 

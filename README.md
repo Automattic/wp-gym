@@ -28,6 +28,7 @@ Current task areas include:
 
 - Natural site-building requests with hidden WordPress-native quality criteria.
 - Realistic page-building requests that a site owner might ask for.
+- Visual-builder diagnostics for Elementor-style page state and builder-compatible edits.
 - Content migration requests that import local media attachments into WordPress.
 - Site-understanding requests that organize WordPress entities and relationships.
 - Developer requests for small plugins that expose WordPress data to other tools.
@@ -42,6 +43,11 @@ Use `npm run validate` for the local manifest and PHP syntax check.
 
 Stable task set manifests live in `task-sets/`. The first live side-by-side run
 uses `task-sets/first-live-run.json`.
+
+Visual-builder tasks live in their own task set at `task-sets/visual-builder.json`.
+The first Elementor-oriented scenario validates Elementor-compatible WordPress
+post metadata and rendered page state without requiring the full Elementor
+runtime in Playground.
 
 The smoke workflow in `.github/workflows/playground-smoke.yml` exercises the
 Playground path and uploads the artifacts emitted by Homeboy Extensions for

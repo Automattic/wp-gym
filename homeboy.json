@@ -17,6 +17,7 @@
           "scenarios/block-markup/nested-layout-blocks.json",
           "scenarios/block-markup/no-fallback-pricing-section.json",
           "scenarios/site-building/community-garden.json",
+          "scenarios/visual-builder/elementor-hero-refresh.json",
           "scenarios/content-migration/media-attachment-import.json",
           "scenarios/site-understanding/service-relationship-map.json",
           "scenarios/modern-wordpress-api/abilities-site-summary.json",
@@ -51,7 +52,7 @@
   "self_checks": {
     "lint": [
       "node --check scripts/validate-scenarios.mjs",
-      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json task-sets/first-live-run.json task-sets/wordpress-investigation.json scenarios/wordpress-investigation/homepage-source-diagnosis.json scenarios/content-migration/media-attachment-import.json scenarios/site-understanding/service-relationship-map.json starter-workspaces/content-migration-media-import/import-package/content-export.json"
+      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json task-sets/first-live-run.json task-sets/visual-builder.json task-sets/wordpress-investigation.json scenarios/wordpress-investigation/homepage-source-diagnosis.json scenarios/content-migration/media-attachment-import.json scenarios/site-understanding/service-relationship-map.json starter-workspaces/content-migration-media-import/import-package/content-export.json"
     ],
     "test": [
       "npm test"

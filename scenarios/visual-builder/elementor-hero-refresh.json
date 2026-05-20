@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "visual-builder-elementor-hero-refresh",
+  "label": "Elementor-style hero refresh",
+  "issue": "https://github.com/Automattic/wp-gym/issues/85",
+  "prompt_file": "../../prompts/visual-builder/elementor-hero-refresh.md",
+  "grader_file": "../../graders/visual-builder/elementor-hero-refresh.php",
+  "tags": ["wordpress", "visual-builder", "elementor", "page-builder", "diagnostic"],
+  "rules": {
+    "general": ["wordpress_visual_builder_state", "no_raw_html_or_shortcodes"],
+    "task_specific": ["elementor_builder_metadata", "campaign_hero_copy", "two_column_hero_structure", "visual_builder_cta"]
+  },
+  "environment": {
+    "action_mode": "wordpress",
+    "uses_workspace": false,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": ["prompt", "wordpress_runtime", "rendered_site", "builder_state"],
+    "allowed_tools": [],
+    "writable_roots": [],
+    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "workspace_template": null,
+    "completion_policy": {
+      "type": "agent_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 12,
+      "step_budget": 16,
+      "time_budget_ms": 600000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [0, 1]
+  },
+  "calibration": {
+    "status": "demo",
+    "benchmark_scope": "demo",
+    "difficulty_band": "uncalibrated",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": ["metadata_stub_without_rendered_content", "raw_html_replacement"],
+    "task_contract_level": "wordpress_state_diagnostic",
+    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty", "no_full_elementor_runtime"]
+  },
+  "expected_artifacts": ["wordpress_state", "rendered_site", "builder_state", "grader_result"],
+  "expected": {
+    "post_title": "Luma Studio Landing Page",
+    "builder_contract": "Elementor-compatible post metadata and JSON widget tree; full Elementor runtime is not required for this diagnostic fixture.",
+    "required_meta": ["_elementor_edit_mode", "_elementor_data"],
+    "required_widget_types": ["heading", "text-editor", "button"],
+    "required_copy": ["Brand Photos That Feel Effortless", "Book A Shoot"],
+    "forbidden_blocks": ["core/html"],
+    "forbidden_markup": ["shortcodes"]
+  }
+}
