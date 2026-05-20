@@ -37,6 +37,14 @@ Gutenberg block structure over shortcode markup. The agent-facing request should
 ask for content the site owner can revise in the WordPress editor; the private
 criteria should verify registered blocks and flag shortcode-like markup.
 
+For content migration and media import tasks, prompts can point to source packages
+provided in the task workspace. Manifests should declare the allowed import
+surfaces through `environment.allowed_tools`; WP-CLI, REST API, filesystem staging,
+and browser/UI flows are all acceptable when the scenario enables the required
+tools. Hidden graders should verify final WordPress state separately for content,
+attachment posts, local files, featured image metadata, and stale remote media
+URLs.
+
 ## Reward And Fingerprints
 
 Hidden PHP graders own the reward. Their `checks` array should contain the hard

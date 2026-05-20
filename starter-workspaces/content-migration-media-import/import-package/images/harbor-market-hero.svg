@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Harbor Market Hero</title>
+  <desc id="desc">A spring market table with greens, flowers, and a harbor sunrise.</desc>
+  <rect width="1200" height="800" fill="#f7efe2"/>
+  <circle cx="960" cy="150" r="96" fill="#f6b44b"/>
+  <rect x="120" y="430" width="960" height="120" rx="18" fill="#7a4e2d"/>
+  <rect x="170" y="310" width="220" height="170" rx="22" fill="#5b8f57"/>
+  <rect x="430" y="280" width="260" height="200" rx="26" fill="#d8694f"/>
+  <rect x="730" y="330" width="260" height="150" rx="24" fill="#4f7c8f"/>
+  <path d="M155 410 C260 300 330 310 395 420" fill="none" stroke="#2f5f3a" stroke-width="28" stroke-linecap="round"/>
+  <path d="M770 430 C840 260 940 250 1025 420" fill="none" stroke="#305f72" stroke-width="30" stroke-linecap="round"/>
+  <text x="120" y="690" fill="#2e2a24" font-family="Georgia, serif" font-size="72">Harbor Market Spring</text>
+</svg>
