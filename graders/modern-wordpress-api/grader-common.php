@@ -15,6 +15,145 @@ function wp_gym_modern_api_existing_directories( array $directories ): array {
 	return array_values( $existing );
 }
 
+function wp_gym_modern_api_normalize_relative_path( string $path ): string {
+	$path = trim( str_replace( '\\', '/', $path ) );
+	$path = ltrim( $path, '/' );
+
+	while ( str_contains( $path, '//' ) ) {
+		$path = str_replace( '//', '/', $path );
+	}
+
+	return rtrim( $path, '/' );
+}
+
+function wp_gym_modern_api_hidden_path_prefixes(): array {
+	$default_hidden_paths = array(
+		'graders',
+		'scenarios',
+		'prompts',
+		'checks',
+		'task-sets',
+		'.github',
+		'docs',
+		'scripts',
+	);
+	$env_hidden_paths     = getenv( 'WP_GYM_HIDDEN_PATHS' );
+	$hidden_paths         = false === $env_hidden_paths || '' === trim( $env_hidden_paths )
+		? $default_hidden_paths
+		: preg_split( '/[,:]/', $env_hidden_paths );
+
+	return array_values(
+		array_filter(
+			array_map(
+				static fn( string $path ): string => wp_gym_modern_api_normalize_relative_path( $path ),
+				$hidden_paths
+			)
+		)
+	);
+}
+
+function wp_gym_modern_api_writable_path_prefixes(): array {
+	$default_writable_paths = array(
+		'plugins',
+		'starter-workspaces/modern-wordpress-api/plugins',
+	);
+	$env_writable_paths     = getenv( 'WP_GYM_WRITABLE_ROOTS' );
+	$writable_paths         = false === $env_writable_paths || '' === trim( $env_writable_paths )
+		? $default_writable_paths
+		: preg_split( '/[,:]/', $env_writable_paths );
+
+	return array_values(
+		array_filter(
+			array_map(
+				static fn( string $path ): string => wp_gym_modern_api_normalize_relative_path( $path ),
+				$writable_paths
+			)
+		)
+	);
+}
+
+function wp_gym_modern_api_path_has_prefix( string $path, string $prefix ): bool {
+	return $path === $prefix || str_starts_with( $path, $prefix . '/' );
+}
+
+function wp_gym_modern_api_hidden_relative_path( string $relative_path ): bool {
+	foreach ( wp_gym_modern_api_hidden_path_prefixes() as $hidden_path ) {
+		if ( wp_gym_modern_api_path_has_prefix( $relative_path, $hidden_path ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function wp_gym_modern_api_writable_relative_path( string $relative_path ): bool {
+	$writable_paths = wp_gym_modern_api_writable_path_prefixes();
+	if ( empty( $writable_paths ) ) {
+		return false;
+	}
+
+	foreach ( $writable_paths as $writable_path ) {
+		if ( wp_gym_modern_api_path_has_prefix( $relative_path, $writable_path ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function wp_gym_modern_api_changed_relative_paths( string $root ): array {
+	$command = sprintf(
+		'git -C %s status --porcelain --untracked-files=all 2>/dev/null',
+		escapeshellarg( $root )
+	);
+	$output  = array();
+	$status  = 0;
+	exec( $command, $output, $status );
+
+	if ( 0 !== $status ) {
+		return array( '__git_status_failed__' );
+	}
+
+	$paths = array();
+	foreach ( $output as $line ) {
+		$path = trim( substr( $line, 3 ) );
+		if ( str_contains( $path, ' -> ' ) ) {
+			$parts = explode( ' -> ', $path );
+			$path  = trim( end( $parts ) );
+		}
+
+		$path = trim( $path, '"' );
+		if ( '' !== $path ) {
+			$paths[] = wp_gym_modern_api_normalize_relative_path( $path );
+		}
+	}
+
+	return array_values( array_unique( $paths ) );
+}
+
+function wp_gym_modern_api_is_hidden_path( string $root, string $pathname ): bool {
+	$relative_path = wp_gym_modern_api_normalize_relative_path( substr( $pathname, strlen( rtrim( $root, DIRECTORY_SEPARATOR ) ) + 1 ) );
+
+	return wp_gym_modern_api_hidden_relative_path( $relative_path );
+}
+
+function wp_gym_modern_api_is_writable_path( string $root, string $pathname ): bool {
+	$relative_path  = wp_gym_modern_api_normalize_relative_path( substr( $pathname, strlen( rtrim( $root, DIRECTORY_SEPARATOR ) ) + 1 ) );
+	$writable_paths = wp_gym_modern_api_writable_path_prefixes();
+
+	if ( empty( $writable_paths ) ) {
+		return false;
+	}
+
+	foreach ( $writable_paths as $writable_path ) {
+		if ( wp_gym_modern_api_path_has_prefix( $relative_path, $writable_path ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function wp_gym_modern_api_submitted_project_roots(): array {
 	$cwd = getcwd();
 
@@ -60,6 +199,20 @@ function wp_gym_modern_api_submitted_project_files( array $extensions = array( '
 			}
 
 			$pathname = $file->getPathname();
+			$realpath = realpath( $pathname );
+			$rootpath = rtrim( $root, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
+			if ( false === $realpath || 0 !== strpos( $realpath, $rootpath ) ) {
+				continue;
+			}
+
+			if ( wp_gym_modern_api_is_hidden_path( $root, $pathname ) ) {
+				continue;
+			}
+
+			if ( ! wp_gym_modern_api_is_writable_path( $root, $pathname ) ) {
+				continue;
+			}
+
 			$files[ $pathname ] = $pathname;
 		}
 	}
@@ -114,6 +267,45 @@ function wp_gym_modern_api_submitted_source( array $needles = array(), array $ex
 	}
 
 	return $source;
+}
+
+function wp_gym_modern_api_workspace_policy_check(): array {
+	$roots      = wp_gym_modern_api_submitted_project_roots();
+	$violations = array();
+
+	if ( empty( $roots ) ) {
+		return array(
+			'id'             => 'workspace_policy',
+			'passed'         => false,
+			'score'          => 0,
+			'max_score'      => 0,
+			'failure_reason' => 'missing_workspace_root',
+			'message'        => 'No submitted workspace root was available for policy checks.',
+		);
+	}
+
+	foreach ( $roots as $root ) {
+		foreach ( wp_gym_modern_api_changed_relative_paths( $root ) as $relative_path ) {
+			if (
+				wp_gym_modern_api_hidden_relative_path( $relative_path ) ||
+				! wp_gym_modern_api_writable_relative_path( $relative_path )
+			) {
+				$violations[] = $relative_path;
+			}
+		}
+	}
+
+	$violations = array_values( array_unique( $violations ) );
+	$passed     = empty( $violations );
+
+	return array(
+		'id'             => 'workspace_policy',
+		'passed'         => $passed,
+		'score'          => 0,
+		'max_score'      => 0,
+		'failure_reason' => $passed ? null : 'workspace_policy_violation',
+		'message'        => $passed ? 'Workspace changes stayed inside writable roots.' : 'Detected changed files outside writable roots or inside hidden paths: ' . implode( ', ', $violations ),
+	);
 }
 
 function wp_gym_modern_api_relative_paths( array $files ): array {
@@ -244,6 +436,7 @@ function wp_gym_modern_api_failure_reason_for_check( array $check ): string {
 		'exact_output_shape'                      => 'output_shape_mismatch',
 		'plugin_author_supported'                 => 'unsupported_plugin_author',
 		'no_speculative_plugin_packaging_metadata' => 'speculative_plugin_packaging_metadata',
+		'workspace_policy'                         => 'workspace_policy_violation',
 		'route_registered'                        => 'missing_rest_route',
 		'permission_callback_present'             => 'missing_permission_callback',
 		'status_200'                              => 'rest_status_mismatch',
@@ -283,16 +476,22 @@ function wp_gym_modern_api_failure_reasons( array $checks ): array {
 function wp_gym_modern_api_grade( array $checks ): array {
 	$checks = wp_gym_modern_api_normalize_checks( $checks );
 	$score  = min( 1, round( array_sum( array_column( $checks, 'score' ) ), 6 ) );
+	foreach ( $checks as $check ) {
+		if ( is_array( $check ) && 'workspace_policy' === ( $check['id'] ?? '' ) && empty( $check['passed'] ) ) {
+			$score = 0;
+			break;
+		}
+	}
 
 	return array(
-		'success'           => $score >= 1.0,
-		'reward'            => $score,
-		'done'              => true,
-		'terminated'        => true,
-		'truncated'         => false,
+		'success'         => $score >= 1.0,
+		'reward'          => $score,
+		'done'            => true,
+		'terminated'      => true,
+		'truncated'       => false,
 		'truncation_reason' => null,
-		'failure_reasons'   => wp_gym_modern_api_failure_reasons( $checks ),
-		'grade'             => array(
+		'failure_reasons' => wp_gym_modern_api_failure_reasons( $checks ),
+		'grade'           => array(
 			'score'     => $score,
 			'max_score' => 1,
 			'checks'    => $checks,

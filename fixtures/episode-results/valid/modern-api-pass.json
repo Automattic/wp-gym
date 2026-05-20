@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "scenario": {
+    "id": "modern-wordpress-api-rest-route-status",
+    "manifest_sha256": "sha256:859eb66ac37b3bd174bb4ab5f87d0484136127e9bf544c41e125b574944c6992",
+    "prompt_sha256": "sha256:4b0af6e274ff0bff877256c6f1a27425b67144b7f48540bc0e1f753d6be6da49",
+    "grader_sha256": "sha256:7af60473280ba436575a0344373e3d0003baef5943de704b160aab7c16fb7391",
+    "seed": 0,
+    "reset_hash": "sha256:925186864753448c211db5ff81f042b5c92fe0a2d3db77d28d993e85395c0346"
+  },
+  "environment": {
+    "action_mode": "workspace",
+    "observation_channels": [
+      "prompt",
+      "workspace_tree",
+      "wordpress_runtime"
+    ],
+    "allowed_tools": [
+      "workspace_show",
+      "workspace_ls",
+      "workspace_read",
+      "workspace_grep",
+      "workspace_write",
+      "workspace_edit",
+      "workspace_apply_patch",
+      "workspace_git_status",
+      "wordpress_runtime_ls"
+    ],
+    "writable_roots": [
+      "plugins/"
+    ],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "prompts/",
+      "checks/",
+      "task-sets/",
+      ".github/",
+      "docs/",
+      "scripts/"
+    ]
+  },
+  "steps": [
+    {
+      "index": 0,
+      "actor": "agent",
+      "observation": {
+        "reset_hash": "sha256:925186864753448c211db5ff81f042b5c92fe0a2d3db77d28d993e85395c0346",
+        "channels": [
+          "prompt",
+          "workspace_tree"
+        ]
+      },
+      "action": {
+        "tool": "workspace_apply_patch",
+        "args_sha256": "sha256:e16d801636e81fc375eef4a2332cf791543254207ac505ccf0410b3e96d000c4"
+      },
+      "result": {
+        "status": "ok",
+        "workspace_diff_sha256": "sha256:55a9aa8d9b28a25680bf20f9f60478bf80553fe6e58386a2b297fff01e55b857"
+      },
+      "reward": 0.25,
+      "failure_reasons": [
+        "missing_rest_route"
+      ],
+      "artifacts": {
+        "workspace_diff": "fixtures/episode-results/artifacts/modern-api-pass/step-0.patch"
+      },
+      "artifact_hashes": {
+        "workspace_diff": "sha256:55a9aa8d9b28a25680bf20f9f60478bf80553fe6e58386a2b297fff01e55b857"
+      },
+      "provenance": {
+        "runner_ref": "fixture-runner"
+      }
+    },
+    {
+      "index": 1,
+      "actor": "grader",
+      "observation": {
+        "reset_hash": "sha256:925186864753448c211db5ff81f042b5c92fe0a2d3db77d28d993e85395c0346",
+        "channels": [
+          "wordpress_runtime"
+        ]
+      },
+      "action": {
+        "tool": "php_grader",
+        "args_sha256": "sha256:564e7385cec62aa16812138f7298bd323172025f041354467379f77b8c8dbb02"
+      },
+      "result": {
+        "status": "pass",
+        "workspace_diff_sha256": null
+      },
+      "reward": 1,
+      "failure_reasons": [],
+      "artifacts": {
+        "grade_json": "fixtures/episode-results/artifacts/modern-api-pass/grade.json"
+      },
+      "artifact_hashes": {
+        "grade_json": "sha256:b986f098acb6bb78e0c7bff50ea7e5b659a7cac8c153dbd0d41cb214c83a8ca4"
+      },
+      "provenance": {
+        "runner_ref": "fixture-runner"
+      }
+    }
+  ],
+  "result": {
+    "success": true,
+    "reward": 1,
+    "terminated": true,
+    "truncated": false,
+    "truncation_reason": null,
+    "failure_reasons": [],
+    "grade": {
+      "score": 1,
+      "max_score": 1,
+      "checks": [
+        {
+          "id": "route_registered",
+          "passed": true,
+          "score": 1,
+          "max_score": 1
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "wp_gym_ref": "fixture-wp-gym",
+    "runner_ref": "fixture-runner",
+    "wordpress_version": "6.9",
+    "php_version": "8.3",
+    "provider": "fixture",
+    "model": "fixture-model",
+    "tool_policy_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "bundle_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "artifacts": {
+    "transcript": "fixtures/episode-results/artifacts/modern-api-pass/transcript.jsonl",
+    "replay_bundle": "fixtures/episode-results/artifacts/modern-api-pass/replay.txt",
+    "workspace_diff": "fixtures/episode-results/artifacts/modern-api-pass/final.patch",
+    "episode_jsonl": "fixtures/episode-results/artifacts/modern-api-pass/episode.jsonl"
+  },
+  "artifact_hashes": {
+    "transcript": "sha256:46590b0f37547cb87b4bd6bc874222afa16bed7d8611236b9184fc6b2505bf78",
+    "replay_bundle": "sha256:c8f70af580e3b8b5dc68392388dd910affc58c2fe67a6c455b65a5d34937bd2d",
+    "workspace_diff": "sha256:d31805bad663426273422c7a79da6aa29b85747767fe67f0e89d87bcb885ed4d",
+    "episode_jsonl": "sha256:0483c28300dfb7d6298586f4fe95c5ebcdb843e8c2f4c6777c644f88af36b098"
+  }
+}
