@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/step-result.v1.schema.json",
+  "title": "WP Gym StepResult v1",
+  "description": "Canonical result for one episode step. Reward and success are explicit and separate from telemetry. See https://github.com/Automattic/wp-gym/issues/80.",
+  "type": "object",
+  "required": ["schema_version", "observation", "reward", "done", "telemetry"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "observation": { "$ref": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/observation.v1.schema.json" },
+    "reward": {
+      "type": "object",
+      "required": ["value", "success"],
+      "properties": {
+        "value": { "type": "number" },
+        "success": { "type": "boolean" },
+        "failure_reasons": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "uniqueItems": true
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "success"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+              "success": { "type": "boolean" },
+              "score": { "type": "number" },
+              "max_score": { "type": "number" },
+              "failure_reason": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+              "message": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "done": { "type": "boolean" },
+    "telemetry": {
+      "type": "object",
+      "description": "Behavioral diagnostics such as timings, token use, tool counts, and fingerprints. Reward/success/score are intentionally forbidden here.",
+      "propertyNames": { "not": { "enum": ["reward", "success", "score"] } },
+      "additionalProperties": true
+    },
+    "info": {
+      "type": "object",
+      "description": "Compatibility alias for existing gym-style consumers. Prefer telemetry for new records.",
+      "propertyNames": { "not": { "enum": ["reward", "success", "score"] } },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
