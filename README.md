@@ -19,6 +19,11 @@ Detailed WordPress expectations live outside the prompt files, in manifests and
 PHP checkers. That keeps the request realistic while still letting automation
 inspect the final WordPress state.
 
+The corpus expansion plan in
+[`docs/corpus-expansion-plan.md`](docs/corpus-expansion-plan.md) maps current and
+planned task families, target milestones, and acceptance criteria for adding new
+scenarios.
+
 Current task areas include:
 
 - Natural site-building requests with hidden WordPress-native quality criteria.
