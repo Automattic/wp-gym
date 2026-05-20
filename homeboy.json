@@ -17,6 +17,7 @@
           "scenarios/block-markup/nested-layout-blocks.json",
           "scenarios/block-markup/no-fallback-pricing-section.json",
           "scenarios/site-building/community-garden.json",
+          "scenarios/site-understanding/service-relationship-map.json",
           "scenarios/modern-wordpress-api/abilities-site-summary.json",
           "scenarios/modern-wordpress-api/rest-route-status.json",
           "scenarios/wordpress-investigation/homepage-source-diagnosis.json"
