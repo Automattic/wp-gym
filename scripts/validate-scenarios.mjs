@@ -23,6 +23,7 @@ const knownTools = new Set([
 	'workspace_apply_patch',
 	'workspace_git_status',
 	'wordpress_runtime_ls',
+	'run_wp_cli',
 ]);
 const knownCompletionPolicies = new Set(['agent_final_response', 'explicit_final_response']);
 const knownTerminationPolicies = new Set(['terminal_grader']);

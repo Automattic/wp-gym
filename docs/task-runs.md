@@ -215,6 +215,12 @@ with the slugs from `bundle-validator.json`:
 - Pipeline: `wordpress-task-runner-pipeline`.
 - Flow: `wordpress-task-runner-flow`.
 
+Workspace-backed developer tasks can expose the runner-owned `run_wp_cli` tool
+through their scenario `environment.allowed_tools`. The live-run matrix turns on
+Homeboy Extensions terminal actions for those rows, so the agent can run real
+WP-CLI commands against the disposable WP Codebox runtime while wp-gym still
+captures the command output as task evidence.
+
 To trigger the first live run:
 
 1. Open **Actions** -> **Data Machine Live Task Run**.
