@@ -134,6 +134,12 @@ Homeboy Extensions owns the disposable WordPress runtime and artifact shape; an
 agent loop such as Data Machine can drive the same tasks without changing the
 task corpus.
 
+The long-term adapter contract for consuming `wp-codebox` / Sandbox Runtime is
+documented in `docs/sandbox-runtime-adapter-contract.md`. That boundary keeps
+Sandbox Runtime generic while `wp-gym` maps runtime execution, observations, and
+artifacts into eval actions, observations, step results, traces, rewards, and
+reports.
+
 ## Data Machine Bundle
 
 The minimal Data Machine bundle lives at `bundles/datamachine-task-runner`. It
