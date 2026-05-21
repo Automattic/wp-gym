@@ -118,6 +118,18 @@ function wp_gym_modern_api_submitted_source( array $needles = array(), array $ex
 	return $source;
 }
 
+function wp_gym_modern_api_submitted_action_hooks( string $source ): array {
+	$hooks = array();
+
+	if ( preg_match_all( "/add_action\s*\(\s*(['\"])([^'\"]+)\\1\s*,/", $source, $matches ) ) {
+		foreach ( $matches[2] as $hook ) {
+			$hooks[] = $hook;
+		}
+	}
+
+	return array_values( array_unique( $hooks ) );
+}
+
 function wp_gym_modern_api_relative_paths( array $files ): array {
 	$roots = wp_gym_modern_api_submitted_project_roots();
 	$paths = array();
