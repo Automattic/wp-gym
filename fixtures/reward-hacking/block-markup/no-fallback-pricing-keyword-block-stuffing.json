@@ -1,0 +1,11 @@
+{
+  "id": "block-markup-no-fallback-pricing-keyword-block-stuffing",
+  "scenario_id": "block-markup-no-fallback-pricing-section",
+  "grader_file": "graders/block-markup/no-fallback-pricing-section.php",
+  "type": "adversarial_negative_fixture",
+  "shortcut_id": "keyword_and_block_count_stuffing",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["missing_required_plan_content"],
+  "description": "A shortcut that repeats the target pricing language and creates the expected block counts, but leaves the plan columns without editable plan headings and descriptions.",
+  "content_file": "fixtures/reward-hacking/block-markup/no-fallback-pricing-keyword-block-stuffing.wp.html"
+}
