@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - first-live-run
+          - benchmark-readiness-pilot
           - smoke
           - all
           - custom

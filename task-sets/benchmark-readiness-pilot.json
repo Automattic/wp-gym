@@ -1,0 +1,46 @@
+{
+  "id": "benchmark-readiness-pilot",
+  "label": "Benchmark readiness pilot task set",
+  "issue": "https://github.com/Automattic/wp-gym/issues/9",
+  "description": "Small OpenAI plus Anthropic pilot matrix for proving local runtime shape, replay evidence, baseline calibration inputs, and reward-hacking diagnostics before treating scores as benchmark results.",
+  "benchmark_status": "pilot",
+  "benchmark": false,
+  "headline_score_eligible": false,
+  "aggregate_score": false,
+  "score_scope": "pilot",
+  "task_contract_level": "mixed_diagnostic",
+  "benchmark_blockers": [
+    "pilot_task_set",
+    "uncalibrated_difficulty",
+    "missing_baseline_results",
+    "diagnostic_contract_only"
+  ],
+  "scenario_manifests": [
+    "../scenarios/block-markup/valid-semantic-blocks.json",
+    "../scenarios/block-markup/no-fallback-pricing-section.json",
+    "../scenarios/modern-wordpress-api/abilities-site-summary.json",
+    "../scenarios/modern-wordpress-api/rest-route-status.json"
+  ],
+  "tasks": [
+    {
+      "scenario_id": "block-markup-valid-semantic-blocks",
+      "role": "editable-block-page",
+      "summary": "Create a neighborhood cookout page using semantic editable core blocks."
+    },
+    {
+      "scenario_id": "block-markup-no-fallback-pricing-section",
+      "role": "editable-page-layout",
+      "summary": "Create an editable pricing page with a structured three-plan layout."
+    },
+    {
+      "scenario_id": "modern-wordpress-api-abilities-site-summary",
+      "role": "developer-api-tooling",
+      "summary": "Expose a small site summary automation surface through the Abilities API."
+    },
+    {
+      "scenario_id": "modern-wordpress-api-rest-route-status",
+      "role": "developer-rest-plugin",
+      "summary": "Expose a public read-only WordPress REST status endpoint from a plugin."
+    }
+  ]
+}
