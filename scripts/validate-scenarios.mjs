@@ -496,6 +496,7 @@ for (const file of taskSetFiles) {
 
 const phpFiles = [
 	path.join('scripts', 'run-block-markup-fixture.php'),
+	path.join('scripts', 'run-local-wordpress-state-grade.php'),
 	path.join('graders', 'block-markup', 'grader-common.php'),
 	path.join('graders', 'modern-wordpress-api', 'grader-common.php'),
 	...files.map(async (file) => {

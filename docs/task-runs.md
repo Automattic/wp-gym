@@ -104,6 +104,10 @@ files and model-hidden inputs as `wp-gym`/runner policy, preserves the existing
 `success`, `reward`, `grade.checks`, and `failure_reasons` result shape, and keeps
 runtime failures, agent failures, grader failures, and task failures distinct.
 
+The local Gym-like API is documented in [`docs/local-api.md`](local-api.md). It
+uses the same scenario manifests and episode schemas for local experiments while
+leaving full WordPress orchestration and artifact export in the runner layer.
+
 ## Task Contract
 
 Each task should add:
