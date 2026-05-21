@@ -39,6 +39,15 @@ The local adapter is intentionally thin. It currently supports:
 - `filesystem` actions inside scenario `environment.writable_roots` for workspace
   scenarios.
 
+`env.runtimePlan()` exports a generic `wp-gym/runtime-plan/v1` record that Homeboy
+or another orchestrator can map onto a headless runtime. The plan describes the
+WordPress reset fixture, recorded actions, readonly scenario-repo mount, hidden PHP
+grader source, limits, and expected artifacts without choosing a runtime provider.
+
+Homeboy should own translating the plan into WP Codebox recipes or any other
+headless runtime contract, then feed runtime artifacts back into `wp-gym` for
+grading and report projection.
+
 Sandbox Runtime, Homeboy Extensions, and CI remain the full WordPress execution
 substrate. The local API is the stable contract for experiments and future RL
 loops; reusable orchestration still belongs in the runner layer.

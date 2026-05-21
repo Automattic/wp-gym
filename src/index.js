@@ -505,6 +505,35 @@ export class WPGymEnvironment {
 		throw new Error(`Local WPGym does not implement filesystem ${action.operation} yet.`);
 	}
 
+	runtimePlan() {
+		this.assertOpen();
+
+		return {
+			schema: 'wp-gym/runtime-plan/v1',
+			scenario_id: this.scenario.id,
+			runtime: {
+				kind: 'wordpress',
+				reset_fixture: this.scenario.environment.reset_fixture,
+			},
+			limits: this.scenario.environment.truncation_policy,
+			mounts: [
+				{
+					source: this.root,
+					target: '/inputs/repo',
+					mode: 'readonly',
+					role: 'scenario_repository',
+				},
+			],
+			actions: this.steps.map((step) => step.action),
+			grader: {
+				type: 'php',
+				source: repoRelative(this.root, resolveFrom(this.scenarioFile, this.scenario.grader_file)),
+				bootstrap: 'wordpress',
+			},
+			expected_artifacts: this.scenario.expected_artifacts || [],
+		};
+	}
+
 	async runPhpGrader() {
 		const graderFile = resolveFrom(this.scenarioFile, this.scenario.grader_file);
 		const stateFile = path.join(this.episodeRoot, 'state.json');
