@@ -41,6 +41,11 @@ instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.
 
+Canonical episode schemas for action, observation, step result, and trace records
+live in `schemas/` and are documented in `docs/episode-contract.md` for issue
+#80. Use `npm run episode-schemas:validate` to compile and smoke-test those
+contracts.
+
 Stable task set manifests live in `task-sets/`. The first live side-by-side run
 uses `task-sets/first-live-run.json`.
 
