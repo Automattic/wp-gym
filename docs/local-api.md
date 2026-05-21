@@ -39,6 +39,18 @@ The local adapter is intentionally thin. It currently supports:
 - `filesystem` actions inside scenario `environment.writable_roots` for workspace
   scenarios.
 
+`WPGym.make( scenarioId, { backend: 'wp-codebox' } )` uses the same public API but
+projects recorded actions into a generic WP Codebox workspace recipe. The recipe
+uses `wordpress.wp-cli` for `wp_cli` actions, `wordpress.run-php` for the hidden
+grader handoff, and generic readonly mounts for the repo inputs. WP Codebox remains
+unaware of scenarios, rewards, graders, failure reasons, or task sets; those stay in
+the `wp-gym` adapter layer.
+
+The WP Codebox backend executes the recipe at `grade()` time so all recorded steps
+run inside one disposable WordPress runtime before the hidden grader runs. Use
+`wpCodeboxCommand` or the `WP_CODEBOX_BIN` environment variable to point at the
+generic `wp-codebox` CLI when it is not on `PATH`.
+
 Sandbox Runtime, Homeboy Extensions, and CI remain the full WordPress execution
 substrate. The local API is the stable contract for experiments and future RL
 loops; reusable orchestration still belongs in the runner layer.
