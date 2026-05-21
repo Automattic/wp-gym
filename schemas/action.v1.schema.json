@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/action.v1.schema.json",
+  "title": "WP Gym Action v1",
+  "description": "Canonical action record for one requested episode step. See https://github.com/Automattic/wp-gym/issues/80.",
+  "oneOf": [
+    { "$ref": "#/$defs/wpCliAction" },
+    { "$ref": "#/$defs/filesystemAction" },
+    { "$ref": "#/$defs/restAction" },
+    { "$ref": "#/$defs/browserAction" }
+  ],
+  "$defs": {
+    "baseAction": {
+      "type": "object",
+      "required": ["schema_version", "type"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "type": { "enum": ["wp_cli", "filesystem", "rest", "browser"] },
+        "id": { "type": "string", "minLength": 1 },
+        "metadata": {
+          "type": "object",
+          "description": "Action routing/debug metadata. Reward and success values do not belong here.",
+          "propertyNames": { "not": { "enum": ["reward", "success", "score"] } },
+          "additionalProperties": true
+        }
+      }
+    },
+    "wpCliAction": {
+      "allOf": [
+        { "$ref": "#/$defs/baseAction" },
+        {
+          "type": "object",
+          "required": ["type", "command"],
+          "properties": {
+            "type": { "const": "wp_cli" },
+            "command": {
+              "type": "string",
+              "minLength": 1,
+              "description": "WP-CLI command without the leading `wp`, for example `post list --post_type=page --format=json`."
+            },
+            "timeout_ms": { "type": "integer", "minimum": 1 },
+            "cwd": { "type": "string", "minLength": 1 },
+            "env": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "filesystemAction": {
+      "allOf": [
+        { "$ref": "#/$defs/baseAction" },
+        {
+          "type": "object",
+          "required": ["type", "operation", "path"],
+          "properties": {
+            "type": { "const": "filesystem" },
+            "operation": { "enum": ["read", "write", "patch", "list", "delete"] },
+            "path": { "type": "string", "minLength": 1 },
+            "content": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "restAction": {
+      "allOf": [
+        { "$ref": "#/$defs/baseAction" },
+        {
+          "type": "object",
+          "required": ["type", "method", "path"],
+          "properties": {
+            "type": { "const": "rest" },
+            "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+            "path": { "type": "string", "pattern": "^/" },
+            "body": true,
+            "headers": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "browserAction": {
+      "allOf": [
+        { "$ref": "#/$defs/baseAction" },
+        {
+          "type": "object",
+          "required": ["type", "operation"],
+          "properties": {
+            "type": { "const": "browser" },
+            "operation": { "type": "string", "minLength": 1 },
+            "selector": { "type": "string", "minLength": 1 },
+            "url": { "type": "string", "minLength": 1 },
+            "value": true
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  }
+}

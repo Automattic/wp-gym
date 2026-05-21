@@ -251,6 +251,10 @@ function pipelineStepPatches(task) {
 	return '[]';
 }
 
+function terminalActionsEnabled(task) {
+	return task.allowedTools.includes('run_wp_cli');
+}
+
 function artifactExportConfig(task, provider, metadata) {
 	return JSON.stringify({
 		include_job_artifacts: true,
@@ -467,6 +471,8 @@ function resolveMatrix() {
 				runner_workspace: workspaceConfig(task, branchSlug),
 				pipeline_step_patches: pipelineStepPatches(task),
 				flow_step_patches: flowStepPatches(task),
+				enable_terminal_actions: terminalActionsEnabled(task),
+				wp_cli_tool_name: 'run_wp_cli',
 				artifact_export_config: artifactExportConfig(task, provider, rowMetadata),
 				max_turns: task.maxTurns,
 				step_budget: task.stepBudget,
@@ -518,8 +524,10 @@ function checkExpectedShape(matrix, selectedTasks) {
 	const explicitIds = explicitTaskIds();
 	const expectedByTaskSet = {
 		'first-live-run': { rows: 6, workspaceRows: 2 },
+		'visual-builder': { rows: 2, workspaceRows: 0 },
 		smoke: { rows: 2, workspaceRows: 0 },
-		all: { rows: 14, workspaceRows: 4 },
+		'wordpress-investigation': { rows: 2, workspaceRows: 0 },
+		all: { rows: 22, workspaceRows: 6 },
 	};
 	const expected = explicitIds.length === 0 ? expectedByTaskSet[taskSet] : null;
 
@@ -576,6 +584,8 @@ function assertLiveRunMatrix(matrix) {
 			);
 		}
 		assert(row.workload_run_after !== '[]', `${row.task_id} must run a grader`);
+		assert(row.enable_terminal_actions === terminalActionsEnabled(task), `${row.task_id} terminal actions flag mismatch`);
+		assert(row.wp_cli_tool_name === 'run_wp_cli', `${row.task_id} wp_cli_tool_name mismatch`);
 
 		const pipelinePatches = parseJsonField(row, 'pipeline_step_patches');
 		assert(Array.isArray(pipelinePatches) && pipelinePatches.length === 0, `${row.task_id} must not complete from pipeline write side effects`);

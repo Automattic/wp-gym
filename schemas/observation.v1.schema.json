@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/observation.v1.schema.json",
+  "title": "WP Gym Observation v1",
+  "description": "Canonical observation record for replayable episode evidence. See https://github.com/Automattic/wp-gym/issues/80.",
+  "oneOf": [
+    { "$ref": "#/$defs/commandResultObservation" },
+    { "$ref": "#/$defs/logsObservation" },
+    { "$ref": "#/$defs/wpStateObservation" },
+    { "$ref": "#/$defs/filesObservation" },
+    { "$ref": "#/$defs/htmlObservation" },
+    { "$ref": "#/$defs/screenshotObservation" }
+  ],
+  "$defs": {
+    "baseObservation": {
+      "type": "object",
+      "required": ["schema_version", "type"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "type": { "enum": ["command_result", "logs", "wp_state", "files", "html", "screenshot"] },
+        "id": { "type": "string", "minLength": 1 },
+        "metadata": {
+          "type": "object",
+          "description": "Runtime/debug metadata. Reward and success values do not belong here.",
+          "propertyNames": { "not": { "enum": ["reward", "success", "score"] } },
+          "additionalProperties": true
+        }
+      }
+    },
+    "commandResultObservation": {
+      "allOf": [
+        { "$ref": "#/$defs/baseObservation" },
+        {
+          "type": "object",
+          "required": ["type", "action_type", "command", "status", "stdout", "stderr", "timed_out", "error"],
+          "properties": {
+            "type": { "const": "command_result" },
+            "action_type": { "const": "wp_cli" },
+            "command": { "type": "string", "minLength": 1 },
+            "status": { "type": ["integer", "null"] },
+            "stdout": { "type": "string" },
+            "stderr": { "type": "string" },
+            "timeout_ms": { "type": "integer", "minimum": 1 },
+            "timed_out": { "type": "boolean" },
+            "duration_ms": { "type": "integer", "minimum": 0 },
+            "error": {
+              "type": ["object", "null"],
+              "properties": {
+                "code": { "type": "string", "minLength": 1 },
+                "message": { "type": "string", "minLength": 1 }
+              },
+              "required": ["code", "message"],
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "logsObservation": {
+      "allOf": [
+        { "$ref": "#/$defs/baseObservation" },
+        {
+          "type": "object",
+          "required": ["type", "entries"],
+          "properties": {
+            "type": { "const": "logs" },
+            "entries": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["message"],
+                "properties": {
+                  "timestamp": { "type": "string", "format": "date-time" },
+                  "level": { "type": "string", "minLength": 1 },
+                  "message": { "type": "string" }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "wpStateObservation": {
+      "allOf": [
+        { "$ref": "#/$defs/baseObservation" },
+        {
+          "type": "object",
+          "required": ["type", "state"],
+          "properties": {
+            "type": { "const": "wp_state" },
+            "state": { "type": "object", "additionalProperties": true }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "filesObservation": {
+      "allOf": [
+        { "$ref": "#/$defs/baseObservation" },
+        {
+          "type": "object",
+          "required": ["type", "files"],
+          "properties": {
+            "type": { "const": "files" },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["path"],
+                "properties": {
+                  "path": { "type": "string", "minLength": 1 },
+                  "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                  "content": { "type": "string" }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "htmlObservation": {
+      "allOf": [
+        { "$ref": "#/$defs/baseObservation" },
+        {
+          "type": "object",
+          "required": ["type", "html"],
+          "properties": {
+            "type": { "const": "html" },
+            "url": { "type": "string", "minLength": 1 },
+            "html": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "screenshotObservation": {
+      "allOf": [
+        { "$ref": "#/$defs/baseObservation" },
+        {
+          "type": "object",
+          "required": ["type", "mime_type"],
+          "properties": {
+            "type": { "const": "screenshot" },
+            "mime_type": { "enum": ["image/png", "image/jpeg"] },
+            "artifact_path": { "type": "string", "minLength": 1 },
+            "data_base64": { "type": "string", "minLength": 1 }
+          },
+          "oneOf": [
+            { "required": ["artifact_path"] },
+            { "required": ["data_base64"] }
+          ],
+          "additionalProperties": true
+        }
+      ]
+    }
+  }
+}
