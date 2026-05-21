@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../graders/failure-reasons.php';
+
 return static function (): array {
     $page = get_page_by_title('Smoke Page', OBJECT, 'page');
     $has_page = $page instanceof WP_Post;
@@ -20,12 +22,14 @@ return static function (): array {
         ],
     ];
 
+    $checks = wp_gym_add_failure_reasons_to_checks($checks);
     $score = array_sum(array_column($checks, 'score'));
 
     return [
         'success' => $score >= 1,
         'reward' => $score,
         'done' => true,
+        'failure_reasons' => wp_gym_collect_failure_reasons($checks),
         'grade' => [
             'max_score' => 1,
             'score' => $score,

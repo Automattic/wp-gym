@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../failure-reasons.php';
+
 function wp_gym_modern_api_existing_directories( array $directories ): array {
 	$existing = array();
 
@@ -232,52 +234,15 @@ function wp_gym_check_no_speculative_plugin_packaging_metadata( array $options =
 }
 
 function wp_gym_modern_api_failure_reason_for_check( array $check ): string {
-	$id = (string) ( $check['id'] ?? '' );
-
-	$reasons = array(
-		'abilities_api_available'                 => 'abilities_api_unavailable',
-		'abilities_api_lifecycle'                 => 'incorrect_abilities_api_lifecycle',
-		'category_registered'                     => 'missing_ability_category',
-		'ability_registered'                      => 'missing_ability_registration',
-		'site_name_matches'                       => 'output_site_name_mismatch',
-		'post_count_matches'                      => 'output_post_count_mismatch',
-		'exact_output_shape'                      => 'output_shape_mismatch',
-		'plugin_author_supported'                 => 'unsupported_plugin_author',
-		'no_speculative_plugin_packaging_metadata' => 'speculative_plugin_packaging_metadata',
-		'route_registered'                        => 'missing_rest_route',
-		'permission_callback_present'             => 'missing_permission_callback',
-		'status_200'                              => 'rest_status_mismatch',
-		'ok_flag_true'                            => 'output_ok_flag_mismatch',
-	);
-
-	return $reasons[ $id ] ?? $id;
+	return wp_gym_failure_reason_for_check_id( (string) ( $check['id'] ?? '' ) );
 }
 
 function wp_gym_modern_api_normalize_checks( array $checks ): array {
-	foreach ( $checks as &$check ) {
-		if ( ! is_array( $check ) || ! empty( $check['passed'] ) || ! empty( $check['failure_reason'] ) ) {
-			continue;
-		}
-
-		$check['failure_reason'] = wp_gym_modern_api_failure_reason_for_check( $check );
-	}
-	unset( $check );
-
-	return $checks;
+	return wp_gym_add_failure_reasons_to_checks( $checks );
 }
 
 function wp_gym_modern_api_failure_reasons( array $checks ): array {
-	$reasons = array();
-
-	foreach ( $checks as $check ) {
-		if ( ! is_array( $check ) || ! empty( $check['passed'] ) || empty( $check['failure_reason'] ) ) {
-			continue;
-		}
-
-		$reasons[] = (string) $check['failure_reason'];
-	}
-
-	return array_values( array_unique( $reasons ) );
+	return wp_gym_collect_failure_reasons( $checks );
 }
 
 function wp_gym_modern_api_grade( array $checks ): array {

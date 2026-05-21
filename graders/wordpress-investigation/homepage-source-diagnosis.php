@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../failure-reasons.php';
+
 return static function (): array {
 	$show_on_front = (string) get_option( 'show_on_front' );
 	$page_on_front  = (int) get_option( 'page_on_front' );
@@ -194,6 +196,8 @@ function wp_gym_investigation_grade( array $checks ): array {
 	$max_score       = 0.0;
 	$failure_reasons = array();
 
+	$checks = wp_gym_add_failure_reasons_to_checks( $checks );
+
 	foreach ( $checks as &$check ) {
 		$check['passed']    = ! empty( $check['passed'] );
 		$check['score']     = (float) ( $check['score'] ?? 0 );
@@ -201,9 +205,8 @@ function wp_gym_investigation_grade( array $checks ): array {
 		$score             += $check['score'];
 		$max_score         += $check['max_score'];
 
-		if ( ! $check['passed'] ) {
-			$check['failure_reason'] = wp_gym_investigation_failure_reason_for_check( $check );
-			$failure_reasons[]       = $check['failure_reason'];
+		if ( ! $check['passed'] && ! empty( $check['failure_reason'] ) ) {
+			$failure_reasons[] = $check['failure_reason'];
 		}
 	}
 	unset( $check );
@@ -223,16 +226,5 @@ function wp_gym_investigation_grade( array $checks ): array {
 }
 
 function wp_gym_investigation_failure_reason_for_check( array $check ): string {
-	$reasons = array(
-		'final_answer_available'      => 'missing_final_answer_artifact',
-		'used_wp_cli'                 => 'missing_wp_cli_evidence',
-		'show_on_front_reported'      => 'missing_show_on_front_evidence',
-		'page_on_front_reported'      => 'missing_page_on_front_evidence',
-		'diagnosis_correct'           => 'incorrect_homepage_diagnosis',
-		'static_homepage_remediation' => 'missing_static_homepage_remediation',
-	);
-
-	$id = (string) ( $check['id'] ?? '' );
-
-	return $reasons[ $id ] ?? $id;
+	return wp_gym_failure_reason_for_check_id( (string) ( $check['id'] ?? '' ) );
 }
