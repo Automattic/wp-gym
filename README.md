@@ -46,6 +46,9 @@ The `wp-gym` adapter boundary for consuming WP Codebox is documented in
 isolated WordPress runtime substrate; `wp-gym` owns scenario, trace, grader,
 reward, and eval artifact semantics.
 
+Ownership boundaries across `wp-gym`, WP Codebox, Homeboy, Data Machine, and Data
+Machine Code are documented in `docs/ownership-boundaries.md`.
+
 Canonical episode schemas for action, observation, step result, and trace records
 live in `schemas/` and are documented in `docs/episode-contract.md` for issue
 #80. Use `npm run episode-schemas:validate` to compile and smoke-test those
@@ -60,14 +63,13 @@ post metadata and rendered page state without requiring the full Elementor
 runtime in Playground.
 
 The smoke workflow in `.github/workflows/playground-smoke.yml` exercises the
-Playground path and uploads the artifacts emitted by Homeboy Extensions for
-maintainers.
+portable `wp-gym` path and uploads artifacts for maintainers.
 
 Manual side-by-side Data Machine runs are documented in `docs/task-runs.md` and
 live in `.github/workflows/datamachine-live-run.yml`.
 
-The hidden grader handoff from Sandbox Runtime or `wp-codebox` artifacts into
-`wp-gym` PHP graders is documented in `docs/grader-handoff.md`.
+The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
+documented in `docs/grader-handoff.md`.
 
 The local Gym-like `WPGym.make()` / `reset()` / `step()` / `grade()` API is
 documented in `docs/local-api.md`; WordPress scenarios use WP Codebox's native

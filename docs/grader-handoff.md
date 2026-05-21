@@ -2,23 +2,23 @@
 
 Issue: [#89](https://github.com/Automattic/wp-gym/issues/89)
 
-`wp-gym` owns hidden grading and reward policy. Sandbox Runtime, including the
-`wp-codebox` execution path, owns the isolated WordPress runtime, agent execution,
-state capture, and artifact export. The handoff between them is a runner contract:
-runtime state and artifacts become private grader inputs, then `wp-gym` projects the
-grader output into the canonical eval result.
+`wp-gym` owns hidden grading and reward policy. WP Codebox owns the isolated
+WordPress runtime, agent execution, state capture, and artifact export. The
+handoff between them is a runner contract: runtime state and artifacts become
+private grader inputs, then `wp-gym` projects the grader output into the canonical
+eval result.
 
-Sandbox Runtime must not learn benchmark semantics such as hidden graders, model
-visibility, reward thresholds, or failure reason IDs. Those are `wp-gym` and runner
-policy layered above the generic runtime substrate.
+WP Codebox must not learn benchmark semantics such as hidden graders, model
+visibility, reward thresholds, or failure reason IDs. Those are `wp-gym` and
+runner policy layered above the generic runtime substrate.
 
 ## Handoff Flow
 
 1. `wp-gym` resolves a scenario manifest, prompt, private grader file, hidden paths,
    runner workspace policy, and expected artifacts.
-2. The runner starts a Sandbox Runtime task with only the model-visible prompt,
-   writable roots, allowed tools, and runtime limits.
-3. Sandbox Runtime executes the agent in an isolated WordPress environment and
+2. The runner starts a WP Codebox runtime episode with only the model-visible
+   prompt, writable roots, allowed tools, and runtime limits.
+3. WP Codebox executes the agent in an isolated WordPress environment and
    returns task status plus captured runtime state and artifacts.
 4. The runner mounts or references private grader inputs outside the model-visible
    sandbox, restores the final WordPress state, and executes the scenario PHP grader.
@@ -45,7 +45,7 @@ when that artifact is part of the scenario contract.
 Hidden grader files, hidden paths, and model-hidden inputs are `wp-gym`/runner
 policy. For example, `environment.hidden_paths` may hide `graders/`, `scenarios/`,
 `checks/`, or `task-sets/` from the agent workspace, and the runner may mount the
-selected PHP grader only after the agent stops. Sandbox Runtime only enforces the
+selected PHP grader only after the agent stops. WP Codebox only enforces the
 workspace/tool/runtime isolation requested by the runner; it does not know why a
 path is hidden or whether a file is a grader.
 
@@ -85,7 +85,7 @@ it is an explicit scenario check.
 The runner must classify failures before aggregation so scores from different
 failure classes are not conflated:
 
-- Runtime failure: Sandbox Runtime could not start, restore WordPress, execute the
+- Runtime failure: WP Codebox could not start, restore WordPress, execute the
   agent loop, enforce limits, or export required state/artifacts. No PHP grader
   result is authoritative.
 - Agent failure: The runtime completed, but the agent stopped without producing a

@@ -117,8 +117,8 @@ finished.
   report metadata.
 
 Trace validation belongs in `wp-gym`. It can reject malformed action,
-observation, StepResult, or eval artifact records without requiring Sandbox
-Runtime to validate eval semantics.
+observation, StepResult, or eval artifact records without requiring WP Codebox to
+validate eval semantics.
 
 ## Compatibility Gaps
 
@@ -131,6 +131,6 @@ described in runtime terms, for example:
 - A missing artifact type, such as screenshot capture or normalized log bundles.
 - A missing lifecycle hook, such as snapshot before cleanup.
 
-The requested runtime change should stay generic. For example, ask Sandbox
-Runtime for a screenshot artifact, not a visual-grading artifact; ask for a
-WordPress state export, not a `wp-gym` grader input.
+The requested runtime change should stay generic. For example, ask WP Codebox for
+a screenshot artifact, not a visual-grading artifact; ask for a WordPress state
+export, not a `wp-gym` grader input.
