@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "node --check scripts/validate-scenarios.mjs && node --check scripts/resolve-live-run-matrix.mjs && node --check scripts/validate-reward-fixtures.mjs && node --check scripts/validate-episode-schemas.mjs",
     "matrix:live-run": "node scripts/resolve-live-run-matrix.mjs",
-    "matrix:check": "TASK_SET=first-live-run node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=smoke node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=all node scripts/resolve-live-run-matrix.mjs --check",
+    "matrix:check": "TASK_SET=first-live-run node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=visual-builder node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=smoke node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=wordpress-investigation node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=all node scripts/resolve-live-run-matrix.mjs --check",
     "reward-fixtures:validate": "node scripts/validate-reward-fixtures.mjs",
     "episode-schemas:validate": "node scripts/validate-episode-schemas.mjs",
     "validate": "node scripts/validate-scenarios.mjs && npm run episode-schemas:validate",
