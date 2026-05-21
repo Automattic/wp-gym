@@ -48,13 +48,20 @@
     "difficulty_band": "uncalibrated",
     "headline_score_eligible": false,
     "baseline_result_sets": [],
-    "known_shortcuts": ["topic_keyword_stuffing", "minimal_page_shell"],
+    "known_shortcuts": ["topic_keyword_stuffing", "minimal_page_shell", "raw_html_shortcut"],
+    "audit_packet": "../../docs/grader-audit-site-building-community-garden.md",
+    "reward_fixture_ids": [
+      "site-building-community-garden-positive-control",
+      "site-building-community-garden-topic-keyword-stuffing",
+      "site-building-community-garden-minimal-page-shell",
+      "site-building-community-garden-raw-html-shortcut"
+    ],
     "task_contract_level": "wordpress_state_diagnostic",
     "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty"]
   },
   "expected_artifacts": ["wordpress_state", "rendered_site", "grader_result"],
   "expected": {
-    "required_topics": ["plots", "events", "volunteer", "contact"],
+    "required_topics": ["marshside", "garden", "plots", "events", "volunteer", "contact"],
     "quality_criteria": [
       "used_block_theme",
       "theme_json_present",

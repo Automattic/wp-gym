@@ -55,11 +55,38 @@ return static function (): array {
 		)
 	);
 	$required_topics   = array( 'marshside', 'garden', 'plots', 'events', 'volunteer', 'contact' );
+	$section_topics    = array( 'plots', 'events', 'volunteer', 'contact' );
 	$lowercase_content = strtolower( $content );
 	$missing_topics    = array_values(
 		array_filter(
 			$required_topics,
 			static fn( string $topic ): bool => false === strpos( $lowercase_content, $topic )
+		)
+	);
+	$section_text      = array();
+
+	foreach ( $flat_blocks as $block ) {
+		$block_name = (string) ( $block['blockName'] ?? '' );
+
+		if ( ! in_array( $block_name, array( 'core/heading', 'core/buttons', 'core/button' ), true ) ) {
+			continue;
+		}
+
+		$section_text[] = strtolower( wp_strip_all_tags( (string) ( $block['innerHTML'] ?? '' ) ) );
+	}
+
+	$missing_sections = array_values(
+		array_filter(
+			$section_topics,
+			static function ( string $topic ) use ( $section_text ): bool {
+				foreach ( $section_text as $text ) {
+					if ( false !== strpos( $text, $topic ) ) {
+						return false;
+					}
+				}
+
+				return true;
+			}
 		)
 	);
 
@@ -87,10 +114,10 @@ return static function (): array {
 		),
 		array(
 			'id'        => 'required_pages_or_sections',
-			'passed'    => $pages_seen >= 1 && empty( $missing_topics ),
-			'score'     => $pages_seen >= 1 && empty( $missing_topics ) ? 0.18 : 0,
+			'passed'    => $pages_seen >= 1 && empty( $missing_topics ) && empty( $missing_sections ),
+			'score'     => $pages_seen >= 1 && empty( $missing_topics ) && empty( $missing_sections ) ? 0.18 : 0,
 			'max_score' => 0.18,
-			'message'   => empty( $missing_topics ) ? 'Required community garden content is present.' : 'Missing topics: ' . implode( ', ', $missing_topics ),
+			'message'   => empty( $missing_topics ) && empty( $missing_sections ) ? 'Required community garden content is present in editable sections.' : 'Missing topics: ' . implode( ', ', $missing_topics ) . '; missing editable sections: ' . implode( ', ', $missing_sections ),
 		),
 		array(
 			'id'        => 'valid_blocks',
