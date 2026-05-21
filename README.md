@@ -70,5 +70,5 @@ The hidden grader handoff from Sandbox Runtime or `wp-codebox` artifacts into
 `wp-gym` PHP graders is documented in `docs/grader-handoff.md`.
 
 The local Gym-like `WPGym.make()` / `reset()` / `step()` / `grade()` API is
-documented in `docs/local-api.md`; WordPress scenarios require the `wp-codebox`
-CLI on `PATH`, or `WP_CODEBOX_BIN` pointing at the CLI entrypoint.
+documented in `docs/local-api.md`; WordPress scenarios use WP Codebox's native
+runtime episode API.

@@ -40,9 +40,9 @@ The local adapter is intentionally thin. It currently supports:
   scenarios.
 
 `env.runtimePlan()` exports a generic `wp-gym/runtime-plan/v1` record for replay
-and debugging. Normal local execution uses WP Codebox directly; CI orchestration
-can call the same `wp-gym` API or CLI without becoming part of the library
-contract.
+and debugging. Normal local execution uses WP Codebox's native runtime episode
+API directly; CI orchestration can call the same `wp-gym` API or CLI without
+becoming part of the library contract.
 
 ## Demo Command
 

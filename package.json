@@ -20,5 +20,8 @@
   },
   "devDependencies": {
     "ajv": "^8.20.0"
-  }
+  },
+	"dependencies": {
+		"wp-codebox-workspace": "github:chubes4/wp-codebox#main"
+	}
 }
