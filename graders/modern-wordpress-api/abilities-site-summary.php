@@ -6,11 +6,12 @@ return function (): array {
 	$checks = array();
 
 	$plugin_source                = wp_gym_modern_api_submitted_source( array( 'site-tools/site-summary', 'wp_register_ability' ) );
+	$submitted_action_hooks       = wp_gym_modern_api_submitted_action_hooks( $plugin_source );
 	$uses_category_lifecycle      = str_contains( $plugin_source, 'wp_abilities_api_categories_init' );
 	$uses_ability_lifecycle       = str_contains( $plugin_source, 'wp_abilities_api_init' );
-	$uses_unprefixed_lifecycle    = (bool) preg_match( "/add_action\s*\(\s*['\"]abilities_api_init['\"]/", $plugin_source );
+	$uses_unprefixed_lifecycle    = in_array( 'abilities_api_init', $submitted_action_hooks, true );
 	$uses_init_for_ability_source = str_contains( $plugin_source, 'wp_register_ability' )
-		&& (bool) preg_match( "/add_action\s*\(\s*['\"]init['\"]/", $plugin_source );
+		&& in_array( 'init', $submitted_action_hooks, true );
 	$uses_function_exists_guard   = str_contains( $plugin_source, "function_exists( 'wp_register_ability'" )
 		|| str_contains( $plugin_source, 'function_exists( "wp_register_ability"' );
 
