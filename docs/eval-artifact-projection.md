@@ -2,18 +2,18 @@
 
 Issue: [#88](https://github.com/Automattic/wp-gym/issues/88)
 
-`wp-gym` projects generic Sandbox Runtime artifacts into benchmark-specific eval
-results. Sandbox Runtime, published as `wp-codebox`, stays generic: it emits
-runtime metadata, events, command logs, observations, mounts, patches, packages,
-screenshots, transcripts, and replay bundles where available. `wp-gym` adds the
-scenario, task-set, model, runner, prompt, rule, reward, check, and report context.
+`wp-gym` projects generic WP Codebox artifacts into benchmark-specific eval
+results. WP Codebox stays generic: it emits runtime metadata, events, command
+logs, observations, mounts, patches, packages, screenshots, transcripts, and
+replay bundles where available. `wp-gym` adds the scenario, task-set, model,
+runner, prompt, rule, reward, check, and report context.
 
 The versioned JSON schema lives at `schemas/eval-artifact.schema.json` and is
 stored under `metadata.eval_artifact` in runner outputs.
 
 ## Projection Boundary
 
-Sandbox Runtime owns generic runtime facts:
+WP Codebox owns generic runtime facts:
 
 - Artifact bundle ID, schema version, creation time, runtime ID, and environment ID.
 - Event, command, observation, mount, patch, package, screenshot, transcript, and
@@ -33,16 +33,16 @@ The runner owns execution facts:
 - Task-set ID, label, and source manifest path.
 - Grader success, reward, score, checks, failure reasons, and general rule results.
 
-`wp-codebox` must not emit `metadata.eval_artifact`, scenario IDs, task-set IDs,
+WP Codebox must not emit `metadata.eval_artifact`, scenario IDs, task-set IDs,
 reward fields, grader checks, or `wp-gym` failure classifications. The projection
-may reference Sandbox Runtime artifact paths or hashes, but eval semantics are
-added by `wp-gym` or its runner integration.
+may reference WP Codebox artifact paths or hashes, but eval semantics are added by
+`wp-gym` or its runner integration.
 
 ## Failure Classes
 
 The projection keeps infrastructure and task quality failures distinct:
 
-- `runtime_failure`: Sandbox Runtime could not prepare, run, observe, or export the
+- `runtime_failure`: WP Codebox could not prepare, run, observe, or export the
   generic artifact bundle.
 - `agent_failure`: The agent loop failed before a complete task attempt could be
   graded, for example provider errors, missing final response, or exhausted runner
@@ -69,14 +69,14 @@ Each top-level section can include `source_fields` entries with this shape:
 
 Use these owners:
 
-- `sandbox-runtime` for fields copied from generic Sandbox Runtime artifacts.
+- `wp-codebox` for fields copied from generic WP Codebox artifacts.
 - `runner` for Homeboy/runner workflow, model, and fingerprint metadata.
 - `wp-gym` for scenario manifests, task-set manifests, and grader output.
 
 Expected source examples:
 
-- `runtime.artifact_bundle.id` from Sandbox Runtime bundle metadata.
-- `runtime.references.events[]` from Sandbox Runtime event artifacts.
+- `runtime.artifact_bundle.id` from WP Codebox bundle metadata.
+- `runtime.references.events[]` from WP Codebox event artifacts.
 - `runner.provider` and `runner.model` from runner matrix metadata.
 - `runner.bundle_sha256` and `runner.tool_policy_sha256` from runner fingerprints.
 - `scenario.id`, `scenario.rules`, and `scenario.prompt_sha256` from `wp-gym`
@@ -103,7 +103,7 @@ Expected source examples:
   },
   "runtime": {
     "artifact_bundle": {
-      "id": "sandbox-runtime-run-123",
+      "id": "wp-codebox-run-123",
       "schema_version": "1",
       "created_at": "2026-05-20T00:00:00Z",
       "runtime_id": "playground",

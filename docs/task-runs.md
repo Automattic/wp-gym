@@ -1,18 +1,21 @@
 # Task Runs
 
-`wp-gym` uses Homeboy Extensions WordPress Playground workloads as the default
-execution substrate. The repository supplies ordinary user/developer requests,
-task metadata, and private completion checks; Homeboy supplies the disposable
-WordPress runtime, Data Machine runner, generated code PRs, and replay artifacts.
+`wp-gym` owns the task corpus and eval contract: ordinary user/developer
+requests, task metadata, private completion checks, rewards, traces, and reports.
+The default local execution path uses WP Codebox runtime episodes for disposable
+WordPress state. Homeboy supplies CI orchestration, matrix inputs, GitHub
+workflow status, generated code PRs, and replay artifacts for live runs.
 
 The prototype loop is:
 
 1. `wp-gym` selects a task and model matrix.
-2. Homeboy starts a disposable WordPress Playground runtime.
-3. Data Machine runs the task prompt through the selected model.
-4. The model edits only the isolated `current-project` workspace alias.
-5. Hidden PHP checks grade the finished WordPress state after the agent stops.
-6. The runner opens one pull request per task/model with the generated files and
+2. Homeboy starts the CI job and invokes `wp-gym` with the selected task.
+3. `wp-gym` creates a disposable WP Codebox runtime episode.
+4. Data Machine, or another configured actor, runs the task prompt through the
+   selected model.
+5. The model edits only the isolated `current-project` workspace alias.
+6. Hidden PHP checks grade the finished WordPress state after the agent stops.
+7. The runner opens one pull request per task/model with the generated files and
    a report body containing task, model, workflow, score, checks, changed files,
    tool summary, and replay/artifact links.
 
@@ -97,8 +100,8 @@ workspace evidence: `production_build_when_assets_change` passes when no buildab
 assets changed, and reports `production_build_not_run` when CSS/JS/theme assets
 changed without attached production-build evidence.
 
-The grader handoff from Sandbox Runtime or `wp-codebox` artifacts into hidden
-`wp-gym` PHP graders is documented in
+The grader handoff from WP Codebox artifacts into hidden `wp-gym` PHP graders is
+documented in
 [`docs/grader-handoff.md`](grader-handoff.md). That contract treats hidden grader
 files and model-hidden inputs as `wp-gym`/runner policy, preserves the existing
 `success`, `reward`, `grade.checks`, and `failure_reasons` result shape, and keeps
@@ -106,7 +109,7 @@ runtime failures, agent failures, grader failures, and task failures distinct.
 
 The local Gym-like API is documented in [`docs/local-api.md`](local-api.md). It
 uses the same scenario manifests and episode schemas for local experiments while
-leaving full WordPress orchestration and artifact export in the runner layer.
+consuming WP Codebox for WordPress runtime orchestration.
 
 ## Task Contract
 
@@ -126,23 +129,22 @@ The task-family roadmap and acceptance criteria for expanding the corpus are in
 ## CI Run
 
 The GitHub Actions smoke workflow runs the same smoke task on pull requests and
-manual dispatch. Homeboy Extensions emits the derived files next to the Homeboy
-result JSON, and the workflow uploads:
+manual dispatch. Homeboy invokes `wp-gym`, preserves the Homeboy result JSON, and
+the workflow uploads:
 
 - The Homeboy result JSON.
 - JSONL rows for downstream aggregation.
 - A Markdown leaderboard for quick review.
 
 This path intentionally keeps task definitions separate from the agent loop.
-Homeboy Extensions owns the disposable WordPress runtime and artifact shape; an
-agent loop such as Data Machine can drive the same tasks without changing the
-task corpus.
+`wp-gym` owns task and eval semantics, WP Codebox owns the disposable WordPress
+runtime and generic artifact shape, and an agent loop such as Data Machine can
+drive the same tasks without changing the task corpus.
 
-The long-term adapter contract for consuming `wp-codebox` / Sandbox Runtime is
-documented in `docs/sandbox-runtime-adapter-contract.md`. That boundary keeps
-Sandbox Runtime generic while `wp-gym` maps runtime execution, observations, and
-artifacts into eval actions, observations, step results, traces, rewards, and
-reports.
+The long-term adapter contract for consuming WP Codebox is documented in
+`docs/sandbox-runtime-adapter-contract.md`. That boundary keeps WP Codebox
+generic while `wp-gym` maps runtime execution, observations, and artifacts into
+eval actions, observations, step results, traces, rewards, and reports.
 
 ## Data Machine Bundle
 
@@ -241,9 +243,9 @@ parsing the full Homeboy result JSON:
 The versioned eval artifact projection is documented in
 `docs/eval-artifact-projection.md` and defined by
 `schemas/eval-artifact.schema.json`. Per issue
-[#88](https://github.com/Automattic/wp-gym/issues/88), Sandbox Runtime artifacts
-remain generic and `wp-gym` adds the eval-specific scenario, task-set, model,
-grader, and failure-class metadata.
+[#88](https://github.com/Automattic/wp-gym/issues/88), WP Codebox artifacts remain
+generic and `wp-gym` adds the eval-specific scenario, task-set, model, grader,
+and failure-class metadata.
 
 PR comments are not required for the prototype. Comments are useful for adding a
 Homeboy report to a human-authored PR, but here the generated PR is itself the
@@ -259,9 +261,9 @@ with the slugs from `bundle-validator.json`:
 
 Workspace-backed developer tasks can expose the runner-owned `run_wp_cli` tool
 through their scenario `environment.allowed_tools`. The live-run matrix turns on
-Homeboy Extensions terminal actions for those rows, so the agent can run real
-WP-CLI commands against the disposable WP Codebox runtime while wp-gym still
-captures the command output as task evidence.
+terminal actions for those rows, so the agent can run real WP-CLI commands
+against the disposable WP Codebox runtime while `wp-gym` still captures the
+command output as task evidence.
 
 To trigger the first live run:
 
