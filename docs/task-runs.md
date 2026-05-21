@@ -194,6 +194,17 @@ developer API surface with the expected output fields. Shortcode-like markup is
 treated as a quality failure for editable content tasks because it hides structure
 from the block editor.
 
+## Benchmark Readiness Pilot
+
+The benchmark-readiness pilot task set is `task-sets/benchmark-readiness-pilot.json`.
+It exists for issue #9 evidence collection, not headline scoring. It runs a small
+OpenAI plus Anthropic matrix across two Gutenberg/block scenarios, one
+Abilities/API plugin scenario, and one REST/plugin scenario.
+
+Use `docs/benchmark-readiness.md` for the exact dry-run command, live-run command,
+artifact collection steps, pilot summary template, and gates that must be met
+before the matrix can be marked benchmark-ready.
+
 ## WordPress Investigation Task Set
 
 The `wordpress-investigation` task set starts the issue #49 investigation family.

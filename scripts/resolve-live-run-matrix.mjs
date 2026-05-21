@@ -524,6 +524,7 @@ function checkExpectedShape(matrix, selectedTasks) {
 	const explicitIds = explicitTaskIds();
 	const expectedByTaskSet = {
 		'first-live-run': { rows: 6, workspaceRows: 2 },
+		'benchmark-readiness-pilot': { rows: 8, workspaceRows: 4 },
 		'visual-builder': { rows: 2, workspaceRows: 0 },
 		smoke: { rows: 2, workspaceRows: 0 },
 		'wordpress-investigation': { rows: 2, workspaceRows: 0 },

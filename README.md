@@ -68,6 +68,11 @@ portable `wp-gym` path and uploads artifacts for maintainers.
 Manual side-by-side Data Machine runs are documented in `docs/task-runs.md` and
 live in `.github/workflows/datamachine-live-run.yml`.
 
+The benchmark-readiness pilot runbook and evidence plan for issue #9 is in
+`docs/benchmark-readiness.md`. It documents the small OpenAI plus Anthropic
+matrix, safe dry-run checks, live-run command shape, expected artifacts, and the
+remaining gates before results can be called benchmark-ready.
+
 The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
 documented in `docs/grader-handoff.md`.
 
