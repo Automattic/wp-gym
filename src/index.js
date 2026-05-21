@@ -140,6 +140,33 @@ function quoteCliValue(value) {
 	return `'${String(value).replaceAll("'", "'\\''")}'`;
 }
 
+function wpCodeboxBin(options = {}) {
+	return options.wpCodeboxBin || process.env.WP_CODEBOX_BIN || process.env.HOMEBOY_WP_CODEBOX_BIN || 'wp-codebox';
+}
+
+function wpCodeboxCommand(bin) {
+	return bin.endsWith('.js') ? ['node', bin] : [bin];
+}
+
+function jsonFromOutput(output) {
+	const trimmed = output.trim();
+	if (!trimmed) {
+		throw new Error('Expected JSON output, got empty output.');
+	}
+
+	try {
+		return JSON.parse(trimmed);
+	} catch {
+		const start = trimmed.indexOf('{');
+		const end = trimmed.lastIndexOf('}');
+		if (start === -1 || end === -1 || end <= start) {
+			throw new Error(`Expected JSON output, got: ${trimmed}`);
+		}
+
+		return JSON.parse(trimmed.slice(start, end + 1));
+	}
+}
+
 async function loadSchemas(root) {
 	const ajv = new Ajv2020({ allErrors: true, strict: false, validateFormats: false });
 	for (const file of [
@@ -282,6 +309,7 @@ export class WPGymEnvironment {
 		this.nextPostId = 1;
 		this.steps = [];
 		this.lastGrade = null;
+		this.lastRecipeRun = null;
 
 		await mkdir(this.workspaceRoot, { recursive: true });
 		const workspaceTemplate = this.scenario.environment?.workspace_template;
@@ -330,7 +358,7 @@ export class WPGymEnvironment {
 			reward: this.lastGrade ? normalizeGradeReward(this.lastGrade) : { value: 0, success: false, failure_reasons: [] },
 			done: false,
 			telemetry: {
-				runner: 'local-wpgym',
+				runner: this.scenario.environment.action_mode === 'wordpress' ? 'wp-codebox' : 'local-wpgym',
 				duration_ms: Date.now() - started,
 				action_type: normalizedAction.type,
 			},
@@ -356,7 +384,7 @@ export class WPGymEnvironment {
 		return {
 			...grade,
 			telemetry: {
-				runner: 'local-wpgym',
+				runner: this.scenario.environment.action_mode === 'wordpress' ? 'wp-codebox' : 'local-wpgym',
 				duration_ms: Date.now() - started,
 			},
 		};
@@ -390,6 +418,10 @@ export class WPGymEnvironment {
 	}
 
 	async stepWpCli(action) {
+		if (this.scenario.environment.action_mode === 'wordpress') {
+			return await this.stepWpCliWithCodebox(action);
+		}
+
 		const args = shellSplit(action.command);
 		const [entity, operation, ...rest] = args;
 		const { positional, options } = parseWpCliOptions(rest);
@@ -466,6 +498,44 @@ export class WPGymEnvironment {
 		}
 	}
 
+	async stepWpCliWithCodebox(action) {
+		const started = Date.now();
+		const pendingActions = [...this.steps.map((step) => step.action), action];
+		const recipeRun = await this.runWpCodeboxRecipe(pendingActions);
+		this.lastRecipeRun = recipeRun;
+		const execution = recipeRun.executions?.[recipeRun.executions.length - 1];
+
+		if (!recipeRun.success || !execution) {
+			return {
+				schema_version: 1,
+				type: 'command_result',
+				action_type: 'wp_cli',
+				command: action.command,
+				status: 1,
+				stdout: execution?.stdout || '',
+				stderr: execution?.stderr || recipeRun.error?.message || 'WP Codebox did not return an execution result.',
+				timeout_ms: action.timeout_ms,
+				timed_out: false,
+				duration_ms: Date.now() - started,
+				error: { code: 'wp_codebox_wp_cli_error', message: execution?.stderr || recipeRun.error?.message || 'Missing execution result.' },
+			};
+		}
+
+		return {
+			schema_version: 1,
+			type: 'command_result',
+			action_type: 'wp_cli',
+			command: action.command,
+			status: execution.exitCode,
+			stdout: execution.stdout,
+			stderr: execution.stderr,
+			timeout_ms: action.timeout_ms,
+			timed_out: false,
+			duration_ms: Date.parse(execution.finishedAt) - Date.parse(execution.startedAt) || Date.now() - started,
+			error: execution.exitCode === 0 ? null : { code: 'wp_codebox_wp_cli_error', message: execution.stderr || recipeRun.error?.message || 'WP-CLI action failed.' },
+		};
+	}
+
 	async stepFilesystem(action) {
 		const target = this.resolveWorkspacePath(action.path);
 
@@ -535,6 +605,10 @@ export class WPGymEnvironment {
 	}
 
 	async runPhpGrader() {
+		if (this.scenario.environment.action_mode === 'wordpress') {
+			return await this.runPhpGraderWithCodebox();
+		}
+
 		const graderFile = resolveFrom(this.scenarioFile, this.scenario.grader_file);
 		const stateFile = path.join(this.episodeRoot, 'state.json');
 		await writeFile(stateFile, JSON.stringify({ posts: this.posts }, null, 2));
@@ -550,6 +624,91 @@ export class WPGymEnvironment {
 		}
 
 		return JSON.parse(result.stdout);
+	}
+
+	async runPhpGraderWithCodebox() {
+		const graderPath = `/inputs/repo/${repoRelative(this.root, resolveFrom(this.scenarioFile, this.scenario.grader_file))}`;
+		const wrapperFile = path.join(this.episodeRoot, 'grader-wrapper.php');
+		await writeFile(wrapperFile, `<?php
+$grader = require ${JSON.stringify(graderPath)};
+$result = is_callable($grader) ? $grader() : $grader;
+echo json_encode($result, JSON_PRETTY_PRINT);
+`);
+
+		const recipeRun = await this.runWpCodeboxRecipe(
+			this.steps.map((step) => step.action),
+			[{ command: 'wordpress.run-php', args: [`code-file=${wrapperFile}`] }]
+		);
+		this.lastRecipeRun = recipeRun;
+		const execution = recipeRun.executions?.[recipeRun.executions.length - 1];
+
+		if (!recipeRun.success || !execution || execution.exitCode !== 0) {
+			throw new Error(`WP Codebox grader failed: ${execution?.stderr || recipeRun.error?.message || 'Unknown error'}`);
+		}
+
+		return jsonFromOutput(execution.stdout);
+	}
+
+	async runWpCodeboxRecipe(actions, extraSteps = []) {
+		const recipeFile = path.join(this.episodeRoot, `wp-codebox-recipe-${Date.now()}-${Math.random().toString(16).slice(2)}.json`);
+		const artifactsDir = path.join(this.episodeRoot, 'wp-codebox-artifacts');
+		const workflowSteps = actions.map((action) => {
+			if (action.type !== 'wp_cli') {
+				throw new Error(`WP Codebox local runtime only supports wp_cli actions, got ${action.type}.`);
+			}
+
+			return {
+				command: 'wordpress.wp-cli',
+				args: [`command=${action.command}`],
+			};
+		});
+
+		const recipe = {
+			schema: 'wp-codebox/workspace-recipe/v1',
+			runtime: {
+				wp: this.options.wpVersion || this.options.wpCodeboxWordPressVersion || '7.0',
+				blueprint: this.wpCodeboxBlueprint(),
+			},
+			inputs: {
+				mounts: [
+					{
+						source: this.root,
+						target: '/inputs/repo',
+						mode: 'readonly',
+					},
+				],
+			},
+			workflow: {
+				steps: [...workflowSteps, ...extraSteps],
+			},
+		};
+
+		await writeFile(recipeFile, JSON.stringify(recipe, null, 2));
+		const [command, ...prefixArgs] = wpCodeboxCommand(wpCodeboxBin(this.options));
+		const result = await runCommand(command, [
+			...prefixArgs,
+			'recipe-run',
+			'--recipe',
+			recipeFile,
+			'--artifacts',
+			artifactsDir,
+			'--json',
+		], { cwd: this.root, timeoutMs: this.options.wpCodeboxTimeoutMs || 120000 });
+
+		if (result.status !== 0) {
+			throw new Error(`WP Codebox failed: ${result.stderr || result.stdout || result.error?.message}`);
+		}
+
+		return jsonFromOutput(result.stdout);
+	}
+
+	wpCodeboxBlueprint() {
+		const resetFixture = this.scenario.environment.reset_fixture;
+		if (resetFixture && typeof resetFixture === 'object') {
+			return resetFixture;
+		}
+
+		return { steps: [] };
 	}
 
 	findPost(identifier) {

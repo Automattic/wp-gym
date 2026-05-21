@@ -1,23 +1,23 @@
-# Sandbox Runtime Adapter Contract
+# WP Codebox Adapter Contract
 
 This document defines the `wp-gym` adapter boundary for
 [issue #86](https://github.com/Automattic/wp-gym/issues/86) and
 [issue #87](https://github.com/Automattic/wp-gym/issues/87).
 
-`wp-codebox` / Sandbox Runtime is the complete generic runtime substrate for
-isolated WordPress workspaces. It owns runtime creation, input mounts,
-controlled execution, state observation, snapshots, artifact collection, and
-runtime cleanup. It should not learn `wp-gym`, Homeboy, model-eval, benchmark,
-reward, grader, scenario, or task-set concepts.
+WP Codebox is the complete generic runtime substrate for isolated WordPress
+workspaces. It owns runtime creation, input mounts, controlled execution, state
+observation, snapshots, artifact collection, and runtime cleanup. It should not
+learn `wp-gym`, model-eval, benchmark, reward, grader, scenario, or task-set
+concepts.
 
 `wp-gym` owns the evaluation layer. It translates scenario manifests, prompts,
-actions, observations, traces, graders, rewards, and reports onto Sandbox Runtime
+actions, observations, traces, graders, rewards, and reports onto WP Codebox
 primitives and then projects the generic runtime outputs back into `wp-gym` eval
 artifacts.
 
 ## Layer Boundary
 
-Sandbox Runtime provides generic primitives:
+WP Codebox provides generic primitives:
 
 - Create and destroy an isolated WordPress runtime.
 - Mount files, plugins, themes, blueprints, and workspace inputs.
@@ -35,15 +35,15 @@ Sandbox Runtime provides generic primitives:
 - Eval trace projection and validation.
 - Eval artifact shape used by downstream analysis.
 
-The adapter is therefore one-way in dependency terms: `wp-gym` consumes Sandbox
-Runtime. Sandbox Runtime remains generic and does not validate or emit
+The adapter is therefore one-way in dependency terms: `wp-gym` consumes WP
+Codebox. WP Codebox remains generic and does not validate or emit
 `wp-gym`-specific eval fields.
 
 ## Scenario To Runtime Input
 
-The adapter maps a `wp-gym` scenario manifest into Sandbox Runtime setup input:
+The adapter maps a `wp-gym` scenario manifest into WP Codebox setup input:
 
-| `wp-gym` concept | Sandbox Runtime primitive | Notes |
+| `wp-gym` concept | WP Codebox primitive | Notes |
 | --- | --- | --- |
 | Starting WordPress state | Runtime create input and optional blueprint | The adapter chooses the runtime image, WordPress version, and setup blueprint from scenario metadata. |
 | Starter workspace files | Runtime mounts | Files are mounted as ordinary sandbox inputs; runtime does not know why they matter. |
@@ -52,17 +52,16 @@ The adapter maps a `wp-gym` scenario manifest into Sandbox Runtime setup input:
 | Expected artifacts | Artifact collection options | Runtime collects the requested generic artifacts; `wp-gym` decides how to grade them. |
 | Time/tool policy | Runtime execution policy | Generic limits and allowed execution channels stay runtime-shaped, while task policy labels stay in `wp-gym`. |
 
-Existing Homeboy-backed scenarios can keep running while this adapter is
-introduced. Homeboy may remain a caller or orchestration layer, but the contract
-between `wp-gym` and `wp-codebox` should be this generic Sandbox Runtime shape.
+CI orchestration can remain an external caller, but the runtime contract for
+`wp-gym` is the generic WP Codebox recipe and command shape.
 
 ## Actions
 
 `wp-gym` Action is an eval-layer command record. The adapter converts it into a
-generic Sandbox Runtime execution request, then records the action in the eval
+generic WP Codebox execution request, then records the action in the eval
 trace.
 
-| `wp-gym` action type | Sandbox Runtime execution | Runtime output consumed by `wp-gym` |
+| `wp-gym` action type | WP Codebox execution | Runtime output consumed by `wp-gym` |
 | --- | --- | --- |
 | `wp_cli` | Execute a `wp` command in the sandbox | Exit code, stdout, stderr, duration, and emitted artifacts. |
 | `filesystem` | Read, write, patch, or list mounted files through runtime file primitives | File result, file metadata, and changed artifact paths. |
@@ -77,10 +76,10 @@ task id stay outside the runtime request.
 ## Observations
 
 `wp-gym` Observation is the eval-layer view of sandbox state after setup, after an
-action, or at final grading time. The adapter builds it from Sandbox Runtime
+action, or at final grading time. The adapter builds it from WP Codebox
 observation results and selected artifacts.
 
-| `wp-gym` observation source | Sandbox Runtime source | Notes |
+| `wp-gym` observation source | WP Codebox source | Notes |
 | --- | --- | --- |
 | `logs` | Runtime log artifact or log stream snapshot | Includes PHP, WordPress, server, browser, and command logs when enabled. |
 | `wp_state` | Generic WordPress observation command or exported state artifact | The adapter chooses the WordPress-specific query and shapes it for graders. |
@@ -89,7 +88,7 @@ observation results and selected artifacts.
 | `screenshot` | Browser screenshot artifact | Runtime stores the image; `wp-gym` references it from reports or graders. |
 | `command_result` | Execution result from a prior runtime command | Exit code and output become observation evidence, not reward state. |
 
-Sandbox Runtime may expose additional generic observations later. `wp-gym` can
+WP Codebox may expose additional generic observations later. `wp-gym` can
 consume them without requiring the runtime to adopt eval-specific schema names.
 
 ## StepResult
@@ -98,12 +97,12 @@ consume them without requiring the runtime to adopt eval-specific schema names.
 observation cycle. It should contain:
 
 - The accepted `wp-gym` Action record.
-- The Sandbox Runtime execution result projected into `wp-gym` evidence fields.
+- The WP Codebox execution result projected into `wp-gym` evidence fields.
 - The `wp-gym` Observation assembled from runtime observations and artifacts.
 - Eval-only fields such as `reward`, `done`, `success`, `failure_reasons`, and
   grader diagnostics when that step performs grading.
 
-Sandbox Runtime should only return generic execution and observation data. The
+WP Codebox should only return generic execution and observation data. The
 adapter attaches reward and completion semantics after the generic runtime work is
 finished.
 
@@ -111,7 +110,7 @@ finished.
 
 `wp-gym` Trace is the eval-layer replay record. The adapter constructs it from:
 
-- Sandbox Runtime lifecycle events: create, mount, execute, observe, snapshot,
+- WP Codebox lifecycle events: create, mount, execute, observe, snapshot,
   collect artifacts, and destroy.
 - `wp-gym` action and observation projections.
 - Eval-only grader results, reward state, completion state, fingerprints, and
@@ -124,7 +123,7 @@ Runtime to validate eval semantics.
 ## Compatibility Gaps
 
 The adapter should record a compatibility gap when a scenario needs a runtime
-primitive that Sandbox Runtime does not yet expose generically. The gap should be
+primitive that WP Codebox does not yet expose generically. The gap should be
 described in runtime terms, for example:
 
 - A missing execution channel, such as browser interaction.

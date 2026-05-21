@@ -41,10 +41,10 @@ instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.
 
-The `wp-gym` adapter boundary for consuming `wp-codebox` / Sandbox Runtime is
-documented in `docs/sandbox-runtime-adapter-contract.md`. Sandbox Runtime remains
-the generic isolated WordPress runtime substrate; `wp-gym` owns scenario, trace,
-grader, reward, and eval artifact semantics.
+The `wp-gym` adapter boundary for consuming WP Codebox is documented in
+`docs/sandbox-runtime-adapter-contract.md`. WP Codebox remains the generic
+isolated WordPress runtime substrate; `wp-gym` owns scenario, trace, grader,
+reward, and eval artifact semantics.
 
 Canonical episode schemas for action, observation, step result, and trace records
 live in `schemas/` and are documented in `docs/episode-contract.md` for issue
@@ -70,4 +70,5 @@ The hidden grader handoff from Sandbox Runtime or `wp-codebox` artifacts into
 `wp-gym` PHP graders is documented in `docs/grader-handoff.md`.
 
 The local Gym-like `WPGym.make()` / `reset()` / `step()` / `grade()` API is
-documented in `docs/local-api.md`.
+documented in `docs/local-api.md`; WordPress scenarios require the `wp-codebox`
+CLI on `PATH`, or `WP_CODEBOX_BIN` pointing at the CLI entrypoint.
