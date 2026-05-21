@@ -37,6 +37,14 @@ Gutenberg block structure over shortcode markup. The agent-facing request should
 ask for content the site owner can revise in the WordPress editor; the private
 criteria should verify registered blocks and flag shortcode-like markup.
 
+For content migration and media import tasks, prompts can point to source packages
+provided in the task workspace. Manifests should declare the allowed import
+surfaces through `environment.allowed_tools`; WP-CLI, REST API, filesystem staging,
+and browser/UI flows are all acceptable when the scenario enables the required
+tools. Hidden graders should verify final WordPress state separately for content,
+attachment posts, local files, featured image metadata, and stale remote media
+URLs.
+
 ## Reward And Fingerprints
 
 Hidden PHP graders own the reward. Their `checks` array should contain the hard
@@ -89,6 +97,13 @@ workspace evidence: `production_build_when_assets_change` passes when no buildab
 assets changed, and reports `production_build_not_run` when CSS/JS/theme assets
 changed without attached production-build evidence.
 
+The grader handoff from Sandbox Runtime or `wp-codebox` artifacts into hidden
+`wp-gym` PHP graders is documented in
+[`docs/grader-handoff.md`](grader-handoff.md). That contract treats hidden grader
+files and model-hidden inputs as `wp-gym`/runner policy, preserves the existing
+`success`, `reward`, `grade.checks`, and `failure_reasons` result shape, and keeps
+runtime failures, agent failures, grader failures, and task failures distinct.
+
 ## Task Contract
 
 Each task should add:
@@ -100,6 +115,9 @@ Each task should add:
 - Reusable `rules.general` and scenario-specific `rules.task_specific` labels.
 - Optional zero-weight `probes` for behavioral fingerprints.
 - A `homeboy.json` `playground_workloads` entry that wires setup and completion checks.
+
+The task-family roadmap and acceptance criteria for expanding the corpus are in
+[`docs/corpus-expansion-plan.md`](corpus-expansion-plan.md).
 
 ## CI Run
 
@@ -115,6 +133,12 @@ This path intentionally keeps task definitions separate from the agent loop.
 Homeboy Extensions owns the disposable WordPress runtime and artifact shape; an
 agent loop such as Data Machine can drive the same tasks without changing the
 task corpus.
+
+The long-term adapter contract for consuming `wp-codebox` / Sandbox Runtime is
+documented in `docs/sandbox-runtime-adapter-contract.md`. That boundary keeps
+Sandbox Runtime generic while `wp-gym` maps runtime execution, observations, and
+artifacts into eval actions, observations, step results, traces, rewards, and
+reports.
 
 ## Data Machine Bundle
 
@@ -163,6 +187,20 @@ visible content, editable blocks instead of raw fallback markup, and the request
 developer API surface with the expected output fields. Shortcode-like markup is
 treated as a quality failure for editable content tasks because it hides structure
 from the block editor.
+
+## WordPress Investigation Task Set
+
+The `wordpress-investigation` task set starts the issue #49 investigation family.
+These tasks are non-mutating WordPress debugging requests: the model should inspect
+the live site with WP-CLI, keep queries bounded to the requested state, and return
+an evidence-backed answer rather than code changes. Hidden graders can read the
+final response and runner tool artifacts to check that the answer cites the actual
+WordPress state and that WP-CLI was used.
+
+The first task, `wordpress-investigation-homepage-source-diagnosis`, asks why a
+fresh site's homepage is showing latest posts instead of a static page. The hidden
+criteria check for the current `show_on_front` and `page_on_front` option values,
+the diagnosis, the static-homepage remediation, and WP-CLI evidence.
 
 ## Live Data Machine Runs
 
@@ -214,6 +252,12 @@ with the slugs from `bundle-validator.json`:
 - Agent: `wordpress-task-runner`.
 - Pipeline: `wordpress-task-runner-pipeline`.
 - Flow: `wordpress-task-runner-flow`.
+
+Workspace-backed developer tasks can expose the runner-owned `run_wp_cli` tool
+through their scenario `environment.allowed_tools`. The live-run matrix turns on
+Homeboy Extensions terminal actions for those rows, so the agent can run real
+WP-CLI commands against the disposable WP Codebox runtime while wp-gym still
+captures the command output as task evidence.
 
 To trigger the first live run:
 

@@ -1,0 +1,32 @@
+{
+  "id": "visual-builder",
+  "label": "Visual builder diagnostic task set",
+  "issue": "https://github.com/Automattic/wp-gym/issues/85",
+  "description": "A separate diagnostic task set for Elementor-style visual-builder WordPress tasks.",
+  "benchmark_status": "demo",
+  "benchmark": false,
+  "headline_score_eligible": false,
+  "aggregate_score": false,
+  "score_scope": "demo",
+  "task_contract_level": "wordpress_state_diagnostic",
+  "benchmark_blockers": [
+    "demo_task_set",
+    "uncalibrated_difficulty",
+    "missing_baseline_results",
+    "diagnostic_contract_only",
+    "no_full_elementor_runtime"
+  ],
+  "scenario_manifests": [
+    "../scenarios/visual-builder/elementor-hero-refresh.json"
+  ],
+  "tasks": [
+    {
+      "scenario_id": "visual-builder-elementor-hero-refresh",
+      "role": "visual-builder-page-editing",
+      "summary": "Refresh an Elementor-style hero while preserving builder-compatible page state."
+    }
+  ],
+  "notes": [
+    "This first scenario validates Elementor-compatible post metadata and rendered WordPress state without requiring Elementor to run in Playground."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "source": "Harbor Market legacy spring microsite",
+  "legacy_media_host": "legacy.example.test",
+  "items": [
+    {
+      "type": "post",
+      "status": "publish",
+      "title": "Harbor Market Spring Menu",
+      "slug": "harbor-market-spring-menu",
+      "featured_image": "harbor-market-hero.svg",
+      "content": [
+        "Our spring menu opens with a smoked mushroom tart and local asparagus bundles from the morning market.",
+        "Add the harbor-market-hero image near the top of the story and make it the featured image."
+      ],
+      "images": [
+        {
+          "filename": "harbor-market-hero.svg",
+          "title": "Harbor Market Hero",
+          "alt": "Illustration of a spring market table with greens and flowers",
+          "legacy_url": "https://legacy.example.test/uploads/harbor-market-hero.svg"
+        }
+      ]
+    },
+    {
+      "type": "page",
+      "status": "publish",
+      "title": "Catering Gallery",
+      "slug": "catering-gallery",
+      "content": [
+        "Use this page for private event catering notes and a seasonal grazing table highlight.",
+        "Include the catering board image in the editable page content."
+      ],
+      "images": [
+        {
+          "filename": "catering-board.svg",
+          "title": "Catering Board",
+          "alt": "Illustration of a colorful catering board with fruit and bread",
+          "legacy_url": "https://old-harbor-market.invalid/media/catering-board.svg"
+        }
+      ]
+    }
+  ]
+}

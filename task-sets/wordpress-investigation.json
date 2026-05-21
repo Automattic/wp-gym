@@ -1,0 +1,27 @@
+{
+  "id": "wordpress-investigation",
+  "label": "WordPress investigation pilot task set",
+  "issue": "https://github.com/Automattic/wp-gym/issues/49",
+  "description": "A focused pilot set for non-mutating WordPress investigation tasks that require WP-CLI evidence.",
+  "benchmark_status": "pilot",
+  "benchmark": false,
+  "headline_score_eligible": false,
+  "aggregate_score": false,
+  "score_scope": "pilot",
+  "task_contract_level": "wordpress_state_diagnostic",
+  "benchmark_blockers": [
+    "pilot_task_set",
+    "diagnostic_contract_only",
+    "missing_baseline_results"
+  ],
+  "scenario_manifests": [
+    "../scenarios/wordpress-investigation/homepage-source-diagnosis.json"
+  ],
+  "tasks": [
+    {
+      "scenario_id": "wordpress-investigation-homepage-source-diagnosis",
+      "role": "wordpress-investigation",
+      "summary": "Use WP-CLI evidence to explain why a clean site's homepage shows latest posts instead of a static page."
+    }
+  ]
+}
