@@ -39,32 +39,13 @@ if ( ! function_exists( 'wp_gym_media_import_post_content_text' ) ) {
 
 if ( ! function_exists( 'wp_gym_media_import_failure_reason_for_check' ) ) {
 	function wp_gym_media_import_failure_reason_for_check( array $check ): string {
-		$reasons = array(
-			'target_content_exists'       => 'missing_content',
-			'required_content_snippets'   => 'missing_content',
-			'attachment_posts_exist'      => 'missing_attachment_posts',
-			'attachment_files_exist'      => 'missing_attachment_files',
-			'featured_image_restored'     => 'missing_featured_image',
-			'image_blocks_use_local_media' => 'stale_remote_media_url',
-			'no_stale_remote_media_urls'  => 'stale_remote_media_url',
-		);
-
-		$id = (string) ( $check['id'] ?? '' );
-
-		return $reasons[ $id ] ?? wp_gym_failure_reason_for_check( $check );
+		return wp_gym_failure_reason_for_check_id( (string) ( $check['id'] ?? '' ) );
 	}
 }
 
 if ( ! function_exists( 'wp_gym_media_import_grade' ) ) {
 	function wp_gym_media_import_grade( array $checks ): array {
-		foreach ( $checks as &$check ) {
-			if ( ! is_array( $check ) || ! empty( $check['passed'] ) || ! empty( $check['failure_reason'] ) ) {
-				continue;
-			}
-
-			$check['failure_reason'] = wp_gym_media_import_failure_reason_for_check( $check );
-		}
-		unset( $check );
+		$checks = wp_gym_add_failure_reasons_to_checks( $checks );
 
 		return wp_gym_grade( $checks );
 	}
