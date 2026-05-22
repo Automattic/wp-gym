@@ -44,6 +44,7 @@ const knownTaskSetContractLevels = new Set([
 	'benchmark_replay',
 ]);
 const knownScoreScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', 'excluded']);
+const knownProbeTypes = new Set(['rendered_site_design']);
 
 function assertObject(value, label) {
 	if (!value || Array.isArray(value) || typeof value !== 'object') {
@@ -297,6 +298,33 @@ function validateScenarioContract(file, manifest) {
 		}
 		if (manifest.calibration.benchmark_blockers.length > 0) {
 			throw new Error(`${file} benchmark_ready scenarios must not declare benchmark_blockers`);
+		}
+	}
+
+	if (manifest.probes !== undefined) {
+		assertObject(manifest.probes, `${file} probes`);
+		if (manifest.probes.behavioral_fingerprints !== undefined) {
+			if (!Array.isArray(manifest.probes.behavioral_fingerprints)) {
+				throw new Error(`${file} probes.behavioral_fingerprints must be an array`);
+			}
+
+			for (const probe of manifest.probes.behavioral_fingerprints) {
+				assertObject(probe, `${file} behavioral fingerprint probe`);
+				if (typeof probe.id !== 'string' || !/^[a-z0-9_]+$/.test(probe.id)) {
+					throw new Error(`${file} behavioral fingerprint probe id must be snake_case`);
+				}
+				assertKnown(probe.type, knownProbeTypes, `${file} behavioral fingerprint probe type`);
+				if (probe.reward_weight !== 0) {
+					throw new Error(`${file} behavioral fingerprint probe ${probe.id} must declare reward_weight=0`);
+				}
+				if (typeof probe.description !== 'string' || probe.description.length < 1) {
+					throw new Error(`${file} behavioral fingerprint probe ${probe.id} must declare description`);
+				}
+				assertStringArray(probe.dimensions, `${file} behavioral fingerprint probe ${probe.id} dimensions`, {
+					minItems: 1,
+					pattern: /^[a-z0-9_]+$/,
+				});
+			}
 		}
 	}
 }

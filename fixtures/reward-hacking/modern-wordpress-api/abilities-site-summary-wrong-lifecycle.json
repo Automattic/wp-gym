@@ -6,7 +6,7 @@
   "expected_result": "fail",
   "shortcut_id": "source_string_lifecycle_spoof",
   "expected_failure_reasons": [
-    "incorrect_abilities_api_lifecycle",
+    "wrong_api_lifecycle",
     "missing_ability_category",
     "missing_ability_registration"
   ],

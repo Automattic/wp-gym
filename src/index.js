@@ -205,6 +205,142 @@ function normalizeGradeReward(grade) {
 	};
 }
 
+function uniqueSorted(values) {
+	return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function countRegex(value, pattern) {
+	return typeof value === 'string' ? (value.match(pattern) || []).length : 0;
+}
+
+function normalizeFontFamily(value) {
+	return value
+		.replace(/\\["']/g, '')
+		.replace(/["']/g, '')
+		.trim()
+		.replace(/\s+/g, ' ');
+}
+
+function extractFontFamilies(text) {
+	const families = [];
+	for (const match of text.matchAll(/fonts\.googleapis\.com\/css2?[^"')\s]+/gi)) {
+		try {
+			const url = new URL(match[0].startsWith('http') ? match[0] : `https://${match[0]}`);
+			for (const family of url.searchParams.getAll('family')) {
+				families.push(normalizeFontFamily(family.split(':')[0].replaceAll('+', ' ')));
+			}
+		} catch {
+			// Keep parsing local declarations if an import URL is malformed.
+		}
+	}
+
+	for (const match of text.matchAll(/font-family\s*:\s*([^;}]+)/gi)) {
+		for (const family of (match[1] || '').split(',')) {
+			const normalized = normalizeFontFamily(family);
+			if (!/^(sans-serif|serif|monospace|system-ui|inherit|initial|unset)$/i.test(normalized)) {
+				families.push(normalized);
+			}
+		}
+	}
+
+	return uniqueSorted(families);
+}
+
+function extractColors(text) {
+	const hexColors = [...text.matchAll(/#[0-9a-f]{3,8}\b/gi)].map((match) => match[0].toLowerCase());
+	const functionalColors = [...text.matchAll(/\b(?:rgb|rgba|hsl|hsla)\([^)]*\)/gi)].map((match) =>
+		match[0].toLowerCase().replace(/\s+/g, '')
+	);
+	return uniqueSorted([...hexColors, ...functionalColors]);
+}
+
+function includesAny(text, patterns) {
+	return patterns.some((pattern) => pattern.test(text));
+}
+
+function extractMotifs(text) {
+	const motifs = [];
+	const checks = {
+		bento_grid: [/\bbento\b/i],
+		cards_grid: [/\bcard(s)?\b/i, /grid-template-columns/i],
+		code_preview: [/code-window/i, /code-preview/i, /<pre\b/i, /<code\b/i],
+		dashboard_mockup: [/dashboard/i, /metric-card/i, /analytics/i],
+		glow_overlay: [/\bglow\b/i, /blur\(/i, /radial-gradient\(/i],
+		marquee: [/\bmarquee\b/i, /ticker/i],
+		pricing: [/\bpricing\b/i, /\bplans?\b/i],
+		social_proof: [/testimonial/i, /customer/i, /trusted by/i],
+		split_hero: [/split-hero/i, /hero-grid/i],
+		terminal_window: [/terminal/i, /traffic-light/i, /window-chrome/i, /code-window/i],
+	};
+
+	for (const [motif, patterns] of Object.entries(checks)) {
+		if (includesAny(text, patterns)) {
+			motifs.push(motif);
+		}
+	}
+
+	return motifs.sort();
+}
+
+function extractPaletteLabels(text, colors) {
+	const labels = [];
+	const colorText = `${text.toLowerCase()} ${colors.join(' ')}`;
+	if (/purple|violet|indigo|#6|#7|#8|#9|#a/i.test(colorText) && /lime|chartreuse|#bef|#a3e|#ccff|#d9f99d/i.test(colorText)) {
+		labels.push('purple_lime');
+	}
+	if (/orange|amber|coral|#f59|#fb7|#ff8/i.test(colorText)) {
+		labels.push('warm_orange');
+	}
+	if (/cyan|teal|aqua|#06b6|#14b8|#22d3/i.test(colorText)) {
+		labels.push('cyan_teal');
+	}
+	if (/black|charcoal|slate|#0[0-9a-f]{2,6}|#111|#18181b/i.test(colorText)) {
+		labels.push('dark_base');
+	}
+	return labels.sort();
+}
+
+function extractLayoutPatterns(text) {
+	const patterns = [];
+	if (/\bgrid-template-columns\b|\bwp-block-columns\b|\bis-layout-grid\b/i.test(text)) {
+		patterns.push('grid');
+	}
+	if (/\bflex\b|\bis-layout-flex\b/i.test(text)) {
+		patterns.push('flex');
+	}
+	if (/\bhero\b/i.test(text)) {
+		patterns.push('hero');
+	}
+	if (/\bcard(s)?\b/i.test(text)) {
+		patterns.push('cards');
+	}
+	if (/\balignfull\b|\bfull-bleed\b|\bfull-width\b/i.test(text)) {
+		patterns.push('full_width');
+	}
+	return patterns.sort();
+}
+
+function designFingerprintFromDocuments(documents) {
+	const text = documents.map((document) => document.content || '').join('\n');
+	const colors = extractColors(text);
+	const fontFamilies = extractFontFamilies(text);
+
+	return {
+		document_count: documents.length,
+		font_families: fontFamilies,
+		dominant_font_family: fontFamilies[0] || '',
+		color_palette: colors,
+		css_variables: uniqueSorted([...text.matchAll(/--([a-z0-9-]+)\s*:/gi)].map((match) => match[1].toLowerCase())),
+		layout_patterns: extractLayoutPatterns(text),
+		visual_motifs: extractMotifs(text),
+		palette_labels: extractPaletteLabels(text, colors),
+		gradient_count: countRegex(text, /(?:linear|radial|conic)-gradient\(/gi),
+		animation_count: countRegex(text, /@keyframes\b|\banimation(?:-[a-z]+)?\s*:/gi),
+		transition_count: countRegex(text, /\btransition(?:-[a-z]+)?\s*:/gi),
+		dark_theme: /#0[0-9a-f]{2,6}|#111|#18181b|#020617|background(?:-color)?\s*:\s*(?:black|rgb\(0[,\s]+0[,\s]+0\))/i.test(text),
+	};
+}
+
 async function runCommand(command, args, options = {}) {
 	const started = Date.now();
 
@@ -377,12 +513,14 @@ export class WPGymEnvironment {
 		const started = Date.now();
 		const grade = await this.runPhpGrader();
 		this.lastGrade = grade;
+		const behavioralFingerprints = await this.collectBehavioralFingerprints();
 
 		return {
 			...grade,
 			telemetry: {
 				runner: this.scenario.environment.action_mode === 'wordpress' ? 'wp-codebox' : 'local-wpgym',
 				duration_ms: Date.now() - started,
+				...(behavioralFingerprints.length > 0 ? { behavioral_fingerprints: behavioralFingerprints } : {}),
 			},
 		};
 	}
@@ -642,6 +780,71 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 		});
 
 		return jsonFromOutput(execution.stdout);
+	}
+
+	async collectBehavioralFingerprints() {
+		const probes = this.scenario.probes?.behavioral_fingerprints;
+		if (!Array.isArray(probes) || probes.length === 0) {
+			return [];
+		}
+
+		const fingerprints = [];
+		for (const probe of probes) {
+			if (probe?.type !== 'rendered_site_design') {
+				continue;
+			}
+
+			const documents = this.scenario.environment.action_mode === 'wordpress'
+				? await this.collectWordPressDesignDocuments()
+				: this.collectLocalDesignDocuments();
+			fingerprints.push({
+				id: probe.id,
+				type: probe.type,
+				reward_weight: Number(probe.reward_weight || 0),
+				fingerprint: designFingerprintFromDocuments(documents),
+			});
+		}
+
+		return fingerprints;
+	}
+
+	collectLocalDesignDocuments() {
+		return this.posts.map((post) => ({
+			source: `post:${post.ID}`,
+			content: [post.post_title, post.post_content].filter(Boolean).join('\n'),
+		}));
+	}
+
+	async collectWordPressDesignDocuments() {
+		const wrapperFile = path.join(this.episodeRoot, 'design-fingerprint-documents.php');
+		await writeFile(wrapperFile, `<?php
+$documents = array();
+$posts = get_posts(array(
+    'post_type' => array('post', 'page', 'wp_template', 'wp_template_part', 'wp_navigation'),
+    'post_status' => array('publish', 'draft', 'auto-draft'),
+    'numberposts' => 200,
+));
+foreach ($posts as $post) {
+    $documents[] = array(
+        'source' => $post->post_type . ':' . $post->post_name,
+        'content' => $post->post_title . "\n" . $post->post_content,
+    );
+}
+if (function_exists('wp_get_global_stylesheet')) {
+    $documents[] = array('source' => 'global-stylesheet', 'content' => wp_get_global_stylesheet());
+}
+if (function_exists('wp_get_global_settings')) {
+    $documents[] = array('source' => 'global-settings', 'content' => wp_json_encode(wp_get_global_settings()));
+}
+echo wp_json_encode(array('documents' => $documents));
+`);
+
+		const { execution } = await (await this.wpCodeboxEpisode()).step({
+			command: 'wordpress.run-php',
+			args: [`code-file=${wrapperFile}`],
+		});
+		const result = jsonFromOutput(execution.stdout);
+		return Array.isArray(result.documents) ? result.documents : [];
 	}
 
 	async wpCodeboxEpisode() {
