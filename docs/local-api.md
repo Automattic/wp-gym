@@ -28,7 +28,9 @@ await env.close();
   applies it through the local adapter, and returns a canonical step result.
 - `env.grade()` runs the scenario's hidden PHP grader against the current episode
   state and returns the grader's `success`, `reward`, `grade.checks`, and
-  `failure_reasons` envelope.
+  `failure_reasons` envelope. Scenarios that declare zero-weight behavioral
+  fingerprint probes also receive probe output under
+  `telemetry.behavioral_fingerprints`.
 - `env.trace()` returns a canonical replay trace using `schemas/trace.v1.schema.json`.
 - `env.close()` removes temporary episode files.
 
