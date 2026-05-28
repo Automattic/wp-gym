@@ -28,6 +28,17 @@ const criticalReferenceGroups = [
 		refs: (artifact) => artifact.runtime?.references?.events || [],
 	},
 ];
+const expectedArtifactReferenceFields = {
+	wordpress_state: ['runtime.references.observations'],
+	rendered_site: ['runtime.references.screenshots', 'runtime.references.observations'],
+	builder_state: ['runtime.references.observations'],
+	media_library: ['runtime.references.observations', 'runtime.references.packages'],
+	tool_summary: ['runtime.references.commands'],
+	final_response: ['runtime.references.transcript'],
+	workspace_diff: ['runtime.references.patches'],
+	plugin_files: ['runtime.references.packages', 'runtime.references.mounts'],
+	grader_result: ['reports.result_json'],
+};
 
 export function validateLiveArtifact(value, options = {}) {
 	const benchmarkMode = Boolean(options.benchmarkMode);
@@ -64,6 +75,26 @@ export function validateLiveArtifact(value, options = {}) {
 	}
 
 	if (benchmarkMode) {
+		const expectedArtifacts = scenarioExpectedArtifacts(evalArtifact, options);
+		for (const artifact of expectedArtifacts) {
+			const matches = expectedArtifactReferences(evalArtifact, artifact);
+			if (!matches.length) {
+				compatibilityGaps.push(gap(
+					'missing_expected_artifact',
+					'error',
+					`expected_artifacts.${artifact}`,
+					`Benchmark-mode validation requires scenario expected_artifacts entry ${artifact}.`
+				));
+				continue;
+			}
+
+			for (const match of matches) {
+				const check = validateArtifactReference(match.reference, baseDir, match.field, artifact);
+				artifactChecks.push(check);
+				compatibilityGaps.push(...check.gaps);
+			}
+		}
+
 		for (const group of criticalReferenceGroups) {
 			const refs = group.refs(evalArtifact);
 			if (!refs.length) {
@@ -79,11 +110,13 @@ export function validateLiveArtifact(value, options = {}) {
 			for (const reference of refs) {
 				const check = validateArtifactReference(reference, baseDir, group.field);
 				artifactChecks.push(check);
-				if (!check.ok) {
-					compatibilityGaps.push(...check.gaps);
-				}
+				compatibilityGaps.push(...check.gaps);
 			}
 		}
+
+		const gradeAgreement = validateTerminalGradeAgreement(evalArtifact, baseDir);
+		artifactChecks.push(...gradeAgreement.checks);
+		compatibilityGaps.push(...gradeAgreement.gaps);
 	}
 
 	return {
@@ -390,11 +423,86 @@ function validateSchema(value) {
 	};
 }
 
-function validateArtifactReference(reference, baseDir, field) {
+function scenarioExpectedArtifacts(evalArtifact, options) {
+	if (Array.isArray(options.expectedArtifacts)) {
+		return options.expectedArtifacts;
+	}
+	if (Array.isArray(evalArtifact.scenario?.expected_artifacts)) {
+		return evalArtifact.scenario.expected_artifacts;
+	}
+
+	const scenarioId = evalArtifact.scenario?.id;
+	if (!scenarioId) {
+		return [];
+	}
+
+	for (const scenarioFile of collectScenarioFiles(path.join(root, 'scenarios'))) {
+		const manifest = JSON.parse(fs.readFileSync(scenarioFile, 'utf8'));
+		if (manifest.id === scenarioId && Array.isArray(manifest.expected_artifacts)) {
+			return manifest.expected_artifacts;
+		}
+	}
+
+	return [];
+}
+
+function collectScenarioFiles(dir) {
+	const files = [];
+	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+		const entryPath = path.join(dir, entry.name);
+		if (entry.isDirectory()) {
+			files.push(...collectScenarioFiles(entryPath));
+		} else if (entry.isFile() && entry.name.endsWith('.json')) {
+			files.push(entryPath);
+		}
+	}
+	return files;
+}
+
+function expectedArtifactReferences(evalArtifact, artifact) {
+	const matches = [];
+	for (const item of collectArtifactReferences(evalArtifact)) {
+		if (item.reference?.source_field === artifact || item.reference?.kind === artifact) {
+			matches.push(item);
+		}
+	}
+
+	if (matches.length) {
+		return matches;
+	}
+
+	const fields = expectedArtifactReferenceFields[artifact] || [];
+	return collectArtifactReferences(evalArtifact).filter((item) => fields.includes(item.field));
+}
+
+function collectArtifactReferences(evalArtifact) {
+	const references = [];
+	for (const [field, refs] of [
+		['reports.result_json', evalArtifact.reports?.result_json],
+		['reports.replay', evalArtifact.reports?.replay],
+		['runtime.references.events', evalArtifact.runtime?.references?.events],
+		['runtime.references.commands', evalArtifact.runtime?.references?.commands],
+		['runtime.references.observations', evalArtifact.runtime?.references?.observations],
+		['runtime.references.mounts', evalArtifact.runtime?.references?.mounts],
+		['runtime.references.patches', evalArtifact.runtime?.references?.patches],
+		['runtime.references.packages', evalArtifact.runtime?.references?.packages],
+		['runtime.references.screenshots', evalArtifact.runtime?.references?.screenshots],
+		['runtime.references.transcript', evalArtifact.runtime?.references?.transcript],
+		['runtime.references.replay_bundle', evalArtifact.runtime?.references?.replay_bundle],
+	]) {
+		for (const reference of refs || []) {
+			references.push({ field, reference });
+		}
+	}
+	return references;
+}
+
+function validateArtifactReference(reference, baseDir, field, expectedArtifact = null) {
 	const gaps = [];
 	const target = reference?.path_or_url || '';
 	const result = {
 		field,
+		expected_artifact: expectedArtifact,
 		kind: reference?.kind || null,
 		path_or_url: target,
 		local: false,
@@ -442,6 +550,103 @@ function validateArtifactReference(reference, baseDir, field) {
 	}
 
 	return result;
+}
+
+function validateTerminalGradeAgreement(evalArtifact, baseDir) {
+	const checks = [];
+	const gaps = [];
+
+	for (const reference of evalArtifact.reports?.result_json || []) {
+		const target = reference?.path_or_url || '';
+		const check = {
+			field: 'reports.result_json',
+			kind: reference?.kind || null,
+			path_or_url: target,
+			terminal_grade_agreement: false,
+			ok: true,
+			gaps: [],
+		};
+		checks.push(check);
+
+		if (!target || /^https?:\/\//i.test(target)) {
+			continue;
+		}
+
+		const resolved = path.resolve(baseDir, target);
+		if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) {
+			continue;
+		}
+
+		let terminalGrade;
+		try {
+			terminalGrade = extractTerminalGrade(JSON.parse(fs.readFileSync(resolved, 'utf8')));
+		} catch (error) {
+			const item = gap('terminal_grade_unreadable', 'error', 'reports.result_json', `${target} could not be parsed as JSON: ${error.message}`);
+			check.ok = false;
+			check.gaps.push(item);
+			gaps.push(item);
+			continue;
+		}
+
+		if (!terminalGrade) {
+			const item = gap(
+				'terminal_grade_missing',
+				'error',
+				'reports.result_json',
+				`${target} does not contain a grader payload for terminal grade agreement.`
+			);
+			check.ok = false;
+			check.gaps.push(item);
+			gaps.push(item);
+			continue;
+		}
+
+		const expected = stableGradePayload(evalArtifact.grader);
+		const actual = stableGradePayload(terminalGrade);
+		check.terminal_grade_agreement = JSON.stringify(expected) === JSON.stringify(actual);
+		if (!check.terminal_grade_agreement) {
+			const item = gap(
+				'terminal_grade_mismatch',
+				'error',
+				'grader',
+				`${target} terminal grade output does not match metadata.eval_artifact.grader.`
+			);
+			check.ok = false;
+			check.gaps.push(item);
+			gaps.push(item);
+		}
+	}
+
+	return { checks, gaps };
+}
+
+function extractTerminalGrade(value) {
+	return value?.metadata?.eval_artifact?.grader || value?.eval_artifact?.grader || value?.grader || null;
+}
+
+function stableGradePayload(grader = {}) {
+	return stableValue({
+		success: grader.success,
+		reward: grader.reward,
+		failure_reasons: grader.failure_reasons || [],
+		grade: grader.grade || {},
+		checks: grader.checks || [],
+		general_rule_results: grader.general_rule_results || [],
+	});
+}
+
+function stableValue(value) {
+	if (Array.isArray(value)) {
+		return value.map(stableValue);
+	}
+	if (value && typeof value === 'object') {
+		return Object.fromEntries(
+			Object.entries(value)
+				.sort(([left], [right]) => left.localeCompare(right))
+				.map(([key, item]) => [key, stableValue(item)])
+		);
+	}
+	return value;
 }
 
 function validatedFields(artifact) {

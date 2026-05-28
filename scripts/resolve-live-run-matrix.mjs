@@ -410,6 +410,18 @@ function benchmarkRejectReasons(task, taskSet) {
 	if (!Array.isArray(calibration.baseline_result_sets) || calibration.baseline_result_sets.length === 0) {
 		reasons.push('missing_baseline_results');
 	}
+	if (!Array.isArray(calibration.calibration_result_sets) || calibration.calibration_result_sets.length === 0) {
+		reasons.push('missing_calibration_results');
+	}
+	if (!calibration.pass_rate_band || calibration.pass_rate_band === 'uncalibrated') {
+		reasons.push(`pass_rate_band_${calibration.pass_rate_band || 'unknown'}`);
+	}
+	if (!Array.isArray(calibration.confidence_interval_95) || calibration.confidence_interval_95.length !== 2) {
+		reasons.push('missing_confidence_interval');
+	}
+	if (calibration.held_out_private_variants_ready !== true) {
+		reasons.push('held_out_private_variants_not_ready');
+	}
 	if (Array.isArray(calibration.known_shortcuts) && calibration.known_shortcuts.length > 0) {
 		reasons.push('known_reward_shortcut');
 	}

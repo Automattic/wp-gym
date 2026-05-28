@@ -163,6 +163,15 @@ The pilot becomes benchmark-ready only after these gates are complete:
 - Scenario `calibration.difficulty_band` is no longer `uncalibrated`.
 - Known reward shortcuts are either fixed by stronger graders or explicitly kept
   as non-headline diagnostic tasks.
+- Each declared `calibration.known_shortcuts` entry has executable reward-hacking
+  coverage: at least one `adversarial_negative_fixture` for the shortcut and a
+  nearby `positive_control_fixture` whose `covers_shortcut_ids` includes it.
+- Calibration result sets use `schemas/calibration-result.schema.json` and include
+  no-op, heuristic/scripted, cheap-model, frontier-model, repeated-attempt, and
+  human/reference rows before any pass-rate claim is treated as benchmark data.
+- Scenario calibration records `calibration_result_sets`, a calibrated
+  `pass_rate_band`, a 95% confidence interval, and
+  `held_out_private_variants_ready=true` before benchmark mode can pass.
 - Scenario `calibration.task_contract_level` reaches `benchmark_replay` for rows
   that count toward headline scores.
 - The task set flips to `benchmark_status=benchmark_ready`, `benchmark=true`,

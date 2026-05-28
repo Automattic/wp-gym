@@ -108,6 +108,7 @@ function validateFixture(file, fixture, scenarios) {
 	}
 	if (fixture.type === 'positive_control_fixture') {
 		assert(fixture.expected_result === 'pass', `${file} positive_control_fixture must expect pass`);
+		assert(Array.isArray(fixture.covers_shortcut_ids) && fixture.covers_shortcut_ids.length > 0, `${file} positive_control_fixture must declare covers_shortcut_ids`);
 	}
 	if (fixture.expected_result === 'fail') {
 		assert(Array.isArray(fixture.expected_failure_reasons) && fixture.expected_failure_reasons.length > 0, `${file} must declare expected_failure_reasons`);
@@ -126,9 +127,59 @@ function validateFixture(file, fixture, scenarios) {
 			`${file} shortcut_id must be declared in scenario calibration.known_shortcuts`
 		);
 	}
+	if (fixture.type === 'positive_control_fixture') {
+		for (const shortcutId of fixture.covers_shortcut_ids) {
+			assert(
+				Array.isArray(scenario.manifest.calibration?.known_shortcuts) &&
+					scenario.manifest.calibration.known_shortcuts.includes(shortcutId),
+				`${file} covers_shortcut_ids entries must be declared in scenario calibration.known_shortcuts: ${shortcutId}`
+			);
+		}
+	}
 	assert(contentFile.startsWith('fixtures/reward-hacking/'), `${file} content_file must live under fixtures/reward-hacking/`);
 	assert(existsSync(path.join(root, graderFile)), `${file} grader_file does not exist: ${fixture.grader_file}`);
 	assert(existsSync(path.join(root, contentFile)), `${file} content_file does not exist: ${fixture.content_file}`);
+}
+
+function assertShortcutCoverage(fixtures, scenarios) {
+	const coverage = new Map();
+
+	for (const { file, fixture } of fixtures) {
+		if (!coverage.has(fixture.scenario_id)) {
+			coverage.set(fixture.scenario_id, { negative: new Map(), positive: new Map() });
+		}
+
+		const scenarioCoverage = coverage.get(fixture.scenario_id);
+		if (fixture.type === 'adversarial_negative_fixture') {
+			if (!scenarioCoverage.negative.has(fixture.shortcut_id)) {
+				scenarioCoverage.negative.set(fixture.shortcut_id, []);
+			}
+			scenarioCoverage.negative.get(fixture.shortcut_id).push(file);
+		}
+		if (fixture.type === 'positive_control_fixture') {
+			for (const shortcutId of fixture.covers_shortcut_ids) {
+				if (!scenarioCoverage.positive.has(shortcutId)) {
+					scenarioCoverage.positive.set(shortcutId, []);
+				}
+				scenarioCoverage.positive.get(shortcutId).push(file);
+			}
+		}
+	}
+
+	for (const [scenarioId, scenarioCoverage] of coverage.entries()) {
+		const scenario = scenarios.get(scenarioId);
+		assert(scenario, `Reward fixture coverage references unknown scenario_id: ${scenarioId}`);
+		for (const shortcutId of scenario.manifest.calibration?.known_shortcuts || []) {
+			assert(
+				scenarioCoverage.negative.has(shortcutId),
+				`${scenario.file} calibration.known_shortcuts ${shortcutId} needs an adversarial_negative_fixture`
+			);
+			assert(
+				scenarioCoverage.positive.has(shortcutId),
+				`${scenario.file} calibration.known_shortcuts ${shortcutId} needs nearby positive_control_fixture coverage`
+			);
+		}
+	}
 }
 
 function runFixture(file, fixture) {
@@ -166,11 +217,15 @@ function runFixture(file, fixture) {
 const files = await listFixtureFiles();
 assert(files.length > 0, 'Expected at least one reward-hacking fixture.');
 const scenarios = await loadScenarios();
+const fixtures = [];
 
 for (const file of files) {
 	const fixture = JSON.parse(await readFile(path.join(root, file), 'utf8'));
 	validateFixture(file, fixture, scenarios);
+	fixtures.push({ file, fixture });
 	runFixture(file, fixture);
 }
+
+assertShortcutCoverage(fixtures, scenarios);
 
 console.log(`Validated and executed ${files.length} reward-hacking fixture(s).`);

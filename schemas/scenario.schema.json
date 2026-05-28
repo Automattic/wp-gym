@@ -131,6 +131,23 @@
           "type": "array",
           "items": { "type": "string", "minLength": 1 }
         },
+        "calibration_result_sets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "pass_rate_band": {
+          "enum": ["uncalibrated", "too_easy", "easy", "target", "hard", "too_hard"]
+        },
+        "confidence_interval_95": {
+          "type": "array",
+          "prefixItems": [
+            { "type": "number", "minimum": 0, "maximum": 1 },
+            { "type": "number", "minimum": 0, "maximum": 1 }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "held_out_private_variants_ready": { "type": "boolean" },
         "known_shortcuts": {
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }

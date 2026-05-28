@@ -105,26 +105,35 @@ assert(missingProjectionBenchmark.compatibility_gaps.some((item) => item.code ==
 const temp = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-live-artifacts-'));
 try {
 	await writeFile(path.join(temp, 'result.json'), '{"ok":true}\n');
+	await writeFile(path.join(temp, 'result-with-grade.json'), JSON.stringify({ grader: baseArtifact().grader }, null, 2));
 	await writeFile(path.join(temp, 'replay.zip'), 'zip-bytes');
 	await writeFile(path.join(temp, 'events.jsonl'), '{"event":"started"}\n');
+	await writeFile(path.join(temp, 'wordpress-state.json'), '{"posts":[]}\n');
 
 	const benchmarkArtifact = baseArtifact({
 		runtime: {
 			...baseArtifact().runtime,
 			references: {
 				events: [{ kind: 'jsonl', path_or_url: 'events.jsonl', sha256: sha256('{"event":"started"}\n') }],
+				observations: [{ kind: 'wordpress_state', path_or_url: 'wordpress-state.json', sha256: sha256('{"posts":[]}\n') }],
 				replay_bundle: [{ kind: 'zip', path_or_url: 'replay.zip', sha256: sha256('zip-bytes') }],
 			},
 		},
 		reports: {
-			result_json: [{ kind: 'json', path_or_url: 'result.json', sha256: sha256('{"ok":true}\n') }],
+			result_json: [{ kind: 'json', path_or_url: 'result-with-grade.json', sha256: sha256(JSON.stringify({ grader: baseArtifact().grader }, null, 2)) }],
 		},
 	});
 
 	const benchmarkResult = validateLiveArtifact({ metadata: { eval_artifact: benchmarkArtifact } }, { benchmarkMode: true, baseDir: temp });
 	assert.equal(benchmarkResult.ok, true);
-	assert.equal(benchmarkResult.artifact_checks.length, 3);
-	assert.equal(benchmarkResult.artifact_checks.every((check) => check.hashable), true);
+	assert(benchmarkResult.artifact_checks.length >= 5);
+	assert.equal(benchmarkResult.artifact_checks.filter((check) => 'hashable' in check).every((check) => check.hashable), true);
+
+	const missingGradePayload = structuredClone(benchmarkArtifact);
+	missingGradePayload.reports.result_json[0] = { kind: 'json', path_or_url: 'result.json', sha256: sha256('{"ok":true}\n') };
+	const missingGrade = validateLiveArtifact(missingGradePayload, { benchmarkMode: true, baseDir: temp });
+	assert.equal(missingGrade.ok, false);
+	assert(missingGrade.compatibility_gaps.some((item) => item.code === 'terminal_grade_missing'));
 
 	const missingReplay = validateLiveArtifact(baseArtifact(), { benchmarkMode: true, baseDir: temp });
 	assert.equal(missingReplay.ok, false);
@@ -135,6 +144,51 @@ try {
 	const mismatch = validateLiveArtifact(mismatchedHash, { benchmarkMode: true, baseDir: temp });
 	assert.equal(mismatch.ok, false);
 	assert(mismatch.compatibility_gaps.some((item) => item.code === 'artifact_hash_mismatch'));
+
+	const missingExpectedArtifact = structuredClone(benchmarkArtifact);
+	missingExpectedArtifact.runtime.references.observations = [];
+	const missingExpected = validateLiveArtifact(missingExpectedArtifact, { benchmarkMode: true, baseDir: temp });
+	assert.equal(missingExpected.ok, false);
+	assert(missingExpected.compatibility_gaps.some((item) => item.code === 'missing_expected_artifact'));
+
+	const missingLocalArtifact = structuredClone(benchmarkArtifact);
+	missingLocalArtifact.runtime.references.observations[0].path_or_url = 'missing-wordpress-state.json';
+	const missingLocal = validateLiveArtifact(missingLocalArtifact, { benchmarkMode: true, baseDir: temp });
+	assert.equal(missingLocal.ok, false);
+	assert(missingLocal.compatibility_gaps.some((item) => item.code === 'missing_local_artifact'));
+
+	const remoteArtifact = structuredClone(benchmarkArtifact);
+	remoteArtifact.runtime.references.observations[0] = { kind: 'wordpress_state', path_or_url: 'https://example.com/wordpress-state.json' };
+	const remote = validateLiveArtifact(remoteArtifact, { benchmarkMode: true, baseDir: temp });
+	assert.equal(remote.ok, true);
+	assert(remote.compatibility_gaps.some((item) => item.code === 'remote_artifact_not_hashable_locally'));
+
+	const missingHash = structuredClone(benchmarkArtifact);
+	delete missingHash.runtime.references.observations[0].sha256;
+	const noHash = validateLiveArtifact(missingHash, { benchmarkMode: true, baseDir: temp });
+	assert.equal(noHash.ok, false);
+	assert(noHash.compatibility_gaps.some((item) => item.code === 'missing_artifact_hash'));
+
+	const gradeMismatchArtifact = structuredClone(benchmarkArtifact);
+	await writeFile(path.join(temp, 'grade-mismatch.json'), JSON.stringify({
+		grader: {
+			...baseArtifact().grader,
+			checks: [{ id: 'semantic_blocks', passed: true, score: 1, max_score: 1, failure_reason: null, message: 'changed', evidence: { source: 'fixture' } }],
+		},
+	}, null, 2));
+	gradeMismatchArtifact.reports.result_json[0] = {
+		kind: 'json',
+		path_or_url: 'grade-mismatch.json',
+		sha256: sha256(JSON.stringify({
+			grader: {
+				...baseArtifact().grader,
+				checks: [{ id: 'semantic_blocks', passed: true, score: 1, max_score: 1, failure_reason: null, message: 'changed', evidence: { source: 'fixture' } }],
+			},
+		}, null, 2)),
+	};
+	const gradeMismatch = validateLiveArtifact(gradeMismatchArtifact, { benchmarkMode: true, baseDir: temp });
+	assert.equal(gradeMismatch.ok, false);
+	assert(gradeMismatch.compatibility_gaps.some((item) => item.code === 'terminal_grade_mismatch'));
 } finally {
 	await rm(temp, { recursive: true, force: true });
 }
