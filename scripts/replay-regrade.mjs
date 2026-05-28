@@ -1,11 +1,15 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import Ajv2020 from 'ajv/dist/2020.js';
 import { validateLiveArtifact, unwrapEvalArtifact } from './validate-live-artifacts.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const replayCriticalStateKeys = ['wordpress_state', 'wp_state', 'state', 'state_json'];
+const replayCriticalTraceKeys = ['replay_trace', 'trace', 'episode_trace', 'actions', 'action_trace'];
+const replayableActionTypes = ['wp_cli', 'filesystem', 'rest'];
 
 function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -45,6 +49,10 @@ function isRemoteReference(target) {
 
 function gap(code, severity, field, message) {
 	return { code, severity, field, message };
+}
+
+function sha256File(file) {
+	return createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 }
 
 function normalizeReferenceList(refs) {
@@ -87,6 +95,53 @@ function findLocalStateReference(artifact, baseDir) {
 		}
 	}
 
+	return null;
+}
+
+function findLocalTraceReference(artifact, baseDir) {
+	const references = collectArtifactReferences(artifact);
+	const candidates = references.filter(({ key, reference }) => {
+		const target = reference?.path_or_url || '';
+		return replayCriticalTraceKeys.includes(key)
+			|| /(?:^|[-_/])(episode-)?(?:replay-)?trace(?:[-_.]|$)/i.test(target)
+			|| /(?:^|[-_/])actions(?:[-_.]|$)/i.test(target)
+			|| /replay_trace|episode_trace/i.test(reference?.source_field || '');
+	});
+
+	for (const candidate of candidates) {
+		const target = candidate.reference?.path_or_url || '';
+		if (!target || isRemoteReference(target)) {
+			continue;
+		}
+
+		const resolved = path.resolve(baseDir, target);
+		if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
+			return { ...candidate, resolved };
+		}
+	}
+
+	return null;
+}
+
+function validateReferenceHash(referenceInfo) {
+	const declared = referenceInfo.reference?.sha256 || null;
+	const computed = sha256File(referenceInfo.resolved);
+	if (declared && declared !== computed) {
+		return gap(
+			'artifact_hash_mismatch',
+			'error',
+			`${referenceInfo.section}.${referenceInfo.key}`,
+			`${referenceInfo.reference.path_or_url} sha256 does not match file contents.`
+		);
+	}
+	if (!declared) {
+		return gap(
+			'missing_artifact_hash',
+			'error',
+			`${referenceInfo.section}.${referenceInfo.key}`,
+			`${referenceInfo.reference.path_or_url} is local and hashable but does not declare sha256.`
+		);
+	}
 	return null;
 }
 
@@ -141,6 +196,107 @@ function compareGrades(expectedGrade, actualGrade) {
 	}
 
 	return { ok: mismatches.length === 0, expected, actual, mismatches };
+}
+
+function createTraceValidator() {
+	const ajv = new Ajv2020({ allErrors: true, strict: false, validateFormats: false });
+	for (const file of [
+		'schemas/action.v1.schema.json',
+		'schemas/observation.v1.schema.json',
+		'schemas/step-result.v1.schema.json',
+		'schemas/trace.v1.schema.json',
+	]) {
+		ajv.addSchema(readJson(path.join(root, file)));
+	}
+	return ajv.getSchema('https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/trace.v1.schema.json');
+}
+
+function formatAjvErrors(errors = []) {
+	return errors.map((error) => `${error.instancePath || '/'} ${error.message}`).join('; ');
+}
+
+function auditReplayTrace(artifact, traceReference) {
+	const trace = readJson(traceReference.resolved);
+	const traceSchema = createTraceValidator();
+	const gaps = [];
+	const unsupportedActions = [];
+
+	if (!traceSchema(trace)) {
+		gaps.push(gap(
+			'trace_schema_mismatch',
+			'error',
+			`${traceReference.section}.${traceReference.key}`,
+			`Replay trace does not match trace.v1 schema: ${formatAjvErrors(traceSchema.errors)}`
+		));
+		return { ok: false, trace, gaps, unsupported_actions: unsupportedActions };
+	}
+
+	if (trace.scenario_id !== artifact.scenario?.id) {
+		gaps.push(gap(
+			'trace_scenario_mismatch',
+			'error',
+			`${traceReference.section}.${traceReference.key}.scenario_id`,
+			`Replay trace scenario_id ${trace.scenario_id} does not match artifact scenario ${artifact.scenario?.id || '(missing)'}.`
+		));
+	}
+
+	if (!trace.steps.length) {
+		gaps.push(gap(
+			'missing_replay_actions',
+			'error',
+			`${traceReference.section}.${traceReference.key}.steps`,
+			'Replay trace must include at least one canonical action/result step.'
+		));
+	}
+
+	for (const [index, step] of trace.steps.entries()) {
+		if (step.step_index !== index) {
+			gaps.push(gap(
+				'trace_step_order_mismatch',
+				'error',
+				`${traceReference.section}.${traceReference.key}.steps[${index}].step_index`,
+				`Replay trace step_index ${step.step_index} should equal ordered position ${index}.`
+			));
+		}
+
+		if (!trace.metadata.allowed_action_types.includes(step.action.type)) {
+			gaps.push(gap(
+				'trace_action_not_allowed',
+				'error',
+				`${traceReference.section}.${traceReference.key}.steps[${index}].action.type`,
+				`Action type ${step.action.type} is not listed in trace metadata.allowed_action_types.`
+			));
+		}
+
+		if (!replayableActionTypes.includes(step.action.type)) {
+			unsupportedActions.push({ step_index: index, action_type: step.action.type });
+			gaps.push(gap(
+				'non_replayable_action_type',
+				'warning',
+				`${traceReference.section}.${traceReference.key}.steps[${index}].action.type`,
+				`Action type ${step.action.type} is preserved in the trace but is not replayed by this local regrade harness yet.`
+			));
+		}
+
+		if (step.action.type === 'wp_cli') {
+			const observation = step.result?.observation || {};
+			if (observation.type !== 'command_result' || observation.action_type !== 'wp_cli' || observation.command !== step.action.command) {
+				gaps.push(gap(
+					'trace_action_result_mismatch',
+					'error',
+					`${traceReference.section}.${traceReference.key}.steps[${index}]`,
+					'wp_cli actions must be paired with a command_result observation for the same command.'
+				));
+			}
+		}
+	}
+
+	return {
+		ok: !gaps.some((item) => item.severity === 'error'),
+		trace,
+		gaps,
+		unsupported_actions: unsupportedActions,
+	};
 }
 
 function runTerminalGrader(scenarioInfo, stateFile, options = {}) {
@@ -206,6 +362,24 @@ export function replayRegradeArtifactFile(file, options = {}) {
 		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, replay: null };
 	}
 
+	const traceReference = findLocalTraceReference(artifact, baseDir);
+	let traceAudit = null;
+	if (!traceReference) {
+		compatibilityGaps.push(gap(
+			'missing_replay_trace_evidence',
+			'error',
+			'runtime.references.replay_trace or reports.replay',
+			'Replay/regrade requires a local canonical episode trace with ordered actions and observations.'
+		));
+	} else {
+		const hashGap = validateReferenceHash(traceReference);
+		if (hashGap) {
+			compatibilityGaps.push(hashGap);
+		}
+		traceAudit = auditReplayTrace(artifact, traceReference);
+		compatibilityGaps.push(...traceAudit.gaps);
+	}
+
 	const graderRun = runTerminalGrader(scenarioInfo, stateReference.resolved, options);
 	if (!graderRun.ok) {
 		compatibilityGaps.push(gap('terminal_grader_failed', 'error', 'grader', graderRun.error));
@@ -224,12 +398,19 @@ export function replayRegradeArtifactFile(file, options = {}) {
 
 	return {
 		file,
-		ok: validation.ok && comparison.ok && !compatibilityGaps.some((item) => item.severity === 'error'),
+		ok: validation.ok && comparison.ok && traceAudit?.ok !== false && !compatibilityGaps.some((item) => item.severity === 'error'),
 		validation,
 		compatibility_gaps: compatibilityGaps,
 		replay: {
+			phase: 'trace_audit_plus_state_regrade',
 			scenario_file: repoRelative(scenarioInfo.file),
 			grader_file: repoRelative(path.resolve(path.dirname(scenarioInfo.file), scenarioInfo.scenario.grader_file)),
+			trace_reference: traceReference ? {
+				field: `${traceReference.section}.${traceReference.key}`,
+				path_or_url: traceReference.reference.path_or_url,
+				step_count: traceAudit?.trace?.steps?.length || 0,
+				unsupported_actions: traceAudit?.unsupported_actions || [],
+			} : null,
 			state_reference: {
 				field: `${stateReference.section}.${stateReference.key}`,
 				path_or_url: stateReference.reference.path_or_url,
