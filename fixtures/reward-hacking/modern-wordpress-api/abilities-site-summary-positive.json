@@ -3,6 +3,7 @@
   "scenario_id": "modern-wordpress-api-abilities-site-summary",
   "grader_file": "graders/modern-wordpress-api/abilities-site-summary.php",
   "type": "positive_control_fixture",
+  "covers_shortcut_ids": ["source_string_lifecycle_spoof", "hard_coded_clean_site_state"],
   "expected_result": "pass",
   "description": "Registers the requested Abilities API category and ability on the documented lifecycle hooks and returns the exact site summary shape.",
   "fixture_runtime": "modern_wordpress_api",

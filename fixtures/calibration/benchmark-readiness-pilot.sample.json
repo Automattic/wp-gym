@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "benchmark-readiness-pilot-sample",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-27T00:00:00Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/120"
+  },
+  "rows": [
+    {
+      "row_type": "no_op",
+      "label": "No-op baseline",
+      "attempts": 3,
+      "passes": 0,
+      "pass_rate": 0,
+      "mean_reward": 0
+    },
+    {
+      "row_type": "heuristic_scripted",
+      "label": "Scripted fixture baseline",
+      "attempts": 3,
+      "passes": 3,
+      "pass_rate": 1,
+      "mean_reward": 1
+    },
+    {
+      "row_type": "cheap_model",
+      "label": "Cheap model calibration row",
+      "provider": "openai",
+      "model": "gpt-5.4-mini",
+      "attempts": 5,
+      "passes": 2,
+      "pass_rate": 0.4,
+      "mean_reward": 0.46
+    },
+    {
+      "row_type": "frontier_model",
+      "label": "Frontier model calibration row",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "attempts": 5,
+      "passes": 4,
+      "pass_rate": 0.8,
+      "mean_reward": 0.84
+    },
+    {
+      "row_type": "repeated_attempts",
+      "label": "Repeated-attempt stability row",
+      "provider": "anthropic",
+      "model": "claude-opus-4-7",
+      "attempts": 10,
+      "passes": 7,
+      "pass_rate": 0.7,
+      "mean_reward": 0.73
+    },
+    {
+      "row_type": "human_reference",
+      "label": "Human/reference row",
+      "attempts": 3,
+      "passes": 3,
+      "pass_rate": 1,
+      "mean_reward": 1
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "uncalibrated",
+    "confidence_interval_95": [0.38, 0.86],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "keep_pilot",
+    "blockers": ["sample_only", "missing_real_calibration_run", "held_out_private_variants_not_ready"]
+  }
+}
