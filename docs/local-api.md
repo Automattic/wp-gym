@@ -10,7 +10,7 @@ used by CI runners.
 import { WPGym } from './src/index.js';
 
 const env = await WPGym.make('block-markup-no-fallback-pricing-section');
-const obs = await env.reset();
+const obs = await env.reset({ seed: 1234 });
 const result = await env.step({
   type: 'wp_cli',
   command: "post create --post_type=page --post_title='Simple Pricing Page' --post_content='<blocks>'",
@@ -23,7 +23,9 @@ await env.close();
 ## Contract
 
 - `WPGym.make(scenarioId, options)` loads one scenario manifest from `scenarios/`.
-- `env.reset()` creates an isolated local episode and returns an observation.
+- `env.reset(options)` creates an isolated local episode and returns an
+  observation. Pass `{ seed }` when a model loop needs deterministic reset
+  metadata and a stable seeded `episode_id` for trace comparison.
 - `env.step(action)` validates the action against `schemas/action.v1.schema.json`,
   applies it through the local adapter, and returns a canonical step result.
 - `env.grade()` runs the scenario's hidden PHP grader against the current episode
@@ -33,6 +35,20 @@ await env.close();
   `telemetry.behavioral_fingerprints`.
 - `env.trace()` returns a canonical replay trace using `schemas/trace.v1.schema.json`.
 - `env.close()` removes temporary episode files.
+
+Seeded resets do not make every underlying WordPress/runtime behavior
+deterministic yet, but they do provide a stable contract surface for RL loops:
+
+```js
+const first = await env.reset({ seed: 1234 });
+const second = await env.reset({ seed: 1234 });
+
+console.assert(first.state.episode_id === second.state.episode_id);
+console.assert(first.state.reset_seed === '1234');
+
+const trace = await env.trace();
+console.assert(trace.metadata.reset_seed === '1234');
+```
 
 The local adapter is intentionally thin. It currently supports:
 
