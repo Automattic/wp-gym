@@ -32,6 +32,7 @@ const knownRewardTypes = new Set(['terminal_php_grader']);
 const knownCalibrationStatuses = new Set(['demo', 'pilot', 'calibrating', 'benchmark_ready', 'excluded']);
 const knownBenchmarkScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', 'excluded']);
 const knownDifficultyBands = new Set(['uncalibrated', 'smoke', 'easy', 'medium', 'hard']);
+const knownPassRateBands = new Set(['uncalibrated', 'too_easy', 'easy', 'target', 'hard', 'too_hard']);
 const knownTaskContractLevels = new Set([
 	'wordpress_state_diagnostic',
 	'workspace_diff_diagnostic',
@@ -276,6 +277,28 @@ function validateScenarioContract(file, manifest) {
 		throw new Error(`${file} calibration.headline_score_eligible must be a boolean`);
 	}
 	assertStringArray(manifest.calibration.baseline_result_sets, `${file} calibration.baseline_result_sets`);
+	if (manifest.calibration.calibration_result_sets !== undefined) {
+		assertStringArray(manifest.calibration.calibration_result_sets, `${file} calibration.calibration_result_sets`);
+	}
+	if (manifest.calibration.pass_rate_band !== undefined) {
+		assertKnown(manifest.calibration.pass_rate_band, knownPassRateBands, `${file} calibration.pass_rate_band`);
+	}
+	if (manifest.calibration.confidence_interval_95 !== undefined) {
+		if (
+			!Array.isArray(manifest.calibration.confidence_interval_95) ||
+			manifest.calibration.confidence_interval_95.length !== 2 ||
+			!manifest.calibration.confidence_interval_95.every((value) => typeof value === 'number' && value >= 0 && value <= 1) ||
+			manifest.calibration.confidence_interval_95[0] > manifest.calibration.confidence_interval_95[1]
+		) {
+			throw new Error(`${file} calibration.confidence_interval_95 must be an ordered [low, high] pair between 0 and 1`);
+		}
+	}
+	if (
+		manifest.calibration.held_out_private_variants_ready !== undefined &&
+		typeof manifest.calibration.held_out_private_variants_ready !== 'boolean'
+	) {
+		throw new Error(`${file} calibration.held_out_private_variants_ready must be a boolean`);
+	}
 	assertStringArray(manifest.calibration.known_shortcuts, `${file} calibration.known_shortcuts`, {
 		pattern: /^[a-z0-9_]+$/,
 	});
@@ -289,6 +312,18 @@ function validateScenarioContract(file, manifest) {
 		}
 		if (manifest.calibration.baseline_result_sets.length < 1) {
 			throw new Error(`${file} benchmark_ready scenarios must declare baseline_result_sets`);
+		}
+		if (!Array.isArray(manifest.calibration.calibration_result_sets) || manifest.calibration.calibration_result_sets.length < 1) {
+			throw new Error(`${file} benchmark_ready scenarios must declare calibration_result_sets`);
+		}
+		if (!knownPassRateBands.has(manifest.calibration.pass_rate_band) || manifest.calibration.pass_rate_band === 'uncalibrated') {
+			throw new Error(`${file} benchmark_ready scenarios must declare a calibrated pass_rate_band`);
+		}
+		if (!Array.isArray(manifest.calibration.confidence_interval_95)) {
+			throw new Error(`${file} benchmark_ready scenarios must declare confidence_interval_95`);
+		}
+		if (manifest.calibration.held_out_private_variants_ready !== true) {
+			throw new Error(`${file} benchmark_ready scenarios must declare held_out_private_variants_ready=true`);
 		}
 		if (manifest.calibration.known_shortcuts.length > 0) {
 			throw new Error(`${file} benchmark_ready scenarios must not declare known_shortcuts`);

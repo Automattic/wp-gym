@@ -254,9 +254,9 @@ parsing the full Homeboy result JSON:
 The versioned eval artifact projection is documented in
 `docs/eval-artifact-projection.md` and defined by
 `schemas/eval-artifact.schema.json`. Per issue
-[#88](https://github.com/Automattic/wp-gym/issues/88), WP Codebox artifacts remain
-generic and `wp-gym` adds the eval-specific scenario, task-set, model, grader,
-and failure-class metadata.
+[#117](https://github.com/Automattic/wp-gym/issues/117), WP Codebox artifacts and
+Homeboy sealed artifacts remain runner/runtime evidence while `wp-gym` owns the
+canonical scenario, task-set, model, grader, and failure-class row semantics.
 
 PR comments are not required for the prototype. Comments are useful for adding a
 Homeboy report to a human-authored PR, but here the generated PR is itself the

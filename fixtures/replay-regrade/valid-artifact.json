@@ -2,7 +2,7 @@
   "schema_version": 1,
   "projection": {
     "name": "wp-gym-eval-artifact",
-    "issue": "https://github.com/Automattic/wp-gym/issues/88",
+    "issue": "https://github.com/Automattic/wp-gym/issues/117",
     "created_at": "2026-05-27T00:00:00Z"
   },
   "status": {
@@ -34,9 +34,9 @@
           "sha256": "da2a5bf59c092dc2dfed37eee734b5ee9c42dffefa45a16fa14a3926683955d0"
         }
       ],
-      "wordpress_state": [
+      "observations": [
         {
-          "kind": "json",
+          "kind": "wordpress_state",
           "path_or_url": "wordpress-state.json",
           "sha256": "0f8d62a8040b4b16ef6fb3e9420f3636e31e91d06678d4057582c133e5a60702"
         }
@@ -127,7 +127,7 @@
       {
         "kind": "json",
         "path_or_url": "result.json",
-        "sha256": "7f840dad4d7f06f74faf166ed7ac3af75f849988b927fe187f4a61197ee31e05"
+          "sha256": "a8a4828f1c7e747d9ebec1e7279628c09625145e43b88eab7a04c0ef2d8ea796"
       }
     ]
   }

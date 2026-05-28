@@ -1,0 +1,12 @@
+{
+  "id": "block-markup-nested-layout-blocks-shallow-required-text",
+  "scenario_id": "block-markup-nested-layout-blocks",
+  "grader_file": "graders/block-markup/nested-layout-blocks.php",
+  "type": "adversarial_negative_fixture",
+  "shortcut_id": "shallow_required_text",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["layout_structure_mismatch"],
+  "post_title": "Community Services Overview",
+  "description": "A shallow control that includes required words and blocks but misses the required group > columns > column nesting.",
+  "content_file": "fixtures/reward-hacking/block-markup/nested-layout-blocks-block-count-stuffing.wp.html"
+}

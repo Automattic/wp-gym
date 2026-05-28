@@ -21,7 +21,7 @@ const temp = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-replay-regrade-'));
 try {
 	const missingStateFile = path.join(temp, 'missing-state.json');
 	const missingStateArtifact = JSON.parse(await readFile(path.join(fixtureRoot, 'valid-artifact.json'), 'utf8'));
-	delete missingStateArtifact.runtime.references.wordpress_state;
+	delete missingStateArtifact.runtime.references.observations;
 	await writeFile(missingStateFile, JSON.stringify(missingStateArtifact, null, 2));
 
 	const missingState = replayRegradeArtifactFile(missingStateFile, { benchmarkMode: true });

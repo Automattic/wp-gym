@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/eval-artifact.schema.json",
-  "title": "WP Gym eval artifact projection",
-  "description": "Versioned wp-gym projection from generic Sandbox Runtime artifacts plus runner, scenario, task-set, and grader metadata.",
+  "title": "WP Gym canonical eval artifact row",
+  "description": "Versioned wp-gym eval artifact / episode result row. Direct wp-gym outputs own this row; runner-specific artifacts such as homeboy.sealed_eval_artifact must project losslessly into these generic fields before benchmark use.",
   "type": "object",
   "required": [
     "schema_version",
@@ -22,8 +22,9 @@
       "required": ["name", "issue", "created_at"],
       "properties": {
         "name": { "const": "wp-gym-eval-artifact" },
-        "issue": { "const": "https://github.com/Automattic/wp-gym/issues/88" },
-        "created_at": { "type": "string", "format": "date-time" }
+        "issue": { "const": "https://github.com/Automattic/wp-gym/issues/117" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "source_schema_name": { "type": ["string", "null"] }
       },
       "additionalProperties": true
     },

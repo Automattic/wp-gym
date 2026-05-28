@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "sealed_eval_artifact": {
+    "schema_name": "homeboy.sealed_eval_artifact",
+    "schema_version": 1,
+    "generated_at": "2026-05-27T00:00:00Z",
+    "status": "ready_for_replay",
+    "runner": {
+      "ref": "abcdef1234567890",
+      "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/123",
+      "job_id": "benchmark"
+    },
+    "run": {
+      "job_id": "homeboy-job-123",
+      "job_status": "completed",
+      "success_status": "passed"
+    },
+    "task": {
+      "id": "block-markup-valid-semantic-blocks",
+      "label": "Valid semantic blocks"
+    },
+    "model": {
+      "provider": "openai",
+      "model": "gpt-5.5"
+    },
+    "hashes": {
+      "prompt": { "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" },
+      "bundle": { "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+      "tool_policy": { "sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
+      "envelope": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "artifact_hashes": {
+        "result_json": { "path": "https://example.com/result.json", "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
+        "replay_bundle": { "path": "https://example.com/replay.json", "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+        "events": { "path": "https://example.com/events.jsonl", "sha256": "1111111111111111111111111111111111111111111111111111111111111111" },
+        "wordpress_state": { "path": "https://example.com/wordpress-state.json", "sha256": "2222222222222222222222222222222222222222222222222222222222222222" }
+      }
+    },
+    "grade": { "score": 4, "max_score": 4, "reward": 1 },
+    "failure_reasons": [],
+    "artifacts": {
+      "references": [
+        { "name": "result_json", "path": "https://example.com/result.json", "kind": "json", "required": true },
+        { "name": "replay_bundle", "path": "https://example.com/replay.json", "kind": "json", "required": true },
+        { "name": "events", "path": "https://example.com/events.jsonl", "kind": "jsonl", "required": true },
+        { "name": "wordpress_state", "path": "https://example.com/wordpress-state.json", "kind": "wordpress_state", "required": true }
+      ],
+      "hashes": {
+        "result_json": { "path": "https://example.com/result.json", "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
+        "replay_bundle": { "path": "https://example.com/replay.json", "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+        "events": { "path": "https://example.com/events.jsonl", "sha256": "1111111111111111111111111111111111111111111111111111111111111111" },
+        "wordpress_state": { "path": "https://example.com/wordpress-state.json", "sha256": "2222222222222222222222222222222222222222222222222222222222222222" }
+      },
+      "issues": []
+    },
+    "wp_gym": {
+      "scenario": {
+        "id": "block-markup-valid-semantic-blocks",
+        "label": "Valid semantic blocks",
+        "task_family": "block-markup",
+        "rules": {
+          "general": ["wordpress_editable_blocks"],
+          "task_specific": ["semantic_content"]
+        }
+      },
+      "task_set": {
+        "id": "benchmark-readiness-pilot",
+        "label": "Benchmark readiness pilot",
+        "source_path": "task-sets/benchmark-readiness-pilot.json"
+      },
+      "grader": {
+        "success": true,
+        "reward": 1,
+        "grade": { "score": 4, "max_score": 4 },
+        "checks": [
+          {
+            "id": "semantic_blocks",
+            "passed": true,
+            "score": 1,
+            "max_score": 1,
+            "failure_reason": null,
+            "message": null
+          }
+        ],
+        "failure_reasons": []
+      }
+    }
+  }
+}
