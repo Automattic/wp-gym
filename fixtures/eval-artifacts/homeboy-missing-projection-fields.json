@@ -1,0 +1,25 @@
+{
+  "sealed_eval_artifact": {
+    "schema_name": "homeboy.sealed_eval_artifact",
+    "schema_version": 1,
+    "generated_at": "2026-05-27T00:00:00Z",
+    "status": "ready_for_replay",
+    "runner": {
+      "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/123"
+    },
+    "task": {
+      "id": "block-markup-valid-semantic-blocks",
+      "label": "Valid semantic blocks"
+    },
+    "model": {
+      "provider": "openai",
+      "model": "gpt-5.5"
+    },
+    "hashes": {
+      "prompt": { "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" }
+    },
+    "artifacts": {
+      "references": []
+    }
+  }
+}

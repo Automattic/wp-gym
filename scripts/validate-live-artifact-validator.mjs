@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { validateLiveArtifact, unwrapEvalArtifact } from './validate-live-artifacts.mjs';
 
+const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const hash64 = (digit) => digit.repeat(64);
 
@@ -13,7 +15,7 @@ function baseArtifact(overrides = {}) {
 		schema_version: 1,
 		projection: {
 			name: 'wp-gym-eval-artifact',
-			issue: 'https://github.com/Automattic/wp-gym/issues/88',
+			issue: 'https://github.com/Automattic/wp-gym/issues/117',
 			created_at: '2026-05-27T00:00:00Z',
 		},
 		status: {
@@ -74,6 +76,26 @@ const schemaOnly = validateLiveArtifact(baseArtifact());
 assert.equal(schemaOnly.ok, true);
 assert.equal(schemaOnly.validated_fields.find((field) => field.field === 'runner.model')?.value, 'gpt-5.5');
 
+const directFixture = await readFixture('direct-wp-gym-row.json');
+const directFixtureResult = validateLiveArtifact(directFixture);
+assert.equal(directFixtureResult.ok, true);
+
+const homeboyWrappedFixture = await readFixture('homeboy-wrapped-row.json');
+const projectedHomeboy = unwrapEvalArtifact(homeboyWrappedFixture);
+assert.equal(projectedHomeboy?.projection.name, 'wp-gym-eval-artifact');
+assert.equal(projectedHomeboy?.projection.source_schema_name, 'homeboy.sealed_eval_artifact');
+assert.equal(projectedHomeboy?.scenario.task_family, 'block-markup');
+const homeboyWrappedResult = validateLiveArtifact(homeboyWrappedFixture, { benchmarkMode: true });
+assert.equal(homeboyWrappedResult.ok, true);
+
+const missingProjectionFixture = await readFixture('homeboy-missing-projection-fields.json');
+const missingProjectionNonBenchmark = validateLiveArtifact(missingProjectionFixture);
+assert.equal(missingProjectionNonBenchmark.ok, false);
+assert(missingProjectionNonBenchmark.compatibility_gaps.some((item) => item.code === 'missing_homeboy_projection_field'));
+const missingProjectionBenchmark = validateLiveArtifact(missingProjectionFixture, { benchmarkMode: true });
+assert.equal(missingProjectionBenchmark.ok, false);
+assert(missingProjectionBenchmark.compatibility_gaps.some((item) => item.code === 'missing_homeboy_projection_field' && item.severity === 'error'));
+
 const temp = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-live-artifacts-'));
 try {
 	await writeFile(path.join(temp, 'result.json'), '{"ok":true}\n');
@@ -109,6 +131,10 @@ try {
 	assert(mismatch.compatibility_gaps.some((item) => item.code === 'artifact_hash_mismatch'));
 } finally {
 	await rm(temp, { recursive: true, force: true });
+}
+
+async function readFixture(name) {
+	return JSON.parse(await readFile(path.join(root, 'fixtures/eval-artifacts', name), 'utf8'));
 }
 
 console.log('Validated live artifact validator scaffold.');

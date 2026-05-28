@@ -1,19 +1,22 @@
 # Eval Artifact Projection
 
-Issue: [#88](https://github.com/Automattic/wp-gym/issues/88)
+Issue: [#117](https://github.com/Automattic/wp-gym/issues/117)
 
-`wp-gym` projects generic WP Codebox artifacts into benchmark-specific eval
-results. WP Codebox stays generic: it emits runtime metadata, events, command
-logs, observations, mounts, patches, packages, screenshots, transcripts, and
-replay bundles where available. `wp-gym` adds the scenario, task-set, model,
-runner, prompt, rule, reward, check, and report context.
+`wp-gym` owns the canonical eval artifact / episode result row. Direct wp-gym
+runners emit this row as `metadata.eval_artifact` or as the top-level JSON value.
+Other orchestrators may wrap their own sealed artifacts, but benchmark evidence
+is trusted only after those artifacts project into this canonical row.
 
-The versioned JSON schema lives at `schemas/eval-artifact.schema.json` and is
-stored under `metadata.eval_artifact` in runner outputs.
+The current cross-runner boundary is Homeboy's `homeboy.sealed_eval_artifact`.
+Homeboy owns the sealed evidence envelope; `wp-gym` owns the benchmark semantics.
+The validator accepts Homeboy-wrapped rows when every required wp-gym semantic
+field can be recovered from the wrapper without losing evidence.
+
+The versioned JSON schema lives at `schemas/eval-artifact.schema.json`.
 
 ## Projection Boundary
 
-WP Codebox owns generic runtime facts:
+Sandbox Runtime / WP Codebox owns generic runtime facts:
 
 - Artifact bundle ID, schema version, creation time, runtime ID, and environment ID.
 - Event, command, observation, mount, patch, package, screenshot, transcript, and
@@ -33,10 +36,41 @@ The runner owns execution facts:
 - Task-set ID, label, and source manifest path.
 - Grader success, reward, score, checks, failure reasons, and general rule results.
 
-WP Codebox must not emit `metadata.eval_artifact`, scenario IDs, task-set IDs,
-reward fields, grader checks, or `wp-gym` failure classifications. The projection
-may reference WP Codebox artifact paths or hashes, but eval semantics are added by
-`wp-gym` or its runner integration.
+Sandbox Runtime / WP Codebox must not emit `metadata.eval_artifact`, scenario
+IDs, task-set IDs, reward fields, grader checks, or `wp-gym` failure
+classifications. The projection may reference runtime artifact paths or hashes,
+but eval semantics are added by `wp-gym` or its runner integration.
+
+## Homeboy Sealed Artifact Projection
+
+Homeboy emits `homeboy.sealed_eval_artifact` as a sealed runner artifact. That
+artifact remains Homeboy-owned. `wp-gym` projects it into the canonical row using
+generic fields only:
+
+| Canonical field | Homeboy source |
+| --- | --- |
+| `projection.source_schema_name` | Constant `homeboy.sealed_eval_artifact` |
+| `projection.created_at` | `sealed_eval_artifact.generated_at` |
+| `runtime.artifact_bundle.id` | `sealed_eval_artifact.hashes.envelope` when available |
+| `runtime.references.*` | `sealed_eval_artifact.artifacts.references` plus matching hashes |
+| `runner.provider` | `sealed_eval_artifact.model.provider` |
+| `runner.model` | `sealed_eval_artifact.model.model` |
+| `runner.bundle_sha256` | `sealed_eval_artifact.hashes.bundle.sha256` |
+| `runner.tool_policy_sha256` | `sealed_eval_artifact.hashes.tool_policy.sha256` |
+| `runner.workflow.*` | `sealed_eval_artifact.runner` and `sealed_eval_artifact.run` |
+| `scenario.*` | `sealed_eval_artifact.wp_gym.scenario` plus prompt hash fallback |
+| `task_set.*` | `sealed_eval_artifact.wp_gym.task_set` |
+| `grader.*` | `sealed_eval_artifact.wp_gym.grader` with grade fallback |
+| `reports.*` | Homeboy result/replay references and workflow URL |
+
+The Homeboy wrapper may contain Homeboy-specific fields such as `integration_seams`,
+`termination`, or replay tool-audit metadata. Those fields are not required by the
+wp-gym canonical schema unless they project to generic row fields above. If they
+must be preserved for Homeboy replay, they remain in the sealed artifact envelope.
+
+Benchmark mode treats missing required projection fields as errors. This prevents
+a Homeboy wrapper from being accepted as benchmark evidence when scenario, task
+set, prompt, grader, runner, or replay-critical references are absent.
 
 ## Failure Classes
 
@@ -69,7 +103,7 @@ Each top-level section can include `source_fields` entries with this shape:
 
 Use these owners:
 
-- `wp-codebox` for fields copied from generic WP Codebox artifacts.
+- `sandbox-runtime` for fields copied from generic runtime artifacts.
 - `runner` for Homeboy/runner workflow, model, and fingerprint metadata.
 - `wp-gym` for scenario manifests, task-set manifests, and grader output.
 
@@ -92,7 +126,7 @@ Expected source examples:
   "schema_version": 1,
   "projection": {
     "name": "wp-gym-eval-artifact",
-    "issue": "https://github.com/Automattic/wp-gym/issues/88",
+    "issue": "https://github.com/Automattic/wp-gym/issues/117",
     "created_at": "2026-05-20T00:00:00Z"
   },
   "status": {
