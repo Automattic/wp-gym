@@ -86,7 +86,8 @@ assert.equal(projectedHomeboy?.projection.name, 'wp-gym-eval-artifact');
 assert.equal(projectedHomeboy?.projection.source_schema_name, 'homeboy.sealed_eval_artifact');
 assert.equal(projectedHomeboy?.scenario.task_family, 'block-markup');
 const homeboyWrappedResult = validateLiveArtifact(homeboyWrappedFixture, { benchmarkMode: true });
-assert.equal(homeboyWrappedResult.ok, true);
+assert.equal(homeboyWrappedResult.ok, false);
+assert(homeboyWrappedResult.compatibility_gaps.some((item) => item.code === 'remote_artifact_not_hashable_locally'));
 
 const homeboyHashFallbackFixture = structuredClone(homeboyWrappedFixture);
 delete homeboyHashFallbackFixture.sealed_eval_artifact.artifacts.hashes;
@@ -160,8 +161,26 @@ try {
 	const remoteArtifact = structuredClone(benchmarkArtifact);
 	remoteArtifact.runtime.references.observations[0] = { kind: 'wordpress_state', path_or_url: 'https://example.com/wordpress-state.json' };
 	const remote = validateLiveArtifact(remoteArtifact, { benchmarkMode: true, baseDir: temp });
-	assert.equal(remote.ok, true);
-	assert(remote.compatibility_gaps.some((item) => item.code === 'remote_artifact_not_hashable_locally'));
+	assert.equal(remote.ok, false);
+	assert(remote.compatibility_gaps.some((item) => item.code === 'remote_artifact_not_hashable_locally' && item.severity === 'error'));
+
+	for (const [field, gapField, mutate] of [
+		['reports.result_json', 'reports.result_json', (artifact) => {
+			artifact.reports.result_json[0] = { kind: 'json', path_or_url: 'https://example.com/result.json' };
+		}],
+		['runtime.references.replay_bundle', 'reports.replay or runtime.references.replay_bundle', (artifact) => {
+			artifact.runtime.references.replay_bundle[0] = { kind: 'zip', path_or_url: 'https://example.com/replay.zip' };
+		}],
+		['runtime.references.events', 'runtime.references.events', (artifact) => {
+			artifact.runtime.references.events[0] = { kind: 'jsonl', path_or_url: 'https://example.com/events.jsonl' };
+		}],
+	]) {
+		const remoteCritical = structuredClone(benchmarkArtifact);
+		mutate(remoteCritical);
+		const remoteCriticalResult = validateLiveArtifact(remoteCritical, { benchmarkMode: true, baseDir: temp });
+		assert.equal(remoteCriticalResult.ok, false, `${field} remote references must fail benchmark mode`);
+		assert(remoteCriticalResult.compatibility_gaps.some((item) => item.code === 'remote_artifact_not_hashable_locally' && item.field === gapField));
+	}
 
 	const missingHash = structuredClone(benchmarkArtifact);
 	delete missingHash.runtime.references.observations[0].sha256;
