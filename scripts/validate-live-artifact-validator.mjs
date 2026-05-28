@@ -88,6 +88,12 @@ assert.equal(projectedHomeboy?.scenario.task_family, 'block-markup');
 const homeboyWrappedResult = validateLiveArtifact(homeboyWrappedFixture, { benchmarkMode: true });
 assert.equal(homeboyWrappedResult.ok, true);
 
+const homeboyHashFallbackFixture = structuredClone(homeboyWrappedFixture);
+delete homeboyHashFallbackFixture.sealed_eval_artifact.artifacts.hashes;
+const projectedHashFallback = unwrapEvalArtifact(homeboyHashFallbackFixture);
+assert.equal(projectedHashFallback?.reports.result_json[0].sha256, 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+assert.equal(projectedHashFallback?.runtime.references.replay_bundle[0].sha256, 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+
 const missingProjectionFixture = await readFixture('homeboy-missing-projection-fields.json');
 const missingProjectionNonBenchmark = validateLiveArtifact(missingProjectionFixture);
 assert.equal(missingProjectionNonBenchmark.ok, false);
