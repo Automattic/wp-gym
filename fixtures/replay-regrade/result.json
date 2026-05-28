@@ -1,0 +1,57 @@
+{
+  "ok": true,
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "grader": {
+    "success": true,
+    "reward": 1,
+    "grade": {
+      "score": 1.1,
+      "max_score": 1.1
+    },
+    "checks": [
+      {
+        "id": "target_post_exists",
+        "passed": true,
+        "score": 0.2,
+        "max_score": 0.2,
+        "message": "Found target page/post."
+      },
+      {
+        "id": "content_has_blocks",
+        "passed": true,
+        "score": 0.2,
+        "max_score": 0.2,
+        "message": "Content uses Gutenberg block comments."
+      },
+      {
+        "id": "required_blocks_present",
+        "passed": true,
+        "score": 0.25,
+        "max_score": 0.25,
+        "message": "All required blocks are present."
+      },
+      {
+        "id": "no_fallback_or_html_blocks",
+        "passed": true,
+        "score": 0.25,
+        "max_score": 0.25,
+        "message": "No fallback/freeform or HTML block detected."
+      },
+      {
+        "id": "no_shortcodes",
+        "passed": true,
+        "score": 0.1,
+        "max_score": 0.1,
+        "message": "No shortcode markup detected."
+      },
+      {
+        "id": "expected_heading_text",
+        "passed": true,
+        "score": 0.1,
+        "max_score": 0.1,
+        "message": "Checks for the requested heading text."
+      }
+    ],
+    "failure_reasons": []
+  }
+}

@@ -76,6 +76,12 @@ remaining gates before results can be called benchmark-ready.
 The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
 documented in `docs/grader-handoff.md`.
 
+Use `wp-gym replay-regrade --input <eval-artifact-json-or-dir> --benchmark-mode`
+to validate sealed eval artifact references, rehydrate local WordPress state
+evidence, rerun the terminal PHP grader, and fail nonzero when the replayed grade
+does not match the stored success, reward, score, checks, messages, or evidence
+references. Benchmark mode reports missing replay-critical evidence as an error.
+
 The local Gym-like `WPGym.make()` / `reset()` / `step()` / `grade()` API is
 documented in `docs/local-api.md`; WordPress scenarios use WP Codebox's native
 runtime episode API.
