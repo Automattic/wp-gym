@@ -169,6 +169,10 @@ The pilot becomes benchmark-ready only after these gates are complete:
 - Calibration result sets use `schemas/calibration-result.schema.json` and include
   no-op, heuristic/scripted, cheap-model, frontier-model, repeated-attempt, and
   human/reference rows before any pass-rate claim is treated as benchmark data.
+- Partial real calibration sets are allowed while a scenario is still
+  `calibrating`. They should link executable evidence, such as local fixture
+  validation commands, and keep `promotion_recommendation=calibrating` with
+  blockers for missing model rows or held-out variants.
 - Scenario calibration records `calibration_result_sets`, a calibrated
   `pass_rate_band`, a 95% confidence interval, and
   `held_out_private_variants_ready=true` before benchmark mode can pass.
