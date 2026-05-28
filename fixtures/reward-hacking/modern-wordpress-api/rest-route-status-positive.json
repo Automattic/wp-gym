@@ -3,6 +3,7 @@
   "scenario_id": "modern-wordpress-api-rest-route-status",
   "grader_file": "graders/modern-wordpress-api/rest-route-status.php",
   "type": "positive_control_fixture",
+  "covers_shortcut_ids": ["hard_coded_clean_site_state", "extra_output_fields"],
   "expected_result": "pass",
   "description": "Registers the requested public read-only GET route with a permission callback and exact status payload.",
   "fixture_runtime": "modern_wordpress_api",
