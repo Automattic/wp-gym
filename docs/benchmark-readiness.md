@@ -152,6 +152,12 @@ Include these rollups below the table:
 - Any generated PR that lacks enough evidence in the body for review without
   downloading artifacts.
 
+Pilot diagnostics may link to remote artifact URLs while the runner plumbing is
+being shaped. Benchmark evidence is stricter: replay-critical artifacts such as
+result JSON, replay bundles, event logs, WordPress state, rendered site evidence,
+and scenario-declared expected artifacts must be local files with declared hashes
+so validators can verify them before a row counts toward benchmark data.
+
 ## Benchmark-Ready Gates
 
 The pilot becomes benchmark-ready only after these gates are complete:

@@ -524,10 +524,11 @@ function validateArtifactReference(reference, baseDir, field, expectedArtifact =
 	if (/^https?:\/\//i.test(target)) {
 		gaps.push(gap(
 			'remote_artifact_not_hashable_locally',
-			'warning',
+			'error',
 			field,
-			`${target} is remote; the scaffold records the reference but cannot hash it without downloaded artifacts.`
+			`${target} is remote; benchmark-mode validation requires local, hashable artifacts.`
 		));
+		result.ok = false;
 		return result;
 	}
 
