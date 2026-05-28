@@ -40,6 +40,13 @@
           "path_or_url": "wordpress-state.json",
           "sha256": "0f8d62a8040b4b16ef6fb3e9420f3636e31e91d06678d4057582c133e5a60702"
         }
+      ],
+      "replay_trace": [
+        {
+          "kind": "json",
+          "path_or_url": "episode-trace.json",
+          "sha256": "4971dbec51bc7541aaa901343c511b2eb745df4392647e373807075e5454b328"
+        }
       ]
     }
   },
@@ -94,6 +101,13 @@
         "kind": "json",
         "path_or_url": "result.json",
           "sha256": "a8a4828f1c7e747d9ebec1e7279628c09625145e43b88eab7a04c0ef2d8ea796"
+      }
+    ],
+    "replay": [
+      {
+        "kind": "json",
+        "path_or_url": "episode-trace.json",
+        "sha256": "4971dbec51bc7541aaa901343c511b2eb745df4392647e373807075e5454b328"
       }
     ]
   }

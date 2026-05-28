@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "episode_id": "replay-fixture-valid-episode",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "metadata": {
+    "max_steps": 3,
+    "allowed_action_types": ["wp_cli"],
+    "setup": ["local-wordpress-state-fixture"],
+    "success_checks": [
+      "target_post_exists",
+      "content_has_blocks",
+      "required_blocks_present",
+      "no_fallback_or_html_blocks",
+      "no_shortcodes",
+      "expected_heading_text"
+    ]
+  },
+  "steps": [
+    {
+      "step_index": 0,
+      "timestamp": "2026-05-27T00:00:01Z",
+      "action": {
+        "schema_version": 1,
+        "type": "wp_cli",
+        "command": "post list --post_type=page --format=json",
+        "timeout_ms": 30000
+      },
+      "result": {
+        "schema_version": 1,
+        "observation": {
+          "schema_version": 1,
+          "type": "command_result",
+          "action_type": "wp_cli",
+          "command": "post list --post_type=page --format=json",
+          "status": 0,
+          "stdout": "[{\"ID\":1,\"post_title\":\"Neighborhood Cookout Plan\",\"post_status\":\"publish\",\"post_type\":\"page\"}]",
+          "stderr": "",
+          "timeout_ms": 30000,
+          "timed_out": false,
+          "duration_ms": 84,
+          "error": null
+        },
+        "reward": {
+          "value": 0,
+          "success": false,
+          "failure_reasons": []
+        },
+        "done": false,
+        "telemetry": {
+          "runner": "fixture"
+        }
+      }
+    },
+    {
+      "step_index": 1,
+      "timestamp": "2026-05-27T00:00:02Z",
+      "action": {
+        "schema_version": 1,
+        "type": "wp_cli",
+        "command": "post get 1 --field=post_content",
+        "timeout_ms": 30000
+      },
+      "result": {
+        "schema_version": 1,
+        "observation": {
+          "schema_version": 1,
+          "type": "command_result",
+          "action_type": "wp_cli",
+          "command": "post get 1 --field=post_content",
+          "status": 0,
+          "stdout": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n<!-- wp:paragraph -->\n<p>Invite neighbors for a relaxed cookout with clear prep, serving, and cleanup roles.</p>\n<!-- /wp:paragraph -->\n<!-- wp:list -->\n<ul><!-- wp:list-item --><li>Confirm shared tables, coolers, and vegetarian options.</li><!-- /wp:list-item --><!-- wp:list-item --><li>Assign setup, grill, games, and cleanup volunteers.</li><!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button --><div class=\"wp-block-button\"><a class=\"wp-block-button__link\">Share the Plan</a></div><!-- /wp:button --></div>\n<!-- /wp:buttons -->",
+          "stderr": "",
+          "timeout_ms": 30000,
+          "timed_out": false,
+          "duration_ms": 91,
+          "error": null
+        },
+        "reward": {
+          "value": 1,
+          "success": true,
+          "failure_reasons": []
+        },
+        "done": true,
+        "telemetry": {
+          "runner": "fixture"
+        }
+      }
+    }
+  ]
+}
