@@ -43,13 +43,26 @@ function repoRelative(root, file) {
 	return path.relative(root, file).replace(/\\/g, '/');
 }
 
-function createEpisodeId(scenarioId) {
+function createEpisodeId(scenarioId, seed = null) {
+	const suffixInput = seed === null
+		? `${scenarioId}:${Date.now()}:${Math.random()}`
+		: `${scenarioId}:seed:${seed}`;
 	const suffix = createHash('sha256')
-		.update(`${scenarioId}:${Date.now()}:${Math.random()}`)
+		.update(suffixInput)
 		.digest('hex')
 		.slice(0, 12);
 
 	return `${scenarioId}-${suffix}`;
+}
+
+function normalizeResetOptions(options = {}) {
+	const resetOptions = typeof options === 'object' && options !== null ? options : { seed: options };
+	const seed = resetOptions.seed ?? null;
+
+	return {
+		...resetOptions,
+		seed: seed === null ? null : String(seed),
+	};
 }
 
 function shellSplit(command) {
@@ -429,10 +442,12 @@ export class WPGymEnvironment {
 		this.closed = false;
 	}
 
-	async reset() {
+	async reset(options = {}) {
+		const resetOptions = normalizeResetOptions(options);
 		await this.close();
 		this.closed = false;
-		this.episodeId = createEpisodeId(this.scenario.id);
+		this.resetSeed = resetOptions.seed;
+		this.episodeId = createEpisodeId(this.scenario.id, this.resetSeed);
 		this.episodeRoot = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-'));
 		this.workspaceRoot = path.join(this.episodeRoot, 'workspace');
 		this.posts = [];
@@ -457,6 +472,7 @@ export class WPGymEnvironment {
 				scenario_id: this.scenario.id,
 				reset_fixture: this.scenario.environment.reset_fixture,
 				episode_id: this.episodeId,
+				reset_seed: this.resetSeed,
 				post_count: 0,
 				workspace_root: this.workspaceRoot,
 			},
@@ -534,6 +550,7 @@ export class WPGymEnvironment {
 			metadata: {
 				max_steps: this.maxSteps(),
 				allowed_action_types: this.allowedActionTypes(),
+				reset_seed: this.resetSeed,
 				setup: [this.scenario.environment.reset_fixture],
 				success_checks: this.successChecks(),
 			},

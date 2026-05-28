@@ -10,9 +10,15 @@ const content = await readFile(
 const env = await WPGym.make(scenarioId);
 
 try {
-	const reset = await env.reset();
+	const reset = await env.reset({ seed: 1234 });
 	assert.equal(reset.type, 'wp_state');
 	assert.equal(reset.state.scenario_id, scenarioId);
+	assert.equal(reset.state.reset_seed, '1234');
+
+	const seededEpisodeId = reset.state.episode_id;
+	const repeatedReset = await env.reset({ seed: 1234 });
+	assert.equal(repeatedReset.state.episode_id, seededEpisodeId);
+	assert.equal(repeatedReset.state.reset_seed, '1234');
 
 	const step = await env.step({
 		type: 'wp_cli',
@@ -34,6 +40,8 @@ try {
 
 	const trace = await env.trace();
 	assert.equal(trace.scenario_id, scenarioId);
+	assert.equal(trace.episode_id, seededEpisodeId);
+	assert.equal(trace.metadata.reset_seed, '1234');
 	assert.equal(trace.steps.length, 1);
 	assert.deepEqual(trace.metadata.allowed_action_types, ['wp_cli']);
 } finally {
