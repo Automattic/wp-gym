@@ -327,6 +327,15 @@ function validateTerminalGradeAgreement(evalArtifact, baseDir) {
 		}
 
 		if (!terminalGrade) {
+			const item = gap(
+				'terminal_grade_missing',
+				'error',
+				'reports.result_json',
+				`${target} does not contain a grader payload for terminal grade agreement.`
+			);
+			check.ok = false;
+			check.gaps.push(item);
+			gaps.push(item);
 			continue;
 		}
 

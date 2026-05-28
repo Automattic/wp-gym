@@ -101,6 +101,12 @@ try {
 	assert(benchmarkResult.artifact_checks.length >= 5);
 	assert.equal(benchmarkResult.artifact_checks.filter((check) => 'hashable' in check).every((check) => check.hashable), true);
 
+	const missingGradePayload = structuredClone(benchmarkArtifact);
+	missingGradePayload.reports.result_json[0] = { kind: 'json', path_or_url: 'result.json', sha256: sha256('{"ok":true}\n') };
+	const missingGrade = validateLiveArtifact(missingGradePayload, { benchmarkMode: true, baseDir: temp });
+	assert.equal(missingGrade.ok, false);
+	assert(missingGrade.compatibility_gaps.some((item) => item.code === 'terminal_grade_missing'));
+
 	const missingReplay = validateLiveArtifact(baseArtifact(), { benchmarkMode: true, baseDir: temp });
 	assert.equal(missingReplay.ok, false);
 	assert(missingReplay.compatibility_gaps.some((item) => item.code === 'missing_replay_critical_artifact'));
