@@ -370,6 +370,8 @@ function normalizeHomeboyArtifactReferences(references, hashes) {
 			appendReference(runtime, 'transcript', normalized);
 		} else if (/screenshot/.test(name)) {
 			appendReference(runtime, 'screenshots', normalized);
+		} else if (/wordpress[_-]?state|wp[_-]?state/.test(name)) {
+			appendReference(runtime, 'observations', normalized);
 		} else {
 			appendReference(runtime, 'packages', normalized);
 		}

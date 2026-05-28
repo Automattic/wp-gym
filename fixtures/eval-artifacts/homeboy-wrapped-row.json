@@ -31,7 +31,8 @@
       "artifact_hashes": {
         "result_json": { "path": "https://example.com/result.json", "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
         "replay_bundle": { "path": "https://example.com/replay.json", "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
-        "events": { "path": "https://example.com/events.jsonl", "sha256": "1111111111111111111111111111111111111111111111111111111111111111" }
+        "events": { "path": "https://example.com/events.jsonl", "sha256": "1111111111111111111111111111111111111111111111111111111111111111" },
+        "wordpress_state": { "path": "https://example.com/wordpress-state.json", "sha256": "2222222222222222222222222222222222222222222222222222222222222222" }
       }
     },
     "grade": { "score": 4, "max_score": 4, "reward": 1 },
@@ -40,12 +41,14 @@
       "references": [
         { "name": "result_json", "path": "https://example.com/result.json", "kind": "json", "required": true },
         { "name": "replay_bundle", "path": "https://example.com/replay.json", "kind": "json", "required": true },
-        { "name": "events", "path": "https://example.com/events.jsonl", "kind": "jsonl", "required": true }
+        { "name": "events", "path": "https://example.com/events.jsonl", "kind": "jsonl", "required": true },
+        { "name": "wordpress_state", "path": "https://example.com/wordpress-state.json", "kind": "wordpress_state", "required": true }
       ],
       "hashes": {
         "result_json": { "path": "https://example.com/result.json", "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
         "replay_bundle": { "path": "https://example.com/replay.json", "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
-        "events": { "path": "https://example.com/events.jsonl", "sha256": "1111111111111111111111111111111111111111111111111111111111111111" }
+        "events": { "path": "https://example.com/events.jsonl", "sha256": "1111111111111111111111111111111111111111111111111111111111111111" },
+        "wordpress_state": { "path": "https://example.com/wordpress-state.json", "sha256": "2222222222222222222222222222222222222222222222222222222222222222" }
       },
       "issues": []
     },
