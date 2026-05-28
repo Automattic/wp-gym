@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "block-markup-valid-semantic-blocks-local-fixture-baseline",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-27T00:00:00Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/127",
+    "evidence_kind": "local_fixture_validation",
+    "validation_command": "npm run reward-fixtures:validate",
+    "evidence_files": [
+      "fixtures/reward-hacking/block-markup/valid-semantic-blocks-meaningful-content.json",
+      "fixtures/reward-hacking/block-markup/valid-semantic-blocks-keyword-stuffing.json",
+      "fixtures/reward-hacking/block-markup/valid-semantic-blocks-shallow-validity.json"
+    ]
+  },
+  "rows": [
+    {
+      "row_type": "no_op",
+      "label": "No-op fixture baseline",
+      "attempts": 1,
+      "passes": 0,
+      "pass_rate": 0,
+      "mean_reward": 0,
+      "notes": "The no-op control is represented by the adversarial fixture path: target text without editable block output must fail."
+    },
+    {
+      "row_type": "heuristic_scripted",
+      "label": "Executable positive-control fixture",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "notes": "The scripted positive control is executed by scripts/run-block-markup-fixture.php through npm run reward-fixtures:validate."
+    },
+    {
+      "row_type": "human_reference",
+      "label": "Curated reference fixture",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "notes": "The curated reference content is hand-authored fixture markup, not a model run."
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "too_easy",
+    "confidence_interval_95": [0, 1],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": ["missing_model_baselines", "held_out_private_variants_not_ready", "diagnostic_contract_only", "known_reward_shortcut"]
+  }
+}

@@ -29,7 +29,7 @@
     },
     "rows": {
       "type": "array",
-      "minItems": 6,
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": ["row_type", "label", "attempts", "passes", "pass_rate"],
