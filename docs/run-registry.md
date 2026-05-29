@@ -1,0 +1,91 @@
+# Run Registry and Artifact Index
+
+Issue: [#136](https://github.com/Automattic/wp-gym/issues/136)
+
+`wp-gym` owns a durable run registry entry for every completed eval run that is
+eligible for lab comparison, calibration, or benchmark review. The registry is
+not a replacement for the canonical eval artifact row from issue #117. It is the
+discoverable index that lets downstream tools enumerate runs and locate the full
+artifact bundle for each row.
+
+The versioned JSON schema lives at `schemas/run-registry-entry.v1.schema.json`.
+Fixtures live in `fixtures/run-registry/` and are validated by
+`npm run run-registry:validate`.
+
+## Registry Boundary
+
+The canonical eval artifact row answers: what happened in this attempt?
+
+The run registry answers: where can maintainers find this attempt later, and how
+can it be compared safely?
+
+Each registry entry indexes a canonical eval artifact row by:
+
+- Task set ID, version, source path, source hash, benchmark status, headline-score eligibility, and compatibility group.
+- Scenario ID, version, source path, source hash, prompt hash, and task family.
+- Provider, model, actor, runtime, run ID, workflow URL, and outcome.
+- Grade identity: grader hash, result hash, success, reward, and failure class.
+- Calibration row type: no-op, scripted, cheap-model, frontier-model, repeated-attempt, human/reference, or excluded.
+- Benchmark eligibility: pilot, calibrating, benchmark-ready, headline-score eligibility, compatibility group, and exclusion reasons.
+
+## Artifact Index
+
+Every registry entry embeds an `artifact_index` with stable references to the
+files needed to inspect or replay the run:
+
+- `eval_artifact`: canonical `wp-gym` eval artifact row.
+- `grade`: terminal grade result or the canonical row that contains it.
+- `replay`: replay bundle or replay trace bundle.
+- Optional transcript, rendered output, screenshot, log, runtime bundle, and nested artifact index entries.
+
+Benchmark-mode validation requires local, hashable artifact references. Remote
+artifact URLs are useful as supplemental pointers, but they are not sufficient for
+benchmark evidence because the validator cannot prove their contents. Local
+artifact references must declare a SHA-256 hash, and stale hashes fail validation.
+
+## Completed Run Flow
+
+```text
+runner finishes attempt
+        |
+        v
+canonical eval artifact row
+        |
+        v
+artifact bundle + hashes
+        |
+        v
+run registry entry
+        |
+        v
+labs enumerate by task_set / scenario / provider / model / outcome
+        |
+        v
+maintainer opens eval_artifact, replay bundle, grade artifact, logs, screenshots
+```
+
+Labs should store registry entries in a durable location for the run collection
+they own, then expose the directory or JSONL stream to comparison tooling. A
+completed run becomes discoverable when its registry entry validates and points to
+the full annotated artifact bundle.
+
+## Validation
+
+Run:
+
+```bash
+npm run run-registry:validate
+```
+
+The validator compiles `run-registry-entry.v1.schema.json` and checks:
+
+- Required registry, run, scenario, task-set, runner, runtime, grade, calibration, benchmark, eval artifact, and artifact-index fields.
+- Presence of grade identity.
+- Presence of a replay bundle entry.
+- Local artifact existence and SHA-256 agreement.
+- Scenario and task-set source hashes against the referenced manifests.
+- Canonical eval artifact scenario/task-set agreement with the registry entry.
+
+Fixtures cover a valid canonical eval artifact row plus invalid cases for missing
+grade identity, missing replay bundle, missing artifact hash, and incompatible
+scenario/task-set hashes.
