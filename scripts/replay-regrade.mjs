@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { WPGym } from '../src/index.js';
@@ -38,6 +39,25 @@ function collectJsonFiles(input) {
 	}
 
 	return files.sort();
+}
+
+function isZipFile(file) {
+	return fs.existsSync(file) && fs.statSync(file).isFile() && path.extname(file).toLowerCase() === '.zip';
+}
+
+function extractZipArchive(file) {
+	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wp-gym-replay-'));
+	const result = spawnSync('unzip', ['-q', file, '-d', tempDir], {
+		cwd: root,
+		encoding: 'utf8',
+	});
+
+	if (result.error || result.status !== 0) {
+		fs.rmSync(tempDir, { recursive: true, force: true });
+		throw new Error(result.error?.message || result.stderr || result.stdout || `unzip exited with ${result.status}`);
+	}
+
+	return tempDir;
 }
 
 function repoRelative(file) {
@@ -199,6 +219,71 @@ function compareGrades(expectedGrade, actualGrade) {
 	return { ok: mismatches.length === 0, expected, actual, mismatches };
 }
 
+function classifyRegrade(artifact, compatibilityGaps, comparison = null, graderRun = null, episodeReplay = null) {
+	const errorCodes = compatibilityGaps
+		.filter((item) => item.severity === 'error')
+		.map((item) => item.code);
+	const drift = Boolean(comparison && !comparison.ok);
+	let failureClass = artifact?.status?.failure_class || (artifact?.grader?.success ? 'none' : 'task_failure');
+	let outcome = artifact?.status?.outcome || (artifact?.grader?.success ? 'passed' : 'failed');
+	let failureReason = artifact?.status?.failure_reason || null;
+
+	if (errorCodes.includes('terminal_grader_failed') || graderRun?.ok === false) {
+		failureClass = 'grader_failure';
+		outcome = 'errored';
+		failureReason = graderRun?.error || failureReason;
+	} else if (errorCodes.includes('episode_replay_failed') || episodeReplay?.ok === false) {
+		failureClass = 'runtime_failure';
+		outcome = 'errored';
+		failureReason = episodeReplay?.error || failureReason;
+	} else if (drift || errorCodes.length) {
+		failureClass = 'replay_incompatibility';
+		outcome = 'errored';
+		failureReason = drift ? 'Regraded output drifted from the sealed eval artifact.' : errorCodes[0];
+	} else if (comparison?.actual) {
+		failureClass = comparison.actual.success ? 'none' : 'task_failure';
+		outcome = comparison.actual.success ? 'passed' : 'failed';
+		failureReason = comparison.actual.failure_reasons?.[0] || null;
+	}
+
+	return {
+		outcome,
+		failure_class: failureClass,
+		failure_reason: failureReason,
+		grade_drift: drift,
+		compatibility_error_codes: errorCodes,
+	};
+}
+
+function summarizeResults(results) {
+	const summary = {
+		total: results.length,
+		ok: results.filter((result) => result.ok).length,
+		failed: results.filter((result) => !result.ok).length,
+		failure_classes: {},
+	};
+
+	for (const result of results) {
+		const failureClass = result.regrade_status?.failure_class || 'unknown';
+		summary.failure_classes[failureClass] = (summary.failure_classes[failureClass] || 0) + 1;
+	}
+
+	return summary;
+}
+
+async function withMutedProcessOutput(callback) {
+	const stdoutWrite = process.stdout.write;
+	const stderrWrite = process.stderr.write;
+	process.stdout.write = () => true;
+	process.stderr.write = () => true;
+	try {
+		return await callback();
+	} finally {
+		process.stdout.write = stdoutWrite;
+		process.stderr.write = stderrWrite;
+	}
+}
+
 function normalizeObservation(observation) {
 	if (!observation || typeof observation !== 'object') {
 		return null;
@@ -264,23 +349,26 @@ async function replayTraceActions(trace, options = {}) {
 	let env = null;
 
 	try {
-		env = await WPGym.make(trace.scenario_id, {
-			root,
-			gradeTimeoutMs: options.timeoutMs,
+		const replay = await withMutedProcessOutput(async () => {
+			env = await WPGym.make(trace.scenario_id, {
+				root,
+				gradeTimeoutMs: options.timeoutMs,
+			});
+			const reset = await env.reset({ seed: trace.metadata?.reset_seed ?? null });
+			for (const step of trace.steps) {
+				await env.step(step.action);
+			}
+			const grade = await env.grade();
+			const replayedTrace = await env.trace();
+			return { reset, grade, replayedTrace };
 		});
-		const reset = await env.reset({ seed: trace.metadata?.reset_seed ?? null });
-		for (const step of trace.steps) {
-			await env.step(step.action);
-		}
-		const grade = await env.grade();
-		const replayedTrace = await env.trace();
 
 		return {
 			ok: true,
-			reset,
-			trace: replayedTrace,
-			grade,
-			step_comparison: compareStepObservations(trace, replayedTrace),
+			reset: replay.reset,
+			trace: replay.replayedTrace,
+			grade: replay.grade,
+			step_comparison: compareStepObservations(trace, replay.replayedTrace),
 		};
 	} catch (error) {
 		return {
@@ -431,7 +519,7 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 	const compatibilityGaps = [...validation.compatibility_gaps];
 
 	if (!artifact) {
-		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, replay: null };
+		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, regrade_status: classifyRegrade(null, compatibilityGaps), replay: null };
 	}
 
 	const scenarioInfo = findScenario(artifact.scenario?.id);
@@ -442,7 +530,7 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 			'scenario.id',
 			`No local scenario manifest found for ${artifact.scenario?.id || '(missing scenario id)'}.`
 		));
-		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, replay: null };
+		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, regrade_status: classifyRegrade(artifact, compatibilityGaps), replay: null };
 	}
 
 	const stateReference = findLocalStateReference(artifact, baseDir);
@@ -453,7 +541,7 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 			'runtime.references.wordpress_state',
 			'Replay/regrade requires a local WordPress state JSON reference to rerun the terminal grader.'
 		));
-		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, replay: null };
+		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, regrade_status: classifyRegrade(artifact, compatibilityGaps), replay: null };
 	}
 
 	const traceReference = findLocalTraceReference(artifact, baseDir);
@@ -501,7 +589,7 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 	const graderRun = runTerminalGrader(scenarioInfo, stateReference.resolved, options);
 	if (!graderRun.ok) {
 		compatibilityGaps.push(gap('terminal_grader_failed', 'error', 'grader', graderRun.error));
-		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, replay: null };
+		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, regrade_status: classifyRegrade(artifact, compatibilityGaps, null, graderRun, episodeReplay), replay: null };
 	}
 
 	const comparison = compareGrades(artifact.grader, replayGrade || graderRun.grade);
@@ -514,11 +602,14 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 		));
 	}
 
+	const ok = validation.ok && comparison.ok && traceAudit?.ok !== false && !compatibilityGaps.some((item) => item.severity === 'error');
+
 	return {
 		file,
-		ok: validation.ok && comparison.ok && traceAudit?.ok !== false && !compatibilityGaps.some((item) => item.severity === 'error'),
+		ok,
 		validation,
 		compatibility_gaps: compatibilityGaps,
+		regrade_status: classifyRegrade(artifact, compatibilityGaps, comparison, graderRun, episodeReplay),
 		replay: {
 			phase: replayGrade ? 'full_episode_replay_regrade' : 'trace_audit_plus_state_regrade',
 			scenario_file: repoRelative(scenarioInfo.file),
@@ -545,11 +636,14 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 }
 
 function parseArgs(argv) {
-	const args = { input: '', benchmarkMode: /^(1|true|yes)$/i.test(process.env.BENCHMARK_MODE || '') };
+	const args = { input: '', benchmarkMode: /^(1|true|yes)$/i.test(process.env.BENCHMARK_MODE || ''), regrade: false };
 	for (let i = 0; i < argv.length; i += 1) {
 		const arg = argv[i];
 		if (arg === '--input') {
 			args.input = argv[++i];
+		} else if (arg === '--regrade') {
+			args.regrade = true;
+			args.benchmarkMode = true;
 		} else if (arg === '--benchmark-mode') {
 			args.benchmarkMode = true;
 		} else if (arg === '--help' || arg === '-h') {
@@ -566,38 +660,58 @@ function parseArgs(argv) {
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
 	if (args.help || !args.input) {
-		console.error('Usage: node scripts/replay-regrade.mjs --input <eval-artifact-json-or-dir> [--benchmark-mode]');
+		console.error('Usage: node scripts/replay-regrade.mjs --input <eval-artifact-json-dir-or-zip> [--regrade] [--benchmark-mode]');
 		process.exit(args.help ? 0 : 2);
 	}
 
-	const files = collectJsonFiles(args.input);
-	const inputIsDirectory = fs.statSync(path.resolve(args.input)).isDirectory();
-	const artifactFiles = inputIsDirectory
-		? files.filter((file) => unwrapEvalArtifact(readJson(file)))
-		: files;
+	const inputPath = path.resolve(args.input);
+	let searchRoot = inputPath;
+	let extractedFrom = null;
+	let exitCode = 0;
+	try {
+		if (isZipFile(inputPath)) {
+			searchRoot = extractZipArchive(inputPath);
+			extractedFrom = inputPath;
+		}
 
-	if (!artifactFiles.length) {
-		console.log(JSON.stringify({
-			ok: false,
-			benchmark_mode: args.benchmarkMode,
-			results: [],
-			compatibility_gaps: [gap(
-				'missing_eval_artifact',
-				'error',
-				'input',
-				'No eval artifact projection found in the provided input.'
-			)],
-		}, null, 2));
-		process.exit(1);
+		const files = collectJsonFiles(searchRoot);
+		const inputIsDirectory = fs.statSync(searchRoot).isDirectory();
+		const artifactFiles = inputIsDirectory
+			? files.filter((file) => unwrapEvalArtifact(readJson(file)))
+			: files;
+
+		if (!artifactFiles.length) {
+			console.log(JSON.stringify({
+				ok: false,
+				benchmark_mode: args.benchmarkMode,
+				regrade: args.regrade,
+				input: args.input,
+				extracted_from: extractedFrom,
+				summary: summarizeResults([]),
+				results: [],
+				compatibility_gaps: [gap(
+					'missing_eval_artifact',
+					'error',
+					'input',
+					'No eval artifact projection found in the provided input.'
+				)],
+			}, null, 2));
+			exitCode = 1;
+		} else {
+			const results = await Promise.all(artifactFiles.map((file) => replayRegradeArtifactFile(file, { benchmarkMode: args.benchmarkMode })));
+			const ok = results.every((result) => result.ok);
+
+			console.log(JSON.stringify({ ok, benchmark_mode: args.benchmarkMode, regrade: args.regrade, input: args.input, extracted_from: extractedFrom, summary: summarizeResults(results), results }, null, 2));
+			if (!ok) {
+				exitCode = 1;
+			}
+		}
+	} finally {
+		if (extractedFrom) {
+			fs.rmSync(searchRoot, { recursive: true, force: true });
+		}
 	}
-
-	const results = await Promise.all(artifactFiles.map((file) => replayRegradeArtifactFile(file, { benchmarkMode: args.benchmarkMode })));
-	const ok = results.every((result) => result.ok);
-
-	console.log(JSON.stringify({ ok, benchmark_mode: args.benchmarkMode, results }, null, 2));
-	if (!ok) {
-		process.exit(1);
-	}
+	process.exit(exitCode);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
