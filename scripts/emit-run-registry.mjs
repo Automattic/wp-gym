@@ -124,6 +124,27 @@ function slug(value) {
 	return String(value || 'run').replace(/[^A-Za-z0-9_.-]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'run';
 }
 
+function positiveInteger(value, fallback = 1) {
+	const number = Number(value);
+	return Number.isInteger(number) && number > 0 ? number : fallback;
+}
+
+function attemptMetadata(evalArtifact) {
+	const provenanceAttempt = evalArtifact.provenance?.attempt || {};
+	const templateValues = evalArtifact.reports?.template_values || evalArtifact.reports?.pr_template_values || {};
+	const resultSetId = provenanceAttempt.result_set_id || templateValues.result_set_id || null;
+	const index = positiveInteger(provenanceAttempt.index || templateValues.attempt_index, 1);
+	const count = positiveInteger(provenanceAttempt.count || templateValues.attempt_count, 1);
+	return {
+		id: provenanceAttempt.id || templateValues.attempt_id || (resultSetId ? `${resultSetId}-attempt-${index}` : null),
+		index,
+		count: Math.max(count, index),
+		resultSetId,
+		seed: provenanceAttempt.seed || templateValues.seed || null,
+		temperature: provenanceAttempt.temperature || templateValues.temperature || null,
+	};
+}
+
 function firstReference(evalArtifact, groups) {
 	for (const group of groups) {
 		const refs = group(evalArtifact);
@@ -237,7 +258,8 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 	const completedAt = evalArtifact.projection?.created_at || new Date().toISOString();
 	const provider = evalArtifact.runner?.provider || 'unknown-provider';
 	const model = evalArtifact.runner?.model || 'unknown-model';
-	const runId = [evalArtifact.runner?.workflow?.run_id, scenario.id, provider, model].filter(Boolean).join('-') || `${scenario.id}-${provider}-${model}`;
+	const attempt = attemptMetadata(evalArtifact);
+	const runId = attempt.id || [evalArtifact.runner?.workflow?.run_id, scenario.id, provider, model].filter(Boolean).join('-') || `${scenario.id}-${provider}-${model}`;
 	const evalReference = {
 		kind: 'json',
 		path_or_url: repoRelative(evalArtifactFile),
@@ -266,7 +288,12 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 		run: {
 			id: runId,
 			actor: evalArtifact.runner?.agent_slug || 'unknown-agent',
-			attempt: 1,
+			attempt: attempt.index,
+			attempt_id: attempt.id,
+			attempt_count: attempt.count,
+			result_set_id: attempt.resultSetId,
+			seed: attempt.seed,
+			temperature: attempt.temperature,
 			started_at: evalArtifact.runtime?.artifact_bundle?.created_at || null,
 			completed_at: completedAt,
 			outcome: evalArtifact.status?.outcome || (evalArtifact.grader?.success ? 'passed' : 'failed'),
@@ -293,10 +320,10 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			failure_class: evalArtifact.status?.failure_class || (evalArtifact.grader?.success ? 'none' : 'task_failure'),
 		},
 		calibration: {
-			row_type: provider.includes('human') ? 'human_reference' : 'frontier_model',
+			row_type: provider.includes('human') ? 'human_reference' : attempt.count > 1 ? 'repeated_attempts' : 'frontier_model',
 			included: taskSet.benchmark_status !== 'excluded',
 			status: taskSet.benchmark_status,
-			result_set_id: scenario.calibration?.baseline_result_sets?.[0] || null,
+			result_set_id: attempt.resultSetId || scenario.calibration?.baseline_result_sets?.[0] || null,
 		},
 		benchmark: {
 			eligible: exclusionReasons.length === 0,
