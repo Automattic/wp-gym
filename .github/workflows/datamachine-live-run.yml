@@ -29,15 +29,6 @@ on:
         required: true
         default: true
         type: boolean
-      agent_runtime:
-        description: Agent runtime implementation to exercise.
-        required: true
-        default: homeboy
-        type: choice
-        options:
-          - homeboy
-          - wp-codebox
-
 permissions:
   actions: read
   contents: write
@@ -92,7 +83,6 @@ jobs:
       provider: ${{ matrix.provider }}
       model: ${{ matrix.model }}
       provider_plugin: ${{ matrix.provider_plugin }}
-      agent_runtime: ${{ inputs.agent_runtime }}
       success_requires_pr: ${{ matrix.success_requires_pr }}
       runner_workspace: ${{ matrix.runner_workspace }}
       pipeline_step_patches: ${{ matrix.pipeline_step_patches }}
