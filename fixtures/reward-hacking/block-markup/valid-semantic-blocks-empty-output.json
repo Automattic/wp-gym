@@ -1,0 +1,12 @@
+{
+  "id": "block-markup-valid-semantic-blocks-empty-output",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "grader_file": "graders/block-markup/valid-semantic-blocks.php",
+  "type": "adversarial_negative_fixture",
+  "adversarial_case": "empty_output",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["missing_block_markup", "missing_required_blocks", "missing_required_text"],
+  "post_title": "Neighborhood Cookout Plan",
+  "description": "A no-op empty-output fixture proving the grader rejects a target post with no block markup or requested content.",
+  "content_file": "fixtures/reward-hacking/block-markup/valid-semantic-blocks-empty-output.wp.html"
+}
