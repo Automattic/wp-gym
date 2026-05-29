@@ -19,6 +19,45 @@
     "schema_version": { "type": "integer", "minimum": 1 },
     "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "label": { "type": "string", "minLength": 1 },
+    "split": {
+      "type": "object",
+      "description": "Public/calibration/validation/held-out split and variant-lineage metadata. Private task contents stay out of public manifests.",
+      "required": ["membership", "variant_family", "variant_seed", "artifact_policy"],
+      "properties": {
+        "membership": { "enum": ["public", "calibration", "validation", "held_out_private"] },
+        "variant_family": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "variant_seed": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$" },
+        "parent_scenario_id": { "type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "lineage_note": { "type": "string" },
+        "held_out_private_variant": {
+          "type": "object",
+          "description": "Non-sensitive pointer describing that a private variant exists or is planned without exposing prompt, fixture, or grader contents.",
+          "properties": {
+            "status": { "enum": ["planned", "ready", "not_applicable"] },
+            "reference": { "type": "string" },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "artifact_policy": {
+          "type": "object",
+          "required": ["public_artifacts", "private_artifacts", "grader_exposure"],
+          "properties": {
+            "public_artifacts": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+            },
+            "private_artifacts": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+            },
+            "grader_exposure": { "enum": ["full_public", "summary_public", "private"] }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
     "prompt_file": { "type": "string", "minLength": 1 },
     "grader_file": { "type": "string", "minLength": 1 },
     "rules": {
@@ -191,7 +230,7 @@
         "benchmark_blockers"
       ],
       "properties": {
-        "status": { "enum": ["demo", "pilot", "calibrating", "benchmark_ready", "excluded"] },
+        "status": { "enum": ["demo", "pilot", "calibrating", "benchmark_ready", "deprecated", "retired", "excluded"] },
         "benchmark_scope": { "enum": ["demo", "pilot", "calibration", "benchmark", "excluded"] },
         "difficulty_band": { "enum": ["uncalibrated", "smoke", "easy", "medium", "hard"] },
         "headline_score_eligible": { "type": "boolean" },
@@ -226,6 +265,40 @@
         "benchmark_blockers": {
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "benchmark_metadata": {
+          "type": "object",
+          "description": "Version and compatibility identity used when a scenario is promoted into benchmark comparison.",
+          "required": ["benchmark_version", "compatibility_group"],
+          "properties": {
+            "benchmark_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-z0-9][a-z0-9.-]*)?$" },
+            "compatibility_group": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+            "compatible_with": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "version_identity": {
+              "type": "object",
+              "required": [
+                "manifest_sha256",
+                "prompt_sha256",
+                "grader_sha256",
+                "setup_sha256",
+                "expected_artifacts_sha256",
+                "replay_contract_sha256"
+              ],
+              "properties": {
+                "manifest_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "prompt_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "grader_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "setup_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "expected_artifacts_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "replay_contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true
