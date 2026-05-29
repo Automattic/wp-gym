@@ -70,10 +70,10 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix: ${{ fromJson(needs.resolve-matrix.outputs.matrix) }}
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@96f0a107221e2de0e990e1927ce3386bafd57ef2
+    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@bfe5c39a14e6d17673aa0a4fbafd93ed48b8d801
     with:
       bundle_path: bundles/datamachine-task-runner
-      homeboy_extensions_ref: 96f0a107221e2de0e990e1927ce3386bafd57ef2
+      homeboy_extensions_ref: bfe5c39a14e6d17673aa0a4fbafd93ed48b8d801
       bundle_ref: ${{ inputs.bundle_ref }}
       bundle_validator_spec: bundle-validator.json
       agent_slug: wordpress-task-runner
