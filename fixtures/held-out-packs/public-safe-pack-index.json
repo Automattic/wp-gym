@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "pack": {
-    "id": "core-block-editing-held-out-v1",
+    "id": "benchmark-readiness-pilot-held-out-v1",
     "version": "1.0.0",
-    "label": "Core block editing held-out private pack",
-    "compatibility_group": "core-block-editing-v1",
+    "label": "Benchmark readiness pilot held-out private pack",
+    "compatibility_group": "benchmark-readiness-pilot-held-out-v1",
     "created_at": "2026-05-29T00:00:00Z",
-    "public_reference": "held-out-pack:core-block-editing-held-out-v1@1.0.0"
+    "public_reference": "held-out-pack:benchmark-readiness-pilot-held-out-v1@1.0.0"
   },
   "boundary": {
     "storage": "private_repo",
@@ -26,7 +26,7 @@
       "id": "block-markup-valid-semantic-blocks-held-out-v1",
       "scenario_id": "block-markup-valid-semantic-blocks-held-out",
       "parent_scenario_id": "block-markup-valid-semantic-blocks",
-      "variant_family": "block-markup-valid-semantic-blocks",
+      "variant_family": "block-markup-cookout-page",
       "variant_seed": "held-out-v1",
       "split_membership": "held_out_private",
       "task_contract_level": "benchmark_replay",
@@ -46,6 +46,84 @@
         { "name": "setup", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000004", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
         { "name": "expected_artifacts", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000005", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
         { "name": "replay_contract", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000006", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" }
+      ]
+    },
+    {
+      "id": "block-markup-no-fallback-pricing-section-held-out-v1",
+      "scenario_id": "block-markup-no-fallback-pricing-section-held-out",
+      "parent_scenario_id": "block-markup-no-fallback-pricing-section",
+      "variant_family": "block-markup-pricing-page",
+      "variant_seed": "held-out-v1",
+      "split_membership": "held_out_private",
+      "task_contract_level": "benchmark_replay",
+      "calibration_status": "calibrating",
+      "version_identity": {
+        "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000011",
+        "prompt_sha256": "0000000000000000000000000000000000000000000000000000000000000012",
+        "grader_sha256": "0000000000000000000000000000000000000000000000000000000000000013",
+        "setup_sha256": "0000000000000000000000000000000000000000000000000000000000000014",
+        "expected_artifacts_sha256": "0000000000000000000000000000000000000000000000000000000000000015",
+        "replay_contract_sha256": "0000000000000000000000000000000000000000000000000000000000000016"
+      },
+      "artifacts": [
+        { "name": "scenario_manifest", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000011", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "prompt", "kind": "markdown", "sha256": "0000000000000000000000000000000000000000000000000000000000000012", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "grader", "kind": "php", "sha256": "0000000000000000000000000000000000000000000000000000000000000013", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "setup", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000014", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "expected_artifacts", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000015", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "replay_contract", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000016", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" }
+      ]
+    },
+    {
+      "id": "modern-wordpress-api-abilities-site-summary-held-out-v1",
+      "scenario_id": "modern-wordpress-api-abilities-site-summary-held-out",
+      "parent_scenario_id": "modern-wordpress-api-abilities-site-summary",
+      "variant_family": "modern-wordpress-api-site-summary",
+      "variant_seed": "held-out-v1",
+      "split_membership": "held_out_private",
+      "task_contract_level": "benchmark_replay",
+      "calibration_status": "calibrating",
+      "version_identity": {
+        "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000021",
+        "prompt_sha256": "0000000000000000000000000000000000000000000000000000000000000022",
+        "grader_sha256": "0000000000000000000000000000000000000000000000000000000000000023",
+        "setup_sha256": "0000000000000000000000000000000000000000000000000000000000000024",
+        "expected_artifacts_sha256": "0000000000000000000000000000000000000000000000000000000000000025",
+        "replay_contract_sha256": "0000000000000000000000000000000000000000000000000000000000000026"
+      },
+      "artifacts": [
+        { "name": "scenario_manifest", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000021", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "prompt", "kind": "markdown", "sha256": "0000000000000000000000000000000000000000000000000000000000000022", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "grader", "kind": "php", "sha256": "0000000000000000000000000000000000000000000000000000000000000023", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "setup", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000024", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "expected_artifacts", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000025", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "replay_contract", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000026", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" }
+      ]
+    },
+    {
+      "id": "modern-wordpress-api-rest-route-status-held-out-v1",
+      "scenario_id": "modern-wordpress-api-rest-route-status-held-out",
+      "parent_scenario_id": "modern-wordpress-api-rest-route-status",
+      "variant_family": "modern-wordpress-api-rest-status",
+      "variant_seed": "held-out-v1",
+      "split_membership": "held_out_private",
+      "task_contract_level": "benchmark_replay",
+      "calibration_status": "calibrating",
+      "version_identity": {
+        "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000031",
+        "prompt_sha256": "0000000000000000000000000000000000000000000000000000000000000032",
+        "grader_sha256": "0000000000000000000000000000000000000000000000000000000000000033",
+        "setup_sha256": "0000000000000000000000000000000000000000000000000000000000000034",
+        "expected_artifacts_sha256": "0000000000000000000000000000000000000000000000000000000000000035",
+        "replay_contract_sha256": "0000000000000000000000000000000000000000000000000000000000000036"
+      },
+      "artifacts": [
+        { "name": "scenario_manifest", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000031", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "prompt", "kind": "markdown", "sha256": "0000000000000000000000000000000000000000000000000000000000000032", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "grader", "kind": "php", "sha256": "0000000000000000000000000000000000000000000000000000000000000033", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "setup", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000034", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "expected_artifacts", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000035", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "replay_contract", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000036", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" }
       ]
     }
   ]

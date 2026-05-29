@@ -1,7 +1,8 @@
 # Private Held-Out Pack Workflow
 
 Issues: [#165](https://github.com/Automattic/wp-gym/issues/165),
-[#204](https://github.com/Automattic/wp-gym/issues/204)
+[#204](https://github.com/Automattic/wp-gym/issues/204),
+[#212](https://github.com/Automattic/wp-gym/issues/212)
 
 Private held-out packs let `wp-gym` run headline benchmark rows without putting
 private prompts, fixtures, expected strings, screenshots, replay bundles, or
@@ -156,8 +157,10 @@ hash/provenance policy.
 ## Public Fixture Coverage
 
 `npm run held-out-packs:test` creates a synthetic private pack in a temporary
-directory, then verifies the full public-safe path:
+directory for the four `benchmark-readiness-pilot` scenario families, then
+verifies the full public-safe path:
 
+- public-safe pack index membership for every pilot scenario family;
 - local private pack validation with `--require-local-artifacts` semantics;
 - dry-run resolution without leaking prompt text or private filesystem paths;
 - CI-style `GITHUB_OUTPUT` matrix resolution for live execution;

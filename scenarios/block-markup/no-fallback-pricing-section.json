@@ -117,7 +117,22 @@
       "missing_repeated_attempts",
       "held_out_private_variants_not_ready",
       "known_reward_shortcut"
-    ]
+    ],
+    "reward_soundness_review": {
+      "status": "reviewed",
+      "reviewed_at": "2026-05-29",
+      "reviewer_type": "human",
+      "artifact": "reviews/reward-soundness/benchmark-readiness-pilot.json",
+      "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
+      "shortcut_resolution_status": "unresolved",
+      "representative_passed_outputs": ["block-markup-no-fallback-pricing-meaningful-content"],
+      "adversarial_or_failed_outputs": ["block-markup-no-fallback-pricing-empty-skeleton", "block-markup-no-fallback-pricing-keyword-block-stuffing"],
+      "diagnostic_contract_review": {
+        "status": "reviewed",
+        "classification": "wordpress_state_diagnostic_only_not_benchmark_replay",
+        "promotion_blocker": "diagnostic_contract_only"
+      }
+    }
   },
   "expected_artifacts": [
     "wordpress_state",

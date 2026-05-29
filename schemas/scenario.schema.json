@@ -345,6 +345,50 @@
             }
           },
           "additionalProperties": true
+        },
+        "reward_soundness_review": {
+          "type": "object",
+          "description": "Human/reference-oracle review evidence that representative pass and adversarial outputs match expected WordPress quality before benchmark promotion.",
+          "required": [
+            "status",
+            "reviewed_at",
+            "reviewer_type",
+            "artifact",
+            "classification",
+            "shortcut_resolution_status",
+            "representative_passed_outputs",
+            "adversarial_or_failed_outputs",
+            "diagnostic_contract_review"
+          ],
+          "properties": {
+            "status": { "enum": ["reviewed", "needs_review"] },
+            "reviewed_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+            "reviewer_type": { "enum": ["human", "reference_oracle"] },
+            "artifact": { "type": "string", "minLength": 1 },
+            "classification": { "type": "string", "minLength": 1 },
+            "shortcut_resolution_status": { "enum": ["resolved", "unresolved", "not_applicable"] },
+            "representative_passed_outputs": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+            },
+            "adversarial_or_failed_outputs": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+            },
+            "diagnostic_contract_review": {
+              "type": "object",
+              "required": ["status", "classification"],
+              "properties": {
+                "status": { "enum": ["reviewed", "not_applicable"] },
+                "classification": { "type": "string", "minLength": 1 },
+                "promotion_blocker": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true
