@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "completed",
+    "status": "failed - tool_result_failed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -8,26 +8,174 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "upsert_post",
+            "tool_name": "local_search",
             "success": true,
             "turn_count": 1
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 1
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 2
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01NjbvMcg55UdC2q3mYAo86H",
+            "tool_name": "local_search",
+            "tool_call_id": "toolu_01RL7zYa8S5JcsDDYeAM4mPt",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:27:04+00:00",
-            "ended_at": "2026-05-29T17:27:04+00:00",
-            "duration_ms": 51,
-            "arguments_sha256": "6ee0965337e0dfe374d4aa452cdf839a8f40944071b0d368da3c8d58ecd5bc13",
-            "result_sha256": "294705b26b69e274560376e0bbe839cd2dfdb9201e2120d22e3a477e1799772a",
+            "started_at": "2026-05-29T17:28:37+00:00",
+            "ended_at": "2026-05-29T17:28:37+00:00",
+            "duration_ms": 21,
+            "arguments_sha256": "9342003089741acbcd7d42eb39d1b3d3875e98429a808aca225bcbf71966f72e",
+            "result_sha256": "8cd6d4f67eab4e745177eab1ac39cd3088424af53b907d45fca5fede046f1b14",
+            "arguments_redacted": {
+                "query": "Marshside Community Garden"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "toolu_01KAmS3YWYKsKGu1SSsBKDD5",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:28:37+00:00",
+            "ended_at": "2026-05-29T17:28:37+00:00",
+            "duration_ms": 18,
+            "arguments_sha256": "cff5aecbe35a7b2a97bd7553a02a5cc5e6b53dde3ab4b3f3c19239fdd8916192",
+            "result_sha256": "3fd59ca782fff1ec4147780e8f05841ec27656e931638d935aa0373aae7c28f9",
+            "arguments_redacted": {
+                "query": "home",
+                "post_types": [
+                    "page"
+                ]
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "toolu_016tb1P2CTryNaxq7yXYQ2oZ",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:28:39+00:00",
+            "ended_at": "2026-05-29T17:28:39+00:00",
+            "duration_ms": 12,
+            "arguments_sha256": "4635f07f1a9dafab5bfed650b1e903b09f3fc8972d2b3537022ac51def996085",
+            "result_sha256": "d6137e475b12261da33b32632083e4675879cc58d96fa547576d1be6041c93a9",
+            "arguments_redacted": {
+                "query": "Marshside garden",
+                "post_types": [
+                    "page",
+                    "post"
+                ]
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01JU74stmFtgHExCmFWQrVNz",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:29:44+00:00",
+            "ended_at": "2026-05-29T17:29:44+00:00",
+            "duration_ms": 4,
+            "arguments_sha256": "0e7539a11c9f17143bb41d5d9e0251052415fff91c8318818a02346a4ec77eca",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "home",
+                "title": "Welcome to Marshside Community Garden",
+                "content": "## A neighborhood garden, grown by neighbors like you\n\nMarshside Community Garden is a shared green space tended by the people who live around it. Whether you want to grow tomatoes, meet a neighbor, get your hands in the soil, or just enjoy a quiet bench under the oak tree \u2014 there's a place for you here.\n\nWe're open to everyone in the neighborhood. No gardening experience required. No green thumb required. Just bring your curiosity (and maybe a sun hat).\n\n## What you'll find at the garden\n\n- **Raised garden plots** that neighbors can request and tend for the season\n- **A shared herb and pollinator garden** open to anyone to enjoy\n- **Tools, compost, and water** available to plot holders and volunteers\n- **Monthly workdays** where we plant, weed, build, and share a snack\n- **Seasonal events** like seedling swaps, harvest potlucks, and kids' planting days\n\n## Ways to get involved\n\n### \ud83c\udf31 Request a garden plot\nPlots are assigned each spring on a first-come, first-served basis, with priority for neighbors who live within walking distance.\n[See plot details and request a plot \u2192](/garden-plots/)\n\n### \ud83d\udee0\ufe0f Join a workday or event\nWorkdays are casual, friendly, and family-welcome. Drop in for an hour or stay the morning.\n[See upcoming events \u2192](/events/)\n\n### \ud83e\udd1d Volunteer with us\nWe always need help with watering shifts, tool care, event hosting, and welcoming new neighbors.\n[Find a volunteer role \u2192](/volunteer/)\n\n### \u2709\ufe0f Just have a question?\nWe're real neighbors and we love hearing from you.\n[Get in touch \u2192](/contact/)\n\n## Visit the garden\n\nThe garden is **open every day from sunrise to sunset**. The front gate stays unlocked during daylight hours \u2014 come walk the paths, sit a while, or say hello to whoever happens to be weeding.\n\nWe can't wait to meet you."
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01FLWCAdwrvbccXFBB9orJVN",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:29:44+00:00",
+            "ended_at": "2026-05-29T17:29:44+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "d8d7c69f6a12e9995bd949f6af0f3591cd89ffe58c3d2847fe6f0b7e5fdce14e",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
             "arguments_omitted": "redacted_arguments_too_large"
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01FowxrKYPQhmaGEKh8JBdiL",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:29:44+00:00",
+            "ended_at": "2026-05-29T17:29:44+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "2396e443c8add55d388c6c5f6c25f373ff19bcf8a7523238b935c6b6bd57a140",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "events",
+                "title": "Events & Workdays",
+                "content": "## Come garden with your neighbors\n\nOur events are open to **everyone** \u2014 plot holders, future gardeners, curious neighbors, kids, dogs on leashes, and folks who just want to sit on a bench and watch the bees. You don't need to RSVP for most events, but it's always nice to know you're coming.\n\n## Regular happenings\n\n### \ud83d\udee0\ufe0f Monthly Workday\n**Second Saturday of every month \u2022 9:00 AM \u2013 12:00 PM**\n\nOur biggest gathering of the month. We tackle shared projects \u2014 building, mulching, pruning, planting \u2014 and we always share coffee and snacks. Stay for the whole morning or just an hour. Tools and gloves provided.\n\n### \ud83d\udca7 Tuesday Evening Watering & Weeding\n**Every Tuesday \u2022 6:00 PM \u2013 7:30 PM**\n\nA quieter weekly drop-in. Bring a water bottle, pull a few weeds, and catch up with neighbors as the sun goes down.\n\n### \ud83c\udf3b Open Garden Hours\n**Every day \u2022 Sunrise to sunset**\n\nYou don't need an event to visit. The gate is open all day.\n\n## Seasonal events\n\nWe host a handful of special gatherings each year. Watch this page (or our front gate chalkboard!) for dates.\n\n- **Spring Seedling Swap** \u2014 Early April. Bring extra starts, take home new ones.\n- **Kids' Planting Day** \u2014 Late May. Little hands welcome, dirt encouraged.\n- **Midsummer Garden Party** \u2014 July. Potluck, music, and a tour of every plot.\n- **Harvest Potluck** \u2014 September. Bring a dish made with something you grew.\n- **Garden Bedding-Down Day** \u2014 October. We mulch the beds for winter and toast the season.\n\n## Want to host an event?\n\nHave an idea for a class, a meetup, or a workshop you'd love to hold at the garden? We love when neighbors bring their skills to share.\n\n[Get in touch \u2192](/contact/) and let's make it happen."
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_019cftkFmQDcPJbh1XVPNiso",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:29:44+00:00",
+            "ended_at": "2026-05-29T17:29:44+00:00",
+            "duration_ms": 10,
+            "arguments_sha256": "8f6323f239a02e931e8ab6ec5a28ec434fd503a8602c0a5c515e54a15e7f4524",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_omitted": "redacted_arguments_too_large"
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01BkSjUG4KVs3R3msMY7Uhwm",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:29:44+00:00",
+            "ended_at": "2026-05-29T17:29:44+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "61d1e297ea65002b9db219648f1c143cd10bbd67f2ef05ef04db01ee06ac4c5b",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "contact",
+                "title": "Contact Us",
+                "content": "## Say hello\n\nWe're a small group of neighbors and we love hearing from people. Whether you want to request a plot, volunteer, ask a gardening question, or just introduce yourself \u2014 please reach out.\n\n## How to reach us\n\n### \u2709\ufe0f Email\n**hello@marshsidegarden.org**\n\nThe fastest way to get a response. A real human (one of us!) reads every message and usually replies within a week.\n\n### \ud83d\udcec At the garden\nThere's a small **weatherproof message box** mounted on the tool shed by the front gate. Drop a note any time \u2014 we check it during Tuesday evening watering.\n\n### \ud83d\udccd Visit in person\n**Marshside Community Garden**\n[Add street address here]\n[Add city, state, zip here]\n\nThe front gate is open every day from sunrise to sunset. Come on in and have a look around. If you visit during a Tuesday evening watering (6:00\u20137:30 PM) or a second-Saturday workday (9:00 AM\u2013noon), you're almost guaranteed to find someone to chat with.\n\n## Common questions\n\n**How do I request a plot?**\nSee the [Garden Plots](/garden-plots/) page for details, then email us.\n\n**Can I just stop by?**\nYes! The garden is always open during daylight hours. No appointment needed.\n\n**Do you accept donations?**\nWe do \u2014 soil, seeds, gently used tools, and small cash contributions all help. Email us first so we can make sure your donation will be put to good use.\n\n**Are dogs welcome?**\nYes, on a leash, and please clean up. We love a good garden dog.\n\n**I have an idea for the garden!**\nWe'd love to hear it. Send us an email or drop a note in the message box.\n\n---\n\n*We're neighbors, not a help desk. Please be patient \u2014 sometimes life (or the tomato harvest) gets in the way of a quick reply.*"
+            }
         }
     ],
     "transcript": null,
@@ -36,7 +184,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "29876af3969693da562ad647f585affdba9510c2ca8b6b6e7b083659ad8cb258",
+            "sha256": "c7a7a945e16c730a4dcb7a56fb3c393f632b6125a12b606e2508eee241367855",
             "bounded": true,
             "redacted": true
         }
@@ -47,11 +195,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:40625/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "a48fb90c4d99ba41950be81aba59033ba7df6741fd1333fc3efa0c9d6a946ebf",
-            "payload_sha256": "e7cfb3ad1b7f57566c8e335fad131911df138f1acf84af08f12c14e33574019f",
-            "bytes": 1420,
-            "written_at": "2026-05-29T17:27:15+00:00"
+            "url": "http://127.0.0.1:43209/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "04a4eb478dd3c7241020c2cca11353bf938a7daf9d7dd1ee70b8aed28a683239",
+            "payload_sha256": "dc3bb71b49aba2f789c64a1bc502f720b666c86048bb7689ff0693961f31e6da",
+            "bytes": 13566,
+            "written_at": "2026-05-29T17:29:56+00:00"
         }
     },
     "transcript_artifact": null,
@@ -61,40 +209,192 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "completed",
+            "job_status": "failed - tool_result_failed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:26:38",
-            "completed_at": "2026-05-29 17:27:15"
+            "created_at": "2026-05-29 17:28:33",
+            "completed_at": "2026-05-29 17:29:56"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 8,
+        "entries_emitted": 8,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01NjbvMcg55UdC2q3mYAo86H",
+                "tool_name": "local_search",
+                "tool_call_id": "toolu_01RL7zYa8S5JcsDDYeAM4mPt",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:27:04+00:00",
-                "ended_at": "2026-05-29T17:27:04+00:00",
-                "duration_ms": 51,
-                "arguments_sha256": "6ee0965337e0dfe374d4aa452cdf839a8f40944071b0d368da3c8d58ecd5bc13",
-                "result_sha256": "294705b26b69e274560376e0bbe839cd2dfdb9201e2120d22e3a477e1799772a",
+                "started_at": "2026-05-29T17:28:37+00:00",
+                "ended_at": "2026-05-29T17:28:37+00:00",
+                "duration_ms": 21,
+                "arguments_sha256": "9342003089741acbcd7d42eb39d1b3d3875e98429a808aca225bcbf71966f72e",
+                "result_sha256": "8cd6d4f67eab4e745177eab1ac39cd3088424af53b907d45fca5fede046f1b14",
+                "arguments_redacted": {
+                    "query": "Marshside Community Garden"
+                },
+                "entry_sha256": "44387b62ae51bf3626eb6bd234652dfa28a41c75a8dc02a42c51833e568af3cc"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "toolu_01KAmS3YWYKsKGu1SSsBKDD5",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:28:37+00:00",
+                "ended_at": "2026-05-29T17:28:37+00:00",
+                "duration_ms": 18,
+                "arguments_sha256": "cff5aecbe35a7b2a97bd7553a02a5cc5e6b53dde3ab4b3f3c19239fdd8916192",
+                "result_sha256": "3fd59ca782fff1ec4147780e8f05841ec27656e931638d935aa0373aae7c28f9",
+                "arguments_redacted": {
+                    "query": "home",
+                    "post_types": [
+                        "page"
+                    ]
+                },
+                "entry_sha256": "cc25f3aae0f1c6f0f54538b664a056a516df4057aa380607cc7f65c4597e3b51"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "toolu_016tb1P2CTryNaxq7yXYQ2oZ",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:28:39+00:00",
+                "ended_at": "2026-05-29T17:28:39+00:00",
+                "duration_ms": 12,
+                "arguments_sha256": "4635f07f1a9dafab5bfed650b1e903b09f3fc8972d2b3537022ac51def996085",
+                "result_sha256": "d6137e475b12261da33b32632083e4675879cc58d96fa547576d1be6041c93a9",
+                "arguments_redacted": {
+                    "query": "Marshside garden",
+                    "post_types": [
+                        "page",
+                        "post"
+                    ]
+                },
+                "entry_sha256": "be60282ca5bd29bfa6cd52f4ac89295c26975bfc344df53ea281ae7da2e3e569"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01JU74stmFtgHExCmFWQrVNz",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:29:44+00:00",
+                "ended_at": "2026-05-29T17:29:44+00:00",
+                "duration_ms": 4,
+                "arguments_sha256": "0e7539a11c9f17143bb41d5d9e0251052415fff91c8318818a02346a4ec77eca",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "home",
+                    "title": "Welcome to Marshside Community Garden",
+                    "content": "## A neighborhood garden, grown by neighbors like you\n\nMarshside Community Garden is a shared green space tended by the people who live around it. Whether you want to grow tomatoes, meet a neighbor, get your hands in the soil, or just enjoy a quiet bench under the oak tree \u2014 there's a place for you here.\n\nWe're open to everyone in the neighborhood. No gardening experience required. No green thumb required. Just bring your curiosity (and maybe a sun hat).\n\n## What you'll find at the garden\n\n- **Raised garden plots** that neighbors can request and tend for the season\n- **A shared herb and pollinator garden** open to anyone to enjoy\n- **Tools, compost, and water** available to plot holders and volunteers\n- **Monthly workdays** where we plant, weed, build, and share a snack\n- **Seasonal events** like seedling swaps, harvest potlucks, and kids' planting days\n\n## Ways to get involved\n\n### \ud83c\udf31 Request a garden plot\nPlots are assigned each spring on a first-come, first-served basis, with priority for neighbors who live within walking distance.\n[See plot details and request a plot \u2192](/garden-plots/)\n\n### \ud83d\udee0\ufe0f Join a workday or event\nWorkdays are casual, friendly, and family-welcome. Drop in for an hour or stay the morning.\n[See upcoming events \u2192](/events/)\n\n### \ud83e\udd1d Volunteer with us\nWe always need help with watering shifts, tool care, event hosting, and welcoming new neighbors.\n[Find a volunteer role \u2192](/volunteer/)\n\n### \u2709\ufe0f Just have a question?\nWe're real neighbors and we love hearing from you.\n[Get in touch \u2192](/contact/)\n\n## Visit the garden\n\nThe garden is **open every day from sunrise to sunset**. The front gate stays unlocked during daylight hours \u2014 come walk the paths, sit a while, or say hello to whoever happens to be weeding.\n\nWe can't wait to meet you."
+                },
+                "entry_sha256": "d6a916ffa8bee7813db33e4f951541369014fd0fccf6f7aeefa2f072f7cab743"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01FLWCAdwrvbccXFBB9orJVN",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:29:44+00:00",
+                "ended_at": "2026-05-29T17:29:44+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "d8d7c69f6a12e9995bd949f6af0f3591cd89ffe58c3d2847fe6f0b7e5fdce14e",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
                 "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "0dce6d3e458a3c56dcc798126d779d055a656a0a1b379c95c7c987b32e64c9e3"
+                "entry_sha256": "1a75990f164ebd8ff53a0053082719e903b14175dffe7e734f041f8162006fe5"
+            },
+            {
+                "index": 5,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01FowxrKYPQhmaGEKh8JBdiL",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:29:44+00:00",
+                "ended_at": "2026-05-29T17:29:44+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "2396e443c8add55d388c6c5f6c25f373ff19bcf8a7523238b935c6b6bd57a140",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "events",
+                    "title": "Events & Workdays",
+                    "content": "## Come garden with your neighbors\n\nOur events are open to **everyone** \u2014 plot holders, future gardeners, curious neighbors, kids, dogs on leashes, and folks who just want to sit on a bench and watch the bees. You don't need to RSVP for most events, but it's always nice to know you're coming.\n\n## Regular happenings\n\n### \ud83d\udee0\ufe0f Monthly Workday\n**Second Saturday of every month \u2022 9:00 AM \u2013 12:00 PM**\n\nOur biggest gathering of the month. We tackle shared projects \u2014 building, mulching, pruning, planting \u2014 and we always share coffee and snacks. Stay for the whole morning or just an hour. Tools and gloves provided.\n\n### \ud83d\udca7 Tuesday Evening Watering & Weeding\n**Every Tuesday \u2022 6:00 PM \u2013 7:30 PM**\n\nA quieter weekly drop-in. Bring a water bottle, pull a few weeds, and catch up with neighbors as the sun goes down.\n\n### \ud83c\udf3b Open Garden Hours\n**Every day \u2022 Sunrise to sunset**\n\nYou don't need an event to visit. The gate is open all day.\n\n## Seasonal events\n\nWe host a handful of special gatherings each year. Watch this page (or our front gate chalkboard!) for dates.\n\n- **Spring Seedling Swap** \u2014 Early April. Bring extra starts, take home new ones.\n- **Kids' Planting Day** \u2014 Late May. Little hands welcome, dirt encouraged.\n- **Midsummer Garden Party** \u2014 July. Potluck, music, and a tour of every plot.\n- **Harvest Potluck** \u2014 September. Bring a dish made with something you grew.\n- **Garden Bedding-Down Day** \u2014 October. We mulch the beds for winter and toast the season.\n\n## Want to host an event?\n\nHave an idea for a class, a meetup, or a workshop you'd love to hold at the garden? We love when neighbors bring their skills to share.\n\n[Get in touch \u2192](/contact/) and let's make it happen."
+                },
+                "entry_sha256": "571ec9d589d9217586433d0721218b0a5aa27d562b5e481380c5b56f908a914e"
+            },
+            {
+                "index": 6,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_019cftkFmQDcPJbh1XVPNiso",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:29:44+00:00",
+                "ended_at": "2026-05-29T17:29:44+00:00",
+                "duration_ms": 10,
+                "arguments_sha256": "8f6323f239a02e931e8ab6ec5a28ec434fd503a8602c0a5c515e54a15e7f4524",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "arguments_omitted": "redacted_arguments_too_large",
+                "entry_sha256": "ccfb013db584150cf1b5bb84c143c7d7dcbf315fc217a241b4081f6725a9c7ba"
+            },
+            {
+                "index": 7,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01BkSjUG4KVs3R3msMY7Uhwm",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:29:44+00:00",
+                "ended_at": "2026-05-29T17:29:44+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "61d1e297ea65002b9db219648f1c143cd10bbd67f2ef05ef04db01ee06ac4c5b",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "contact",
+                    "title": "Contact Us",
+                    "content": "## Say hello\n\nWe're a small group of neighbors and we love hearing from people. Whether you want to request a plot, volunteer, ask a gardening question, or just introduce yourself \u2014 please reach out.\n\n## How to reach us\n\n### \u2709\ufe0f Email\n**hello@marshsidegarden.org**\n\nThe fastest way to get a response. A real human (one of us!) reads every message and usually replies within a week.\n\n### \ud83d\udcec At the garden\nThere's a small **weatherproof message box** mounted on the tool shed by the front gate. Drop a note any time \u2014 we check it during Tuesday evening watering.\n\n### \ud83d\udccd Visit in person\n**Marshside Community Garden**\n[Add street address here]\n[Add city, state, zip here]\n\nThe front gate is open every day from sunrise to sunset. Come on in and have a look around. If you visit during a Tuesday evening watering (6:00\u20137:30 PM) or a second-Saturday workday (9:00 AM\u2013noon), you're almost guaranteed to find someone to chat with.\n\n## Common questions\n\n**How do I request a plot?**\nSee the [Garden Plots](/garden-plots/) page for details, then email us.\n\n**Can I just stop by?**\nYes! The garden is always open during daylight hours. No appointment needed.\n\n**Do you accept donations?**\nWe do \u2014 soil, seeds, gently used tools, and small cash contributions all help. Email us first so we can make sure your donation will be put to good use.\n\n**Are dogs welcome?**\nYes, on a leash, and please clean up. We love a good garden dog.\n\n**I have an idea for the garden!**\nWe'd love to hear it. Send us an email or drop a note in the message box.\n\n---\n\n*We're neighbors, not a help desk. Please be patient \u2014 sometimes life (or the tomato harvest) gets in the way of a quick reply.*"
+                },
+                "entry_sha256": "88b1341c17560fe71f229bbc9b6042bd4aae9e4c5e6da18d61c45b24a8460b87"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "29876af3969693da562ad647f585affdba9510c2ca8b6b6e7b083659ad8cb258"
+        "sha256": "c7a7a945e16c730a4dcb7a56fb3c393f632b6125a12b606e2508eee241367855"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
