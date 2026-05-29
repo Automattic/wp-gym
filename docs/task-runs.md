@@ -297,7 +297,10 @@ To trigger the first live run:
 5. Confirm repository secrets include `OPENAI_API_KEY` and `ANTHROPIC_API_KEY`.
 6. Review the generated PRs. Each task/model that wrote workspace changes should
    have its own PR with the result summary and hidden-grade checks in the body.
-7. Use workflow artifacts only when deeper replay/debugging is needed. Replay
+7. Review the `wp-gym-run-registry-<workflow-run-id>` artifact. It contains one
+   validated registry entry per recovered completed eval row, the canonical eval
+   artifact projections, and a pilot-scope report.
+8. Use workflow artifacts only when deeper replay/debugging is needed. Replay
    bundle artifacts are named `wp-gym-replay-<task>-<provider-model>` when the
    Homeboy runner emits them.
 
