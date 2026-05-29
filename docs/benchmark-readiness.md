@@ -226,6 +226,28 @@ This is real runtime evidence, but it is still non-headline calibration evidence
 it does not include cheap-model, frontier-model, repeated-attempt, or held-out
 private rows. The scenario therefore stays `calibrating` with explicit blockers.
 
+## Live Model Baselines
+
+Issue [#127](https://github.com/Automattic/wp-gym/issues/127) has one
+registry-compatible live model result set for `block-markup-valid-semantic-blocks`:
+
+| Scenario | Result set | Rows covered | Evidence | Promotion state |
+| --- | --- | --- | --- | --- |
+| `block-markup-valid-semantic-blocks` | `block-markup-valid-semantic-blocks-live-model-baseline` | OpenAI `gpt-5.5` frontier row, Anthropic `claude-opus-4-7` frontier row | https://github.com/Automattic/wp-gym/actions/runs/26641080784 artifact `wp-gym-run-registry-26641080784` | `calibrating`; cheap-model, repeated-attempt, held-out, diagnostic-contract, and known-shortcut blockers remain |
+
+Refresh the registry-backed row from a downloaded run artifact with:
+
+```sh
+npm run run-registry:validate
+npm run calibration-results:validate
+```
+
+These rows prove that real model attempts can complete through the live runner,
+emit accepted run-registry entries, and attach replay artifacts. They do not
+establish benchmark readiness because they are single attempts on a public
+diagnostic scenario and do not include a cheap-model row, repeated-attempt
+variance, or held-out private variants.
+
 ## Benchmark-Ready Gates
 
 The pilot becomes benchmark-ready only after these gates are complete:
