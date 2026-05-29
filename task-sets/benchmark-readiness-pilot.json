@@ -20,6 +20,16 @@
     "compatibility_group": "benchmark-readiness-pilot",
     "compatible_with": []
   },
+  "calibration_matrix": {
+    "baseline_models": [
+      {
+        "row_type": "cheap_model",
+        "provider": "openai",
+        "model": "gpt-5.4-mini",
+        "label": "openai-gpt-5-4-mini"
+      }
+    ]
+  },
   "capability_coverage": {
     "schema_version": 1,
     "primary": ["agent_tooling_automation_surfaces", "data_interaction_apis", "gutenberg_blocks"],

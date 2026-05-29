@@ -126,6 +126,36 @@ function loadShortcutCoverage(root) {
 	return coverage;
 }
 
+function loadCalibrationResults(root) {
+	const results = new Map();
+	const fixtureRoot = path.join(root, 'fixtures', 'calibration');
+	if (!fs.existsSync(fixtureRoot)) {
+		return results;
+	}
+
+	for (const file of listJsonFiles(fixtureRoot)) {
+		const result = readJson(file);
+		results.set(result.id, { file, result });
+	}
+	return results;
+}
+
+function calibrationRowsForScenario(calibration, context, rowType) {
+	const rows = [];
+	for (const resultSetId of calibration.calibration_result_sets || calibration.baseline_result_sets || []) {
+		const fixture = context.calibrationResultsById?.get(resultSetId);
+		if (!fixture) {
+			continue;
+		}
+		for (const row of fixture.result.rows || []) {
+			if (row.row_type === rowType) {
+				rows.push({ ...row, result_set_id: row.result_set_id || resultSetId, file: repoRelative(context.root, fixture.file) });
+			}
+		}
+	}
+	return rows;
+}
+
 function scenarioSourceEnvelope(scenario) {
 	return {
 		type: 'scenario',
@@ -182,6 +212,16 @@ function evaluateScenario(scenario, context = {}) {
 	gates.push(calibration.pass_rate_band && calibration.pass_rate_band !== 'uncalibrated'
 		? pass('pass_rate_band_calibrated', `Pass-rate band is ${calibration.pass_rate_band}.`)
 		: fail('pass_rate_band_calibrated', 'Scenario pass_rate_band must be calibrated.', ['uncalibrated_pass_rate']));
+
+	const cheapRows = calibrationRowsForScenario(calibration, context, 'cheap_model');
+	const maxCheapPassRate = cheapRows.reduce((max, row) => Math.max(max, Number(row.pass_rate || 0)), 0);
+	const allowsWeakBaselineSaturation = calibration.difficulty_band === 'smoke' || calibration.control_task === true;
+	gates.push(cheapRows.length > 0
+		? pass('cheap_model_baseline_present', 'Scenario includes cheap/weak model calibration rows.', cheapRows.map((row) => row.result_set_id))
+		: fail('cheap_model_baseline_present', 'Scenario must include cheap/weak model calibration rows.', ['missing_cheap_model_baseline']));
+	gates.push(maxCheapPassRate < 0.8 || allowsWeakBaselineSaturation
+		? pass('cheap_model_baseline_not_saturated', allowsWeakBaselineSaturation ? 'Cheap-model saturation is allowed for smoke/control tasks.' : 'Cheap/weak model rows do not saturate the task.', cheapRows.map((row) => row.file))
+		: fail('cheap_model_baseline_not_saturated', 'Weak baselines already saturate this task; keep it out of headline benchmark promotion unless it is a smoke/control task.', ['cheap_model_baseline_saturates'], cheapRows.map((row) => row.file)));
 
 	gates.push(Array.isArray(calibration.confidence_interval_95) && calibration.confidence_interval_95.length === 2
 		? pass('confidence_interval_present', `95% confidence interval is [${calibration.confidence_interval_95.join(', ')}].`)
@@ -351,6 +391,7 @@ function buildContext(root) {
 		scenariosById: loadScenarios(root),
 		taskSetsById: loadTaskSets(root),
 		shortcutCoverage: loadShortcutCoverage(root),
+		calibrationResultsById: loadCalibrationResults(root),
 	};
 }
 
