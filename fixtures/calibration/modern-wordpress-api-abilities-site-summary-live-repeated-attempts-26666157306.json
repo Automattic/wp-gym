@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "modern-wordpress-api-abilities-site-summary-live-repeated-attempts-26666157306",
+  "scenario_id": "modern-wordpress-api-abilities-site-summary",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-29T23:10:01.713Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/214",
+    "evidence_kind": "live_repeated_attempt_run_registry",
+    "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/26666157306",
+    "artifact_url": "https://github.com/Automattic/wp-gym/actions/runs/26666157306/artifacts",
+    "registry_artifact": "wp-gym-run-registry-26666157306",
+    "attempts_per_model": 2,
+    "validation_command": "node scripts/emit-run-registry.mjs --input artifacts/issue-214-run-26666157306/live-replay-bundles --output artifacts/issue-214-run-26666157306/fixed-wp-gym-run-registry --require-entry && node scripts/validate-run-registry.mjs --input artifacts/issue-214-run-26666157306/fixed-wp-gym-run-registry/entries && node scripts/aggregate-run-registry.mjs --registry artifacts/issue-214-run-26666157306/fixed-wp-gym-run-registry/entries --scope pilot"
+  },
+  "rows": [
+    {
+      "row_type": "repeated_attempts",
+      "label": "Live Anthropic repeated-attempt row",
+      "provider": "anthropic",
+      "model": "claude-opus-4-7",
+      "result_set_id": "benchmark-readiness-pilot-modern-wordpress-api-abilities-site-summary-anthropic-claude-opus-4-7-26666157306-1",
+      "attempt_ids": [
+        "benchmark-readiness-pilot-modern-wordpress-api-abilities-site-summary-anthropic-claude-opus-4-7-26666157306-1-attempt-1",
+        "benchmark-readiness-pilot-modern-wordpress-api-abilities-site-summary-anthropic-claude-opus-4-7-26666157306-1-attempt-2"
+      ],
+      "attempts": 2,
+      "passes": 2,
+      "pass_rate": 1,
+      "pass_at_1": 1,
+      "pass_at_n": 1,
+      "mean_reward": 1,
+      "reward_variance": 0,
+      "reward_stddev": 0,
+      "confidence_interval_95": [1, 1]
+    },
+    {
+      "row_type": "repeated_attempts",
+      "label": "Live OpenAI repeated-attempt row",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "result_set_id": "benchmark-readiness-pilot-modern-wordpress-api-abilities-site-summary-openai-gpt-5-5-26666157306-1",
+      "attempt_ids": [
+        "benchmark-readiness-pilot-modern-wordpress-api-abilities-site-summary-openai-gpt-5-5-26666157306-1-attempt-1",
+        "benchmark-readiness-pilot-modern-wordpress-api-abilities-site-summary-openai-gpt-5-5-26666157306-1-attempt-2"
+      ],
+      "attempts": 2,
+      "passes": 2,
+      "pass_rate": 1,
+      "pass_at_1": 1,
+      "pass_at_n": 1,
+      "mean_reward": 1,
+      "reward_variance": 0,
+      "reward_stddev": 0,
+      "confidence_interval_95": [1, 1]
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "too_easy",
+    "confidence_interval_95": [1, 1],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": [
+      "workspace_diff_diagnostic_only",
+      "uncalibrated_difficulty"
+    ]
+  }
+}

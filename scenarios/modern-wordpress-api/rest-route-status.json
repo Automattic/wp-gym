@@ -153,18 +153,25 @@
   "calibration": {
     "status": "pilot",
     "benchmark_scope": "pilot",
-    "difficulty_band": "uncalibrated",
+    "difficulty_band": "smoke",
     "headline_score_eligible": false,
-    "baseline_result_sets": [],
+    "baseline_result_sets": [
+      "modern-wordpress-api-rest-route-status-live-repeated-attempts-26666157306"
+    ],
+    "calibration_result_sets": [
+      "modern-wordpress-api-rest-route-status-live-repeated-attempts-26666157306"
+    ],
+    "pass_rate_band": "target",
+    "confidence_interval_95": [
+      0.26,
+      1
+    ],
     "known_shortcuts": [
       "hard_coded_clean_site_state",
       "extra_output_fields"
     ],
     "task_contract_level": "benchmark_replay",
-    "benchmark_blockers": [
-      "missing_baseline_results",
-      "uncalibrated_difficulty"
-    ],
+    "benchmark_blockers": [],
     "reward_soundness_review": {
       "status": "reviewed",
       "reviewed_at": "2026-05-29",

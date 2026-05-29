@@ -94,13 +94,15 @@
     "headline_score_eligible": false,
     "baseline_result_sets": [
       "block-markup-no-fallback-pricing-section-local-fixture-baseline",
-      "block-markup-no-fallback-pricing-section-local-episode-baseline"
+      "block-markup-no-fallback-pricing-section-local-episode-baseline",
+      "block-markup-no-fallback-pricing-section-live-repeated-attempts-26666157306"
     ],
     "calibration_result_sets": [
       "block-markup-no-fallback-pricing-section-local-fixture-baseline",
-      "block-markup-no-fallback-pricing-section-local-episode-baseline"
+      "block-markup-no-fallback-pricing-section-local-episode-baseline",
+      "block-markup-no-fallback-pricing-section-live-repeated-attempts-26666157306"
     ],
-    "pass_rate_band": "uncalibrated",
+    "pass_rate_band": "too_easy",
     "confidence_interval_95": [
       0,
       1
@@ -113,8 +115,6 @@
     "task_contract_level": "wordpress_state_diagnostic",
     "benchmark_blockers": [
       "diagnostic_contract_only",
-      "missing_model_baselines",
-      "missing_repeated_attempts",
       "held_out_private_variants_not_ready",
       "known_reward_shortcut"
     ],

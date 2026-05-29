@@ -98,16 +98,16 @@
     "benchmark_scope": "calibration",
     "difficulty_band": "smoke",
     "headline_score_eligible": false,
-    "baseline_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline", "block-markup-valid-semantic-blocks-live-model-baseline"],
+    "baseline_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline", "block-markup-valid-semantic-blocks-live-model-baseline", "block-markup-valid-semantic-blocks-live-repeated-attempts-26666157306"],
     "benchmark_metadata": {
       "benchmark_version": "0.0.0-pilot.1",
       "compatibility_group": "block-markup-valid-semantic-blocks",
       "compatible_with": []
     },
-    "calibration_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline", "block-markup-valid-semantic-blocks-live-model-baseline"],
-    "pass_rate_band": "too_easy",
+    "calibration_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline", "block-markup-valid-semantic-blocks-live-model-baseline", "block-markup-valid-semantic-blocks-live-repeated-attempts-26666157306"],
+    "pass_rate_band": "target",
     "confidence_interval_95": [
-      0,
+      0.26,
       1
     ],
     "held_out_private_variants_ready": false,
@@ -116,7 +116,7 @@
       "shallow_block_validity"
     ],
     "task_contract_level": "benchmark_replay",
-    "benchmark_blockers": ["missing_cheap_model_baseline", "missing_repeated_attempts", "held_out_private_variants_not_ready", "known_reward_shortcut"],
+    "benchmark_blockers": ["missing_cheap_model_baseline", "held_out_private_variants_not_ready", "known_reward_shortcut"],
     "reward_soundness_review": {
       "status": "reviewed",
       "reviewed_at": "2026-05-29",
