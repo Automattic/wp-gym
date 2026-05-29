@@ -81,21 +81,11 @@ npm run run-registry:emit -- \
 ```
 
 The emitter scans JSON files for a canonical `metadata.eval_artifact`, top-level
-canonical eval artifact, or Homeboy `homeboy.sealed_eval_artifact` wrapper. For
-each recovered row it writes:
+canonical eval artifact, or Homeboy `homeboy.sealed_eval_artifact` replay row.
+For each recovered row it writes:
 
 - `eval-artifacts/<run>.json`: the canonical `wp-gym` eval artifact projection.
 - `entries/<run>.json`: the durable run registry entry.
-
-When a row does not yet carry a replay reference, pass a local replay bundle for
-fixture or pilot validation:
-
-```bash
-npm run run-registry:emit -- \
-  --input fixtures/eval-artifacts/direct-wp-gym-row.json \
-  --replay fixtures/replay-regrade/replay.zip \
-  --output artifacts/local-registry-smoke
-```
 
 Benchmark-mode emission is fail-closed for live artifact compatibility:
 
