@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "completed",
+    "status": "failed - tool_result_failed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -8,104 +8,422 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "upsert_post",
+            "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 1
+            "turn_count": 12
         },
         {
-            "tool_name": "upsert_post",
+            "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 2
+            "turn_count": 13
         },
         {
-            "tool_name": "upsert_post",
+            "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 3
+            "turn_count": 15
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 16
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 18
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 19
+        },
+        {
+            "tool_name": "run_wp_cli",
+            "success": true,
+            "turn_count": 20
+        },
+        {
+            "tool_name": "run_wp_cli",
+            "success": true,
+            "turn_count": 21
+        },
+        {
+            "tool_name": "run_wp_cli",
+            "success": true,
+            "turn_count": 22
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 23
+        },
+        {
+            "tool_name": "run_wp_cli",
+            "success": true,
+            "turn_count": 24
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_I6v8cBPzVyMrv4VJh3gaPjOJ",
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_Psyp7SM0kK8ijvwtJSlonTEg",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T17:34:40+00:00",
-            "ended_at": "2026-05-29T17:34:41+00:00",
-            "duration_ms": 308,
-            "arguments_sha256": "693bc76e297eccd2205e94fce6447b0378302596e7aa3dc984713866ba3b2859",
-            "result_sha256": "766c13a1c4e47f668a8377e2f376e8fa53fb2eff5986268be99f1c8ae1d67c1a",
+            "status": "failed",
+            "started_at": "2026-05-29T17:36:16+00:00",
+            "ended_at": "2026-05-29T17:36:16+00:00",
+            "duration_ms": 8,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "post_type": "page",
-                "title": "Services",
-                "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
-                "content_format": "markdown",
-                "slug": "services",
-                "parent_id": 0,
-                "parent_path": "",
-                "post_author": "[redacted]",
-                "content_hash": "harbor-hearth-services-index-v1",
-                "source_url": "",
-                "original_date_gmt": "",
-                "add_source_attribution": false
+                "name": "current-project"
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_xZG5uKEphI3HtdQDfEdqN92j",
-            "turn_count": 2,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T17:34:54+00:00",
-            "ended_at": "2026-05-29T17:34:54+00:00",
-            "duration_ms": 69,
-            "arguments_sha256": "9733cf3cbc705746c675f6a2092f7f86279dce81c9d18121a2f3e287bcca2f0c",
-            "result_sha256": "cedcc3c18d7be3167a187cdc7350ac8e1740fdeaeba5b39dbf47820fdf442186",
-            "arguments_redacted": {
-                "post_type": "page",
-                "title": "Services",
-                "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
-                "content_format": "markdown",
-                "slug": "services",
-                "parent_id": 0,
-                "parent_path": "",
-                "post_author": "[redacted]",
-                "content_hash": "harbor-hearth-services-index-v2",
-                "source_url": "",
-                "original_date_gmt": "",
-                "add_source_attribution": false
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_XozoOnsxjbcIbWfuSYtBJtrt",
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_mvtXpC4IakgyjKLhwerBt5Vr",
             "turn_count": 3,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T17:35:06+00:00",
-            "ended_at": "2026-05-29T17:35:06+00:00",
-            "duration_ms": 51,
-            "arguments_sha256": "6a38f5f5b2d442925bceb6ccf9b03881a0d40005e8d7e3671b60439029d05f12",
-            "result_sha256": "a90b3e186da894cf2207eebe90e814b94efdca5e3ffb1a43af9f2d08d39be0fd",
+            "status": "failed",
+            "started_at": "2026-05-29T17:36:21+00:00",
+            "ended_at": "2026-05-29T17:36:21+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "post_type": "page",
-                "title": "Staff",
-                "content": "Directory of Harbor Hearth Repair staff members and the services and neighborhoods they support.\n\n## Staff entries\n\n- [Maya Ortiz](/staff/maya-ortiz/)\n- [Theo Grant](/staff/theo-grant/)\n\nEach staff page links back to the services and service areas assigned to that person.",
-                "content_format": "markdown",
-                "slug": "staff",
-                "parent_id": 0,
-                "parent_path": "",
-                "post_author": "[redacted]",
-                "content_hash": "harbor-hearth-staff-index-v1",
-                "source_url": "",
-                "original_date_gmt": "",
-                "add_source_attribution": false
+                "repo": "current-project",
+                "path": ""
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_kcGB1ty3r3sTlvYWZsz27AKV",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:36:26+00:00",
+            "ended_at": "2026-05-29T17:36:26+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": ""
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_write",
+            "tool_call_id": "call_sPGcmW0pvmfUZv1Pus1zSSJE",
+            "turn_count": 6,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:36:44+00:00",
+            "ended_at": "2026-05-29T17:36:44+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "bd6a0b9101ddb683cd3e83446b6db9a24b6ad317097bbbcb2f801b25452ee7d1",
+            "result_sha256": "9f4aaa1e22355904a65b286c160679c6f77a72ef839331988c9cd8ddac14fbbb",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_omitted": "redacted_arguments_too_large"
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_OJz4AsWONdeUVyexjW8Be3bX",
+            "turn_count": 8,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:37:00+00:00",
+            "ended_at": "2026-05-29T17:37:00+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "529df39da8ca692452cfad84822b6560822891677b94fcbedd4cca659bf80b84",
+            "result_sha256": "e53154d0432d3b6e0330fc409a945ca7572d284fce66c832fff4b09b71760c4c",
+            "output_summary": "Remote workspace repository \"project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "project",
+                "path": ""
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_olLIduF9HF1vSpqPhqAiHARW",
+            "turn_count": 9,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:37:09+00:00",
+            "ended_at": "2026-05-29T17:37:09+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "0ac32de6745dfb5451a97591bdd05cc7c10743fc92e7e9f95b67731c4fb67751",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "wp-content/plugins"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_git_status",
+            "tool_call_id": "call_ibeCRrM7T7ZZgVf6SE0Skjda",
+            "turn_count": 10,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:37:14+00:00",
+            "ended_at": "2026-05-29T17:37:14+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+            "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project",
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_XLosM12HXFjND4TGWpT9sWkl",
+            "turn_count": 12,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:37:37+00:00",
+            "ended_at": "2026-05-29T17:37:37+00:00",
+            "duration_ms": 6,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_y17exRa373EDmirA2J35zKVZ",
+            "turn_count": 13,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:37:45+00:00",
+            "ended_at": "2026-05-29T17:37:45+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_YSL1U6RkBRvLZBaAe65vEn9l",
+            "turn_count": 14,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:37:52+00:00",
+            "ended_at": "2026-05-29T17:37:52+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "."
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_yoOtw21cZFe67sxDLxCCn5Iw",
+            "turn_count": 15,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:37:57+00:00",
+            "ended_at": "2026-05-29T17:37:57+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_trLRLVAYpNT5uNpRSNhOEPa4",
+            "turn_count": 16,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:38:02+00:00",
+            "ended_at": "2026-05-29T17:38:02+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_wJ7BVTTQIcf0efD4C229VL4f",
+            "turn_count": 18,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:38:12+00:00",
+            "ended_at": "2026-05-29T17:38:12+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_fxaetxymby6i0StcOczNdpeU",
+            "turn_count": 19,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:38:16+00:00",
+            "ended_at": "2026-05-29T17:38:16+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "run_wp_cli",
+            "tool_call_id": "call_k9npZXBhJhWRAQuTqlCYcU9U",
+            "turn_count": 20,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:38:26+00:00",
+            "ended_at": "2026-05-29T17:38:26+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "13e109ac4bc3ab76989b17dcefb508e53d1754f379717e9a5e267ce41de51209",
+            "result_sha256": "6a34cc2c28ad12a6295782fee985aab5227636aabcc10d348192e8a2a442f813",
+            "arguments_redacted": {
+                "command": "eval 'echo ABSPATH;'",
+                "timeout_ms": 10000
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "run_wp_cli",
+            "tool_call_id": "call_9gtpIRx7D8FSDpj2smkKiZpi",
+            "turn_count": 21,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:38:40+00:00",
+            "ended_at": "2026-05-29T17:38:40+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "7eecc227a8056573dc7025408fae605b302a86d9daab69ac93a57de3f2693ea9",
+            "result_sha256": "908389b7d77b8914403434d3529313ad080ccc61d9ad444562c74c10bdb9d946",
+            "arguments_redacted": {
+                "command": "eval 'echo \"ABSPATH=\" . ABSPATH . PHP_EOL; echo \"wp_register_ability=\" . ( function_exists(\"wp_register_ability\") ? \"yes\" : \"no\" ) . PHP_EOL; echo \"wp_register_ability_category=\" . ( function_exists(\"wp_register_ability_category\") ? \"yes\" : \"no\" ) . PHP_EOL;'",
+                "timeout_ms": 10000
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "run_wp_cli",
+            "tool_call_id": "call_aPF0ilceqtNGNiAsrBCU8CeI",
+            "turn_count": 22,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:38:59+00:00",
+            "ended_at": "2026-05-29T17:39:00+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "b34d47cab0772e9048cf9921b9eeeec74311a8d9d6c373f7489dcc9a0d268c69",
+            "result_sha256": "32081955c0cf7e11a810747e440e23d627dcfe5ffef1a1504e1f35fb95c688e2",
+            "arguments_omitted": "redacted_arguments_too_large"
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_UBPiU7v6gjzuLAYTaqq72Bte",
+            "turn_count": 23,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:39:09+00:00",
+            "ended_at": "2026-05-29T17:39:09+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "65f91738536995066d903c90e0530974e4ec4799c9bd505caa8450aa14a6e2db",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "run_wp_cli",
+            "tool_call_id": "call_BRfESh0oR3m3a0NqeT5OjtLC",
+            "turn_count": 24,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:39:17+00:00",
+            "ended_at": "2026-05-29T17:39:17+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "8ab9fdd10b9998e4ffa5f18fd6d375b46e78adfc4f5532bb6214701ceeb0aac5",
+            "result_sha256": "f11ea21bc46f22293034ced95e1e6ac17a65a7db202cbf2ad3a4348abd327e0a",
+            "arguments_redacted": {
+                "command": "plugin list --fields=name,status,version --format=table",
+                "timeout_ms": 10000
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "run_wp_cli",
+            "tool_call_id": "call_pYTqZ1uis5S9EvSTy5AA3H40",
+            "turn_count": 25,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:39:23+00:00",
+            "ended_at": "2026-05-29T17:39:23+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "9e3e32e561e9679e025b0cb922ed6edaec5c954b08f2bbd3a27afc54bd3fdd48",
+            "result_sha256": "8e3e6e02c6eda157ed7ac5da1b85f465b43683d941920bcbe0be6c50c7096edf",
+            "output_summary": "The plugin does not have a valid header.",
+            "arguments_redacted": {
+                "command": "plugin activate site-tools-site-summary",
+                "timeout_ms": 10000
             }
         }
     ],
@@ -115,7 +433,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "54d349dcde0a15f781a4209bdf5e6f2669ea34de27073e650173c069c3d0a0dc",
+            "sha256": "9c96e120b1f23e3c341da5929b72c4a95dc67de6d711afb478b14af5e463fbbc",
             "bounded": true,
             "redacted": true
         }
@@ -126,11 +444,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:34961/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "6424a613658cab8a39362f6c1d753750b68501a60015ac02359413e113a9e517",
-            "payload_sha256": "dc13e5e16434877199ef3520890c31499676f06f29335dc5e01660fcd4fa8781",
-            "bytes": 5449,
-            "written_at": "2026-05-29T17:35:10+00:00"
+            "url": "http://127.0.0.1:37107/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "3dbaaf99cc9e5f79373880db54dc842c0eca5f35d58005225efabd1a52625828",
+            "payload_sha256": "e3985ed2e2e3ce4782b819425e72b7374309e99d5e047c94a27f131b1ae3b151",
+            "bytes": 19342,
+            "written_at": "2026-05-29T17:39:23+00:00"
         }
     },
     "transcript_artifact": null,
@@ -140,113 +458,425 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "completed",
+            "job_status": "failed - tool_result_failed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:34:20",
-            "completed_at": "2026-05-29 17:35:10"
+            "created_at": "2026-05-29 17:36:14",
+            "completed_at": "2026-05-29 17:39:23"
         },
-        "trace_count": 3,
-        "entries_emitted": 3,
+        "trace_count": 20,
+        "entries_emitted": 20,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_I6v8cBPzVyMrv4VJh3gaPjOJ",
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_Psyp7SM0kK8ijvwtJSlonTEg",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T17:34:40+00:00",
-                "ended_at": "2026-05-29T17:34:41+00:00",
-                "duration_ms": 308,
-                "arguments_sha256": "693bc76e297eccd2205e94fce6447b0378302596e7aa3dc984713866ba3b2859",
-                "result_sha256": "766c13a1c4e47f668a8377e2f376e8fa53fb2eff5986268be99f1c8ae1d67c1a",
+                "status": "failed",
+                "started_at": "2026-05-29T17:36:16+00:00",
+                "ended_at": "2026-05-29T17:36:16+00:00",
+                "duration_ms": 8,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Services",
-                    "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
-                    "content_format": "markdown",
-                    "slug": "services",
-                    "parent_id": 0,
-                    "parent_path": "",
-                    "post_author": "[redacted]",
-                    "content_hash": "harbor-hearth-services-index-v1",
-                    "source_url": "",
-                    "original_date_gmt": "",
-                    "add_source_attribution": false
+                    "name": "current-project"
                 },
-                "entry_sha256": "d30f8a4fc2fc4c7bdfcdd8142e7093c2003b958468d06227cb6557f161814e7b"
+                "entry_sha256": "c15db7f4c394a82451700b2916a10c4ce7da175f6da6ff4ad9fb9327b6b1c971"
             },
             {
                 "index": 1,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_xZG5uKEphI3HtdQDfEdqN92j",
-                "turn_count": 2,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_mvtXpC4IakgyjKLhwerBt5Vr",
+                "turn_count": 3,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T17:34:54+00:00",
-                "ended_at": "2026-05-29T17:34:54+00:00",
-                "duration_ms": 69,
-                "arguments_sha256": "9733cf3cbc705746c675f6a2092f7f86279dce81c9d18121a2f3e287bcca2f0c",
-                "result_sha256": "cedcc3c18d7be3167a187cdc7350ac8e1740fdeaeba5b39dbf47820fdf442186",
+                "status": "failed",
+                "started_at": "2026-05-29T17:36:21+00:00",
+                "ended_at": "2026-05-29T17:36:21+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Services",
-                    "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
-                    "content_format": "markdown",
-                    "slug": "services",
-                    "parent_id": 0,
-                    "parent_path": "",
-                    "post_author": "[redacted]",
-                    "content_hash": "harbor-hearth-services-index-v2",
-                    "source_url": "",
-                    "original_date_gmt": "",
-                    "add_source_attribution": false
+                    "repo": "current-project",
+                    "path": ""
                 },
-                "entry_sha256": "ddfc77e590e01aa87f810e3dea8b2a7936fd3fd392c0b796d71cee1f79d88776"
+                "entry_sha256": "b7fcbbb0354e8ba53be7b9e824a52ca4d287c9d6de59b6c269413a8c7908efa3"
             },
             {
                 "index": 2,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_XozoOnsxjbcIbWfuSYtBJtrt",
-                "turn_count": 3,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_kcGB1ty3r3sTlvYWZsz27AKV",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:36:26+00:00",
+                "ended_at": "2026-05-29T17:36:26+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": ""
+                },
+                "entry_sha256": "4881fad8d65c2b3c8dc714f4e69ed0082b9c31e1dba168bddd91e737541c1691"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "workspace_write",
+                "tool_call_id": "call_sPGcmW0pvmfUZv1Pus1zSSJE",
+                "turn_count": 6,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:36:44+00:00",
+                "ended_at": "2026-05-29T17:36:44+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "bd6a0b9101ddb683cd3e83446b6db9a24b6ad317097bbbcb2f801b25452ee7d1",
+                "result_sha256": "9f4aaa1e22355904a65b286c160679c6f77a72ef839331988c9cd8ddac14fbbb",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_omitted": "redacted_arguments_too_large",
+                "entry_sha256": "8bcc9d0a5d086e4fc7ed55200b103aa3ef2d4e4ae3a7d92fc092e5f2f6e65764"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_OJz4AsWONdeUVyexjW8Be3bX",
+                "turn_count": 8,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:37:00+00:00",
+                "ended_at": "2026-05-29T17:37:00+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "529df39da8ca692452cfad84822b6560822891677b94fcbedd4cca659bf80b84",
+                "result_sha256": "e53154d0432d3b6e0330fc409a945ca7572d284fce66c832fff4b09b71760c4c",
+                "output_summary": "Remote workspace repository \"project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "project",
+                    "path": ""
+                },
+                "entry_sha256": "34b038559b7596af3adbb1181ffbb6ae180e3e16ca5925deb555feaebcb7d8e8"
+            },
+            {
+                "index": 5,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_olLIduF9HF1vSpqPhqAiHARW",
+                "turn_count": 9,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:37:09+00:00",
+                "ended_at": "2026-05-29T17:37:09+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "0ac32de6745dfb5451a97591bdd05cc7c10743fc92e7e9f95b67731c4fb67751",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": "wp-content/plugins"
+                },
+                "entry_sha256": "0f0a17fc4e421de4af4b70a68a8970bfb4aeb6b1eb3727e1a2895051a58b600a"
+            },
+            {
+                "index": 6,
+                "schema_version": 1,
+                "tool_name": "workspace_git_status",
+                "tool_call_id": "call_ibeCRrM7T7ZZgVf6SE0Skjda",
+                "turn_count": 10,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:37:14+00:00",
+                "ended_at": "2026-05-29T17:37:14+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+                "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project",
+                    "repo": "current-project"
+                },
+                "entry_sha256": "8a11af9e9338d148006d8c9dc6c7864bc064f121eb5cabff1b988b9dd8744cf6"
+            },
+            {
+                "index": 7,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_XLosM12HXFjND4TGWpT9sWkl",
+                "turn_count": 12,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:35:06+00:00",
-                "ended_at": "2026-05-29T17:35:06+00:00",
-                "duration_ms": 51,
-                "arguments_sha256": "6a38f5f5b2d442925bceb6ccf9b03881a0d40005e8d7e3671b60439029d05f12",
-                "result_sha256": "a90b3e186da894cf2207eebe90e814b94efdca5e3ffb1a43af9f2d08d39be0fd",
+                "started_at": "2026-05-29T17:37:37+00:00",
+                "ended_at": "2026-05-29T17:37:37+00:00",
+                "duration_ms": 6,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Staff",
-                    "content": "Directory of Harbor Hearth Repair staff members and the services and neighborhoods they support.\n\n## Staff entries\n\n- [Maya Ortiz](/staff/maya-ortiz/)\n- [Theo Grant](/staff/theo-grant/)\n\nEach staff page links back to the services and service areas assigned to that person.",
-                    "content_format": "markdown",
-                    "slug": "staff",
-                    "parent_id": 0,
-                    "parent_path": "",
-                    "post_author": "[redacted]",
-                    "content_hash": "harbor-hearth-staff-index-v1",
-                    "source_url": "",
-                    "original_date_gmt": "",
-                    "add_source_attribution": false
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
                 },
-                "entry_sha256": "78b0eec6232a7ea03ce5a45816e9fb75d6f7a5f8bbb425edc2e47db131c4b9da"
+                "entry_sha256": "e7292ddba1e113c27c62e8af1c0b896b9ae7bfb68a426d8290d12379bf85c244"
+            },
+            {
+                "index": 8,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_y17exRa373EDmirA2J35zKVZ",
+                "turn_count": 13,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:37:45+00:00",
+                "ended_at": "2026-05-29T17:37:45+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
+                },
+                "entry_sha256": "16ccd8ede5fa70dbcc2433bd5cd961cda672b303ab5caa43d32b3ce400d75e81"
+            },
+            {
+                "index": 9,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_YSL1U6RkBRvLZBaAe65vEn9l",
+                "turn_count": 14,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:37:52+00:00",
+                "ended_at": "2026-05-29T17:37:52+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": "."
+                },
+                "entry_sha256": "5ed670b6d9b9c6786e2231dd35611b23cbdfb5185516a44c044af84a1c753224"
+            },
+            {
+                "index": 10,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_yoOtw21cZFe67sxDLxCCn5Iw",
+                "turn_count": 15,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:37:57+00:00",
+                "ended_at": "2026-05-29T17:37:57+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
+                },
+                "entry_sha256": "47a3ee72a805cb0775d1fe252ea4988e3a1c7a035f3ee70413d2e48740745069"
+            },
+            {
+                "index": 11,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_trLRLVAYpNT5uNpRSNhOEPa4",
+                "turn_count": 16,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:38:02+00:00",
+                "ended_at": "2026-05-29T17:38:02+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
+                },
+                "entry_sha256": "32a84fc85b684c55b7898ac4b611fe56ff0a95d6e1df9f51e63863539719956c"
+            },
+            {
+                "index": 12,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_wJ7BVTTQIcf0efD4C229VL4f",
+                "turn_count": 18,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:38:12+00:00",
+                "ended_at": "2026-05-29T17:38:12+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
+                },
+                "entry_sha256": "82ba2fa0fa84cc801a842c91acd69a8d8e7cc155a1b2808a64c41b7b667a3f13"
+            },
+            {
+                "index": 13,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_fxaetxymby6i0StcOczNdpeU",
+                "turn_count": 19,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:38:16+00:00",
+                "ended_at": "2026-05-29T17:38:16+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
+                },
+                "entry_sha256": "3143a5cd8dbba9e46282a77ef7966fc83b6160b91278c17a2dab031dd70a6ba4"
+            },
+            {
+                "index": 14,
+                "schema_version": 1,
+                "tool_name": "run_wp_cli",
+                "tool_call_id": "call_k9npZXBhJhWRAQuTqlCYcU9U",
+                "turn_count": 20,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:38:26+00:00",
+                "ended_at": "2026-05-29T17:38:26+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "13e109ac4bc3ab76989b17dcefb508e53d1754f379717e9a5e267ce41de51209",
+                "result_sha256": "6a34cc2c28ad12a6295782fee985aab5227636aabcc10d348192e8a2a442f813",
+                "arguments_redacted": {
+                    "command": "eval 'echo ABSPATH;'",
+                    "timeout_ms": 10000
+                },
+                "entry_sha256": "4908bb76e52288c64348f74161b529577756c2ceb4246612b915c8082dd27abd"
+            },
+            {
+                "index": 15,
+                "schema_version": 1,
+                "tool_name": "run_wp_cli",
+                "tool_call_id": "call_9gtpIRx7D8FSDpj2smkKiZpi",
+                "turn_count": 21,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:38:40+00:00",
+                "ended_at": "2026-05-29T17:38:40+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "7eecc227a8056573dc7025408fae605b302a86d9daab69ac93a57de3f2693ea9",
+                "result_sha256": "908389b7d77b8914403434d3529313ad080ccc61d9ad444562c74c10bdb9d946",
+                "arguments_redacted": {
+                    "command": "eval 'echo \"ABSPATH=\" . ABSPATH . PHP_EOL; echo \"wp_register_ability=\" . ( function_exists(\"wp_register_ability\") ? \"yes\" : \"no\" ) . PHP_EOL; echo \"wp_register_ability_category=\" . ( function_exists(\"wp_register_ability_category\") ? \"yes\" : \"no\" ) . PHP_EOL;'",
+                    "timeout_ms": 10000
+                },
+                "entry_sha256": "2471968573aa2d694f4974ed09d8986725b81779f6ce440fd9ec314ddc9e3194"
+            },
+            {
+                "index": 16,
+                "schema_version": 1,
+                "tool_name": "run_wp_cli",
+                "tool_call_id": "call_aPF0ilceqtNGNiAsrBCU8CeI",
+                "turn_count": 22,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:38:59+00:00",
+                "ended_at": "2026-05-29T17:39:00+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "b34d47cab0772e9048cf9921b9eeeec74311a8d9d6c373f7489dcc9a0d268c69",
+                "result_sha256": "32081955c0cf7e11a810747e440e23d627dcfe5ffef1a1504e1f35fb95c688e2",
+                "arguments_omitted": "redacted_arguments_too_large",
+                "entry_sha256": "bcebe78f2458e75278cc5ec8ee086a2a99e8d5eab4e87839844ec1ce2c5b5586"
+            },
+            {
+                "index": 17,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_UBPiU7v6gjzuLAYTaqq72Bte",
+                "turn_count": 23,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:39:09+00:00",
+                "ended_at": "2026-05-29T17:39:09+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "65f91738536995066d903c90e0530974e4ec4799c9bd505caa8450aa14a6e2db",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
+                },
+                "entry_sha256": "1410dd9201fce7fa77ff67a4f13705f65ed1eaa5e2910e67723cb44c1c210634"
+            },
+            {
+                "index": 18,
+                "schema_version": 1,
+                "tool_name": "run_wp_cli",
+                "tool_call_id": "call_BRfESh0oR3m3a0NqeT5OjtLC",
+                "turn_count": 24,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:39:17+00:00",
+                "ended_at": "2026-05-29T17:39:17+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "8ab9fdd10b9998e4ffa5f18fd6d375b46e78adfc4f5532bb6214701ceeb0aac5",
+                "result_sha256": "f11ea21bc46f22293034ced95e1e6ac17a65a7db202cbf2ad3a4348abd327e0a",
+                "arguments_redacted": {
+                    "command": "plugin list --fields=name,status,version --format=table",
+                    "timeout_ms": 10000
+                },
+                "entry_sha256": "c01701edb1f2125b5129ef72f45f755ba413018e3abc6ac5c2f43f0a41f1887a"
+            },
+            {
+                "index": 19,
+                "schema_version": 1,
+                "tool_name": "run_wp_cli",
+                "tool_call_id": "call_pYTqZ1uis5S9EvSTy5AA3H40",
+                "turn_count": 25,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:39:23+00:00",
+                "ended_at": "2026-05-29T17:39:23+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "9e3e32e561e9679e025b0cb922ed6edaec5c954b08f2bbd3a27afc54bd3fdd48",
+                "result_sha256": "8e3e6e02c6eda157ed7ac5da1b85f465b43683d941920bcbe0be6c50c7096edf",
+                "output_summary": "The plugin does not have a valid header.",
+                "arguments_redacted": {
+                    "command": "plugin activate site-tools-site-summary",
+                    "timeout_ms": 10000
+                },
+                "entry_sha256": "6ab3af3eb06bf8ce781b43a7811dac9eea4895ab5c3a383add490b82295b433e"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "54d349dcde0a15f781a4209bdf5e6f2669ea34de27073e650173c069c3d0a0dc"
+        "sha256": "9c96e120b1f23e3c341da5929b72c4a95dc67de6d711afb478b14af5e463fbbc"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
