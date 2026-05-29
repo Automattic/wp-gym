@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-05-29T03:17:05.426Z",
+  "scenario_id": "block-markup-no-fallback-pricing-section",
+  "result_set_id": "block-markup-no-fallback-pricing-section-local-episode-baseline",
+  "command": "node scripts/run-local-calibration-baseline.mjs block-markup-no-fallback-pricing-section",
+  "runtime": "wp-codebox local WPGym episode API",
+  "episodes": [
+    {
+      "episode": "no_op",
+      "success": false,
+      "reward": 0,
+      "failure_reasons": [
+        "missing_target_content"
+      ],
+      "checks": [
+        {
+          "id": "target_post_exists",
+          "passed": false,
+          "score": 0,
+          "max_score": 1,
+          "message": "No page or post found with title: Simple Pricing Page"
+        }
+      ],
+      "trace": {
+        "episode_id": "block-markup-no-fallback-pricing-section-8d9c622b6e13",
+        "scenario_id": "block-markup-no-fallback-pricing-section",
+        "step_count": 0,
+        "allowed_action_types": [
+          "wp_cli"
+        ],
+        "reset_seed": "local-calibration-no-op"
+      }
+    },
+    {
+      "episode": "heuristic_scripted",
+      "success": true,
+      "reward": 1,
+      "failure_reasons": [],
+      "checks": [
+        {
+          "id": "target_post_exists",
+          "passed": true,
+          "score": 0.15,
+          "max_score": 0.15,
+          "message": "Found target page/post."
+        },
+        {
+          "id": "content_has_blocks",
+          "passed": true,
+          "score": 0.15,
+          "max_score": 0.15,
+          "message": "Content uses Gutenberg block comments."
+        },
+        {
+          "id": "required_blocks_present",
+          "passed": true,
+          "score": 0.25,
+          "max_score": 0.25,
+          "message": "All required blocks are present."
+        },
+        {
+          "id": "three_pricing_columns",
+          "passed": true,
+          "score": 0.2,
+          "max_score": 0.2,
+          "message": "Expected exactly three core/column blocks; found 3."
+        },
+        {
+          "id": "buttons_for_plans",
+          "passed": true,
+          "score": 0.1,
+          "max_score": 0.1,
+          "message": "Expected at least three core/button blocks; found 3."
+        },
+        {
+          "id": "plan_columns_have_meaningful_content",
+          "passed": true,
+          "score": 0.2,
+          "max_score": 0.2,
+          "message": "Expected each pricing column to include an editable plan heading, descriptive paragraph, and button; found 3 complete plan columns."
+        },
+        {
+          "id": "no_fallback_or_html_blocks",
+          "passed": true,
+          "score": 0.2,
+          "max_score": 0.2,
+          "message": "No fallback/freeform or HTML block detected."
+        },
+        {
+          "id": "no_shortcodes",
+          "passed": true,
+          "score": 0.1,
+          "max_score": 0.1,
+          "message": "No shortcode markup detected."
+        },
+        {
+          "id": "expected_heading_text",
+          "passed": true,
+          "score": 0.1,
+          "max_score": 0.1,
+          "message": "Checks for the requested pricing heading text."
+        }
+      ],
+      "trace": {
+        "episode_id": "block-markup-no-fallback-pricing-section-e0748e22e7c3",
+        "scenario_id": "block-markup-no-fallback-pricing-section",
+        "step_count": 1,
+        "allowed_action_types": [
+          "wp_cli"
+        ],
+        "reset_seed": "local-calibration-scripted"
+      }
+    }
+  ],
+  "limitations": [
+    "No cheap-model or frontier-model row was executed.",
+    "No repeated-attempt variance was measured.",
+    "No held-out private variant was used.",
+    "This evidence is suitable only for calibration scaffolding, not headline benchmark claims."
+  ]
+}

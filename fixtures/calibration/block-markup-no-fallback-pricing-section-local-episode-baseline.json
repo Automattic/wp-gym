@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "block-markup-no-fallback-pricing-section-local-episode-baseline",
+  "scenario_id": "block-markup-no-fallback-pricing-section",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-29T03:17:05.426Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/127",
+    "evidence_kind": "local_wp_gym_episode",
+    "validation_command": "node scripts/run-local-calibration-baseline.mjs block-markup-no-fallback-pricing-section",
+    "evidence_files": [
+      "fixtures/calibration-evidence/block-markup-no-fallback-pricing-section-local-episode-baseline.evidence.json"
+    ]
+  },
+  "rows": [
+    {
+      "row_type": "no_op",
+      "label": "Local WPGym no-op episode",
+      "attempts": 1,
+      "passes": 0,
+      "pass_rate": 0,
+      "mean_reward": 0,
+      "notes": "A real local runtime episode reset the scenario and ran the terminal grader without taking any task action. This is runtime evidence, not a model attempt."
+    },
+    {
+      "row_type": "heuristic_scripted",
+      "label": "Local WPGym scripted WP-CLI episode",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "notes": "A real local runtime episode inserted the curated Gutenberg reference content through the public wp_cli action path, then ran the terminal grader. This is not a model attempt."
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "uncalibrated",
+    "confidence_interval_95": [
+      0,
+      1
+    ],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": [
+      "missing_model_baselines",
+      "missing_repeated_attempts",
+      "held_out_private_variants_not_ready",
+      "diagnostic_contract_only",
+      "known_reward_shortcut"
+    ]
+  }
+}
