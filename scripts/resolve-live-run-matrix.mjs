@@ -117,6 +117,7 @@ function taskSetMetadata() {
 		task_contract_level: manifest.task_contract_level || 'mixed_diagnostic',
 		benchmark_blockers: manifest.benchmark_blockers || [],
 		benchmark_metadata: manifest.benchmark_metadata || null,
+		calibration_matrix: manifest.calibration_matrix || null,
 	};
 }
 
@@ -235,15 +236,16 @@ function smokeTask() {
 	};
 }
 
-function providers() {
+function providers(taskSet = taskSetMetadata()) {
 	const anthropicProviderRef = process.env.ANTHROPIC_PROVIDER_SHA || process.env.ANTHROPIC_PROVIDER_REF || 'trunk';
 	const anthropicProviderSha = process.env.ANTHROPIC_PROVIDER_SHA || '';
 
-	return [
+	const frontierProviders = [
 		{
 			provider: 'openai',
 			model: 'gpt-5.5',
 			label: 'openai-gpt-5-5',
+			calibrationRowType: 'frontier_model',
 			providerPlugin: '{}',
 			providerPlugins: [],
 		},
@@ -251,6 +253,7 @@ function providers() {
 			provider: 'anthropic',
 			model: 'claude-opus-4-7',
 			label: 'anthropic-claude-opus-4-7',
+			calibrationRowType: 'frontier_model',
 			providerPlugin: JSON.stringify({
 				repo: 'WordPress/ai-provider-for-anthropic',
 				ref: anthropicProviderRef,
@@ -268,6 +271,17 @@ function providers() {
 			}],
 		},
 	];
+
+	const baselineProviders = (taskSet.calibration_matrix?.baseline_models || []).map((model) => ({
+		provider: model.provider,
+		model: model.model,
+		label: model.label,
+		calibrationRowType: model.row_type || 'cheap_model',
+		providerPlugin: '{}',
+		providerPlugins: [],
+	}));
+
+	return [...frontierProviders, ...baselineProviders];
 }
 
 function isGitSha(value) {
@@ -320,6 +334,7 @@ function provenanceConfig(task, provider, metadata) {
 		provider: {
 			provider: provider.provider,
 			model: provider.model,
+			calibration_row_type: provider.calibrationRowType || 'frontier_model',
 			model_version: process.env.MODEL_VERSION || '',
 			model_snapshot: process.env.MODEL_SNAPSHOT || '',
 		},
@@ -418,6 +433,7 @@ function artifactExportConfig(task, provider, metadata) {
 			'- **Task ID:** `{task_id}`',
 			'- **Provider:** `{provider}`',
 			'- **Model:** `{model}`',
+			'- **Calibration row type:** `{calibration_row_type}`',
 			'- **Agent:** `{agent_slug}`',
 			'- **Workflow:** {workflow_run_url}',
 			'',
@@ -484,6 +500,7 @@ function artifactExportConfig(task, provider, metadata) {
 			provider: provider.provider,
 			model: provider.model,
 			model_label: `${provider.provider}/${provider.model}`,
+			calibration_row_type: provider.calibrationRowType || 'frontier_model',
 			task_set_id: metadata.taskSet.id,
 			task_set_benchmark_status: metadata.taskSet.benchmark_status,
 			task_set_benchmark_version: metadata.taskSet.benchmark_metadata?.benchmark_version || 'unversioned',
@@ -670,7 +687,7 @@ function resolveMatrix() {
 			? JSON.stringify([{ type: 'php', file: task.graderFile }])
 			: '[]';
 
-		for (const provider of providers()) {
+		for (const provider of providers(taskSet)) {
 			const resultSetId = `${taskSet.id}-${task.id}-${provider.label}-${runId || 'local'}-${runAttempt || '1'}`.replace(/[^A-Za-z0-9_.-]+/g, '-').toLowerCase();
 			const benchmarkRejectReasonList = [...new Set([
 				...benchmarkRejectReasons(task, taskSet),
@@ -708,6 +725,7 @@ function resolveMatrix() {
 				model: provider.model,
 				provider_label: provider.label,
 				provider_plugin: provider.providerPlugin,
+				calibration_row_type: provider.calibrationRowType || 'frontier_model',
 				provenance: provenanceConfig(task, provider, rowMetadata),
 				prompt: redactPrivateOutput ? '[redacted-held-out-private-prompt]' : prompt,
 				workload_run_after: redactPrivateOutput ? '[redacted-held-out-private-grader]' : workloadRunAfter,
@@ -802,7 +820,7 @@ function checkExpectedShape(matrix, selectedTasks) {
 	const attemptCount = attemptsPerModel();
 	const expectedByTaskSet = {
 		'first-live-run': { rows: 6, workspaceRows: 2 },
-		'benchmark-readiness-pilot': { rows: 8, workspaceRows: 4 },
+		'benchmark-readiness-pilot': { rows: 12, workspaceRows: 6 },
 		'visual-builder': { rows: 2, workspaceRows: 0 },
 		smoke: { rows: 2, workspaceRows: 0 },
 		'wordpress-investigation': { rows: 2, workspaceRows: 0 },
@@ -823,9 +841,9 @@ function checkExpectedShape(matrix, selectedTasks) {
 function assertLiveRunMatrix(matrix) {
 	const selectedTasks = resolveTasks();
 	const tasksById = new Map(selectedTasks.map((task) => [task.id, task]));
-	const providerLabels = new Set(providers().map((provider) => provider.label));
-	const benchmarkMode = truthyEnv(process.env.BENCHMARK_MODE);
 	const taskSet = taskSetMetadata();
+	const providerLabels = new Set(providers(taskSet).map((provider) => provider.label));
+	const benchmarkMode = truthyEnv(process.env.BENCHMARK_MODE);
 
 	checkExpectedShape(matrix, selectedTasks);
 
@@ -895,6 +913,7 @@ function assertLiveRunMatrix(matrix) {
 		const artifactExport = parseJsonField(row, 'artifact_export_config');
 		assert(artifactExport.include_job_artifacts === true, `${row.task_id} must export job artifacts`);
 		assert(artifactExport.pr_template_values?.task_id === row.task_id, `${row.task_id} artifact export task id mismatch`);
+		assert(artifactExport.pr_template_values?.calibration_row_type === row.calibration_row_type, `${row.task_id} artifact export calibration row type mismatch`);
 		assert(artifactExport.pr_template_values?.benchmark_eligible === row.benchmark_eligible, `${row.task_id} artifact export benchmark eligibility mismatch`);
 		assert(artifactExport.pr_template_values?.score_scope === row.score_scope, `${row.task_id} artifact export score scope mismatch`);
 		assert(artifactExport.pr_template_values?.attempt_id === row.attempt_id, `${row.task_id} artifact export attempt id mismatch`);

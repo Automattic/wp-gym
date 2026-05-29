@@ -16,7 +16,7 @@
   "task_set": {
     "id": "benchmark-readiness-pilot",
     "version": "fixture-2026-05-28",
-    "sha256": "7307e935896e2c3ae229232c813e1a7f0b28939ebc4096b0e18f24e60a627afd",
+    "sha256": "cb2882b68940b072695364f02667c1f60918e903cf096f4e5252868c5e87353a",
     "source_path": "task-sets/benchmark-readiness-pilot.json",
     "benchmark_status": "pilot",
     "headline_score_eligible": false,
