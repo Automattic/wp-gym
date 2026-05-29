@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "incomplete-repeated-attempts",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-29T00:00:00Z",
+  "_expected_error": "repeated_attempts rows must include attempt_ids for every attempt",
+  "rows": [
+    {
+      "row_type": "repeated_attempts",
+      "label": "Incomplete repeated attempts",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "result_set_id": "incomplete-repeated-attempts-openai-gpt-5-5",
+      "attempt_ids": ["incomplete-repeated-attempts-openai-gpt-5-5-attempt-1"],
+      "attempts": 3,
+      "passes": 1,
+      "pass_rate": 0.3333,
+      "pass_at_1": 0.3333,
+      "pass_at_n": 1,
+      "mean_reward": 0.33
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "target",
+    "confidence_interval_95": [0.01, 0.91],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": ["missing_repeated_attempts"]
+  }
+}

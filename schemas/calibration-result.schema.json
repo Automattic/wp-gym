@@ -47,10 +47,28 @@
           "label": { "type": "string", "minLength": 1 },
           "provider": { "type": "string" },
           "model": { "type": "string" },
+          "result_set_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$" },
+          "attempt_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "pass_at_1": { "type": "number", "minimum": 0, "maximum": 1 },
+          "pass_at_n": { "type": "number", "minimum": 0, "maximum": 1 },
           "attempts": { "type": "integer", "minimum": 1 },
           "passes": { "type": "integer", "minimum": 0 },
           "pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
           "mean_reward": { "type": "number", "minimum": 0, "maximum": 1 },
+          "reward_variance": { "type": "number", "minimum": 0 },
+          "reward_stddev": { "type": "number", "minimum": 0 },
+          "confidence_interval_95": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "number", "minimum": 0, "maximum": 1 },
+              { "type": "number", "minimum": 0, "maximum": 1 }
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          },
           "notes": { "type": "string" }
         },
         "additionalProperties": true

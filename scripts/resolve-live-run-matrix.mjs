@@ -30,6 +30,14 @@ function currentTaskSetId() {
 	return process.env.TASK_SET || 'first-live-run';
 }
 
+function attemptsPerModel() {
+	const value = Number(process.env.ATTEMPTS_PER_MODEL || process.env.ATTEMPTS_PER_SCENARIO_MODEL || 1);
+	if (!Number.isInteger(value) || value < 1) {
+		throw new Error('ATTEMPTS_PER_MODEL must be a positive integer.');
+	}
+	return value;
+}
+
 function explicitTaskIds() {
 	return (process.env.TASK_IDS || '')
 		.split(',')
@@ -315,6 +323,14 @@ function provenanceConfig(task, provider, metadata) {
 			model_version: process.env.MODEL_VERSION || '',
 			model_snapshot: process.env.MODEL_SNAPSHOT || '',
 		},
+		attempt: {
+			id: metadata.attemptId,
+			index: metadata.attemptIndex,
+			count: metadata.attemptCount,
+			result_set_id: metadata.resultSetId,
+			seed: metadata.seed,
+			temperature: metadata.temperature,
+		},
 		provider_plugins: provider.providerPlugins || [],
 		tool_policy: {
 			sha256: process.env.TOOL_POLICY_SHA256 || '',
@@ -425,6 +441,10 @@ function artifactExportConfig(task, provider, metadata) {
 			'- **Variant family:** `{variant_family}`',
 			'- **Variant seed:** `{variant_seed}`',
 			'- **Run:** `{run_id}` attempt `{run_attempt}`',
+			'- **Matrix attempt:** `{attempt_id}` (`{attempt_index}` / `{attempt_count}`)',
+			'- **Result set:** `{result_set_id}`',
+			'- **Seed:** `{seed}`',
+			'- **Temperature:** `{temperature}`',
 			'- **Blockers:** `{benchmark_blockers}`',
 			'',
 			'{result_table}',
@@ -479,6 +499,12 @@ function artifactExportConfig(task, provider, metadata) {
 			variant_seed: task.split?.variant_seed || '',
 			run_id: metadata.runId,
 			run_attempt: metadata.runAttempt,
+			attempt_id: metadata.attemptId,
+			attempt_index: metadata.attemptIndex,
+			attempt_count: metadata.attemptCount,
+			result_set_id: metadata.resultSetId,
+			seed: metadata.seed,
+			temperature: metadata.temperature || 'provider_default',
 			benchmark_blockers: metadata.benchmarkRejectReasons.join(', ') || 'none',
 		},
 		pr_template_paths: {
@@ -633,6 +659,9 @@ function resolveMatrix() {
 	const runId = process.env.GITHUB_RUN_ID || '';
 	const runAttempt = process.env.GITHUB_RUN_ATTEMPT || '';
 	const runPrefix = runSegment();
+	const attemptCount = attemptsPerModel();
+	const baseSeed = process.env.WP_GYM_ATTEMPT_SEED || runId || taskSet.id;
+	const temperature = process.env.WP_GYM_TEMPERATURE || '';
 
 	for (const task of resolveTasks()) {
 		const prompt = readText(task.promptFile);
@@ -642,22 +671,33 @@ function resolveMatrix() {
 			: '[]';
 
 		for (const provider of providers()) {
-			const branchSlug = `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-');
+			const resultSetId = `${taskSet.id}-${task.id}-${provider.label}-${runId || 'local'}-${runAttempt || '1'}`.replace(/[^A-Za-z0-9_.-]+/g, '-').toLowerCase();
 			const benchmarkRejectReasonList = [...new Set([
 				...benchmarkRejectReasons(task, taskSet),
 				...providerProvenanceRejectReasons(provider),
 			])].sort();
 			const benchmarkEligible = benchmarkRejectReasonList.length === 0;
-			const artifactSuffix = runPrefix ? `${runPrefix}-${branchSlug}` : branchSlug;
-			const rowMetadata = {
-				taskSet,
-				benchmarkEligible,
-				benchmarkRejectReasons: benchmarkRejectReasonList,
-				runId,
-				runAttempt,
-			};
+			for (let attemptIndex = 1; attemptIndex <= attemptCount; attemptIndex += 1) {
+				const attemptSuffix = attemptCount > 1 ? `attempt-${attemptIndex}` : 'attempt-1';
+				const branchSlug = `${task.id}-${provider.label}-${attemptSuffix}`.replace(/[^A-Za-z0-9_.-]+/g, '-');
+				const attemptId = `${resultSetId}-${attemptSuffix}`;
+				const seed = `${baseSeed}:${task.id}:${provider.label}:${attemptIndex}`;
+				const artifactSuffix = runPrefix ? `${runPrefix}-${branchSlug}` : branchSlug;
+				const rowMetadata = {
+					taskSet,
+					benchmarkEligible,
+					benchmarkRejectReasons: benchmarkRejectReasonList,
+					runId,
+					runAttempt,
+					attemptId,
+					attemptIndex,
+					attemptCount,
+					resultSetId,
+					seed,
+					temperature,
+				};
 
-			include.push({
+				include.push({
 				task_set_id: taskSet.id,
 				task_set_benchmark_status: taskSet.benchmark_status,
 				task_set_benchmark_version: taskSet.benchmark_metadata?.benchmark_version || '',
@@ -717,8 +757,15 @@ function resolveMatrix() {
 				} : null,
 				run_id: runId,
 				run_attempt: runAttempt,
+				attempt_id: attemptId,
+				attempt_index: attemptIndex,
+				attempt_count: attemptCount,
+				result_set_id: resultSetId,
+				seed,
+				temperature,
 				artifact_suffix: artifactSuffix,
 			});
+			}
 		}
 	}
 
@@ -752,6 +799,7 @@ function sameSet(actual, expected, label) {
 function checkExpectedShape(matrix, selectedTasks) {
 	const taskSet = currentTaskSetId();
 	const explicitIds = explicitTaskIds();
+	const attemptCount = attemptsPerModel();
 	const expectedByTaskSet = {
 		'first-live-run': { rows: 6, workspaceRows: 2 },
 		'benchmark-readiness-pilot': { rows: 8, workspaceRows: 4 },
@@ -763,9 +811,9 @@ function checkExpectedShape(matrix, selectedTasks) {
 	const expected = explicitIds.length === 0 ? expectedByTaskSet[taskSet] : null;
 
 	if (expected) {
-		assert(matrix.include.length === expected.rows, `${taskSet} expected ${expected.rows} rows, got ${matrix.include.length}`);
+		assert(matrix.include.length === expected.rows * attemptCount, `${taskSet} expected ${expected.rows * attemptCount} rows, got ${matrix.include.length}`);
 		const workspaceRows = matrix.include.filter((row) => row.success_requires_pr).length;
-		assert(workspaceRows === expected.workspaceRows, `${taskSet} expected ${expected.workspaceRows} workspace rows, got ${workspaceRows}`);
+		assert(workspaceRows === expected.workspaceRows * attemptCount, `${taskSet} expected ${expected.workspaceRows * attemptCount} workspace rows, got ${workspaceRows}`);
 	}
 
 	const taskIds = new Set(selectedTasks.map((task) => task.id));
@@ -783,7 +831,7 @@ function assertLiveRunMatrix(matrix) {
 
 	for (const task of selectedTasks) {
 		const rows = matrix.include.filter((row) => row.task_id === task.id);
-		assert(rows.length === providerLabels.size, `${task.id} expected ${providerLabels.size} provider rows, got ${rows.length}`);
+		assert(rows.length === providerLabels.size * attemptsPerModel(), `${task.id} expected ${providerLabels.size * attemptsPerModel()} provider attempt rows, got ${rows.length}`);
 		sameSet(new Set(rows.map((row) => row.provider_label)), providerLabels, `${task.id} provider labels`);
 	}
 
@@ -807,6 +855,11 @@ function assertLiveRunMatrix(matrix) {
 		assert(row.headline_score_eligible === Boolean(task.calibration.headline_score_eligible), `${row.task_id} headline_score_eligible mismatch`);
 		assert(row.task_contract_level === (task.calibration.task_contract_level || 'unknown'), `${row.task_id} task_contract_level mismatch`);
 		assert(row.benchmark_scope !== 'benchmark' || row.headline_score_eligible === true, `${row.task_id} benchmark rows must be headline eligible`);
+		assert(row.attempt_index >= 1, `${row.task_id} attempt_index must be positive`);
+		assert(row.attempt_count === attemptsPerModel(), `${row.task_id} attempt_count mismatch`);
+		assert(row.attempt_index <= row.attempt_count, `${row.task_id} attempt_index cannot exceed attempt_count`);
+		assert(row.attempt_id === `${row.result_set_id}-attempt-${row.attempt_index}`, `${row.task_id} attempt_id must be stable from result_set_id and attempt_index`);
+		assert(row.seed === `${process.env.WP_GYM_ATTEMPT_SEED || row.run_id || taskSet.id}:${row.task_id}:${row.provider_label}:${row.attempt_index}`, `${row.task_id} seed mismatch`);
 		assert(Array.isArray(row.benchmark_reject_reasons), `${row.task_id} benchmark_reject_reasons must be an array`);
 		assert(
 			row.benchmark_eligible === (row.benchmark_reject_reasons.length === 0),
@@ -844,10 +897,14 @@ function assertLiveRunMatrix(matrix) {
 		assert(artifactExport.pr_template_values?.task_id === row.task_id, `${row.task_id} artifact export task id mismatch`);
 		assert(artifactExport.pr_template_values?.benchmark_eligible === row.benchmark_eligible, `${row.task_id} artifact export benchmark eligibility mismatch`);
 		assert(artifactExport.pr_template_values?.score_scope === row.score_scope, `${row.task_id} artifact export score scope mismatch`);
+		assert(artifactExport.pr_template_values?.attempt_id === row.attempt_id, `${row.task_id} artifact export attempt id mismatch`);
+		assert(artifactExport.pr_template_values?.result_set_id === row.result_set_id, `${row.task_id} artifact export result set mismatch`);
 
 		const provenance = parseJsonField(row, 'provenance');
 		assert(provenance.provider?.provider === row.provider, `${row.task_id} provenance provider mismatch`);
 		assert(provenance.provider?.model === row.model, `${row.task_id} provenance model mismatch`);
+		assert(provenance.attempt?.id === row.attempt_id, `${row.task_id} provenance attempt id mismatch`);
+		assert(provenance.attempt?.result_set_id === row.result_set_id, `${row.task_id} provenance result set mismatch`);
 		assert(/^[a-f0-9]{64}$/.test(provenance.inputs?.scenario_sha256 || ''), `${row.task_id} provenance scenario hash missing`);
 		assert(/^[a-f0-9]{64}$/.test(provenance.inputs?.prompt_sha256 || ''), `${row.task_id} provenance prompt hash missing`);
 		assert(/^[a-f0-9]{64}$/.test(provenance.inputs?.grader_sha256 || ''), `${row.task_id} provenance grader hash missing`);

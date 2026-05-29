@@ -111,6 +111,23 @@ function validateRunRegistryEntry(entry, options = {}) {
 		gaps.push(gap('missing_grade_identity', 'error', 'grade_identity', 'Registry entries must identify the grader and result hashes used for scoring.'));
 	}
 
+	if (entry.calibration?.row_type === 'repeated_attempts') {
+		if (!entry.run?.result_set_id || !entry.calibration?.result_set_id) {
+			gaps.push(gap('missing_result_set_id', 'error', 'run.result_set_id', 'Repeated-attempt registry entries must identify the result set they belong to.'));
+		} else if (entry.run.result_set_id !== entry.calibration.result_set_id) {
+			gaps.push(gap('result_set_id_mismatch', 'error', 'calibration.result_set_id', 'Repeated-attempt run and calibration result set IDs must match.'));
+		}
+		if (!entry.run?.attempt_id) {
+			gaps.push(gap('missing_attempt_id', 'error', 'run.attempt_id', 'Repeated-attempt registry entries must record a stable attempt ID.'));
+		}
+		if (!Number.isInteger(entry.run?.attempt_count) || entry.run.attempt_count < 2) {
+			gaps.push(gap('incomplete_repeated_attempt_set', 'error', 'run.attempt_count', 'Repeated-attempt registry entries must declare at least two attempts in the result set.'));
+		}
+		if (entry.run?.attempt > entry.run?.attempt_count) {
+			gaps.push(gap('attempt_index_out_of_range', 'error', 'run.attempt', 'Attempt index cannot exceed attempt_count.'));
+		}
+	}
+
 	if (!artifactEntries(entry).some((artifact) => artifact.category === 'replay' || artifact.name === 'replay_bundle')) {
 		gaps.push(gap('missing_replay_bundle', 'error', 'artifact_index.entries', 'Registry entries must include a replay bundle entry.'));
 	}

@@ -3,6 +3,7 @@ import { existsSync, statSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { validateEmbeddedPromotionReport } from './benchmark-promotion.mjs';
 
 const root = process.cwd();
 const scenarioRoot = path.join(root, 'scenarios');
@@ -461,6 +462,14 @@ function validateScenarioContract(file, manifest) {
 		validateBenchmarkMetadata(manifest.calibration.benchmark_metadata, `${file} calibration`, {
 			requireVersionIdentity: true,
 		});
+		const promotionReport = validateEmbeddedPromotionReport({
+			type: 'scenario',
+			file,
+			manifest,
+		});
+		if (!promotionReport.ok) {
+			throw new Error(`${file} benchmark_ready scenarios must include a current passing promotion_report: ${promotionReport.gaps.map((item) => item.blockers.join(',')).join('; ')}`);
+		}
 	}
 	if (
 		manifest.calibration.headline_score_eligible &&
@@ -735,6 +744,18 @@ for (const file of taskSetFiles) {
 			throw new Error(`${file} benchmark task sets must require held-out private splits`);
 		}
 		validateBenchmarkMetadata(manifest.benchmark_metadata, file, { requireVersionIdentity: true });
+		const promotionReportScenarios = new Map([...scenarioManifestsById].map(([id, scenarioFile]) => [id, {
+			file: scenarioFile,
+			manifest: scenarioValuesById.get(id),
+		}]));
+		const promotionReport = validateEmbeddedPromotionReport({
+			type: 'task_set',
+			file,
+			manifest,
+		}, promotionReportScenarios);
+		if (!promotionReport.ok) {
+			throw new Error(`${file} benchmark task sets must include a current passing promotion_report: ${promotionReport.gaps.map((item) => item.blockers.join(',')).join('; ')}`);
+		}
 	}
 
 	if (!Array.isArray(manifest.tasks) || manifest.tasks.length < 1) {

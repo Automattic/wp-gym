@@ -364,6 +364,7 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 			provenance: sealed.provenance || undefined,
 			reports: {
 				workflow_run_url: sealed.runner?.workflow_run_url || null,
+				template_values: templateValues,
 				result_json: artifactReferences.reports.result_json,
 				replay: artifactReferences.reports.replay,
 			},

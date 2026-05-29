@@ -49,6 +49,24 @@ function confidenceInterval(successes, total) {
 	return [Math.max(0, rate - margin), Math.min(1, rate + margin)];
 }
 
+function sampleVariance(values) {
+	if (values.length < 2) {
+		return 0;
+	}
+	const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+	return values.reduce((sum, value) => sum + ((value - mean) ** 2), 0) / (values.length - 1);
+}
+
+function rewardConfidenceInterval(values) {
+	if (values.length < 2) {
+		return null;
+	}
+	const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+	const standardDeviation = Math.sqrt(sampleVariance(values));
+	const margin = 1.96 * (standardDeviation / Math.sqrt(values.length));
+	return [Number(Math.max(0, mean - margin).toFixed(4)), Number(Math.min(1, mean + margin).toFixed(4))];
+}
+
 function emptySummary(key = '') {
 	return {
 		key,
@@ -57,8 +75,14 @@ function emptySummary(key = '') {
 		failed: 0,
 		errored: 0,
 		reward_sum: 0,
+		rewards: [],
 		reward_mean: 0,
+		reward_variance: 0,
+		reward_stddev: 0,
+		reward_confidence_interval_95: null,
 		pass_rate: 0,
+		pass_at_1: 0,
+		pass_at_n: 0,
 		confidence_interval_95: null,
 		failure_classes: {},
 		failed_checks: {},
@@ -82,6 +106,7 @@ function addEntry(summary, row) {
 		summary.errored += 1;
 	}
 	summary.reward_sum += Number(row.grade_identity?.reward || 0);
+	summary.rewards.push(Number(row.grade_identity?.reward || 0));
 	addCount(summary.failure_classes, row.grade_identity?.failure_class || 'unknown');
 	for (const reason of row.benchmark?.exclusion_reasons || []) {
 		addCount(summary.data_quality_gaps, reason);
@@ -90,9 +115,15 @@ function addEntry(summary, row) {
 
 function finalizeSummary(summary) {
 	summary.reward_mean = summary.runs > 0 ? Number((summary.reward_sum / summary.runs).toFixed(4)) : 0;
+	summary.reward_variance = Number(sampleVariance(summary.rewards).toFixed(4));
+	summary.reward_stddev = Number(Math.sqrt(summary.reward_variance).toFixed(4));
+	summary.reward_confidence_interval_95 = rewardConfidenceInterval(summary.rewards);
 	summary.pass_rate = summary.runs > 0 ? Number((summary.passed / summary.runs).toFixed(4)) : 0;
+	summary.pass_at_1 = summary.pass_rate;
+	summary.pass_at_n = summary.runs > 0 ? Number((summary.passed > 0 ? 1 : 0).toFixed(4)) : 0;
 	summary.confidence_interval_95 = confidenceInterval(summary.passed, summary.runs);
 	delete summary.reward_sum;
+	delete summary.rewards;
 	return summary;
 }
 
@@ -119,6 +150,10 @@ function groupBy(rows, keyFn) {
 		addEntry(groups.get(key), row);
 	}
 	return Object.fromEntries([...groups.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([key, summary]) => [key, finalizeSummary(summary)]));
+}
+
+function resultSetKey(row) {
+	return row.run?.result_set_id || row.calibration?.result_set_id || `${row.scenario?.id || 'unknown'}:${row.runner?.provider || 'unknown'}:${row.runner?.model || 'unknown'}`;
 }
 
 function rowFailedChecks(row) {
@@ -181,6 +216,8 @@ function aggregate(entries, options) {
 		},
 		overall,
 		by_provider_model: groupBy(rows, (row) => `${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
+		by_scenario_model: groupBy(rows, (row) => `${row.scenario?.id || 'unknown'}:${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
+		by_result_set: groupBy(rows, resultSetKey),
 		by_task: groupBy(rows, (row) => row.scenario?.id || 'unknown'),
 		by_task_family: groupBy(rows, (row) => row.scenario?.task_family || 'unknown'),
 		by_capability: groupBy(rows, (row) => row.scenario?.capabilities?.primary || 'unknown'),
@@ -201,6 +238,10 @@ function aggregate(entries, options) {
 			model: row.runner?.model,
 			outcome: row.run?.outcome,
 			reward: row.grade_identity?.reward,
+			attempt_id: row.run?.attempt_id || null,
+			attempt_index: row.run?.attempt || null,
+			attempt_count: row.run?.attempt_count || null,
+			result_set_id: row.run?.result_set_id || row.calibration?.result_set_id || null,
 			failure_class: row.grade_identity?.failure_class,
 			capability: row.scenario?.capabilities?.primary || null,
 			benchmark_eligible: row.benchmark?.eligible,
@@ -224,7 +265,10 @@ function renderSummaryMap(map) {
 		summary.key,
 		String(summary.runs),
 		percent(summary.pass_rate),
+		percent(summary.pass_at_n),
 		String(summary.reward_mean),
+		String(summary.reward_stddev),
+		summary.reward_confidence_interval_95 ? summary.reward_confidence_interval_95.map((value) => String(value)).join(' - ') : 'n/a',
 		String(summary.failed),
 		String(summary.errored),
 	]);
@@ -241,10 +285,13 @@ function renderMarkdown(report) {
 		'',
 		'## Overall',
 		'',
-		renderTable(['Runs', 'Pass rate', 'Reward mean', 'Passed', 'Failed', 'Errored'], [[
+		renderTable(['Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Passed', 'Failed', 'Errored'], [[
 			String(report.overall.runs),
-			percent(report.overall.pass_rate),
+			percent(report.overall.pass_at_1),
+			percent(report.overall.pass_at_n),
 			String(report.overall.reward_mean),
+			String(report.overall.reward_stddev),
+			report.overall.reward_confidence_interval_95 ? report.overall.reward_confidence_interval_95.map((value) => String(value)).join(' - ') : 'n/a',
 			String(report.overall.passed),
 			String(report.overall.failed),
 			String(report.overall.errored),
@@ -252,22 +299,32 @@ function renderMarkdown(report) {
 		'',
 		'## Provider / Model',
 		'',
-		renderTable(['Provider/model', 'Runs', 'Pass rate', 'Reward mean', 'Failed', 'Errored'], renderSummaryMap(report.by_provider_model)),
+		renderTable(['Provider/model', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_provider_model)),
+		'',
+		'## Scenario / Model',
+		'',
+		renderTable(['Scenario/model', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_scenario_model)),
+		'',
+		'## Result Sets',
+		'',
+		renderTable(['Result set', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_result_set)),
 		'',
 		'## Tasks',
 		'',
-		renderTable(['Task', 'Runs', 'Pass rate', 'Reward mean', 'Failed', 'Errored'], renderSummaryMap(report.by_task)),
+		renderTable(['Task', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_task)),
 		'',
 		'## Task Families',
 		'',
-		renderTable(['Family', 'Runs', 'Pass rate', 'Reward mean', 'Failed', 'Errored'], renderSummaryMap(report.by_task_family)),
+		renderTable(['Family', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_task_family)),
 		'',
 		'## Rows',
 		'',
-		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
+		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
 			row.scenario || '',
 			row.held_out_pack?.pack_id || '',
 			`${row.provider || 'unknown'}/${row.model || 'unknown'}`,
+			row.attempt_index ? `${row.attempt_index}/${row.attempt_count || '?'}` : '',
+			row.result_set_id || '',
 			row.outcome || '',
 			String(row.reward ?? ''),
 			row.failure_class || '',
