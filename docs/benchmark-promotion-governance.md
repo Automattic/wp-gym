@@ -57,6 +57,29 @@ Scenario promotion requires:
 - Benchmark metadata includes full version identity hashes.
 - `calibration.benchmark_blockers` is empty.
 
+## Benchmark Replay Contract
+
+`task_contract_level=benchmark_replay` means the row is no longer a diagnostic
+contract. The scenario must be locally replayable and regradable from retained or
+downloaded artifacts without hidden runner state.
+
+Scenario metadata enforces this contract with:
+
+- `expected_artifacts` includes `grader_result`, `replay_trace`, and
+  `replay_bundle`.
+- `expected_artifacts` includes at least one replayable state artifact:
+  `wordpress_state`, `workspace_diff`, `plugin_files`, or `media_library`.
+- `episode_contract.allowed_action_types` contains only action types the local
+  replay harness can replay today: `wp_cli` and `filesystem`.
+- `benchmark_blockers` no longer contains diagnostic-only blockers such as
+  `diagnostic_contract_only`, `workspace_diff_diagnostic_only`, or
+  `task_contract_workspace_diff_diagnostic`.
+
+Benchmark-mode artifact validation also treats `replay_trace` and
+`replay_bundle` as first-class expected artifacts. `wp-gym replay --regrade`
+must be able to verify hashes, replay the canonical trace, rerun the terminal
+grader, and compare the sealed grade result.
+
 Task-set promotion requires:
 
 - `benchmark_status=benchmark_ready`, `benchmark=true`,

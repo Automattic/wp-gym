@@ -242,6 +242,7 @@ try {
 	await writeFile(path.join(temp, 'result.json'), '{"ok":true}\n');
 	await writeFile(path.join(temp, 'result-with-grade.json'), JSON.stringify({ grader: baseArtifact().grader }, null, 2));
 	await writeFile(path.join(temp, 'replay.zip'), 'zip-bytes');
+	await writeFile(path.join(temp, 'episode-trace.json'), '{"steps":[]}');
 	await writeFile(path.join(temp, 'events.jsonl'), '{"event":"started"}\n');
 	await writeFile(path.join(temp, 'wordpress-state.json'), '{"posts":[]}\n');
 	const runnerSurface = await readFile(path.join(root, 'fixtures/runner-surface/visible-agent-surface.fixture.json'), 'utf8');
@@ -262,10 +263,12 @@ try {
 				events: [{ kind: 'jsonl', path_or_url: 'events.jsonl', sha256: sha256('{"event":"started"}\n') }],
 				observations: [{ kind: 'wordpress_state', path_or_url: 'wordpress-state.json', sha256: sha256('{"posts":[]}\n') }],
 				replay_bundle: [{ kind: 'zip', path_or_url: 'replay.zip', sha256: sha256('zip-bytes') }],
+				replay_trace: [{ kind: 'json', path_or_url: 'episode-trace.json', sha256: sha256('{"steps":[]}') }],
 			},
 		},
 		reports: {
 			result_json: [{ kind: 'json', path_or_url: 'result-with-grade.json', sha256: sha256(JSON.stringify({ grader: baseArtifact().grader }, null, 2)) }],
+			replay: [{ kind: 'json', path_or_url: 'episode-trace.json', sha256: sha256('{"steps":[]}') }],
 		},
 	});
 

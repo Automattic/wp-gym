@@ -130,9 +130,8 @@
       "text_only_import_without_media",
       "remote_url_reuse"
     ],
-    "task_contract_level": "workspace_diff_diagnostic",
+    "task_contract_level": "benchmark_replay",
     "benchmark_blockers": [
-      "workspace_diff_diagnostic_only",
       "missing_baseline_results",
       "uncalibrated_difficulty",
       "known_reward_shortcut"
@@ -142,6 +141,8 @@
     "workspace_diff",
     "wordpress_state",
     "media_library",
+    "replay_trace",
+    "replay_bundle",
     "grader_result"
   ],
   "expected": {

@@ -39,6 +39,8 @@ const expectedArtifactReferenceFields = {
 	workspace_diff: ['runtime.references.patches'],
 	plugin_files: ['runtime.references.packages', 'runtime.references.mounts'],
 	grader_result: ['reports.result_json'],
+	replay_bundle: ['runtime.references.replay_bundle'],
+	replay_trace: ['reports.replay', 'runtime.references.replay_trace'],
 };
 const sensitiveValueRules = [
 	{ code: 'private_key_marker', pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----/i, label: 'private key material' },

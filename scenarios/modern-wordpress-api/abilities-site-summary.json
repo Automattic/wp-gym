@@ -169,10 +169,8 @@
       "source_string_lifecycle_spoof",
       "hard_coded_clean_site_state"
     ],
-    "task_contract_level": "workspace_diff_diagnostic",
-    "benchmark_blockers": [
-      "workspace_diff_diagnostic_only"
-    ],
+    "task_contract_level": "benchmark_replay",
+    "benchmark_blockers": [],
     "reward_soundness_review": {
       "status": "reviewed",
       "reviewed_at": "2026-05-29",
@@ -192,6 +190,8 @@
   "expected_artifacts": [
     "workspace_diff",
     "plugin_files",
+    "replay_trace",
+    "replay_bundle",
     "grader_result"
   ],
   "expected": {
