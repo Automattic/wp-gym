@@ -144,7 +144,9 @@
   "episode_contract": {
     "schema_version": 1,
     "allowed_action_types": [
-      "wp_cli"
+      "wp_cli",
+      "rest",
+      "browser"
     ],
     "max_steps": 16,
     "setup": [

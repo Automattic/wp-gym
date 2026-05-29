@@ -21,7 +21,10 @@ assert.deepEqual(description.capabilities.schemas, {
 });
 
 const capabilities = await WPGym.capabilities(scenarioId);
-assert.deepEqual(capabilities.allowed_action_types, ['wp_cli']);
+assert.deepEqual(capabilities.allowed_action_types, ['wp_cli', 'rest', 'browser']);
+assert.deepEqual(capabilities.replayable_action_types, ['wp_cli', 'rest', 'browser']);
+assert.deepEqual(capabilities.evidence_only_action_types, []);
+assert.deepEqual(capabilities.implemented_local_action_types, ['wp_cli', 'filesystem', 'rest', 'browser']);
 
 const taskSet = await WPGym.describeTaskSet('first-live-run');
 assert.equal(taskSet.id, 'first-live-run');
@@ -56,6 +59,29 @@ try {
 	assert.equal(repeatedReset.state.episode_id, seededEpisodeId);
 	assert.equal(repeatedReset.state.reset_seed, '1234');
 
+	const restStep = await env.step({
+		type: 'rest',
+		method: 'GET',
+		path: '/wp-json/',
+	});
+	assert.equal(restStep.observation.type, 'rest_response');
+	assert.equal(restStep.observation.action_type, 'rest');
+	assert.equal(restStep.observation.status, 200);
+	assert.equal(restStep.observation.error, null);
+
+	const browserStep = await env.step({
+		type: 'browser',
+		operation: 'capture',
+		replayability: 'replayable',
+		url: '/',
+		capture: ['html'],
+	});
+	assert.equal(browserStep.observation.type, 'browser_result');
+	assert.equal(browserStep.observation.action_type, 'browser');
+	assert.equal(browserStep.observation.operation, 'capture');
+	assert.equal(browserStep.observation.error, null);
+	assert.ok(browserStep.observation.artifacts.some((artifact) => artifact.path === 'files/browser/snapshot.html'));
+
 	const step = await env.step({
 		type: 'wp_cli',
 		command: [
@@ -78,8 +104,8 @@ try {
 	assert.equal(trace.scenario_id, scenarioId);
 	assert.equal(trace.episode_id, seededEpisodeId);
 	assert.equal(trace.metadata.reset_seed, '1234');
-	assert.equal(trace.steps.length, 1);
-	assert.deepEqual(trace.metadata.allowed_action_types, ['wp_cli']);
+	assert.equal(trace.steps.length, 3);
+	assert.deepEqual(trace.metadata.allowed_action_types, ['wp_cli', 'rest', 'browser']);
 } finally {
 	await env.close();
 }
