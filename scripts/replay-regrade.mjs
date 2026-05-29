@@ -267,7 +267,6 @@ async function replayTraceActions(trace, options = {}) {
 		env = await WPGym.make(trace.scenario_id, {
 			root,
 			gradeTimeoutMs: options.timeoutMs,
-			wpCodeboxWordPressVersion: options.wpCodeboxWordPressVersion,
 		});
 		const reset = await env.reset({ seed: trace.metadata?.reset_seed ?? null });
 		for (const step of trace.steps) {

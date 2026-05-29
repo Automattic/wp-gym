@@ -9,23 +9,52 @@
     "variant_seed": "service-relationship-map-public-v1",
     "parent_scenario_id": null,
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
   "prompt_file": "../../prompts/site-understanding/service-relationship-map.md",
   "grader_file": "../../graders/site-understanding/service-relationship-map.php",
-  "tags": ["wordpress", "site-understanding", "entity-relationships", "natural-prompt"],
+  "tags": [
+    "wordpress",
+    "site-understanding",
+    "entity-relationships",
+    "natural-prompt"
+  ],
   "capabilities": {
     "schema_version": 1,
     "primary": "data_interaction_apis",
-    "secondary": ["theme_site_building"],
-    "criteria": ["wordpress_native_content_model", "taxonomy_relationships", "evidence_grounded_summary"]
+    "secondary": [
+      "theme_site_building"
+    ],
+    "criteria": [
+      "wordpress_native_content_model",
+      "taxonomy_relationships",
+      "evidence_grounded_summary"
+    ]
   },
   "rules": {
-    "general": ["wordpress_native_content", "evidence_grounded_summary", "no_hallucinated_entities"],
-    "task_specific": ["service_entities_created", "staff_location_relationships", "taxonomy_relationships", "source_evidence_present"]
+    "general": [
+      "wordpress_native_content",
+      "evidence_grounded_summary",
+      "no_hallucinated_entities"
+    ],
+    "task_specific": [
+      "service_entities_created",
+      "staff_location_relationships",
+      "taxonomy_relationships",
+      "source_evidence_present"
+    ]
   },
   "limits": {
     "max_turns": 12,
@@ -36,10 +65,20 @@
     "action_mode": "wordpress",
     "uses_workspace": false,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "wordpress_runtime", "block_editor", "rendered_site"],
+    "observation_channels": [
+      "prompt",
+      "wordpress_runtime",
+      "block_editor",
+      "rendered_site"
+    ],
     "allowed_tools": [],
     "writable_roots": [],
-    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "checks/",
+      "task-sets/"
+    ],
     "workspace_template": null,
     "completion_policy": {
       "type": "agent_final_response"
@@ -57,7 +96,10 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "pilot",
@@ -65,16 +107,39 @@
     "difficulty_band": "uncalibrated",
     "headline_score_eligible": false,
     "baseline_result_sets": [],
-    "known_shortcuts": ["flat_summary_only", "unsupported_entity_guessing", "missing_source_evidence"],
+    "known_shortcuts": [
+      "flat_summary_only",
+      "unsupported_entity_guessing",
+      "missing_source_evidence"
+    ],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty"]
+    "benchmark_blockers": [
+      "diagnostic_contract_only",
+      "missing_baseline_results",
+      "uncalibrated_difficulty"
+    ]
   },
-  "expected_artifacts": ["wordpress_state", "rendered_site", "grader_result"],
+  "expected_artifacts": [
+    "wordpress_state",
+    "rendered_site",
+    "grader_result"
+  ],
   "expected": {
     "entities": {
-      "services": ["boiler tune-ups", "chimney inspections", "heat pump triage"],
-      "staff": ["Maya Ortiz", "Theo Grant"],
-      "locations": ["North Loop", "River Market", "South Hill"]
+      "services": [
+        "boiler tune-ups",
+        "chimney inspections",
+        "heat pump triage"
+      ],
+      "staff": [
+        "Maya Ortiz",
+        "Theo Grant"
+      ],
+      "locations": [
+        "North Loop",
+        "River Market",
+        "South Hill"
+      ]
     },
     "relationships": [
       "Boiler tune-ups -> Maya Ortiz -> North Loop",
@@ -89,6 +154,25 @@
       "taxonomy_relationships_present",
       "source_evidence_present",
       "no_hallucinated_entities"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "wp_cli"
+    ],
+    "max_steps": 18,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_native_content",
+      "evidence_grounded_summary",
+      "no_hallucinated_entities",
+      "service_entities_created",
+      "staff_location_relationships",
+      "taxonomy_relationships",
+      "source_evidence_present"
     ]
   }
 }

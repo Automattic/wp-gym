@@ -9,32 +9,71 @@
     "variant_seed": "elementor-hero-refresh-public-v1",
     "parent_scenario_id": null,
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
   "prompt_file": "../../prompts/visual-builder/elementor-hero-refresh.md",
   "grader_file": "../../graders/visual-builder/elementor-hero-refresh.php",
-  "tags": ["wordpress", "visual-builder", "elementor", "page-builder", "diagnostic"],
+  "tags": [
+    "wordpress",
+    "visual-builder",
+    "elementor",
+    "page-builder",
+    "diagnostic"
+  ],
   "capabilities": {
     "schema_version": 1,
     "primary": "custom_admin_ui",
-    "secondary": ["theme_site_building"],
-    "criteria": ["builder_state_preservation", "rendered_content_quality", "no_raw_html_shortcut"]
+    "secondary": [
+      "theme_site_building"
+    ],
+    "criteria": [
+      "builder_state_preservation",
+      "rendered_content_quality",
+      "no_raw_html_shortcut"
+    ]
   },
   "rules": {
-    "general": ["wordpress_visual_builder_state", "no_raw_html_or_shortcodes"],
-    "task_specific": ["elementor_builder_metadata", "campaign_hero_copy", "two_column_hero_structure", "visual_builder_cta"]
+    "general": [
+      "wordpress_visual_builder_state",
+      "no_raw_html_or_shortcodes"
+    ],
+    "task_specific": [
+      "elementor_builder_metadata",
+      "campaign_hero_copy",
+      "two_column_hero_structure",
+      "visual_builder_cta"
+    ]
   },
   "environment": {
     "action_mode": "wordpress",
     "uses_workspace": false,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "wordpress_runtime", "rendered_site", "builder_state"],
+    "observation_channels": [
+      "prompt",
+      "wordpress_runtime",
+      "rendered_site",
+      "builder_state"
+    ],
     "allowed_tools": [],
     "writable_roots": [],
-    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "checks/",
+      "task-sets/"
+    ],
     "workspace_template": null,
     "completion_policy": {
       "type": "agent_final_response"
@@ -52,7 +91,10 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "demo",
@@ -60,18 +102,63 @@
     "difficulty_band": "uncalibrated",
     "headline_score_eligible": false,
     "baseline_result_sets": [],
-    "known_shortcuts": ["metadata_stub_without_rendered_content", "raw_html_replacement"],
+    "known_shortcuts": [
+      "metadata_stub_without_rendered_content",
+      "raw_html_replacement"
+    ],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty", "no_full_elementor_runtime"]
+    "benchmark_blockers": [
+      "diagnostic_contract_only",
+      "missing_baseline_results",
+      "uncalibrated_difficulty",
+      "no_full_elementor_runtime"
+    ]
   },
-  "expected_artifacts": ["wordpress_state", "rendered_site", "builder_state", "grader_result"],
+  "expected_artifacts": [
+    "wordpress_state",
+    "rendered_site",
+    "builder_state",
+    "grader_result"
+  ],
   "expected": {
     "post_title": "Luma Studio Landing Page",
     "builder_contract": "Elementor-compatible post metadata and JSON widget tree; full Elementor runtime is not required for this diagnostic fixture.",
-    "required_meta": ["_elementor_edit_mode", "_elementor_data"],
-    "required_widget_types": ["heading", "text-editor", "button"],
-    "required_copy": ["Brand Photos That Feel Effortless", "Book A Shoot"],
-    "forbidden_blocks": ["core/html"],
-    "forbidden_markup": ["shortcodes"]
+    "required_meta": [
+      "_elementor_edit_mode",
+      "_elementor_data"
+    ],
+    "required_widget_types": [
+      "heading",
+      "text-editor",
+      "button"
+    ],
+    "required_copy": [
+      "Brand Photos That Feel Effortless",
+      "Book A Shoot"
+    ],
+    "forbidden_blocks": [
+      "core/html"
+    ],
+    "forbidden_markup": [
+      "shortcodes"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "wp_cli"
+    ],
+    "max_steps": 16,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_visual_builder_state",
+      "no_raw_html_or_shortcodes",
+      "elementor_builder_metadata",
+      "campaign_hero_copy",
+      "two_column_hero_structure",
+      "visual_builder_cta"
+    ]
   }
 }

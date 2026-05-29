@@ -9,8 +9,17 @@
     "variant_seed": "simple-pricing-public-v1",
     "parent_scenario_id": null,
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
@@ -19,21 +28,43 @@
   "capabilities": {
     "schema_version": 1,
     "primary": "gutenberg_blocks",
-    "secondary": ["theme_site_building"],
-    "criteria": ["parseable_block_markup", "no_fallback_blocks", "editable_layout_structure"]
+    "secondary": [
+      "theme_site_building"
+    ],
+    "criteria": [
+      "parseable_block_markup",
+      "no_fallback_blocks",
+      "editable_layout_structure"
+    ]
   },
   "rules": {
-    "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
-    "task_specific": ["three_pricing_columns", "buttons_for_plans", "expected_heading_text"]
+    "general": [
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes"
+    ],
+    "task_specific": [
+      "three_pricing_columns",
+      "buttons_for_plans",
+      "expected_heading_text"
+    ]
   },
   "environment": {
     "action_mode": "wordpress",
     "uses_workspace": false,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "wordpress_runtime", "block_editor"],
+    "observation_channels": [
+      "prompt",
+      "wordpress_runtime",
+      "block_editor"
+    ],
     "allowed_tools": [],
     "writable_roots": [],
-    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "checks/",
+      "task-sets/"
+    ],
     "workspace_template": null,
     "completion_policy": {
       "type": "agent_final_response"
@@ -51,23 +82,47 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "calibrating",
     "benchmark_scope": "calibration",
     "difficulty_band": "smoke",
     "headline_score_eligible": false,
-    "baseline_result_sets": ["block-markup-no-fallback-pricing-section-local-fixture-baseline", "block-markup-no-fallback-pricing-section-local-episode-baseline"],
-    "calibration_result_sets": ["block-markup-no-fallback-pricing-section-local-fixture-baseline", "block-markup-no-fallback-pricing-section-local-episode-baseline"],
+    "baseline_result_sets": [
+      "block-markup-no-fallback-pricing-section-local-fixture-baseline",
+      "block-markup-no-fallback-pricing-section-local-episode-baseline"
+    ],
+    "calibration_result_sets": [
+      "block-markup-no-fallback-pricing-section-local-fixture-baseline",
+      "block-markup-no-fallback-pricing-section-local-episode-baseline"
+    ],
     "pass_rate_band": "uncalibrated",
-    "confidence_interval_95": [0, 1],
+    "confidence_interval_95": [
+      0,
+      1
+    ],
     "held_out_private_variants_ready": false,
-    "known_shortcuts": ["empty_block_skeleton", "keyword_and_block_count_stuffing"],
+    "known_shortcuts": [
+      "empty_block_skeleton",
+      "keyword_and_block_count_stuffing"
+    ],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_model_baselines", "missing_repeated_attempts", "held_out_private_variants_not_ready", "known_reward_shortcut"]
+    "benchmark_blockers": [
+      "diagnostic_contract_only",
+      "missing_model_baselines",
+      "missing_repeated_attempts",
+      "held_out_private_variants_not_ready",
+      "known_reward_shortcut"
+    ]
   },
-  "expected_artifacts": ["wordpress_state", "grader_result"],
+  "expected_artifacts": [
+    "wordpress_state",
+    "grader_result"
+  ],
   "expected": {
     "post_title": "Simple Pricing Page",
     "required_blocks": [
@@ -84,6 +139,23 @@
     ],
     "forbidden_markup": [
       "shortcodes"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "wp_cli"
+    ],
+    "max_steps": 16,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes",
+      "three_pricing_columns",
+      "buttons_for_plans",
+      "expected_heading_text"
     ]
   }
 }

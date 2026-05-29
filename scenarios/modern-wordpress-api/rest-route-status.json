@@ -9,19 +9,40 @@
     "variant_seed": "rest-route-status-public-v1",
     "parent_scenario_id": null,
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader", "starter_workspace"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_workspace_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader",
+        "starter_workspace"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_workspace_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
   "prompt_file": "../../prompts/modern-wordpress-api/rest-route-status.md",
   "grader_file": "../../graders/modern-wordpress-api/rest-route-status.php",
-  "tags": ["wordpress", "rest-api", "plugin-api", "modern-api"],
+  "tags": [
+    "wordpress",
+    "rest-api",
+    "plugin-api",
+    "modern-api"
+  ],
   "capabilities": {
     "schema_version": 1,
     "primary": "data_interaction_apis",
-    "secondary": ["plugin_quality_wordpress_standards"],
-    "criteria": ["rest_route_registration", "permission_callback", "structured_output"]
+    "secondary": [
+      "plugin_quality_wordpress_standards"
+    ],
+    "criteria": [
+      "rest_route_registration",
+      "permission_callback",
+      "structured_output"
+    ]
   },
   "api_provenance": {
     "capability_area": "data_interaction_apis",
@@ -57,8 +78,16 @@
     }
   },
   "rules": {
-    "general": ["wordpress_docs_standards", "no_speculative_plugin_packaging", "supported_plugin_author_metadata"],
-    "task_specific": ["route_registered", "permission_callback_present", "exact_rest_output_shape"]
+    "general": [
+      "wordpress_docs_standards",
+      "no_speculative_plugin_packaging",
+      "supported_plugin_author_metadata"
+    ],
+    "task_specific": [
+      "route_registered",
+      "permission_callback_present",
+      "exact_rest_output_shape"
+    ]
   },
   "limits": {
     "max_turns": 25,
@@ -69,7 +98,11 @@
     "action_mode": "workspace",
     "uses_workspace": true,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "workspace_tree", "wordpress_runtime"],
+    "observation_channels": [
+      "prompt",
+      "workspace_tree",
+      "wordpress_runtime"
+    ],
     "allowed_tools": [
       "workspace_show",
       "workspace_ls",
@@ -82,8 +115,19 @@
       "wordpress_runtime_ls",
       "run_wp_cli"
     ],
-    "writable_roots": ["plugins/"],
-    "hidden_paths": ["graders/", "scenarios/", "prompts/", "checks/", "task-sets/", ".github/", "docs/", "scripts/"],
+    "writable_roots": [
+      "plugins/"
+    ],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "prompts/",
+      "checks/",
+      "task-sets/",
+      ".github/",
+      "docs/",
+      "scripts/"
+    ],
     "workspace_template": "starter-workspaces/modern-wordpress-api",
     "completion_policy": {
       "type": "explicit_final_response"
@@ -101,7 +145,10 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "pilot",
@@ -109,14 +156,48 @@
     "difficulty_band": "uncalibrated",
     "headline_score_eligible": false,
     "baseline_result_sets": [],
-    "known_shortcuts": ["hard_coded_clean_site_state", "extra_output_fields"],
+    "known_shortcuts": [
+      "hard_coded_clean_site_state",
+      "extra_output_fields"
+    ],
     "task_contract_level": "workspace_diff_diagnostic",
-    "benchmark_blockers": ["workspace_diff_diagnostic_only", "missing_baseline_results", "uncalibrated_difficulty"]
+    "benchmark_blockers": [
+      "workspace_diff_diagnostic_only",
+      "missing_baseline_results",
+      "uncalibrated_difficulty"
+    ]
   },
-  "expected_artifacts": ["workspace_diff", "plugin_files", "grader_result"],
+  "expected_artifacts": [
+    "workspace_diff",
+    "plugin_files",
+    "grader_result"
+  ],
   "expected": {
     "route": "/site-tools/v1/status",
     "method": "GET",
-    "required_output_keys": ["ok", "site_name", "post_count"]
+    "required_output_keys": [
+      "ok",
+      "site_name",
+      "post_count"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "filesystem",
+      "wp_cli"
+    ],
+    "max_steps": 12,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_docs_standards",
+      "no_speculative_plugin_packaging",
+      "supported_plugin_author_metadata",
+      "route_registered",
+      "permission_callback_present",
+      "exact_rest_output_shape"
+    ]
   }
 }

@@ -57,17 +57,7 @@ function schemaReferences() {
 }
 
 function actionCapabilitiesForScenario(manifest) {
-	if (manifest.episode_contract?.allowed_action_types?.length) {
-		return manifest.episode_contract.allowed_action_types;
-	}
-
-	if (manifest.environment?.action_mode === 'workspace') {
-		return manifest.environment.allowed_tools?.includes('run_wp_cli')
-			? ['filesystem', 'wp_cli']
-			: ['filesystem'];
-	}
-
-	return ['wp_cli'];
+	return manifest.episode_contract.allowed_action_types;
 }
 
 function scenarioSummary(root, scenario) {
@@ -828,7 +818,7 @@ export class WPGymEnvironment {
 			timeout_ms: action.timeout_ms,
 			timed_out: false,
 			duration_ms: Date.parse(execution.finishedAt) - Date.parse(execution.startedAt) || Date.now() - started,
-			error: execution.exitCode === 0 ? null : { code: 'wp_codebox_wp_cli_error', message: execution.stderr || recipeRun.error?.message || 'WP-CLI action failed.' },
+			error: execution.exitCode === 0 ? null : { code: 'wp_codebox_wp_cli_error', message: execution.stderr || 'WP-CLI action failed.' },
 		};
 	}
 
@@ -890,7 +880,9 @@ export class WPGymEnvironment {
 				kind: 'wordpress',
 				reset_fixture: this.scenario.environment.reset_fixture,
 			},
-			limits: this.scenario.environment.truncation_policy,
+			limits: {
+				max_steps: this.scenario.episode_contract.max_steps,
+			},
 			mounts: [
 				{
 					source: this.root,
@@ -1028,7 +1020,7 @@ echo wp_json_encode(array('documents' => $documents));
 				environment: {
 					kind: 'wordpress',
 					name: `wp-gym-${this.scenario.id}`,
-					version: this.options.wpVersion || this.options.wpCodeboxWordPressVersion || '7.0',
+					version: this.options.wpVersion || '7.0',
 					blueprint: this.wpCodeboxBlueprint(),
 				},
 				policy: {
@@ -1100,18 +1092,11 @@ echo wp_json_encode(array('documents' => $documents));
 	}
 
 	maxSteps() {
-		return this.scenario.episode_contract?.max_steps || this.scenario.environment.truncation_policy.step_budget;
+		return this.scenario.episode_contract.max_steps;
 	}
 
 	successChecks() {
-		if (this.scenario.episode_contract?.success_checks?.length) {
-			return this.scenario.episode_contract.success_checks;
-		}
-
-		return [
-			...(this.scenario.rules?.general || []),
-			...(this.scenario.rules?.task_specific || []),
-		];
+		return this.scenario.episode_contract.success_checks;
 	}
 
 	assertAllowedAction(type) {

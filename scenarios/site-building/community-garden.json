@@ -9,23 +9,54 @@
     "variant_seed": "community-garden-public-v1",
     "parent_scenario_id": null,
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader", "reward_fixtures"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader",
+        "reward_fixtures"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
   "prompt_file": "../../prompts/site-building/community-garden.md",
   "grader_file": "../../graders/site-building/community-garden.php",
-  "tags": ["wordpress", "site-building", "natural-prompt", "quality-criteria"],
+  "tags": [
+    "wordpress",
+    "site-building",
+    "natural-prompt",
+    "quality-criteria"
+  ],
   "capabilities": {
     "schema_version": 1,
     "primary": "theme_site_building",
-    "secondary": ["gutenberg_blocks"],
-    "criteria": ["block_theme_choice", "editable_block_content", "theme_json_templates_navigation"]
+    "secondary": [
+      "gutenberg_blocks"
+    ],
+    "criteria": [
+      "block_theme_choice",
+      "editable_block_content",
+      "theme_json_templates_navigation"
+    ]
   },
   "rules": {
-    "general": ["wordpress_block_theme_site", "wordpress_editable_blocks", "no_raw_html_or_shortcodes", "production_build_when_assets_change"],
-    "task_specific": ["homepage_set", "community_garden_content", "navigation_created", "template_parts_seen"]
+    "general": [
+      "wordpress_block_theme_site",
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes",
+      "production_build_when_assets_change"
+    ],
+    "task_specific": [
+      "homepage_set",
+      "community_garden_content",
+      "navigation_created",
+      "template_parts_seen"
+    ]
   },
   "limits": {
     "max_turns": 10,
@@ -36,10 +67,20 @@
     "action_mode": "wordpress",
     "uses_workspace": false,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "wordpress_runtime", "block_editor", "rendered_site"],
+    "observation_channels": [
+      "prompt",
+      "wordpress_runtime",
+      "block_editor",
+      "rendered_site"
+    ],
     "allowed_tools": [],
     "writable_roots": [],
-    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "checks/",
+      "task-sets/"
+    ],
     "workspace_template": null,
     "completion_policy": {
       "type": "agent_final_response"
@@ -57,7 +98,10 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "demo",
@@ -65,7 +109,11 @@
     "difficulty_band": "uncalibrated",
     "headline_score_eligible": false,
     "baseline_result_sets": [],
-    "known_shortcuts": ["topic_keyword_stuffing", "minimal_page_shell", "raw_html_shortcut"],
+    "known_shortcuts": [
+      "topic_keyword_stuffing",
+      "minimal_page_shell",
+      "raw_html_shortcut"
+    ],
     "audit_packet": "../../docs/grader-audit-site-building-community-garden.md",
     "reward_fixture_ids": [
       "site-building-community-garden-positive-control",
@@ -74,11 +122,26 @@
       "site-building-community-garden-raw-html-shortcut"
     ],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty"]
+    "benchmark_blockers": [
+      "diagnostic_contract_only",
+      "missing_baseline_results",
+      "uncalibrated_difficulty"
+    ]
   },
-  "expected_artifacts": ["wordpress_state", "rendered_site", "grader_result"],
+  "expected_artifacts": [
+    "wordpress_state",
+    "rendered_site",
+    "grader_result"
+  ],
   "expected": {
-    "required_topics": ["marshside", "garden", "plots", "events", "volunteer", "contact"],
+    "required_topics": [
+      "marshside",
+      "garden",
+      "plots",
+      "events",
+      "volunteer",
+      "contact"
+    ],
     "quality_criteria": [
       "used_block_theme",
       "theme_json_present",
@@ -110,6 +173,26 @@
           "animations"
         ]
       }
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "wp_cli"
+    ],
+    "max_steps": 16,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_block_theme_site",
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes",
+      "production_build_when_assets_change",
+      "homepage_set",
+      "community_garden_content",
+      "navigation_created",
+      "template_parts_seen"
     ]
   }
 }

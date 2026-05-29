@@ -25,6 +25,7 @@ const knownTools = new Set([
 	'wordpress_runtime_ls',
 	'run_wp_cli',
 ]);
+const knownActionTypes = new Set(['wp_cli', 'filesystem', 'rest', 'browser']);
 const knownCompletionPolicies = new Set(['agent_final_response', 'explicit_final_response']);
 const knownTerminationPolicies = new Set(['terminal_grader']);
 const knownTruncationPolicies = new Set(['budget']);
@@ -368,6 +369,23 @@ function validateScenarioContract(file, manifest) {
 	}
 
 	assertStringArray(manifest.expected_artifacts, `${file} expected_artifacts`, {
+		minItems: 1,
+		pattern: /^[a-z0-9_]+$/,
+	});
+
+	assertObject(manifest.episode_contract, `${file} episode_contract`);
+	if (manifest.episode_contract.schema_version !== 1) {
+		throw new Error(`${file} episode_contract.schema_version must be 1`);
+	}
+	assertStringArray(manifest.episode_contract.allowed_action_types, `${file} episode_contract.allowed_action_types`, {
+		minItems: 1,
+	});
+	for (const actionType of manifest.episode_contract.allowed_action_types) {
+		assertKnown(actionType, knownActionTypes, `${file} episode_contract.allowed_action_types`);
+	}
+	assertPositiveInteger(manifest.episode_contract.max_steps, `${file} episode_contract.max_steps`);
+	assertStringArray(manifest.episode_contract.setup, `${file} episode_contract.setup`, { minItems: 1 });
+	assertStringArray(manifest.episode_contract.success_checks, `${file} episode_contract.success_checks`, {
 		minItems: 1,
 		pattern: /^[a-z0-9_]+$/,
 	});
