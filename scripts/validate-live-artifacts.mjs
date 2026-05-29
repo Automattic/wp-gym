@@ -93,6 +93,10 @@ export function validateLiveArtifact(value, options = {}) {
 		artifactChecks.push(...sensitivity.checks);
 		compatibilityGaps.push(...sensitivity.gaps);
 
+		const provenance = validateBenchmarkProvenance(evalArtifact);
+		artifactChecks.push(...provenance.checks);
+		compatibilityGaps.push(...provenance.gaps);
+
 		const expectedArtifacts = scenarioExpectedArtifacts(evalArtifact, options);
 		for (const artifact of expectedArtifacts) {
 			const matches = expectedArtifactReferences(evalArtifact, artifact);
@@ -298,6 +302,7 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 				...grader,
 				source_fields: [{ target: 'grader', source: 'sealed_eval_artifact.wp_gym.grader', owner: 'wp-gym' }],
 			},
+			provenance: sealed.provenance || undefined,
 			reports: {
 				workflow_run_url: sealed.runner?.workflow_run_url || null,
 				result_json: artifactReferences.reports.result_json,
@@ -306,6 +311,161 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 		},
 		gaps,
 	};
+}
+
+function validateBenchmarkProvenance(evalArtifact) {
+	const checks = [];
+	const gaps = [];
+	const provenance = evalArtifact.provenance;
+
+	if (!provenance || typeof provenance !== 'object') {
+		return {
+			checks,
+			gaps: [gap(
+				'missing_benchmark_provenance',
+				'error',
+				'provenance',
+				'Benchmark-mode rows must include pinned workflow, runtime, provider, tool-policy, and input provenance.'
+			)],
+		};
+	}
+
+	const requiredFields = [
+		['provenance.workflow.repository', 'Benchmark provenance must name the workflow repository.'],
+		['provenance.workflow.ref', 'Benchmark provenance must record the workflow ref that was executed.'],
+		['provenance.workflow.sha', 'Benchmark provenance must pin workflow code to an immutable commit sha.'],
+		['provenance.runner.name', 'Benchmark provenance must name the runner/orchestrator.'],
+		['provenance.runtime.wordpress_version', 'Benchmark provenance must record the WordPress version.'],
+		['provenance.runtime.php_version', 'Benchmark provenance must record the PHP version.'],
+		['provenance.runtime.node_version', 'Benchmark provenance must record the Node.js version.'],
+		['provenance.runtime.wp_codebox_version', 'Benchmark provenance must record the WP Codebox/runtime package version.'],
+		['provenance.runtime.package_lock_sha256', 'Benchmark provenance must hash the package lock used by the runner.'],
+		['provenance.provider.provider', 'Benchmark provenance must record the provider.'],
+		['provenance.provider.model', 'Benchmark provenance must record the model.'],
+		['provenance.tool_policy.sha256', 'Benchmark provenance must hash the effective tool policy.'],
+		['provenance.tool_policy.enabled_tools_sha256', 'Benchmark provenance must hash the enabled tool surface.'],
+		['provenance.tool_policy.agent_instructions_sha256', 'Benchmark provenance must hash agent instructions.'],
+		['provenance.inputs.scenario_sha256', 'Benchmark provenance must hash the scenario manifest.'],
+		['provenance.inputs.prompt_sha256', 'Benchmark provenance must hash the model-facing prompt.'],
+		['provenance.inputs.grader_sha256', 'Benchmark provenance must hash the hidden grader.'],
+		['provenance.inputs.task_set_sha256', 'Benchmark provenance must hash the task-set manifest.'],
+		['provenance.inputs.bundle_sha256', 'Benchmark provenance must hash the agent bundle.'],
+	];
+
+	for (const [field, message] of requiredFields) {
+		checks.push({ field, present: hasDottedPath({ provenance }, field), ok: hasDottedPath({ provenance }, field) });
+		if (!hasDottedPath({ provenance }, field)) {
+			gaps.push(gap('missing_benchmark_provenance_field', 'error', field, message));
+		}
+	}
+
+	for (const field of [
+		'provenance.workflow.sha',
+		'provenance.runner.sha',
+	]) {
+		const value = getDottedPath({ provenance }, field);
+		if (value !== undefined && value !== null && value !== '' && !isGitSha(value)) {
+			gaps.push(gap('invalid_provenance_git_sha', 'error', field, `${field} must be a 40- or 64-character git sha.`));
+		}
+	}
+
+	for (const field of [
+		'provenance.runtime.package_lock_sha256',
+		'provenance.tool_policy.sha256',
+		'provenance.tool_policy.enabled_tools_sha256',
+		'provenance.tool_policy.agent_instructions_sha256',
+		'provenance.inputs.scenario_sha256',
+		'provenance.inputs.prompt_sha256',
+		'provenance.inputs.grader_sha256',
+		'provenance.inputs.task_set_sha256',
+		'provenance.inputs.bundle_sha256',
+	]) {
+		const value = getDottedPath({ provenance }, field);
+		if (value !== undefined && value !== null && value !== '' && !isSha256(value)) {
+			gaps.push(gap('invalid_provenance_sha256', 'error', field, `${field} must be a sha256 hex digest.`));
+		}
+	}
+
+	for (const pinned of [
+		{ field: 'provenance.workflow', value: provenance.workflow },
+		{ field: 'provenance.runner', value: provenance.runner },
+		...(Array.isArray(provenance.provider_plugins) ? provenance.provider_plugins.map((value, index) => ({ field: `provenance.provider_plugins[${index}]`, value })) : []),
+	]) {
+		validateImmutableReference(pinned.value, pinned.field, gaps);
+	}
+
+	if (provenance.provider?.provider && provenance.provider.provider !== evalArtifact.runner?.provider) {
+		gaps.push(gap('provenance_provider_mismatch', 'error', 'provenance.provider.provider', 'Provenance provider must match runner.provider.'));
+	}
+	if (provenance.provider?.model && provenance.provider.model !== evalArtifact.runner?.model) {
+		gaps.push(gap('provenance_model_mismatch', 'error', 'provenance.provider.model', 'Provenance model must match runner.model.'));
+	}
+	if (provenance.tool_policy?.sha256 && evalArtifact.runner?.tool_policy_sha256 && provenance.tool_policy.sha256 !== evalArtifact.runner.tool_policy_sha256) {
+		gaps.push(gap('provenance_tool_policy_mismatch', 'error', 'provenance.tool_policy.sha256', 'Tool-policy provenance must match runner.tool_policy_sha256.'));
+	}
+	if (provenance.inputs?.prompt_sha256 && evalArtifact.scenario?.prompt_sha256 && provenance.inputs.prompt_sha256 !== evalArtifact.scenario.prompt_sha256) {
+		gaps.push(gap('provenance_prompt_mismatch', 'error', 'provenance.inputs.prompt_sha256', 'Prompt provenance must match scenario.prompt_sha256.'));
+	}
+	if (provenance.inputs?.bundle_sha256 && evalArtifact.runner?.bundle_sha256 && provenance.inputs.bundle_sha256 !== evalArtifact.runner.bundle_sha256) {
+		gaps.push(gap('provenance_bundle_mismatch', 'error', 'provenance.inputs.bundle_sha256', 'Bundle provenance must match runner.bundle_sha256.'));
+	}
+
+	return { checks, gaps };
+}
+
+function validateImmutableReference(value, field, gaps) {
+	if (!value || typeof value !== 'object') {
+		return;
+	}
+
+	const ref = value.ref || '';
+	const sha = value.sha || value.digest || '';
+	if (ref && isMutableRef(ref) && !sha) {
+		gaps.push(gap(
+			'mutable_provenance_ref',
+			'error',
+			`${field}.ref`,
+			`${field}.ref uses mutable ref ${ref}; benchmark-mode provenance requires an immutable ref, commit sha, or digest.`
+		));
+	}
+}
+
+function isMutableRef(ref) {
+	const normalized = String(ref).trim();
+	if (!normalized) {
+		return false;
+	}
+	if (isGitSha(normalized) || /^sha256:[a-f0-9]{64}$/i.test(normalized)) {
+		return false;
+	}
+	const refPart = normalized.includes('@') ? normalized.split('@').pop() : normalized;
+	return /^(HEAD|main|master|trunk|dev|develop|latest)$/i.test(refPart)
+		|| /^refs\/heads\//.test(refPart)
+		|| /^release\//i.test(refPart);
+}
+
+function isGitSha(value) {
+	return /^[a-f0-9]{40}([a-f0-9]{24})?$/i.test(String(value || ''));
+}
+
+function isSha256(value) {
+	return /^[a-f0-9]{64}$/i.test(String(value || ''));
+}
+
+function getDottedPath(value, dottedPath) {
+	let current = value;
+	for (const part of dottedPath.split('.')) {
+		if (!current || typeof current !== 'object' || !(part in current)) {
+			return undefined;
+		}
+		current = current[part];
+	}
+	return current;
+}
+
+function hasDottedPath(value, dottedPath) {
+	const current = getDottedPath(value, dottedPath);
+	return current !== undefined && current !== null && current !== '';
 }
 
 function hasProjectedField(field, projected) {

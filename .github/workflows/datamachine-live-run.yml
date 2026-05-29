@@ -114,6 +114,7 @@ jobs:
           "task_id": "metadata.engine_data.task_id",
           "job_status": "metadata.job_status",
           "eval_artifact": "metadata.eval_artifact",
+          "provenance": "metadata.eval_artifact.provenance",
           "fingerprints": "metadata.fingerprints",
           "rules": "metadata.eval_artifact.rules",
           "probes": "metadata.eval_artifact.probes",

@@ -250,6 +250,8 @@ workflow `engine_data_json` output so downstream reports can compare runs withou
 parsing the full Homeboy result JSON:
 
 - `metadata.eval_artifact`: versioned canonical eval result envelope.
+- `metadata.eval_artifact.provenance`: benchmark-mode workflow, runner, runtime,
+  provider, tool-policy, and task-input provenance for immutable replay.
 - `metadata.fingerprints.prompt.sha256`: model-facing task prompt fingerprint.
 - `metadata.fingerprints.bundle.sha256`: Data Machine bundle fingerprint.
 - `metadata.fingerprints.tool_policy.sha256`: enabled-tools and runner-policy fingerprint.
@@ -260,6 +262,10 @@ The versioned eval artifact projection is documented in
 [#117](https://github.com/Automattic/wp-gym/issues/117), WP Codebox artifacts and
 Homeboy sealed artifacts remain runner/runtime evidence while `wp-gym` owns the
 canonical scenario, task-set, model, grader, and failure-class row semantics.
+Per issue [#140](https://github.com/Automattic/wp-gym/issues/140), benchmark-mode
+rows additionally require immutable provenance for workflow code, runtime package
+versions, provider plugins, model/provider metadata, agent instructions, tool
+policy, scenario/prompt/grader/task-set inputs, and bundle fingerprints.
 
 PR comments are not required for the prototype. Comments are useful for adding a
 Homeboy report to a human-authored PR, but here the generated PR is itself the
