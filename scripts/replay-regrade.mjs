@@ -4,12 +4,13 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { WPGym } from '../src/index.js';
 import { validateLiveArtifact, unwrapEvalArtifact } from './validate-live-artifacts.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const replayCriticalStateKeys = ['wordpress_state', 'wp_state', 'state', 'state_json'];
 const replayCriticalTraceKeys = ['replay_trace', 'trace', 'episode_trace', 'actions', 'action_trace'];
-const replayableActionTypes = ['wp_cli', 'filesystem', 'rest'];
+const replayableActionTypes = ['wp_cli', 'filesystem'];
 
 function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -198,6 +199,100 @@ function compareGrades(expectedGrade, actualGrade) {
 	return { ok: mismatches.length === 0, expected, actual, mismatches };
 }
 
+function normalizeObservation(observation) {
+	if (!observation || typeof observation !== 'object') {
+		return null;
+	}
+
+	if (observation.type === 'command_result') {
+		return {
+			type: observation.type,
+			action_type: observation.action_type,
+			command: observation.command,
+			status: observation.status,
+			stdout: observation.stdout,
+			stderr: observation.stderr,
+			timed_out: Boolean(observation.timed_out),
+			error: observation.error ?? null,
+		};
+	}
+
+	if (observation.type === 'files') {
+		return {
+			type: observation.type,
+			files: (Array.isArray(observation.files) ? observation.files : [])
+				.map((file) => ({
+					path: file.path,
+					sha256: file.sha256 ?? null,
+					content: file.content ?? null,
+				}))
+				.sort((a, b) => String(a.path).localeCompare(String(b.path))),
+		};
+	}
+
+	return observation;
+}
+
+function compareStepObservations(expectedTrace, actualTrace) {
+	const mismatches = [];
+	const actualSteps = actualTrace?.steps || [];
+
+	for (const [index, expectedStep] of expectedTrace.steps.entries()) {
+		const actualStep = actualSteps[index];
+		if (!actualStep) {
+			mismatches.push({ field: `steps[${index}]`, expected: 'present', actual: 'missing' });
+			continue;
+		}
+
+		compareValues(`steps[${index}].action`, expectedStep.action, actualStep.action, mismatches);
+		compareValues(
+			`steps[${index}].observation`,
+			normalizeObservation(expectedStep.result?.observation),
+			normalizeObservation(actualStep.result?.observation),
+			mismatches
+		);
+	}
+
+	if (actualSteps.length !== expectedTrace.steps.length) {
+		mismatches.push({ field: 'steps.length', expected: expectedTrace.steps.length, actual: actualSteps.length });
+	}
+
+	return { ok: mismatches.length === 0, mismatches };
+}
+
+async function replayTraceActions(trace, options = {}) {
+	let env = null;
+
+	try {
+		env = await WPGym.make(trace.scenario_id, {
+			root,
+			gradeTimeoutMs: options.timeoutMs,
+			wpCodeboxWordPressVersion: options.wpCodeboxWordPressVersion,
+		});
+		const reset = await env.reset({ seed: trace.metadata?.reset_seed ?? null });
+		for (const step of trace.steps) {
+			await env.step(step.action);
+		}
+		const grade = await env.grade();
+		const replayedTrace = await env.trace();
+
+		return {
+			ok: true,
+			reset,
+			trace: replayedTrace,
+			grade,
+			step_comparison: compareStepObservations(trace, replayedTrace),
+		};
+	} catch (error) {
+		return {
+			ok: false,
+			error: error instanceof Error ? error.message : String(error),
+		};
+	} finally {
+		await env?.close();
+	}
+}
+
 function createTraceValidator() {
 	const ajv = new Ajv2020({ allErrors: true, strict: false, validateFormats: false });
 	for (const file of [
@@ -329,7 +424,7 @@ function runTerminalGrader(scenarioInfo, stateFile, options = {}) {
 	}
 }
 
-export function replayRegradeArtifactFile(file, options = {}) {
+export async function replayRegradeArtifactFile(file, options = {}) {
 	const value = readJson(file);
 	const baseDir = path.dirname(file);
 	const artifact = unwrapEvalArtifact(value);
@@ -364,6 +459,8 @@ export function replayRegradeArtifactFile(file, options = {}) {
 
 	const traceReference = findLocalTraceReference(artifact, baseDir);
 	let traceAudit = null;
+	let episodeReplay = null;
+	let replayGrade = null;
 	if (!traceReference) {
 		compatibilityGaps.push(gap(
 			'missing_replay_trace_evidence',
@@ -378,6 +475,28 @@ export function replayRegradeArtifactFile(file, options = {}) {
 		}
 		traceAudit = auditReplayTrace(artifact, traceReference);
 		compatibilityGaps.push(...traceAudit.gaps);
+
+		if (traceAudit.ok && traceAudit.unsupported_actions.length === 0) {
+			episodeReplay = await replayTraceActions(traceAudit.trace, options);
+			if (!episodeReplay.ok) {
+				compatibilityGaps.push(gap(
+					'episode_replay_failed',
+					'error',
+					`${traceReference.section}.${traceReference.key}`,
+					`Full episode replay failed: ${episodeReplay.error}`
+				));
+			} else {
+				replayGrade = episodeReplay.grade;
+				if (!episodeReplay.step_comparison.ok) {
+					compatibilityGaps.push(gap(
+						'episode_replay_step_mismatch',
+						'error',
+						`${traceReference.section}.${traceReference.key}.steps`,
+						'Replayed episode actions did not reproduce the sealed step observations.'
+					));
+				}
+			}
+		}
 	}
 
 	const graderRun = runTerminalGrader(scenarioInfo, stateReference.resolved, options);
@@ -386,7 +505,7 @@ export function replayRegradeArtifactFile(file, options = {}) {
 		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, replay: null };
 	}
 
-	const comparison = compareGrades(artifact.grader, graderRun.grade);
+	const comparison = compareGrades(artifact.grader, replayGrade || graderRun.grade);
 	if (!comparison.ok) {
 		compatibilityGaps.push(gap(
 			'grade_mismatch',
@@ -402,7 +521,7 @@ export function replayRegradeArtifactFile(file, options = {}) {
 		validation,
 		compatibility_gaps: compatibilityGaps,
 		replay: {
-			phase: 'trace_audit_plus_state_regrade',
+			phase: replayGrade ? 'full_episode_replay_regrade' : 'trace_audit_plus_state_regrade',
 			scenario_file: repoRelative(scenarioInfo.file),
 			grader_file: repoRelative(path.resolve(path.dirname(scenarioInfo.file), scenarioInfo.scenario.grader_file)),
 			trace_reference: traceReference ? {
@@ -415,6 +534,12 @@ export function replayRegradeArtifactFile(file, options = {}) {
 				field: `${stateReference.section}.${stateReference.key}`,
 				path_or_url: stateReference.reference.path_or_url,
 			},
+			episode_replay: episodeReplay ? {
+				ok: episodeReplay.ok,
+				step_count: episodeReplay.trace?.steps?.length || 0,
+				step_comparison: episodeReplay.step_comparison || null,
+				error: episodeReplay.error || null,
+			} : null,
 			comparison,
 		},
 	};
@@ -467,7 +592,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	const results = artifactFiles.map((file) => replayRegradeArtifactFile(file, { benchmarkMode: args.benchmarkMode }));
+	const results = await Promise.all(artifactFiles.map((file) => replayRegradeArtifactFile(file, { benchmarkMode: args.benchmarkMode })));
 	const ok = results.every((result) => result.ok);
 
 	console.log(JSON.stringify({ ok, benchmark_mode: args.benchmarkMode, results }, null, 2));

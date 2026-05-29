@@ -29,13 +29,15 @@ function localizeFixtureReferences(artifact) {
 	return artifact;
 }
 
-const valid = replayRegradeArtifactFile(path.join(fixtureRoot, 'valid-artifact.json'), { benchmarkMode: true });
+const valid = await replayRegradeArtifactFile(path.join(fixtureRoot, 'valid-artifact.json'), { benchmarkMode: true });
 assert.equal(valid.ok, true, JSON.stringify(valid, null, 2));
 assert.equal(valid.replay.comparison.ok, true);
-assert.equal(valid.replay.phase, 'trace_audit_plus_state_regrade');
+assert.equal(valid.replay.phase, 'full_episode_replay_regrade');
 assert.equal(valid.replay.trace_reference.step_count, 2);
+assert.equal(valid.replay.episode_replay.ok, true);
+assert.equal(valid.replay.episode_replay.step_comparison.ok, true);
 
-const tampered = replayRegradeArtifactFile(path.join(fixtureRoot, 'tampered-grade-mismatch.json'), { benchmarkMode: true });
+const tampered = await replayRegradeArtifactFile(path.join(fixtureRoot, 'tampered-grade-mismatch.json'), { benchmarkMode: true });
 assert.equal(tampered.ok, false);
 assert(tampered.compatibility_gaps.some((gap) => gap.code === 'grade_mismatch'));
 assert(tampered.replay.comparison.mismatches.some((mismatch) => mismatch.field === 'success'));
@@ -47,7 +49,7 @@ try {
 	delete missingStateArtifact.runtime.references.observations;
 	await writeFile(missingStateFile, JSON.stringify(missingStateArtifact, null, 2));
 
-	const missingState = replayRegradeArtifactFile(missingStateFile, { benchmarkMode: true });
+	const missingState = await replayRegradeArtifactFile(missingStateFile, { benchmarkMode: true });
 	assert.equal(missingState.ok, false);
 	assert(missingState.compatibility_gaps.some((gap) => gap.code === 'missing_wordpress_state_evidence'));
 
@@ -57,7 +59,7 @@ try {
 	delete missingTraceArtifact.reports.replay;
 	await writeFile(missingTraceFile, JSON.stringify(missingTraceArtifact, null, 2));
 
-	const missingTrace = replayRegradeArtifactFile(missingTraceFile, { benchmarkMode: true });
+	const missingTrace = await replayRegradeArtifactFile(missingTraceFile, { benchmarkMode: true });
 	assert.equal(missingTrace.ok, false);
 	assert(missingTrace.compatibility_gaps.some((gap) => gap.code === 'missing_replay_trace_evidence'));
 
@@ -74,7 +76,7 @@ try {
 	missingActionArtifact.reports.replay[0].sha256 = sha256(missingActionTraceText);
 	await writeFile(missingActionArtifactPath, JSON.stringify(missingActionArtifact, null, 2));
 
-	const missingAction = replayRegradeArtifactFile(missingActionArtifactPath, { benchmarkMode: true });
+	const missingAction = await replayRegradeArtifactFile(missingActionArtifactPath, { benchmarkMode: true });
 	assert.equal(missingAction.ok, false);
 	assert(missingAction.compatibility_gaps.some((gap) => gap.code === 'missing_replay_actions'));
 
@@ -91,9 +93,9 @@ try {
 	tamperedActionArtifact.reports.replay[0].sha256 = sha256(tamperedActionTraceText);
 	await writeFile(tamperedActionArtifactPath, JSON.stringify(tamperedActionArtifact, null, 2));
 
-	const tamperedAction = replayRegradeArtifactFile(tamperedActionArtifactPath, { benchmarkMode: true });
+	const tamperedAction = await replayRegradeArtifactFile(tamperedActionArtifactPath, { benchmarkMode: true });
 	assert.equal(tamperedAction.ok, false);
-	assert(tamperedAction.compatibility_gaps.some((gap) => gap.code === 'trace_action_result_mismatch'));
+	assert(tamperedAction.compatibility_gaps.some((gap) => gap.code === 'trace_action_result_mismatch' || gap.code === 'episode_replay_step_mismatch'));
 } finally {
 	await rm(temp, { recursive: true, force: true });
 }
