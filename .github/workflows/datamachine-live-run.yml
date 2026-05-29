@@ -61,7 +61,9 @@ jobs:
           TASK_SET: ${{ inputs.task_set }}
           TASK_IDS: ${{ inputs.task_ids }}
         run: |
-          npm run verify
+          npm run lint
+          npm run validate
+          npm run matrix:check
           node scripts/resolve-live-run-matrix.mjs
 
   live-run:
@@ -119,7 +121,7 @@ jobs:
 
   emit-run-registry:
     needs: live-run
-    if: ${{ always() && ! inputs.dry_run }}
+    if: ${{ always() && ! inputs.dry_run && needs.live-run.result != 'skipped' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
