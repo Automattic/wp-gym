@@ -57,6 +57,46 @@
       "run_url": "https://github.com/Automattic/wp-gym/actions/runs/143"
     }
   },
+  "provenance": {
+    "workflow": {
+      "repository": "Automattic/wp-gym",
+      "path": ".github/workflows/live-run.yml",
+      "ref": "1111111111111111111111111111111111111111",
+      "sha": "1111111111111111111111111111111111111111"
+    },
+    "runner": {
+      "name": "homeboy",
+      "version": "fixture",
+      "ref": "v0.0.0-fixture",
+      "sha": "2222222222222222222222222222222222222222"
+    },
+    "runtime": {
+      "wordpress_version": "7.0-fixture",
+      "php_version": "8.3-fixture",
+      "node_version": "24.13.1",
+      "wp_codebox_version": "fixture",
+      "playground_version": "fixture",
+      "package_lock_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "provider": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "model_version": "fixture",
+      "model_snapshot": "fixture"
+    },
+    "tool_policy": {
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "enabled_tools_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "agent_instructions_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "inputs": {
+      "scenario_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "grader_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "task_set_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
   "scenario": {
     "id": "block-markup-valid-semantic-blocks",
     "label": "Valid semantic blocks",
