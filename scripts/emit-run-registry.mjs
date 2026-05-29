@@ -155,8 +155,9 @@ function artifactEntry(name, category, reference, required = true) {
 	};
 }
 
-function taskSetMetadata(evalArtifact) {
-	const sourcePath = evalArtifact.task_set?.source_path || `task-sets/${evalArtifact.task_set?.id}.json`;
+function taskSetMetadata(evalArtifact, sourceFile) {
+	const sourcePath = evalArtifact.task_set?.source_path
+		|| (evalArtifact.task_set?.id === 'custom' && sourceFile ? repoRelative(sourceFile) : `task-sets/${evalArtifact.task_set?.id}.json`);
 	const resolved = path.join(root, sourcePath);
 	const manifest = fs.existsSync(resolved) ? readJson(resolved) : {};
 	return {
@@ -222,7 +223,7 @@ function benchmarkExclusionReasons(taskSet, scenario) {
 }
 
 function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replayReference, scenarioIndex }) {
-	const taskSet = taskSetMetadata(evalArtifact);
+	const taskSet = taskSetMetadata(evalArtifact, sourceFile);
 	const scenario = scenarioMetadata(evalArtifact, scenarioIndex);
 	const completedAt = evalArtifact.projection?.created_at || new Date().toISOString();
 	const provider = evalArtifact.runner?.provider || 'unknown-provider';
@@ -345,12 +346,17 @@ async function main() {
 	const entriesDir = path.join(output, 'entries');
 	const evalDir = path.join(output, 'eval-artifacts');
 	const scenarioIndex = loadScenarioIndex();
-	const files = collectJsonFiles(args.input);
-	const replayReference = args.replay ? {
-		kind: path.extname(args.replay) === '.zip' ? 'zip' : 'json',
-		path_or_url: repoRelative(path.resolve(args.replay)),
-		sha256: sha256File(path.resolve(args.replay)),
-		media_type: path.extname(args.replay) === '.zip' ? 'application/zip' : 'application/json',
+	const inputFiles = collectJsonFiles(args.input);
+	const replayPath = args.replay ? path.resolve(args.replay) : '';
+	const replayIsFile = replayPath && fs.existsSync(replayPath) && fs.statSync(replayPath).isFile();
+	const replayFiles = replayPath && fs.existsSync(replayPath) ? collectJsonFiles(replayPath) : [];
+	const replayFileSet = new Set(replayFiles);
+	const files = [...new Set([...inputFiles, ...replayFiles])];
+	const replayReference = replayIsFile ? {
+		kind: path.extname(replayPath) === '.zip' ? 'zip' : 'json',
+		path_or_url: repoRelative(replayPath),
+		sha256: sha256File(replayPath),
+		media_type: path.extname(replayPath) === '.zip' ? 'application/zip' : 'application/json',
 	} : null;
 	const results = [];
 
@@ -367,7 +373,13 @@ async function main() {
 			const id = slug([evalArtifact.runner?.workflow?.run_id, evalArtifact.scenario?.id, evalArtifact.runner?.provider, evalArtifact.runner?.model].filter(Boolean).join('-'));
 			const evalArtifactFile = path.join(evalDir, `${id}.json`);
 			writeJson(evalArtifactFile, evalArtifact);
-			const entry = buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile: file, replayReference, scenarioIndex });
+			const recordReplayReference = replayFileSet.has(file) ? {
+				kind: 'json',
+				path_or_url: repoRelative(file),
+				sha256: sha256File(file),
+				media_type: 'application/json',
+			} : replayReference;
+			const entry = buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile: file, replayReference: recordReplayReference, scenarioIndex });
 			const registryValidation = validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, baseDir: root });
 			const entryFile = path.join(entriesDir, `${id}.json`);
 			writeJson(entryFile, entry);

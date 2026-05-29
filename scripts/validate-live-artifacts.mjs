@@ -161,22 +161,26 @@ export function unwrapEvalArtifact(value) {
 
 function normalizeEvalArtifact(value, options = {}) {
 	const benchmarkMode = Boolean(options.benchmarkMode);
-	if (value?.metadata?.eval_artifact) {
+	if (isCanonicalEvalArtifact(value?.metadata?.eval_artifact)) {
 		return { artifact: value.metadata.eval_artifact, gaps: [] };
 	}
-	if (value?.eval_artifact) {
+	if (isCanonicalEvalArtifact(value?.eval_artifact)) {
 		return { artifact: value.eval_artifact, gaps: [] };
 	}
-	if (value?.schema_version === 1 && value?.projection?.name === canonicalProjectionName) {
+	if (isCanonicalEvalArtifact(value)) {
 		return { artifact: value, gaps: [] };
 	}
 
 	const sealed = findHomeboySealedArtifact(value);
 	if (sealed) {
-		return projectHomeboySealedArtifact(sealed, { benchmarkMode });
+		return projectHomeboySealedArtifact(sealed, { benchmarkMode, context: value });
 	}
 
 	return { artifact: null, gaps: [] };
+}
+
+function isCanonicalEvalArtifact(value) {
+	return value?.schema_version === 1 && value?.projection?.name === canonicalProjectionName;
 }
 
 function findHomeboySealedArtifact(value) {
@@ -192,6 +196,8 @@ function findHomeboySealedArtifact(value) {
 
 function projectHomeboySealedArtifact(sealed, options = {}) {
 	const benchmarkMode = Boolean(options.benchmarkMode);
+	const context = options.context && typeof options.context === 'object' ? options.context : {};
+	const templateValues = context.runner_config?.artifact_export?.pr_template_values || {};
 	const wpGym = sealed.wp_gym && typeof sealed.wp_gym === 'object' ? sealed.wp_gym : {};
 	const gaps = [];
 	const missing = (field, message) => {
@@ -210,11 +216,20 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 	const taskSet = { ...(wpGym.task_set || {}) };
 	const grader = { ...(wpGym.grader || {}) };
 
+	if (!scenario.id && templateValues.task_id) {
+		scenario.id = String(templateValues.task_id);
+	}
 	if (!scenario.id && sealed.task?.id) {
 		scenario.id = String(sealed.task.id);
 	}
+	if (!scenario.label && templateValues.task_label) {
+		scenario.label = String(templateValues.task_label);
+	}
 	if (!scenario.label && sealed.task?.label) {
 		scenario.label = String(sealed.task.label);
+	}
+	if (!scenario.task_family && templateValues.variant_family) {
+		scenario.task_family = String(templateValues.variant_family).split('-').slice(0, 2).join('-');
 	}
 	if (!scenario.prompt_sha256 && promptSha256) {
 		scenario.prompt_sha256 = promptSha256;
@@ -222,7 +237,34 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 	if (!scenario.rules && wpGym.rules) {
 		scenario.rules = wpGym.rules;
 	}
-	if (!grader.grade && sealed.grade && typeof sealed.grade === 'object') {
+	if (!scenario.rules && context.runner_config?.rules && typeof context.runner_config.rules === 'object') {
+		scenario.rules = context.runner_config.rules;
+	}
+	if (!scenario.rules) {
+		scenario.rules = {
+			general: Array.isArray(context.runner_config?.general_rules) ? context.runner_config.general_rules : [],
+			task_specific: Array.isArray(context.runner_config?.task_rules) ? context.runner_config.task_rules : [],
+		};
+	}
+	if (!taskSet.id && templateValues.task_set_id) {
+		taskSet.id = String(templateValues.task_set_id);
+	}
+	if (!taskSet.version && templateValues.task_set_benchmark_version) {
+		taskSet.version = String(templateValues.task_set_benchmark_version);
+	}
+	if (!taskSet.benchmark_status && templateValues.task_set_benchmark_status) {
+		taskSet.benchmark_status = String(templateValues.task_set_benchmark_status);
+	}
+	if (!taskSet.compatibility_group && templateValues.task_set_compatibility_group) {
+		taskSet.compatibility_group = String(templateValues.task_set_compatibility_group);
+	}
+	if (taskSet.aggregate_score === undefined && templateValues.aggregate_score !== undefined) {
+		taskSet.aggregate_score = templateValues.aggregate_score === true || templateValues.aggregate_score === 'true';
+	}
+	if (taskSet.headline_score_eligible === undefined) {
+		taskSet.headline_score_eligible = false;
+	}
+	if (!grader.grade && sealed.grade && typeof sealed.grade === 'object' && !Array.isArray(sealed.grade)) {
 		grader.grade = sealed.grade;
 	}
 	if (grader.reward === undefined && sealed.grade?.reward !== undefined) {
@@ -236,6 +278,12 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 	}
 	if (grader.success === undefined && typeof grader.reward === 'number') {
 		grader.success = grader.reward >= 1;
+	}
+	if (grader.success === undefined && sealed.termination?.success === true) {
+		grader.success = true;
+	}
+	if (grader.reward === undefined && grader.success === true) {
+		grader.reward = 1;
 	}
 	if (!grader.grade && typeof grader.reward === 'number') {
 		grader.grade = { score: grader.reward, max_score: 1 };
