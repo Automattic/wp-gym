@@ -8,26 +8,137 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "upsert_post",
+            "tool_name": "local_search",
             "success": true,
             "turn_count": 1
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 3
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 6
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 7
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 11
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_5T5itFWZHPHjPbliJ4RmBikJ",
+            "tool_name": "local_search",
+            "tool_call_id": "call_DJYP5uDlq8drEfVuxjLABXCh",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:29:35+00:00",
-            "ended_at": "2026-05-29T17:29:36+00:00",
-            "duration_ms": 394,
-            "arguments_sha256": "491f0bc68ab5ff6d43d547a474cacb98688360356233906c218ffb9a34d442d7",
-            "result_sha256": "5640cdd29788b1d31f501dc01070dca19e3543fa96a09a0688c75b73d9ef52d3",
-            "arguments_omitted": "redacted_arguments_too_large"
+            "started_at": "2026-05-29T17:31:18+00:00",
+            "ended_at": "2026-05-29T17:31:18+00:00",
+            "duration_ms": 20,
+            "arguments_sha256": "111955d40bd0374b48f2b876bf37f07b52bb5c1991ecf8b4393d92d92850942d",
+            "result_sha256": "30e851b3ffbb62ba08ea874670a47a06a34b9e554ac3df9f77cdc0702decd87e",
+            "arguments_redacted": {
+                "query": "Luma Studio",
+                "post_types": [
+                    "page",
+                    "post"
+                ],
+                "title_only": false
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_4t6nhLub6XlX8V8J8TrwvIEA",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:31:25+00:00",
+            "ended_at": "2026-05-29T17:31:25+00:00",
+            "duration_ms": 11,
+            "arguments_sha256": "ea0318e30c85f0c39b6c4cd2ce201167bf0cab0cee0b47385d90620a80bebb58",
+            "result_sha256": "67358040634f7ee5ec3a5550d5bc52c8a3e52810407ed50a3493e625f7f8bb9d",
+            "arguments_redacted": {
+                "query": "Luma Studio",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": false
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_0QQUJGCIVBnYFjjHQQ0vZHLz",
+            "turn_count": 6,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:31:37+00:00",
+            "ended_at": "2026-05-29T17:31:37+00:00",
+            "duration_ms": 5,
+            "arguments_sha256": "e3f053a8bc1e2189481a09394113b82a00e9494189183eb32b3bb7f3cbf6de59",
+            "result_sha256": "58532f392e2adfb8acf3f5357fbefed116ca21d851bdf56bd0c2d8f196bc8d0c",
+            "arguments_redacted": {
+                "query": "Luma Studio",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": true
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_XJe77FOEKKDKfB6j9uv4PrcC",
+            "turn_count": 7,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:31:40+00:00",
+            "ended_at": "2026-05-29T17:31:40+00:00",
+            "duration_ms": 18,
+            "arguments_sha256": "405f917135b64cf095385a91483c1b5987117bea859c80da822036bafd7dac00",
+            "result_sha256": "359675f08d37098aec4aa67996698f7944df165824e6fcabfdf10fc87435c2a1",
+            "arguments_redacted": {
+                "query": "brand photography founders small teams",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": false
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_6ChEWDGJL9xnY1KJ66tI9Ma8",
+            "turn_count": 11,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:31:54+00:00",
+            "ended_at": "2026-05-29T17:31:54+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "10b9e8a1ee56db36f7536bfe0efa00984856b31b9af8fee8e3b5ba7a64b7d793",
+            "result_sha256": "9aa28a72809c8f2b057f42515eb17f886e3b79b061076853cb70a57c013e03c6",
+            "arguments_redacted": {
+                "query": "Luma",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": false
+            }
         }
     ],
     "transcript": null,
@@ -36,7 +147,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "093e16ae879c8acedcb767f0188b380f7dd06a1b6add72c2cc31e8cad78b6288",
+            "sha256": "80510835c75cdfe1ffe38a12f6dff5f162bbd6d979a83a86686310ffcae205d8",
             "bounded": true,
             "redacted": true
         }
@@ -47,11 +158,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:41865/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "efb85bd8dda67bd5e47180d3fce8d0545937419225d15db19a2e5d091c1e8738",
-            "payload_sha256": "d9bc3b89c326396d517ad6f7869e5929759467739dc3d9fd28e75c8fbbeaa78e",
-            "bytes": 1420,
-            "written_at": "2026-05-29T17:30:10+00:00"
+            "url": "http://127.0.0.1:44337/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "ce2d0f95efe9614537a6e888c0d4363d42bb2dbabafe6592091cb135507cf22f",
+            "payload_sha256": "bf91471d80a583233cf617aef39b0217fa5a0aff151b80803cb31a36ae9d19a3",
+            "bytes": 5390,
+            "written_at": "2026-05-29T17:31:57+00:00"
         }
     },
     "transcript_artifact": null,
@@ -67,34 +178,133 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:28:04",
-            "completed_at": "2026-05-29 17:30:10"
+            "created_at": "2026-05-29 17:31:14",
+            "completed_at": "2026-05-29 17:31:57"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 5,
+        "entries_emitted": 5,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_5T5itFWZHPHjPbliJ4RmBikJ",
+                "tool_name": "local_search",
+                "tool_call_id": "call_DJYP5uDlq8drEfVuxjLABXCh",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:29:35+00:00",
-                "ended_at": "2026-05-29T17:29:36+00:00",
-                "duration_ms": 394,
-                "arguments_sha256": "491f0bc68ab5ff6d43d547a474cacb98688360356233906c218ffb9a34d442d7",
-                "result_sha256": "5640cdd29788b1d31f501dc01070dca19e3543fa96a09a0688c75b73d9ef52d3",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "941c143c9e9022cf0b7d416a9598c2856c6a97add522a2abf18db32b79673aeb"
+                "started_at": "2026-05-29T17:31:18+00:00",
+                "ended_at": "2026-05-29T17:31:18+00:00",
+                "duration_ms": 20,
+                "arguments_sha256": "111955d40bd0374b48f2b876bf37f07b52bb5c1991ecf8b4393d92d92850942d",
+                "result_sha256": "30e851b3ffbb62ba08ea874670a47a06a34b9e554ac3df9f77cdc0702decd87e",
+                "arguments_redacted": {
+                    "query": "Luma Studio",
+                    "post_types": [
+                        "page",
+                        "post"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "9e072ab91f079a68414971a3c14957e28d5a43c9871700183907d2a47dd5b787"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_4t6nhLub6XlX8V8J8TrwvIEA",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:31:25+00:00",
+                "ended_at": "2026-05-29T17:31:25+00:00",
+                "duration_ms": 11,
+                "arguments_sha256": "ea0318e30c85f0c39b6c4cd2ce201167bf0cab0cee0b47385d90620a80bebb58",
+                "result_sha256": "67358040634f7ee5ec3a5550d5bc52c8a3e52810407ed50a3493e625f7f8bb9d",
+                "arguments_redacted": {
+                    "query": "Luma Studio",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "d36ef5cba3910d4152894d349eb0136acfcf99108cdcb0bd5cec4c1d8eef8348"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_0QQUJGCIVBnYFjjHQQ0vZHLz",
+                "turn_count": 6,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:31:37+00:00",
+                "ended_at": "2026-05-29T17:31:37+00:00",
+                "duration_ms": 5,
+                "arguments_sha256": "e3f053a8bc1e2189481a09394113b82a00e9494189183eb32b3bb7f3cbf6de59",
+                "result_sha256": "58532f392e2adfb8acf3f5357fbefed116ca21d851bdf56bd0c2d8f196bc8d0c",
+                "arguments_redacted": {
+                    "query": "Luma Studio",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": true
+                },
+                "entry_sha256": "cd8e1c47961babd2921c7626292842bb2fe63b57046367dac8b48ce7ee88fd12"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_XJe77FOEKKDKfB6j9uv4PrcC",
+                "turn_count": 7,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:31:40+00:00",
+                "ended_at": "2026-05-29T17:31:40+00:00",
+                "duration_ms": 18,
+                "arguments_sha256": "405f917135b64cf095385a91483c1b5987117bea859c80da822036bafd7dac00",
+                "result_sha256": "359675f08d37098aec4aa67996698f7944df165824e6fcabfdf10fc87435c2a1",
+                "arguments_redacted": {
+                    "query": "brand photography founders small teams",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "9410363d1924a83d3f9a86e2d0e701c5e6eb1dfe70f61004e8f26f1d0cdbd6df"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_6ChEWDGJL9xnY1KJ66tI9Ma8",
+                "turn_count": 11,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:31:54+00:00",
+                "ended_at": "2026-05-29T17:31:54+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "10b9e8a1ee56db36f7536bfe0efa00984856b31b9af8fee8e3b5ba7a64b7d793",
+                "result_sha256": "9aa28a72809c8f2b057f42515eb17f886e3b79b061076853cb70a57c013e03c6",
+                "arguments_redacted": {
+                    "query": "Luma",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "70df3ea2b89ee9c793e90ab928c408545421705cba590d3aa965f4b2196bac7f"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "093e16ae879c8acedcb767f0188b380f7dd06a1b6add72c2cc31e8cad78b6288"
+        "sha256": "80510835c75cdfe1ffe38a12f6dff5f162bbd6d979a83a86686310ffcae205d8"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
