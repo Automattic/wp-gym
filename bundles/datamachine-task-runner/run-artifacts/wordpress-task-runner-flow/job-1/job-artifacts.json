@@ -17,16 +17,16 @@
         {
             "schema_version": 1,
             "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01RQx1MPFbmAdyb6r3MdyAWr",
+            "tool_call_id": "toolu_01NSH7oKwbRfDPqqTQ8aUVJg",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:55:28+00:00",
-            "ended_at": "2026-05-29T17:55:28+00:00",
-            "duration_ms": 44,
-            "arguments_sha256": "a07c6537cb2ba40c92d7e7b3e14e1a8eee9c788b584397a5df30021f88ad77b9",
-            "result_sha256": "de4e45d22a663a1d4a1fb85d56a2402da76fc0917fe4c1c38cecb424e0c68f56",
+            "started_at": "2026-05-29T17:57:21+00:00",
+            "ended_at": "2026-05-29T17:57:21+00:00",
+            "duration_ms": 47,
+            "arguments_sha256": "8f32785e523324054186a51a9ab2155c1542e15e24845e15e7052c362b704cf6",
+            "result_sha256": "d67074ab571751bc662da4e261a06ba8aa4367b6837f70579121704605ffc26c",
             "arguments_omitted": "redacted_arguments_too_large"
         }
     ],
@@ -36,7 +36,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "6102eaef136e1937429f4b5e2e667ce4bd6b4ae4401fdaed463f348c62349f1c",
+            "sha256": "69592a10d5e42bab372fa815ef8a9a224e067028e14687177ca6a6dcae4f52f1",
             "bounded": true,
             "redacted": true
         }
@@ -47,11 +47,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:42707/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "d34308514fdb323edde8176ffc7303a74738076b00437cfac83ff4d384608ef1",
-            "payload_sha256": "53f7ca134d39268570429a4401084abe992ad5e6943438fdb15e8056a69a1424",
+            "url": "http://127.0.0.1:41575/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "a4abcb1508a7953600b8ab9e97c5411636f1dd55fb26950d38244a748f930507",
+            "payload_sha256": "b6cf0be67b5377c761398ea07d9140598118eff709a96fdc83145c0cfcf95a37",
             "bytes": 1420,
-            "written_at": "2026-05-29T17:55:36+00:00"
+            "written_at": "2026-05-29T17:57:33+00:00"
         }
     },
     "transcript_artifact": null,
@@ -67,8 +67,8 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:55:14",
-            "completed_at": "2026-05-29 17:55:36"
+            "created_at": "2026-05-29 17:56:52",
+            "completed_at": "2026-05-29 17:57:33"
         },
         "trace_count": 1,
         "entries_emitted": 1,
@@ -78,23 +78,23 @@
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01RQx1MPFbmAdyb6r3MdyAWr",
+                "tool_call_id": "toolu_01NSH7oKwbRfDPqqTQ8aUVJg",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:55:28+00:00",
-                "ended_at": "2026-05-29T17:55:28+00:00",
-                "duration_ms": 44,
-                "arguments_sha256": "a07c6537cb2ba40c92d7e7b3e14e1a8eee9c788b584397a5df30021f88ad77b9",
-                "result_sha256": "de4e45d22a663a1d4a1fb85d56a2402da76fc0917fe4c1c38cecb424e0c68f56",
+                "started_at": "2026-05-29T17:57:21+00:00",
+                "ended_at": "2026-05-29T17:57:21+00:00",
+                "duration_ms": 47,
+                "arguments_sha256": "8f32785e523324054186a51a9ab2155c1542e15e24845e15e7052c362b704cf6",
+                "result_sha256": "d67074ab571751bc662da4e261a06ba8aa4367b6837f70579121704605ffc26c",
                 "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "c60d4afba434b961c4e94d9730f359c798d1f2a4afd0b1596a9cc7f37a09052b"
+                "entry_sha256": "c9b3b50a069505680658b516771d64079cd36ef7bfd672d791a0b07e6370a58d"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "6102eaef136e1937429f4b5e2e667ce4bd6b4ae4401fdaed463f348c62349f1c"
+        "sha256": "69592a10d5e42bab372fa815ef8a9a224e067028e14687177ca6a6dcae4f52f1"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
