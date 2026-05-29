@@ -53,6 +53,7 @@ function fallbackTaskSetMetadata(id) {
 		score_scope: scope,
 		task_contract_level: id === 'custom' ? 'mixed_diagnostic' : 'wordpress_state_diagnostic',
 		benchmark_blockers: [`${scope}_task_set`, 'missing_baseline_results', 'uncalibrated_difficulty'],
+		benchmark_metadata: null,
 	};
 }
 
@@ -73,6 +74,7 @@ function taskSetMetadata() {
 		score_scope: manifest.score_scope || manifest.benchmark_status || 'pilot',
 		task_contract_level: manifest.task_contract_level || 'mixed_diagnostic',
 		benchmark_blockers: manifest.benchmark_blockers || [],
+		benchmark_metadata: manifest.benchmark_metadata || null,
 	};
 }
 
@@ -133,6 +135,7 @@ function scenarioTask(scenarioFile) {
 		workspaceTemplate: environment.workspace_template || '',
 		completionPolicy: environment.completion_policy || {},
 		calibration: scenario.calibration || {},
+		benchmarkMetadata: scenario.calibration?.benchmark_metadata || null,
 		maxTurns: budgets.maxTurns,
 		stepBudget: budgets.stepBudget,
 		timeBudgetMs: budgets.timeBudgetMs,
@@ -164,6 +167,7 @@ function smokeTask() {
 			task_contract_level: 'wordpress_state_diagnostic',
 			benchmark_blockers: ['demo_task', 'diagnostic_contract_only', 'missing_baseline_results'],
 		},
+		benchmarkMetadata: null,
 		split: {
 			membership: 'public',
 			variant_family: 'smoke-homepage',
@@ -282,6 +286,10 @@ function artifactExportConfig(task, provider, metadata) {
 			'## Benchmark Status',
 			'- **Task set:** `{task_set_id}`',
 			'- **Task set status:** `{task_set_benchmark_status}`',
+			'- **Task set version:** `{task_set_benchmark_version}`',
+			'- **Task set compatibility group:** `{task_set_compatibility_group}`',
+			'- **Scenario version:** `{scenario_benchmark_version}`',
+			'- **Scenario compatibility group:** `{scenario_compatibility_group}`',
 			'- **Score scope:** `{score_scope}`',
 			'- **Benchmark eligible:** `{benchmark_eligible}`',
 			'- **Aggregate score:** `{aggregate_score}`',
@@ -330,6 +338,10 @@ function artifactExportConfig(task, provider, metadata) {
 			model_label: `${provider.provider}/${provider.model}`,
 			task_set_id: metadata.taskSet.id,
 			task_set_benchmark_status: metadata.taskSet.benchmark_status,
+			task_set_benchmark_version: metadata.taskSet.benchmark_metadata?.benchmark_version || 'unversioned',
+			task_set_compatibility_group: metadata.taskSet.benchmark_metadata?.compatibility_group || 'unversioned',
+			scenario_benchmark_version: task.calibration.benchmark_metadata?.benchmark_version || 'unversioned',
+			scenario_compatibility_group: task.calibration.benchmark_metadata?.compatibility_group || 'unversioned',
 			score_scope: metadata.taskSet.score_scope,
 			benchmark_eligible: metadata.benchmarkEligible,
 			aggregate_score: metadata.taskSet.aggregate_score,
@@ -449,6 +461,18 @@ function benchmarkRejectReasons(task, taskSet) {
 	if (Array.isArray(taskSet.benchmark_blockers)) {
 		reasons.push(...taskSet.benchmark_blockers);
 	}
+	if (!taskSet.benchmark_metadata?.benchmark_version) {
+		reasons.push('missing_task_set_benchmark_version');
+	}
+	if (!taskSet.benchmark_metadata?.compatibility_group) {
+		reasons.push('missing_task_set_compatibility_group');
+	}
+	if (!calibration.benchmark_metadata?.benchmark_version) {
+		reasons.push('missing_scenario_benchmark_version');
+	}
+	if (!calibration.benchmark_metadata?.compatibility_group) {
+		reasons.push('missing_scenario_compatibility_group');
+	}
 
 	return [...new Set(reasons)].sort();
 }
@@ -482,6 +506,8 @@ function resolveMatrix() {
 			include.push({
 				task_set_id: taskSet.id,
 				task_set_benchmark_status: taskSet.benchmark_status,
+				task_set_benchmark_version: taskSet.benchmark_metadata?.benchmark_version || '',
+				task_set_compatibility_group: taskSet.benchmark_metadata?.compatibility_group || '',
 				task_id: task.id,
 				task_label: task.label,
 				provider: provider.provider,
@@ -506,6 +532,8 @@ function resolveMatrix() {
 				time_budget_ms: task.timeBudgetMs,
 				calibration_status: task.calibration.status || 'unknown',
 				benchmark_scope: task.calibration.benchmark_scope || 'unknown',
+				scenario_benchmark_version: task.calibration.benchmark_metadata?.benchmark_version || '',
+				scenario_compatibility_group: task.calibration.benchmark_metadata?.compatibility_group || '',
 				split_membership: task.split?.membership || 'unknown',
 				variant_family: task.split?.variant_family || '',
 				variant_seed: task.split?.variant_seed || '',
@@ -578,6 +606,7 @@ function assertLiveRunMatrix(matrix) {
 	const tasksById = new Map(selectedTasks.map((task) => [task.id, task]));
 	const providerLabels = new Set(providers().map((provider) => provider.label));
 	const benchmarkMode = truthyEnv(process.env.BENCHMARK_MODE);
+	const taskSet = taskSetMetadata();
 
 	checkExpectedShape(matrix, selectedTasks);
 
@@ -595,6 +624,10 @@ function assertLiveRunMatrix(matrix) {
 		assert(Number(row.time_budget_ms) > 0, `${row.task_id} time_budget_ms must be positive`);
 		assert(row.calibration_status === (task.calibration.status || 'unknown'), `${row.task_id} calibration_status mismatch`);
 		assert(row.benchmark_scope === (task.calibration.benchmark_scope || 'unknown'), `${row.task_id} benchmark_scope mismatch`);
+		assert(row.task_set_benchmark_version === (taskSet.benchmark_metadata?.benchmark_version || ''), `${row.task_id} task_set_benchmark_version mismatch`);
+		assert(row.task_set_compatibility_group === (taskSet.benchmark_metadata?.compatibility_group || ''), `${row.task_id} task_set_compatibility_group mismatch`);
+		assert(row.scenario_benchmark_version === (task.calibration.benchmark_metadata?.benchmark_version || ''), `${row.task_id} scenario_benchmark_version mismatch`);
+		assert(row.scenario_compatibility_group === (task.calibration.benchmark_metadata?.compatibility_group || ''), `${row.task_id} scenario_compatibility_group mismatch`);
 		assert(row.split_membership === (task.split?.membership || 'unknown'), `${row.task_id} split_membership mismatch`);
 		assert(row.headline_score_eligible === Boolean(task.calibration.headline_score_eligible), `${row.task_id} headline_score_eligible mismatch`);
 		assert(row.task_contract_level === (task.calibration.task_contract_level || 'unknown'), `${row.task_id} task_contract_level mismatch`);

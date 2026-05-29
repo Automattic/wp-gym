@@ -59,6 +59,11 @@
     "difficulty_band": "smoke",
     "headline_score_eligible": false,
     "baseline_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline"],
+    "benchmark_metadata": {
+      "benchmark_version": "0.0.0-pilot.1",
+      "compatibility_group": "block-markup-valid-semantic-blocks",
+      "compatible_with": []
+    },
     "calibration_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline"],
     "pass_rate_band": "too_easy",
     "confidence_interval_95": [0, 1],

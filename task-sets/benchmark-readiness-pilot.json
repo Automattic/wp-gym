@@ -15,6 +15,11 @@
     "requires_held_out_private": false,
     "contamination_controls": ["public_tasks_are_training_visible", "headline_scores_blocked_until_held_out_private_ready"]
   },
+  "benchmark_metadata": {
+    "benchmark_version": "0.0.0-pilot.1",
+    "compatibility_group": "benchmark-readiness-pilot",
+    "compatible_with": []
+  },
   "benchmark_blockers": [
     "pilot_task_set",
     "uncalibrated_difficulty",

@@ -29,7 +29,7 @@ const knownCompletionPolicies = new Set(['agent_final_response', 'explicit_final
 const knownTerminationPolicies = new Set(['terminal_grader']);
 const knownTruncationPolicies = new Set(['budget']);
 const knownRewardTypes = new Set(['terminal_php_grader']);
-const knownCalibrationStatuses = new Set(['demo', 'pilot', 'calibrating', 'benchmark_ready', 'excluded']);
+const knownCalibrationStatuses = new Set(['demo', 'pilot', 'calibrating', 'benchmark_ready', 'deprecated', 'retired', 'excluded']);
 const knownBenchmarkScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', 'excluded']);
 const knownDifficultyBands = new Set(['uncalibrated', 'smoke', 'easy', 'medium', 'hard']);
 const knownPassRateBands = new Set(['uncalibrated', 'too_easy', 'easy', 'target', 'hard', 'too_hard']);
@@ -48,6 +48,9 @@ const knownScoreScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', '
 const knownSplitMemberships = new Set(['public', 'calibration', 'validation', 'held_out_private']);
 const knownGraderExposure = new Set(['full_public', 'summary_public', 'private']);
 const knownProbeTypes = new Set(['rendered_site_design']);
+const versionPattern = /^\d+\.\d+\.\d+(?:-[a-z0-9][a-z0-9.-]*)?$/;
+const compatibilityGroupPattern = /^[a-z0-9][a-z0-9-]*$/;
+const hashPattern = /^[a-f0-9]{64}$/;
 
 function assertObject(value, label) {
 	if (!value || Array.isArray(value) || typeof value !== 'object') {
@@ -116,6 +119,30 @@ function pathsOverlap(left, right) {
 function assertKnown(value, knownValues, label) {
 	if (!knownValues.has(value)) {
 		throw new Error(`${label} has unknown value: ${value}`);
+	}
+}
+
+function validateBenchmarkMetadata(metadata, label, { requireVersionIdentity = false } = {}) {
+	assertObject(metadata, `${label} benchmark_metadata`);
+
+	if (typeof metadata.benchmark_version !== 'string' || !versionPattern.test(metadata.benchmark_version)) {
+		throw new Error(`${label} benchmark_metadata.benchmark_version must be semver-like`);
+	}
+	if (typeof metadata.compatibility_group !== 'string' || !compatibilityGroupPattern.test(metadata.compatibility_group)) {
+		throw new Error(`${label} benchmark_metadata.compatibility_group must be kebab-case`);
+	}
+
+	if (metadata.compatible_with !== undefined) {
+		assertStringArray(metadata.compatible_with, `${label} benchmark_metadata.compatible_with`);
+	}
+
+	if (metadata.version_identity !== undefined || requireVersionIdentity) {
+		assertObject(metadata.version_identity, `${label} benchmark_metadata.version_identity`);
+		for (const field of ['manifest_sha256', 'prompt_sha256', 'grader_sha256', 'setup_sha256', 'expected_artifacts_sha256', 'replay_contract_sha256']) {
+			if (typeof metadata.version_identity[field] !== 'string' || !hashPattern.test(metadata.version_identity[field])) {
+				throw new Error(`${label} benchmark_metadata.version_identity.${field} must be a sha256 hex digest`);
+			}
+		}
 	}
 }
 
@@ -339,6 +366,9 @@ function validateScenarioContract(file, manifest) {
 	assertStringArray(manifest.calibration.benchmark_blockers, `${file} calibration.benchmark_blockers`, {
 		pattern: /^[a-z0-9_]+$/,
 	});
+	if (manifest.calibration.benchmark_metadata !== undefined) {
+		validateBenchmarkMetadata(manifest.calibration.benchmark_metadata, `${file} calibration`);
+	}
 	if (manifest.calibration.status === 'benchmark_ready') {
 		if (!manifest.calibration.headline_score_eligible) {
 			throw new Error(`${file} benchmark_ready scenarios must be headline_score_eligible`);
@@ -367,6 +397,9 @@ function validateScenarioContract(file, manifest) {
 		if (manifest.calibration.benchmark_blockers.length > 0) {
 			throw new Error(`${file} benchmark_ready scenarios must not declare benchmark_blockers`);
 		}
+		validateBenchmarkMetadata(manifest.calibration.benchmark_metadata, `${file} calibration`, {
+			requireVersionIdentity: true,
+		});
 	}
 	if (
 		manifest.calibration.headline_score_eligible &&
@@ -555,6 +588,9 @@ for (const file of taskSetFiles) {
 	assertStringArray(manifest.benchmark_blockers, `${file} benchmark_blockers`, {
 		pattern: /^[a-z0-9_]+$/,
 	});
+	if (manifest.benchmark_metadata !== undefined) {
+		validateBenchmarkMetadata(manifest.benchmark_metadata, file);
+	}
 	if (manifest.benchmark) {
 		if (manifest.benchmark_status !== 'benchmark_ready') {
 			throw new Error(`${file} benchmark task sets must declare benchmark_status=benchmark_ready`);
@@ -574,6 +610,7 @@ for (const file of taskSetFiles) {
 		if (manifest.split_policy?.requires_held_out_private !== true) {
 			throw new Error(`${file} benchmark task sets must require held-out private splits`);
 		}
+		validateBenchmarkMetadata(manifest.benchmark_metadata, file, { requireVersionIdentity: true });
 	}
 
 	if (!Array.isArray(manifest.tasks) || manifest.tasks.length < 1) {
