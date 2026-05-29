@@ -27,6 +27,7 @@ const knownTools = new Set([
 	'run_wp_cli',
 ]);
 const knownActionTypes = new Set(['wp_cli', 'filesystem', 'rest', 'browser']);
+const replayableBenchmarkActionTypes = new Set(['wp_cli', 'filesystem']);
 const knownCompletionPolicies = new Set(['agent_final_response', 'explicit_final_response']);
 const knownTerminationPolicies = new Set(['terminal_grader']);
 const knownTruncationPolicies = new Set(['budget']);
@@ -45,6 +46,17 @@ const knownTaskSetContractLevels = new Set([
 	'wordpress_state_diagnostic',
 	'workspace_diff_diagnostic',
 	'benchmark_replay',
+]);
+const benchmarkReplayRequiredArtifacts = new Set([
+	'grader_result',
+	'replay_bundle',
+	'replay_trace',
+]);
+const benchmarkReplayStateArtifacts = new Set([
+	'wordpress_state',
+	'workspace_diff',
+	'plugin_files',
+	'media_library',
 ]);
 const knownScoreScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', 'excluded']);
 const knownSplitMemberships = new Set(['public', 'calibration', 'validation', 'held_out_private']);
@@ -170,6 +182,38 @@ function validateBenchmarkMetadata(metadata, label, { requireVersionIdentity = f
 				throw new Error(`${label} benchmark_metadata.version_identity.${field} must be a sha256 hex digest`);
 			}
 		}
+	}
+}
+
+function validateBenchmarkReplayContract(file, manifest) {
+	const calibration = manifest.calibration;
+	if (calibration.task_contract_level !== 'benchmark_replay') {
+		return;
+	}
+
+	for (const artifact of benchmarkReplayRequiredArtifacts) {
+		if (!manifest.expected_artifacts.includes(artifact)) {
+			throw new Error(`${file} benchmark_replay scenarios must include expected_artifacts entry ${artifact}`);
+		}
+	}
+
+	if (!manifest.expected_artifacts.some((artifact) => benchmarkReplayStateArtifacts.has(artifact))) {
+		throw new Error(`${file} benchmark_replay scenarios must include at least one replayable state artifact`);
+	}
+
+	for (const actionType of manifest.episode_contract.allowed_action_types) {
+		if (!replayableBenchmarkActionTypes.has(actionType)) {
+			throw new Error(`${file} benchmark_replay scenarios may only use locally replayable action types: ${[...replayableBenchmarkActionTypes].join(', ')}`);
+		}
+	}
+
+	const diagnosticBlockers = calibration.benchmark_blockers.filter((blocker) => (
+		blocker === 'diagnostic_contract_only' ||
+		blocker === 'workspace_diff_diagnostic_only' ||
+		blocker === 'task_contract_workspace_diff_diagnostic'
+	));
+	if (diagnosticBlockers.length > 0) {
+		throw new Error(`${file} benchmark_replay scenarios must not retain diagnostic-only blocker codes: ${diagnosticBlockers.join(', ')}`);
 	}
 }
 
@@ -459,6 +503,7 @@ function validateScenarioContract(file, manifest) {
 	if (manifest.calibration.benchmark_metadata !== undefined) {
 		validateBenchmarkMetadata(manifest.calibration.benchmark_metadata, `${file} calibration`);
 	}
+	validateBenchmarkReplayContract(file, manifest);
 	if (manifest.calibration.reward_soundness_review !== undefined) {
 		validateRewardSoundnessReview(file, manifest.calibration.reward_soundness_review);
 	}

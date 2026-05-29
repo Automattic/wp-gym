@@ -115,8 +115,8 @@
       "keyword_stuffing",
       "shallow_block_validity"
     ],
-    "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_cheap_model_baseline", "missing_repeated_attempts", "held_out_private_variants_not_ready", "known_reward_shortcut"],
+    "task_contract_level": "benchmark_replay",
+    "benchmark_blockers": ["missing_cheap_model_baseline", "missing_repeated_attempts", "held_out_private_variants_not_ready", "known_reward_shortcut"],
     "reward_soundness_review": {
       "status": "reviewed",
       "reviewed_at": "2026-05-29",
@@ -135,6 +135,8 @@
   },
   "expected_artifacts": [
     "wordpress_state",
+    "replay_trace",
+    "replay_bundle",
     "grader_result"
   ],
   "expected": {
