@@ -38,6 +38,74 @@
       },
       "additionalProperties": true
     },
+    "api_provenance": {
+      "type": "object",
+      "description": "Optional source and freshness metadata for WordPress API curriculum scenarios.",
+      "required": ["capability_area", "api_surface", "source_inputs", "freshness", "curriculum"],
+      "properties": {
+        "capability_area": {
+          "enum": [
+            "ai_features",
+            "agent_tooling_automation_surfaces",
+            "custom_admin_ui",
+            "data_interaction_apis",
+            "cli_operational_tooling",
+            "theme_site_building",
+            "gutenberg_blocks",
+            "plugin_quality_wordpress_standards"
+          ]
+        },
+        "api_surface": { "type": "string", "minLength": 1 },
+        "source_inputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "url", "ref", "checked_at", "evidence"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+              "type": {
+                "enum": [
+                  "wordpress_core_source",
+                  "gutenberg_source",
+                  "wp_cli_source",
+                  "developer_docs",
+                  "canonical_plugin_source",
+                  "modern_api_repository"
+                ]
+              },
+              "url": { "type": "string", "minLength": 1 },
+              "ref": { "type": "string", "minLength": 1 },
+              "checked_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+              "evidence": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": true
+          }
+        },
+        "freshness": {
+          "type": "object",
+          "required": ["status", "last_reviewed", "next_review_due", "cadence_days"],
+          "properties": {
+            "status": { "enum": ["fresh", "watch", "stale", "retired"] },
+            "last_reviewed": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+            "next_review_due": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+            "cadence_days": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": true
+        },
+        "curriculum": {
+          "type": "object",
+          "required": ["lifecycle_status", "candidate_from_source_change", "promotion_next_step"],
+          "properties": {
+            "lifecycle_status": { "enum": ["proposed", "pilot", "calibrating", "benchmark_ready", "retired"] },
+            "candidate_from_source_change": { "type": "string", "minLength": 1 },
+            "promotion_next_step": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
     "environment": {
       "type": "object",
       "required": [
