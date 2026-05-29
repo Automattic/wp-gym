@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "projection": {
+    "name": "wp-gym-eval-artifact",
+    "issue": "https://github.com/Automattic/wp-gym/issues/117",
+    "created_at": "2026-05-28T00:00:00Z"
+  },
+  "status": {
+    "outcome": "passed",
+    "failure_class": "none",
+    "failure_reason": null,
+    "message": null
+  },
+  "runtime": {
+    "artifact_bundle": {
+      "id": "wp-gym-redacted-fixture",
+      "schema_version": "1",
+      "created_at": "2026-05-28T00:00:00Z",
+      "runtime_id": "wp-codebox",
+      "environment_id": "fixture"
+    },
+    "references": {
+      "events": [
+        {
+          "kind": "jsonl",
+          "path_or_url": "redacted-events.jsonl",
+          "sha256": "96a7abacc05eebad137e1adcc45c773f3d471c21aa695a5bf68e94b14c211300",
+          "sensitivity": ["cookie", "nonce", "local_path"],
+          "sharing_level": "public_report",
+          "redaction_status": "redacted",
+          "redaction": {
+            "status": "redacted",
+            "strategy": "field_redaction",
+            "sharing_level": "public_report"
+          }
+        }
+      ],
+      "replay_bundle": [
+        {
+          "kind": "zip",
+          "path_or_url": "../replay-regrade/replay.zip",
+          "sha256": "da2a5bf59c092dc2dfed37eee734b5ee9c42dffefa45a16fa14a3926683955d0",
+          "sharing_level": "private_lab",
+          "redaction_status": "not_needed"
+        }
+      ]
+    }
+  },
+  "runner": {
+    "provider": "openai",
+    "model": "gpt-5.5",
+    "agent_slug": "wordpress-task-runner",
+    "bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tool_policy_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "workflow": {
+      "run_id": "143-redacted",
+      "run_url": "https://github.com/Automattic/wp-gym/actions/runs/143"
+    }
+  },
+  "scenario": {
+    "id": "block-markup-valid-semantic-blocks",
+    "label": "Valid semantic blocks",
+    "task_family": "block-markup",
+    "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "rules": {
+      "general": ["wordpress_editable_blocks"],
+      "task_specific": ["semantic_content"]
+    }
+  },
+  "task_set": {
+    "id": "benchmark-readiness-pilot",
+    "label": "Benchmark readiness pilot",
+    "source_path": "task-sets/benchmark-readiness-pilot.json"
+  },
+  "grader": {
+    "success": true,
+    "reward": 1,
+    "grade": { "score": 4, "max_score": 4 },
+    "checks": [
+      {
+        "id": "semantic_blocks",
+        "passed": true,
+        "score": 1,
+        "max_score": 1,
+        "failure_reason": null,
+        "message": null
+      }
+    ],
+    "failure_reasons": []
+  },
+  "reports": {
+    "result_json": [
+      {
+        "kind": "json",
+        "path_or_url": "redaction-result.json",
+        "sha256": "e0806040f2639040a4d31eff6dbb4210ac087ee82da03070b352838026ab9f6b",
+        "sharing_level": "public_report",
+        "redaction_status": "not_needed"
+      }
+    ],
+    "replay": [
+      {
+        "kind": "zip",
+        "path_or_url": "../replay-regrade/replay.zip",
+        "sha256": "da2a5bf59c092dc2dfed37eee734b5ee9c42dffefa45a16fa14a3926683955d0",
+        "sharing_level": "private_lab",
+        "redaction_status": "not_needed"
+      }
+    ]
+  }
+}
