@@ -76,6 +76,10 @@ remaining gates before results can be called benchmark-ready.
 Benchmark versioning, promotion, compatibility, deprecation, and retention policy
 is documented in `docs/benchmark-versioning.md`.
 
+Held-out variant and contamination-control policy is documented in
+`docs/contamination-controls.md`. Public scenarios are training-visible; headline
+benchmark claims require held-out/private split metadata and readiness gates.
+
 The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
 documented in `docs/grader-handoff.md`.
 

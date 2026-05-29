@@ -3,6 +3,17 @@
   "id": "content-migration-media-attachment-import",
   "label": "Import content with local media attachments",
   "issue": "https://github.com/Automattic/wp-gym/issues/83",
+  "split": {
+    "membership": "public",
+    "variant_family": "content-migration-media-import",
+    "variant_seed": "media-attachment-import-public-v1",
+    "parent_scenario_id": null,
+    "artifact_policy": {
+      "public_artifacts": ["prompt", "scenario_manifest", "grader", "starter_workspace"],
+      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_workspace_fixture"],
+      "grader_exposure": "full_public"
+    }
+  },
   "prompt_file": "../../prompts/content-migration/media-attachment-import.md",
   "grader_file": "../../graders/content-migration/media-attachment-import.php",
   "tags": ["wordpress", "content-migration", "media-import", "attachments"],

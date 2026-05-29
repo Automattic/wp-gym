@@ -9,6 +9,12 @@
   "aggregate_score": false,
   "score_scope": "demo",
   "task_contract_level": "wordpress_state_diagnostic",
+  "split_policy": {
+    "lane": "public",
+    "allowed_splits": ["public"],
+    "requires_held_out_private": false,
+    "contamination_controls": ["demo_tasks_are_not_benchmark_claims"]
+  },
   "benchmark_blockers": [
     "demo_task_set",
     "uncalibrated_difficulty",

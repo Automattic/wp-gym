@@ -7,6 +7,7 @@
     "schema_version",
     "id",
     "label",
+    "split",
     "prompt_file",
     "grader_file",
     "rules",
@@ -19,6 +20,45 @@
     "schema_version": { "type": "integer", "minimum": 1 },
     "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "label": { "type": "string", "minLength": 1 },
+    "split": {
+      "type": "object",
+      "description": "Public/calibration/validation/held-out split and variant-lineage metadata. Private task contents stay out of public manifests.",
+      "required": ["membership", "variant_family", "variant_seed", "artifact_policy"],
+      "properties": {
+        "membership": { "enum": ["public", "calibration", "validation", "held_out_private"] },
+        "variant_family": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "variant_seed": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$" },
+        "parent_scenario_id": { "type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "lineage_note": { "type": "string" },
+        "held_out_private_variant": {
+          "type": "object",
+          "description": "Non-sensitive pointer describing that a private variant exists or is planned without exposing prompt, fixture, or grader contents.",
+          "properties": {
+            "status": { "enum": ["planned", "ready", "not_applicable"] },
+            "reference": { "type": "string" },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "artifact_policy": {
+          "type": "object",
+          "required": ["public_artifacts", "private_artifacts", "grader_exposure"],
+          "properties": {
+            "public_artifacts": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+            },
+            "private_artifacts": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+            },
+            "grader_exposure": { "enum": ["full_public", "summary_public", "private"] }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
     "prompt_file": { "type": "string", "minLength": 1 },
     "grader_file": { "type": "string", "minLength": 1 },
     "rules": {

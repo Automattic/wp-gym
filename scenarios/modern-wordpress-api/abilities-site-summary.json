@@ -3,6 +3,17 @@
   "id": "modern-wordpress-api-abilities-site-summary",
   "label": "Provider-friendly site summary ability",
   "issue": "https://github.com/Automattic/wp-gym/issues/3",
+  "split": {
+    "membership": "public",
+    "variant_family": "modern-wordpress-api-site-summary",
+    "variant_seed": "abilities-site-summary-public-v1",
+    "parent_scenario_id": null,
+    "artifact_policy": {
+      "public_artifacts": ["prompt", "scenario_manifest", "grader", "starter_workspace"],
+      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_workspace_fixture"],
+      "grader_exposure": "full_public"
+    }
+  },
   "prompt_file": "../../prompts/modern-wordpress-api/abilities-site-summary.md",
   "grader_file": "../../graders/modern-wordpress-api/abilities-site-summary.php",
   "tags": ["wordpress", "abilities-api", "modern-api"],
