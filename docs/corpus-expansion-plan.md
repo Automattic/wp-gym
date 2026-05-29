@@ -13,7 +13,7 @@ benchmark-ready comparisons.
 | --- | --- | --- | --- |
 | `block-markup` / editable block layout | `block-markup-valid-semantic-blocks`, `block-markup-no-fallback-pricing-section`, `block-markup-nested-layout-blocks` | Gutenberg block validity, semantic blocks, fallback avoidance, shortcode/raw HTML detection. | Add more page patterns and nested block constraints before promoting any task set as calibrated. |
 | `site-building` | `site-building-community-garden` | Natural site-owner request with homepage, navigation, block-theme, editable content, and rendered-site evidence. | Add more site genres, multi-page requirements, theme constraints, and design fingerprint probes. |
-| `modern-wordpress-api` / plugin API | `modern-wordpress-api-abilities-site-summary`, `modern-wordpress-api-rest-route-status` | Workspace-backed plugin tasks covering Abilities API and REST route contracts. | Add more API surfaces, permission models, activation/lifecycle checks, and negative cases. |
+| `modern-wordpress-api` / plugin API | `modern-wordpress-api-abilities-site-summary`, `modern-wordpress-api-rest-route-status` | Workspace-backed plugin tasks covering Abilities API and REST route contracts, with API provenance and freshness metadata. | Add more API surfaces, permission models, activation/lifecycle checks, negative cases, and stale-coverage reporting by capability area. |
 | `smoke` | `smoke-homepage` | Minimal automation wiring check. | Keep as infrastructure smoke only; do not use for model quality comparisons. |
 
 ## Planned Families
@@ -48,7 +48,22 @@ Before adding a scenario to a repeatable task set, require:
 - Final-state checks against WordPress data, workspace files, rendered output, command evidence, or artifacts rather than transcript-only assertions.
 - Expected artifacts that are available to generated PRs and replay/debugging workflows.
 - A documented shortcut list for behavior the grader should catch or the family still cannot evaluate.
+- API/source provenance and freshness metadata for scenarios that measure current WordPress API knowledge.
 - Inclusion in an experimental task set first, with promotion to benchmark-ready only after baseline runs and calibration.
+
+## API Curriculum Maintenance
+
+Use [WordPress API Curriculum Loop](wordpress-api-curriculum-loop.md) when adding
+or refreshing modern API scenarios. The loop defines source lanes, capability
+mapping, scenario lifecycle gates, and the freshness report command:
+
+```sh
+npm run curriculum:report
+```
+
+Generated or proposed API scenarios should stay outside benchmark-ready task sets
+until provenance, hidden graders, shortcut fixtures, replay metadata, and
+calibration evidence pass the same gates as hand-authored scenarios.
 
 ## Target Counts
 
