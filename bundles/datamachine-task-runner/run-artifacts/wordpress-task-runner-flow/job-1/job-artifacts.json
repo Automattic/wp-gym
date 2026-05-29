@@ -17,26 +17,26 @@
         {
             "schema_version": 1,
             "tool_name": "upsert_post",
-            "tool_call_id": "call_94l3kn83kfBFVhTmYHx14B25",
+            "tool_call_id": "call_5orP4EfhAXAKmgOgn2EKjHjy",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T15:21:46+00:00",
-            "ended_at": "2026-05-29T15:21:46+00:00",
-            "duration_ms": 44,
-            "arguments_sha256": "bc429ec009137118bbbca4388e7743e1a5b98362cd2ebcaaf4045823e0a24cde",
-            "result_sha256": "9f99da0bebe1d8d2e4137f6c0d5dbd6845acfdef89351af6858e4e0f41a59c3e",
+            "started_at": "2026-05-29T16:09:26+00:00",
+            "ended_at": "2026-05-29T16:09:26+00:00",
+            "duration_ms": 53,
+            "arguments_sha256": "711582f17fc8071fa2557156c98631563abd1f428dc6a41a0fa60081f0ff08a0",
+            "result_sha256": "8490045da155c81263f5af109294a32f28e77c39963bcfd81800f855f0aeb26c",
             "arguments_redacted": {
                 "post_type": "page",
                 "title": "Neighborhood Cookout Plan",
-                "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with grilled favorites, easy sides, cold drinks, and time to catch up outdoors.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul><!-- wp:list-item -->\n<li>Confirm the date, time, and shared outdoor space.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate volunteers for grilling, setup, drinks, and cleanup.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Prepare tables, seating, serving supplies, coolers, and trash bags.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
+                "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with good food, friendly conversation, and simple activities for all ages.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Confirm the date, time, and shared outdoor space.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate grills, tables, seating, and cleanup supplies.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Invite neighbors to bring sides, drinks, or desserts.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
                 "content_format": "blocks",
                 "slug": "neighborhood-cookout-plan",
                 "parent_id": 0,
                 "parent_path": "",
                 "post_author": "[redacted]",
-                "content_hash": "",
+                "content_hash": "neighborhood-cookout-plan-v1",
                 "source_url": "",
                 "original_date_gmt": "",
                 "add_source_attribution": false
@@ -49,7 +49,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "0fd046510c9eff1928b8259f2c74d200a7f436c0f913e691199ebe5eecec4588",
+            "sha256": "fe5e4776d4b963d7d0164097197e3b26e09df4f23c71c20401d2a239e4a1efaa",
             "bounded": true,
             "redacted": true
         }
@@ -60,11 +60,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:42573/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "f989d908e8d7645e822bec6d5282db8ec23945a40399355c2342ad759333a5d7",
-            "payload_sha256": "f2d0c3334f12081441c2119ca6474b7f21498c99b0afeb172cf9c5e487719f3d",
-            "bytes": 2823,
-            "written_at": "2026-05-29T15:21:50+00:00"
+            "url": "http://127.0.0.1:37545/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "e876dba279ba0f8e2fb7c940e62dbe61acb85b8898ad7bf3fd45a577531a6a72",
+            "payload_sha256": "01d3eb64253620a87df13186d9f9dddf8142a51a223c195de721e5bd86b885d4",
+            "bytes": 2850,
+            "written_at": "2026-05-29T16:09:29+00:00"
         }
     },
     "transcript_artifact": null,
@@ -80,8 +80,8 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 15:21:35",
-            "completed_at": "2026-05-29 15:21:50"
+            "created_at": "2026-05-29 16:09:17",
+            "completed_at": "2026-05-29 16:09:29"
         },
         "trace_count": 1,
         "entries_emitted": 1,
@@ -91,36 +91,36 @@
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "upsert_post",
-                "tool_call_id": "call_94l3kn83kfBFVhTmYHx14B25",
+                "tool_call_id": "call_5orP4EfhAXAKmgOgn2EKjHjy",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T15:21:46+00:00",
-                "ended_at": "2026-05-29T15:21:46+00:00",
-                "duration_ms": 44,
-                "arguments_sha256": "bc429ec009137118bbbca4388e7743e1a5b98362cd2ebcaaf4045823e0a24cde",
-                "result_sha256": "9f99da0bebe1d8d2e4137f6c0d5dbd6845acfdef89351af6858e4e0f41a59c3e",
+                "started_at": "2026-05-29T16:09:26+00:00",
+                "ended_at": "2026-05-29T16:09:26+00:00",
+                "duration_ms": 53,
+                "arguments_sha256": "711582f17fc8071fa2557156c98631563abd1f428dc6a41a0fa60081f0ff08a0",
+                "result_sha256": "8490045da155c81263f5af109294a32f28e77c39963bcfd81800f855f0aeb26c",
                 "arguments_redacted": {
                     "post_type": "page",
                     "title": "Neighborhood Cookout Plan",
-                    "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with grilled favorites, easy sides, cold drinks, and time to catch up outdoors.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul><!-- wp:list-item -->\n<li>Confirm the date, time, and shared outdoor space.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate volunteers for grilling, setup, drinks, and cleanup.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Prepare tables, seating, serving supplies, coolers, and trash bags.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
+                    "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with good food, friendly conversation, and simple activities for all ages.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Confirm the date, time, and shared outdoor space.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate grills, tables, seating, and cleanup supplies.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Invite neighbors to bring sides, drinks, or desserts.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
                     "content_format": "blocks",
                     "slug": "neighborhood-cookout-plan",
                     "parent_id": 0,
                     "parent_path": "",
                     "post_author": "[redacted]",
-                    "content_hash": "",
+                    "content_hash": "neighborhood-cookout-plan-v1",
                     "source_url": "",
                     "original_date_gmt": "",
                     "add_source_attribution": false
                 },
-                "entry_sha256": "a3b693a83ac8e23b617dc5a2becf6e98a1b4f228c5ffa4a3d96832d92647d17b"
+                "entry_sha256": "e3183fdbf6896c110e32bf995b5edd4aa2a604994c59891615fde9ec083e13f7"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "0fd046510c9eff1928b8259f2c74d200a7f436c0f913e691199ebe5eecec4588"
+        "sha256": "fe5e4776d4b963d7d0164097197e3b26e09df4f23c71c20401d2a239e4a1efaa"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
