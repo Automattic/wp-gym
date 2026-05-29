@@ -1,0 +1,7 @@
+diff --git a/task-sets/benchmark-readiness-pilot.json b/task-sets/benchmark-readiness-pilot.json
+index 0000000..2222222 100644
+--- a/task-sets/benchmark-readiness-pilot.json
++++ b/task-sets/benchmark-readiness-pilot.json
+@@ -1 +1 @@
+-{"baseline_result_sets":[]}
++{"baseline_result_sets":["fixture"]}

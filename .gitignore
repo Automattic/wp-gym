@@ -4,4 +4,5 @@
 /.pg-bench-results*.json
 /.homeboy/
 /.ci/
+/.remote-artifacts/
 node_modules/

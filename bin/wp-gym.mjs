@@ -23,6 +23,7 @@ function usage() {
 		'  wp-gym demo [scenario-id]',
 		'  wp-gym replay-regrade --input <eval-artifact-json-or-dir> [--benchmark-mode]',
 		'  wp-gym run-registry emit|report|validate [args...]',
+		'  wp-gym remote-archive triage --input <cycle-dir-or-tar> [args...]',
 	].join('\n'));
 }
 
@@ -85,6 +86,18 @@ if (command === 'replay-regrade') {
 		process.exit(2);
 	}
 	const result = spawnSync(process.execPath, [path.join(root, 'scripts', script), ...process.argv.slice(4)], {
+		cwd: root,
+		stdio: 'inherit',
+	});
+	process.exit(result.status ?? 1);
+
+} else if (command === 'remote-archive') {
+	const subcommand = process.argv[3];
+	if (subcommand !== 'triage') {
+		console.error('Usage: wp-gym remote-archive triage --input <cycle-dir-or-tar> [args...]');
+		process.exit(2);
+	}
+	const result = spawnSync(process.execPath, [path.join(root, 'scripts/triage-remote-archive.mjs'), ...process.argv.slice(4)], {
 		cwd: root,
 		stdio: 'inherit',
 	});

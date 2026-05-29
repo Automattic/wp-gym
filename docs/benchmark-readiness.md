@@ -209,6 +209,25 @@ These rows prove the terminal graders reject known shortcut fixtures and accept
 curated positive controls. They do not establish model pass-rate bands,
 repeated-attempt variance, held-out/private readiness, or benchmark readiness.
 
+## Local Episode Baselines
+
+Issue [#127](https://github.com/Automattic/wp-gym/issues/127) also has one real
+local runtime baseline for `block-markup-no-fallback-pricing-section`:
+
+```sh
+npm run calibration:local-baseline -- block-markup-no-fallback-pricing-section
+npm run calibration-results:validate
+```
+
+The command uses the public `WPGym` episode API against a local WP Codebox-backed
+runtime. It records a no-op row and a scripted WP-CLI positive-control row in
+`block-markup-no-fallback-pricing-section-local-episode-baseline`, with sanitized
+grade/check evidence in `fixtures/calibration-evidence/`.
+
+This is real runtime evidence, but it is still non-headline calibration evidence:
+it does not include cheap-model, frontier-model, repeated-attempt, or held-out
+private rows. The scenario therefore stays `calibrating` with explicit blockers.
+
 ## Benchmark-Ready Gates
 
 The pilot becomes benchmark-ready only after these gates are complete:
@@ -236,6 +255,9 @@ The pilot becomes benchmark-ready only after these gates are complete:
 - Headline-eligible benchmark rows use `split.membership=held_out_private`.
   Public, calibration, and validation lanes remain useful for iteration and
   promotion evidence, but not final benchmark claims.
+- Held-out rows resolve through the public-safe private pack contract in
+  [`held-out-pack-workflow.md`](held-out-pack-workflow.md); public reports publish
+  aggregate outcomes and sealed hashes, not raw private task materials.
 - Task sets that publish aggregate/headline benchmark scores declare
   `split_policy.requires_held_out_private=true`.
 - Scenario `calibration.task_contract_level` reaches `benchmark_replay` for rows

@@ -123,6 +123,13 @@ and replay-bundle checks. Use `npm run run-registry:emit` to project live or
 fixture eval outputs into registry entries, and `npm run run-registry:report` to
 produce JSON/Markdown summaries from validated entries.
 
+Remote loop archive triage is documented in
+`docs/remote-archive-triage.md`. Use
+`wp-gym remote-archive triage --input <cycle-dir-or-tar>` or
+`npm run remote-archive:triage -- --input <cycle-dir-or-tar>` to summarize a
+downloaded remote cycle archive, validate reviewer/loop status files, deduplicate
+candidate patches, and emit JSON/Markdown suitable for issue comments.
+
 The local Gym-like `WPGym.listScenarios()` / `listTaskSets()` / `make()` /
 `reset()` / `step()` / `grade()` API is documented in `docs/local-api.md`;
 WordPress scenarios use WP Codebox's native runtime episode API.
