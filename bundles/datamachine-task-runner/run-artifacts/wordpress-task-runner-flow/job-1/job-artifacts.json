@@ -6,43 +6,242 @@
     "disposition_diagnostic": null,
     "required_tool_names": [],
     "satisfied_tool_names": [],
-    "successful_tool_calls": [],
+    "successful_tool_calls": [
+        {
+            "tool_name": "upsert_post",
+            "success": true,
+            "turn_count": 2
+        },
+        {
+            "tool_name": "upsert_post",
+            "success": true,
+            "turn_count": 2
+        },
+        {
+            "tool_name": "upsert_post",
+            "success": true,
+            "turn_count": 2
+        },
+        {
+            "tool_name": "upsert_post",
+            "success": true,
+            "turn_count": 2
+        },
+        {
+            "tool_name": "upsert_post",
+            "success": true,
+            "turn_count": 2
+        }
+    ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "toolu_01NrpKaGjqhhyijfZBNjEtzs",
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01JxLf9SAX4E2PYNCHukYARk",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T17:33:12+00:00",
-            "ended_at": "2026-05-29T17:33:12+00:00",
-            "duration_ms": 9,
-            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "started_at": "2026-05-29T17:35:10+00:00",
+            "ended_at": "2026-05-29T17:35:10+00:00",
+            "duration_ms": 10,
+            "arguments_sha256": "ec7113360888b9a9ac0678d34663cd00013928b944ea3da4e2eea2ac3b78bd20",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
             "arguments_redacted": {
-                "repo": "current-project"
+                "post_type": "page",
+                "slug": "maya-ortiz",
+                "title": "Maya Ortiz",
+                "content": "## Maya Ortiz\n\nMaya Ortiz is a Harbor Hearth Repair technician specializing in **boiler tune-ups** and **heat pump triage**.\n\n### Services Provided\n\n- [Boiler Tune-Ups](/?page_id=boiler-tune-ups) \u2014 performed in North Loop and River Market\n- [Heat Pump Triage](/?page_id=heat-pump-triage) \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- North Loop (boiler tune-ups)\n- River Market (boiler tune-ups)\n- South Hill (heat pump triage)\n\n*Tagged for filtering: staff, technician.*"
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "toolu_017eMqmH6qbTGwGJvJb2pHHt",
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01ME4iqTJLCrEHpZS45FyfYF",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T17:33:12+00:00",
-            "ended_at": "2026-05-29T17:33:12+00:00",
-            "duration_ms": 12,
-            "arguments_sha256": "0efedc0a73294078872e005cd7d6e8c9dc89fed472c292a5e8a412025ae2b4b6",
-            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "started_at": "2026-05-29T17:35:10+00:00",
+            "ended_at": "2026-05-29T17:35:10+00:00",
+            "duration_ms": 13,
+            "arguments_sha256": "842f57c68773ee69fe10019546b8622e2564eab3eefb848974398dad31a6822d",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
             "arguments_redacted": {
-                "repo": "current-project",
-                "path": "import-package"
+                "post_type": "page",
+                "slug": "theo-grant",
+                "title": "Theo Grant",
+                "content": "## Theo Grant\n\nTheo Grant is a Harbor Hearth Repair technician specializing in **chimney inspections**.\n\n### Services Provided\n\n- Chimney Inspections \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- South Hill (chimney inspections)\n\n*Tagged for filtering: staff, technician.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01BdvQyoLqgYFMetFTonTSc2",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:35:10+00:00",
+            "ended_at": "2026-05-29T17:35:10+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "7dd43e392582f8660dbce365ce4ab8c98431036ed9cedf9da79e8daf6e0b35ad",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "north-loop",
+                "title": "North Loop Service Area",
+                "content": "## North Loop\n\nHarbor Hearth Repair offers the following services in the **North Loop** neighborhood:\n\n| Service | Technician |\n|---------|-----------|\n| Boiler Tune-Ups | Maya Ortiz |\n\n*Tagged for filtering: service-area.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01VAbFDSHEpNHSyik8NaPi5n",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:35:10+00:00",
+            "ended_at": "2026-05-29T17:35:10+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "2c1237001b6559980ed34fa96605fb4b129ebd947a62a4dcf782bb001e2c5a95",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "river-market",
+                "title": "River Market Service Area",
+                "content": "## River Market\n\nHarbor Hearth Repair offers the following services in the **River Market** neighborhood:\n\n| Service | Technician |\n|---------|-----------|\n| Boiler Tune-Ups | Maya Ortiz |\n\n*Tagged for filtering: service-area.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01YMsAvRmKpBjoXNHosyznF2",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T17:35:10+00:00",
+            "ended_at": "2026-05-29T17:35:10+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "0db3cb49bb6b7e103fd50741e71ea8cac596ed8efd43c5120105131463288660",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "south-hill",
+                "title": "South Hill Service Area",
+                "content": "## South Hill\n\nHarbor Hearth Repair offers the following services in the **South Hill** neighborhood:\n\n| Service | Technician |\n|---------|-----------|\n| Chimney Inspections | Theo Grant |\n| Heat Pump Triage | Maya Ortiz |\n\n*Tagged for filtering: service-area.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_019hHXcQfuZyywNH4GoeShU3",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:35:23+00:00",
+            "ended_at": "2026-05-29T17:35:23+00:00",
+            "duration_ms": 328,
+            "arguments_sha256": "a325fbcffb4d7c3543a686556044ae4b5e37f52d1b5f3a668ea58a8385dcdef9",
+            "result_sha256": "6435746fcc93ec679008e6b02de7b2584e4238dfffe29392b8cb91894ae7cb1a",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "maya-ortiz",
+                "title": "Maya Ortiz",
+                "content_format": "markdown",
+                "content": "## Maya Ortiz\n\nMaya Ortiz is a Harbor Hearth Repair technician specializing in **boiler tune-ups** and **heat pump triage**.\n\n### Services Provided\n\n- Boiler Tune-Ups \u2014 performed in North Loop and River Market\n- Heat Pump Triage \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- North Loop (boiler tune-ups)\n- River Market (boiler tune-ups)\n- South Hill (heat pump triage)\n\n*Staff profile \u2014 Harbor Hearth Repair.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01LAj3Unjv7GGiznCbdYh7CN",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:35:23+00:00",
+            "ended_at": "2026-05-29T17:35:23+00:00",
+            "duration_ms": 48,
+            "arguments_sha256": "012ab5d4b39d7128713b4da96723378b3dd6194051d1e7cac45199e7445af095",
+            "result_sha256": "45dbfe0d71ecbd05307716b0a03a156bfa60f50b8e458a2c32fbb6b4b3b0f3a1",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "theo-grant",
+                "title": "Theo Grant",
+                "content_format": "markdown",
+                "content": "## Theo Grant\n\nTheo Grant is a Harbor Hearth Repair technician specializing in **chimney inspections**.\n\n### Services Provided\n\n- Chimney Inspections \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- South Hill (chimney inspections)\n\n*Staff profile \u2014 Harbor Hearth Repair.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01RkLpdJnUbMWawRY2DuPBzY",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:35:23+00:00",
+            "ended_at": "2026-05-29T17:35:23+00:00",
+            "duration_ms": 45,
+            "arguments_sha256": "cafc87bb3f5403ecf57d7d9f8f3ea8aefb1df803e2c25bea7a6966a36690bece",
+            "result_sha256": "8c68c9b5b5fac721dfe6c2f8142065bd6bc899df7b30b4766ffb0b20fd087dce",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "north-loop",
+                "title": "North Loop Service Area",
+                "content_format": "markdown",
+                "content": "## North Loop\n\nHarbor Hearth Repair offers the following services in the **North Loop** neighborhood:\n\n- **Boiler Tune-Ups** \u2014 handled by Maya Ortiz\n\n*Service area page \u2014 Harbor Hearth Repair.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01HfNSZvgUBaRP3M9YBFgvjc",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:35:23+00:00",
+            "ended_at": "2026-05-29T17:35:23+00:00",
+            "duration_ms": 46,
+            "arguments_sha256": "99a409a9b5c941c6d50e2f7f36a7d2b2d8e1da2fc5d4f50779b8a6c8edfd4da0",
+            "result_sha256": "91107f2244fe8e2e6f5e541313b51f261500a4b46da78d8d6cd95cf4b32b4e0d",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "river-market",
+                "title": "River Market Service Area",
+                "content_format": "markdown",
+                "content": "## River Market\n\nHarbor Hearth Repair offers the following services in the **River Market** neighborhood:\n\n- **Boiler Tune-Ups** \u2014 handled by Maya Ortiz\n\n*Service area page \u2014 Harbor Hearth Repair.*"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01P5zx9CvHxW74zgrzYx1fe6",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:35:23+00:00",
+            "ended_at": "2026-05-29T17:35:23+00:00",
+            "duration_ms": 46,
+            "arguments_sha256": "7570d293c2ef7b881d355d09e6bf8f67de349900f6aa3caf9353d6e8604a232c",
+            "result_sha256": "b3beff1d6a7919bd7640b28bcfbcfe3f9542666d07e1c0bc9f69332985726b64",
+            "arguments_redacted": {
+                "post_type": "page",
+                "slug": "south-hill",
+                "title": "South Hill Service Area",
+                "content_format": "markdown",
+                "content": "## South Hill\n\nHarbor Hearth Repair offers the following services in the **South Hill** neighborhood:\n\n- **Chimney Inspections** \u2014 handled by Theo Grant\n- **Heat Pump Triage** \u2014 handled by Maya Ortiz\n\n*Service area page \u2014 Harbor Hearth Repair.*"
             }
         }
     ],
@@ -52,7 +251,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "20746e3b8feb4cc6cc0b1a87c00e60731368a71d0536838b56c1629ba672996c",
+            "sha256": "76a0f2bce301d89685ada847cb42748006db39ab2ed3f5d881abb1b134bf15e2",
             "bounded": true,
             "redacted": true
         }
@@ -63,11 +262,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:37555/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "e8c10c21a572810fcc52ced368d41c5cfdbc0a55d3be86bd27c07bee700d2b7f",
-            "payload_sha256": "9bb82ed09272b9e5c8ec454037b5bd9cd3e80363f95c30e55bdfd24d4358d9e4",
-            "bytes": 2579,
-            "written_at": "2026-05-29T17:33:13+00:00"
+            "url": "http://127.0.0.1:36527/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "1224e80ff70b0b663bb5efbb0c0ac0e438b9ddbfa3dcb4e446d6742de3517b64",
+            "payload_sha256": "044f5050b8e04bbfe1bc1eaa5ebff859fe19a0436a38f8dd3145736c9e8b2fbf",
+            "bytes": 13724,
+            "written_at": "2026-05-29T17:35:27+00:00"
         }
     },
     "transcript_artifact": null,
@@ -83,58 +282,247 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:33:09",
-            "completed_at": "2026-05-29 17:33:13"
+            "created_at": "2026-05-29 17:34:54",
+            "completed_at": "2026-05-29 17:35:27"
         },
-        "trace_count": 2,
-        "entries_emitted": 2,
+        "trace_count": 10,
+        "entries_emitted": 10,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "toolu_01NrpKaGjqhhyijfZBNjEtzs",
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01JxLf9SAX4E2PYNCHukYARk",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "failed",
-                "started_at": "2026-05-29T17:33:12+00:00",
-                "ended_at": "2026-05-29T17:33:12+00:00",
-                "duration_ms": 9,
-                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "started_at": "2026-05-29T17:35:10+00:00",
+                "ended_at": "2026-05-29T17:35:10+00:00",
+                "duration_ms": 10,
+                "arguments_sha256": "ec7113360888b9a9ac0678d34663cd00013928b944ea3da4e2eea2ac3b78bd20",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
                 "arguments_redacted": {
-                    "repo": "current-project"
+                    "post_type": "page",
+                    "slug": "maya-ortiz",
+                    "title": "Maya Ortiz",
+                    "content": "## Maya Ortiz\n\nMaya Ortiz is a Harbor Hearth Repair technician specializing in **boiler tune-ups** and **heat pump triage**.\n\n### Services Provided\n\n- [Boiler Tune-Ups](/?page_id=boiler-tune-ups) \u2014 performed in North Loop and River Market\n- [Heat Pump Triage](/?page_id=heat-pump-triage) \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- North Loop (boiler tune-ups)\n- River Market (boiler tune-ups)\n- South Hill (heat pump triage)\n\n*Tagged for filtering: staff, technician.*"
                 },
-                "entry_sha256": "5d2b8b16d0bc5432bd1a7bdaec2290c803cce7a657ef9b9102a000d87c5e2729"
+                "entry_sha256": "1359c38e71eaa0aad3c28583d1ec530cefe02b8199bf504bdfffe7378f0dd258"
             },
             {
                 "index": 1,
                 "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "toolu_017eMqmH6qbTGwGJvJb2pHHt",
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01ME4iqTJLCrEHpZS45FyfYF",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "failed",
-                "started_at": "2026-05-29T17:33:12+00:00",
-                "ended_at": "2026-05-29T17:33:12+00:00",
-                "duration_ms": 12,
-                "arguments_sha256": "0efedc0a73294078872e005cd7d6e8c9dc89fed472c292a5e8a412025ae2b4b6",
-                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "started_at": "2026-05-29T17:35:10+00:00",
+                "ended_at": "2026-05-29T17:35:10+00:00",
+                "duration_ms": 13,
+                "arguments_sha256": "842f57c68773ee69fe10019546b8622e2564eab3eefb848974398dad31a6822d",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
                 "arguments_redacted": {
-                    "repo": "current-project",
-                    "path": "import-package"
+                    "post_type": "page",
+                    "slug": "theo-grant",
+                    "title": "Theo Grant",
+                    "content": "## Theo Grant\n\nTheo Grant is a Harbor Hearth Repair technician specializing in **chimney inspections**.\n\n### Services Provided\n\n- Chimney Inspections \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- South Hill (chimney inspections)\n\n*Tagged for filtering: staff, technician.*"
                 },
-                "entry_sha256": "33e0bbb8a202ffd8f974787ae2de53ba255ec5d3dc7ef1d270cc56eafb777cf0"
+                "entry_sha256": "ef666ac4e4c9f2e876559659a9a4531b3cde63c4baebf5711a0279577088dada"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01BdvQyoLqgYFMetFTonTSc2",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:35:10+00:00",
+                "ended_at": "2026-05-29T17:35:10+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "7dd43e392582f8660dbce365ce4ab8c98431036ed9cedf9da79e8daf6e0b35ad",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "north-loop",
+                    "title": "North Loop Service Area",
+                    "content": "## North Loop\n\nHarbor Hearth Repair offers the following services in the **North Loop** neighborhood:\n\n| Service | Technician |\n|---------|-----------|\n| Boiler Tune-Ups | Maya Ortiz |\n\n*Tagged for filtering: service-area.*"
+                },
+                "entry_sha256": "c0fedd1ef3db17a316d08a76f65ec12fbfdd2c244fe4a4850fbf855e7e4e2927"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01VAbFDSHEpNHSyik8NaPi5n",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:35:10+00:00",
+                "ended_at": "2026-05-29T17:35:10+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "2c1237001b6559980ed34fa96605fb4b129ebd947a62a4dcf782bb001e2c5a95",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "river-market",
+                    "title": "River Market Service Area",
+                    "content": "## River Market\n\nHarbor Hearth Repair offers the following services in the **River Market** neighborhood:\n\n| Service | Technician |\n|---------|-----------|\n| Boiler Tune-Ups | Maya Ortiz |\n\n*Tagged for filtering: service-area.*"
+                },
+                "entry_sha256": "ea69d2786fd571f4369d486b02317d354c30a3800b58896724f63c35e7799c19"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01YMsAvRmKpBjoXNHosyznF2",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T17:35:10+00:00",
+                "ended_at": "2026-05-29T17:35:10+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "0db3cb49bb6b7e103fd50741e71ea8cac596ed8efd43c5120105131463288660",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "south-hill",
+                    "title": "South Hill Service Area",
+                    "content": "## South Hill\n\nHarbor Hearth Repair offers the following services in the **South Hill** neighborhood:\n\n| Service | Technician |\n|---------|-----------|\n| Chimney Inspections | Theo Grant |\n| Heat Pump Triage | Maya Ortiz |\n\n*Tagged for filtering: service-area.*"
+                },
+                "entry_sha256": "9a3b1d0b5a552ea1acfa79006d09834cdbe45d29dc613400faaca25ce9ad806d"
+            },
+            {
+                "index": 5,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_019hHXcQfuZyywNH4GoeShU3",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:35:23+00:00",
+                "ended_at": "2026-05-29T17:35:23+00:00",
+                "duration_ms": 328,
+                "arguments_sha256": "a325fbcffb4d7c3543a686556044ae4b5e37f52d1b5f3a668ea58a8385dcdef9",
+                "result_sha256": "6435746fcc93ec679008e6b02de7b2584e4238dfffe29392b8cb91894ae7cb1a",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "maya-ortiz",
+                    "title": "Maya Ortiz",
+                    "content_format": "markdown",
+                    "content": "## Maya Ortiz\n\nMaya Ortiz is a Harbor Hearth Repair technician specializing in **boiler tune-ups** and **heat pump triage**.\n\n### Services Provided\n\n- Boiler Tune-Ups \u2014 performed in North Loop and River Market\n- Heat Pump Triage \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- North Loop (boiler tune-ups)\n- River Market (boiler tune-ups)\n- South Hill (heat pump triage)\n\n*Staff profile \u2014 Harbor Hearth Repair.*"
+                },
+                "entry_sha256": "2ebd47aefa9ecc746ac7badd098c106d960ffb78e7757fd379a22d5033503896"
+            },
+            {
+                "index": 6,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01LAj3Unjv7GGiznCbdYh7CN",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:35:23+00:00",
+                "ended_at": "2026-05-29T17:35:23+00:00",
+                "duration_ms": 48,
+                "arguments_sha256": "012ab5d4b39d7128713b4da96723378b3dd6194051d1e7cac45199e7445af095",
+                "result_sha256": "45dbfe0d71ecbd05307716b0a03a156bfa60f50b8e458a2c32fbb6b4b3b0f3a1",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "theo-grant",
+                    "title": "Theo Grant",
+                    "content_format": "markdown",
+                    "content": "## Theo Grant\n\nTheo Grant is a Harbor Hearth Repair technician specializing in **chimney inspections**.\n\n### Services Provided\n\n- Chimney Inspections \u2014 performed in South Hill\n\n### Service Areas Covered\n\n- South Hill (chimney inspections)\n\n*Staff profile \u2014 Harbor Hearth Repair.*"
+                },
+                "entry_sha256": "b032dfd0b8b5237e98f211ec4c9b4e6e00102ea8515d2311cae2c66bc0f1eac2"
+            },
+            {
+                "index": 7,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01RkLpdJnUbMWawRY2DuPBzY",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:35:23+00:00",
+                "ended_at": "2026-05-29T17:35:23+00:00",
+                "duration_ms": 45,
+                "arguments_sha256": "cafc87bb3f5403ecf57d7d9f8f3ea8aefb1df803e2c25bea7a6966a36690bece",
+                "result_sha256": "8c68c9b5b5fac721dfe6c2f8142065bd6bc899df7b30b4766ffb0b20fd087dce",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "north-loop",
+                    "title": "North Loop Service Area",
+                    "content_format": "markdown",
+                    "content": "## North Loop\n\nHarbor Hearth Repair offers the following services in the **North Loop** neighborhood:\n\n- **Boiler Tune-Ups** \u2014 handled by Maya Ortiz\n\n*Service area page \u2014 Harbor Hearth Repair.*"
+                },
+                "entry_sha256": "2466e7bf162d5d653e8413de004bb0317d3e3196296cb786bb36fd43411187d8"
+            },
+            {
+                "index": 8,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01HfNSZvgUBaRP3M9YBFgvjc",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:35:23+00:00",
+                "ended_at": "2026-05-29T17:35:23+00:00",
+                "duration_ms": 46,
+                "arguments_sha256": "99a409a9b5c941c6d50e2f7f36a7d2b2d8e1da2fc5d4f50779b8a6c8edfd4da0",
+                "result_sha256": "91107f2244fe8e2e6f5e541313b51f261500a4b46da78d8d6cd95cf4b32b4e0d",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "river-market",
+                    "title": "River Market Service Area",
+                    "content_format": "markdown",
+                    "content": "## River Market\n\nHarbor Hearth Repair offers the following services in the **River Market** neighborhood:\n\n- **Boiler Tune-Ups** \u2014 handled by Maya Ortiz\n\n*Service area page \u2014 Harbor Hearth Repair.*"
+                },
+                "entry_sha256": "41ed9468b57d4a70e5b1be737873d1dc3cbdfcb4a42d171cce5550a6e295ff42"
+            },
+            {
+                "index": 9,
+                "schema_version": 1,
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01P5zx9CvHxW74zgrzYx1fe6",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T17:35:23+00:00",
+                "ended_at": "2026-05-29T17:35:23+00:00",
+                "duration_ms": 46,
+                "arguments_sha256": "7570d293c2ef7b881d355d09e6bf8f67de349900f6aa3caf9353d6e8604a232c",
+                "result_sha256": "b3beff1d6a7919bd7640b28bcfbcfe3f9542666d07e1c0bc9f69332985726b64",
+                "arguments_redacted": {
+                    "post_type": "page",
+                    "slug": "south-hill",
+                    "title": "South Hill Service Area",
+                    "content_format": "markdown",
+                    "content": "## South Hill\n\nHarbor Hearth Repair offers the following services in the **South Hill** neighborhood:\n\n- **Chimney Inspections** \u2014 handled by Theo Grant\n- **Heat Pump Triage** \u2014 handled by Maya Ortiz\n\n*Service area page \u2014 Harbor Hearth Repair.*"
+                },
+                "entry_sha256": "6588b27bae6c53a66e7d526d92bc69b822805b7f3f867e5473962748482b8e0c"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "20746e3b8feb4cc6cc0b1a87c00e60731368a71d0536838b56c1629ba672996c"
+        "sha256": "76a0f2bce301d89685ada847cb42748006db39ab2ed3f5d881abb1b134bf15e2"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
