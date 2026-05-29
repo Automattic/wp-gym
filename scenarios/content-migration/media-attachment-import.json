@@ -9,23 +9,54 @@
     "variant_seed": "media-attachment-import-public-v1",
     "parent_scenario_id": null,
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader", "starter_workspace"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_workspace_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader",
+        "starter_workspace"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_workspace_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
   "prompt_file": "../../prompts/content-migration/media-attachment-import.md",
   "grader_file": "../../graders/content-migration/media-attachment-import.php",
-  "tags": ["wordpress", "content-migration", "media-import", "attachments"],
+  "tags": [
+    "wordpress",
+    "content-migration",
+    "media-import",
+    "attachments"
+  ],
   "capabilities": {
     "schema_version": 1,
     "primary": "plugin_quality_wordpress_standards",
-    "secondary": ["data_interaction_apis", "gutenberg_blocks"],
-    "criteria": ["media_library_api_usage", "attachment_post_integrity", "sanitized_content_import"]
+    "secondary": [
+      "data_interaction_apis",
+      "gutenberg_blocks"
+    ],
+    "criteria": [
+      "media_library_api_usage",
+      "attachment_post_integrity",
+      "sanitized_content_import"
+    ]
   },
   "rules": {
-    "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
-    "task_specific": ["source_content_imported", "attachment_posts_created", "attachment_files_local", "featured_image_restored", "no_stale_remote_media_urls"]
+    "general": [
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes"
+    ],
+    "task_specific": [
+      "source_content_imported",
+      "attachment_posts_created",
+      "attachment_files_local",
+      "featured_image_restored",
+      "no_stale_remote_media_urls"
+    ]
   },
   "limits": {
     "max_turns": 18,
@@ -36,7 +67,12 @@
     "action_mode": "workspace",
     "uses_workspace": true,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "workspace_tree", "wordpress_runtime", "rendered_site"],
+    "observation_channels": [
+      "prompt",
+      "workspace_tree",
+      "wordpress_runtime",
+      "rendered_site"
+    ],
     "allowed_tools": [
       "workspace_show",
       "workspace_ls",
@@ -49,8 +85,19 @@
       "wordpress_runtime_ls",
       "run_wp_cli"
     ],
-    "writable_roots": ["plugins/"],
-    "hidden_paths": ["graders/", "scenarios/", "prompts/", "checks/", "task-sets/", ".github/", "docs/", "scripts/"],
+    "writable_roots": [
+      "plugins/"
+    ],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "prompts/",
+      "checks/",
+      "task-sets/",
+      ".github/",
+      "docs/",
+      "scripts/"
+    ],
     "workspace_template": "starter-workspaces/content-migration-media-import",
     "completion_policy": {
       "type": "explicit_final_response"
@@ -68,7 +115,10 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "pilot",
@@ -76,16 +126,58 @@
     "difficulty_band": "uncalibrated",
     "headline_score_eligible": false,
     "baseline_result_sets": [],
-    "known_shortcuts": ["text_only_import_without_media", "remote_url_reuse"],
+    "known_shortcuts": [
+      "text_only_import_without_media",
+      "remote_url_reuse"
+    ],
     "task_contract_level": "workspace_diff_diagnostic",
-    "benchmark_blockers": ["workspace_diff_diagnostic_only", "missing_baseline_results", "uncalibrated_difficulty", "known_reward_shortcut"]
+    "benchmark_blockers": [
+      "workspace_diff_diagnostic_only",
+      "missing_baseline_results",
+      "uncalibrated_difficulty",
+      "known_reward_shortcut"
+    ]
   },
-  "expected_artifacts": ["workspace_diff", "wordpress_state", "media_library", "grader_result"],
+  "expected_artifacts": [
+    "workspace_diff",
+    "wordpress_state",
+    "media_library",
+    "grader_result"
+  ],
   "expected": {
     "source_package": "starter-workspaces/content-migration-media-import/import-package",
-    "required_content_titles": ["Harbor Market Spring Menu", "Catering Gallery"],
-    "required_attachments": ["harbor-market-hero.svg", "catering-board.svg"],
+    "required_content_titles": [
+      "Harbor Market Spring Menu",
+      "Catering Gallery"
+    ],
+    "required_attachments": [
+      "harbor-market-hero.svg",
+      "catering-board.svg"
+    ],
     "featured_image_post": "Harbor Market Spring Menu",
-    "forbidden_media_hosts": ["legacy.example.test", "old-harbor-market.invalid"]
+    "forbidden_media_hosts": [
+      "legacy.example.test",
+      "old-harbor-market.invalid"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "filesystem",
+      "wp_cli"
+    ],
+    "max_steps": 16,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes",
+      "source_content_imported",
+      "attachment_posts_created",
+      "attachment_files_local",
+      "featured_image_restored",
+      "no_stale_remote_media_urls"
+    ]
   }
 }

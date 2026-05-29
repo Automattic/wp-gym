@@ -15,8 +15,18 @@
       "notes": "Public metadata may name the variant family and readiness state, but private prompts, fixtures, expected strings, and grader assertions stay outside this repository."
     },
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader", "calibration_fixture"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader",
+        "calibration_fixture"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
@@ -25,21 +35,42 @@
   "capabilities": {
     "schema_version": 1,
     "primary": "gutenberg_blocks",
-    "secondary": ["theme_site_building"],
-    "criteria": ["parseable_block_markup", "editable_core_blocks", "semantic_block_choice"]
+    "secondary": [
+      "theme_site_building"
+    ],
+    "criteria": [
+      "parseable_block_markup",
+      "editable_core_blocks",
+      "semantic_block_choice"
+    ]
   },
   "rules": {
-    "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
-    "task_specific": ["required_semantic_blocks", "expected_heading_text"]
+    "general": [
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes"
+    ],
+    "task_specific": [
+      "required_semantic_blocks",
+      "expected_heading_text"
+    ]
   },
   "environment": {
     "action_mode": "wordpress",
     "uses_workspace": false,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "wordpress_runtime", "block_editor"],
+    "observation_channels": [
+      "prompt",
+      "wordpress_runtime",
+      "block_editor"
+    ],
     "allowed_tools": [],
     "writable_roots": [],
-    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/"],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "checks/",
+      "task-sets/"
+    ],
     "workspace_template": null,
     "completion_policy": {
       "type": "agent_final_response"
@@ -57,7 +88,10 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "calibrating",
@@ -72,18 +106,22 @@
     },
     "calibration_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline", "block-markup-valid-semantic-blocks-live-model-baseline"],
     "pass_rate_band": "too_easy",
-    "confidence_interval_95": [0, 1],
+    "confidence_interval_95": [
+      0,
+      1
+    ],
     "held_out_private_variants_ready": false,
-    "benchmark_metadata": {
-      "benchmark_version": "0.0.0-pilot.1",
-      "compatibility_group": "block-markup-valid-semantic-blocks",
-      "compatible_with": []
-    },
-    "known_shortcuts": ["keyword_stuffing", "shallow_block_validity"],
+    "known_shortcuts": [
+      "keyword_stuffing",
+      "shallow_block_validity"
+    ],
     "task_contract_level": "wordpress_state_diagnostic",
     "benchmark_blockers": ["diagnostic_contract_only", "missing_cheap_model_baseline", "missing_repeated_attempts", "held_out_private_variants_not_ready", "known_reward_shortcut"]
   },
-  "expected_artifacts": ["wordpress_state", "grader_result"],
+  "expected_artifacts": [
+    "wordpress_state",
+    "grader_result"
+  ],
   "expected": {
     "post_title": "Neighborhood Cookout Plan",
     "required_blocks": [
@@ -99,6 +137,22 @@
     ],
     "forbidden_markup": [
       "shortcodes"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "wp_cli"
+    ],
+    "max_steps": 16,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_editable_blocks",
+      "no_raw_html_or_shortcodes",
+      "required_semantic_blocks",
+      "expected_heading_text"
     ]
   }
 }

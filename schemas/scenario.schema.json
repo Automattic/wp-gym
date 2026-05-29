@@ -15,7 +15,8 @@
     "environment",
     "reward_spec",
     "calibration",
-    "expected_artifacts"
+    "expected_artifacts",
+    "episode_contract"
   ],
   "properties": {
     "schema_version": { "type": "integer", "minimum": 1 },
@@ -355,7 +356,7 @@
     },
     "episode_contract": {
       "type": "object",
-      "description": "Optional issue #80 episode contract metadata for runners that emit canonical traces.",
+      "description": "Canonical episode contract metadata for runners that emit traces.",
       "required": ["schema_version", "allowed_action_types", "max_steps", "setup", "success_checks"],
       "properties": {
         "schema_version": { "const": 1 },

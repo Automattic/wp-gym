@@ -25,7 +25,7 @@
   "scenario": {
     "id": "block-markup-valid-semantic-blocks",
     "version": "fixture-2026-05-28",
-    "sha256": "9b79e516d2c4aa459671e131d307185544aa0bf3d798cfb1dfe8baf61ef05865",
+    "sha256": "525ec6c496bce1b934e3e5170d01169a625bc14d5a7eb7849ea6144be8684c7e",
     "source_path": "scenarios/block-markup/valid-semantic-blocks.json",
     "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
     "task_family": "block-markup"

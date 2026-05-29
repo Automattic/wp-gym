@@ -9,23 +9,50 @@
     "variant_seed": "homepage-source-diagnosis-public-v1",
     "parent_scenario_id": null,
     "artifact_policy": {
-      "public_artifacts": ["prompt", "scenario_manifest", "grader"],
-      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_fixture"
+      ],
       "grader_exposure": "full_public"
     }
   },
   "prompt_file": "../../prompts/wordpress-investigation/homepage-source-diagnosis.md",
   "grader_file": "../../graders/wordpress-investigation/homepage-source-diagnosis.php",
-  "tags": ["wordpress", "investigation", "wp-cli", "site-state", "homepage"],
+  "tags": [
+    "wordpress",
+    "investigation",
+    "wp-cli",
+    "site-state",
+    "homepage"
+  ],
   "capabilities": {
     "schema_version": 1,
     "primary": "cli_operational_tooling",
-    "secondary": ["data_interaction_apis"],
-    "criteria": ["bounded_wp_cli_inspection", "structured_site_state", "evidence_backed_answer"]
+    "secondary": [
+      "data_interaction_apis"
+    ],
+    "criteria": [
+      "bounded_wp_cli_inspection",
+      "structured_site_state",
+      "evidence_backed_answer"
+    ]
   },
   "rules": {
-    "general": ["evidence_backed_wordpress_answer", "bounded_wp_cli_inspection"],
-    "task_specific": ["homepage_option_diagnosis", "static_front_page_remediation"]
+    "general": [
+      "evidence_backed_wordpress_answer",
+      "bounded_wp_cli_inspection"
+    ],
+    "task_specific": [
+      "homepage_option_diagnosis",
+      "static_front_page_remediation"
+    ]
   },
   "limits": {
     "max_turns": 8,
@@ -36,10 +63,23 @@
     "action_mode": "wordpress",
     "uses_workspace": false,
     "reset_fixture": "wordpress-playground-clean-site",
-    "observation_channels": ["prompt", "wordpress_runtime", "terminal_actions"],
-    "allowed_tools": ["run_wp_cli"],
+    "observation_channels": [
+      "prompt",
+      "wordpress_runtime",
+      "terminal_actions"
+    ],
+    "allowed_tools": [
+      "run_wp_cli"
+    ],
     "writable_roots": [],
-    "hidden_paths": ["graders/", "scenarios/", "checks/", "task-sets/", "docs/", "scripts/"],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "checks/",
+      "task-sets/",
+      "docs/",
+      "scripts/"
+    ],
     "workspace_template": null,
     "completion_policy": {
       "type": "agent_final_response"
@@ -57,7 +97,10 @@
   "reward_spec": {
     "type": "terminal_php_grader",
     "success_threshold": 1,
-    "reward_range": [0, 1]
+    "reward_range": [
+      0,
+      1
+    ]
   },
   "calibration": {
     "status": "pilot",
@@ -65,20 +108,54 @@
     "difficulty_band": "easy",
     "headline_score_eligible": false,
     "baseline_result_sets": [],
-    "known_shortcuts": ["guessing_clean_site_defaults", "answer_without_tool_evidence"],
+    "known_shortcuts": [
+      "guessing_clean_site_defaults",
+      "answer_without_tool_evidence"
+    ],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results"]
+    "benchmark_blockers": [
+      "diagnostic_contract_only",
+      "missing_baseline_results"
+    ]
   },
-  "expected_artifacts": ["wordpress_state", "tool_summary", "final_response", "grader_result"],
+  "expected_artifacts": [
+    "wordpress_state",
+    "tool_summary",
+    "final_response",
+    "grader_result"
+  ],
   "expected": {
     "challenge_type": "operational_diagnosis",
-    "required_options": ["show_on_front", "page_on_front"],
-    "required_evidence": ["wp_cli_usage", "option_values", "remediation"],
+    "required_options": [
+      "show_on_front",
+      "page_on_front"
+    ],
+    "required_evidence": [
+      "wp_cli_usage",
+      "option_values",
+      "remediation"
+    ],
     "hidden_criteria": [
       "final answer identifies that show_on_front is posts/latest posts",
       "final answer reports page_on_front as unset or zero",
       "final answer explains that a static page requires setting show_on_front=page and selecting page_on_front",
       "episode evidence shows WP-CLI was used"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "wp_cli"
+    ],
+    "max_steps": 8,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "evidence_backed_wordpress_answer",
+      "bounded_wp_cli_inspection",
+      "homepage_option_diagnosis",
+      "static_front_page_remediation"
     ]
   }
 }

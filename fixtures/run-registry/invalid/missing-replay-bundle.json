@@ -4,7 +4,7 @@
   "registry": { "name": "wp-gym-run-registry", "issue": "https://github.com/Automattic/wp-gym/issues/136", "created_at": "2026-05-28T00:00:00Z" },
   "run": { "id": "fixture-missing-replay-bundle", "actor": "wordpress-task-runner", "completed_at": "2026-05-28T00:01:00Z", "outcome": "passed" },
   "task_set": { "id": "benchmark-readiness-pilot", "version": "fixture-2026-05-28", "sha256": "7307e935896e2c3ae229232c813e1a7f0b28939ebc4096b0e18f24e60a627afd", "source_path": "task-sets/benchmark-readiness-pilot.json", "benchmark_status": "pilot", "headline_score_eligible": false, "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28" },
-  "scenario": { "id": "block-markup-valid-semantic-blocks", "version": "fixture-2026-05-28", "sha256": "9b79e516d2c4aa459671e131d307185544aa0bf3d798cfb1dfe8baf61ef05865", "source_path": "scenarios/block-markup/valid-semantic-blocks.json", "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "task_family": "block-markup" },
+  "scenario": { "id": "block-markup-valid-semantic-blocks", "version": "fixture-2026-05-28", "sha256": "525ec6c496bce1b934e3e5170d01169a625bc14d5a7eb7849ea6144be8684c7e", "source_path": "scenarios/block-markup/valid-semantic-blocks.json", "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "task_family": "block-markup" },
   "runner": { "provider": "openai", "model": "gpt-5.5" },
   "runtime": { "id": "wp-codebox", "artifact_bundle_id": "wp-gym-direct-fixture" },
   "grade_identity": { "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e", "result_sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec", "success": true, "reward": 1, "failure_class": "none" },

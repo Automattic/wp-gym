@@ -252,9 +252,9 @@ A trace is the replayable episode envelope:
 }
 ```
 
-Scenario manifests can also declare matching episode metadata under optional
-`episode_contract` with `allowed_action_types`, `max_steps`, `setup`, and
-`success_checks`. Existing runner artifacts can be mapped by translating tool
+Scenario manifests declare matching episode metadata under `episode_contract`
+with `allowed_action_types`, `max_steps`, `setup`, and `success_checks`.
+Existing runner artifacts can be mapped by translating tool
 calls into actions, runtime outputs into observations, hidden grader output into
 `reward`, and runner diagnostics into `telemetry`. Any artifact that lacks action
 inputs or observation evidence should be treated as a compatibility gap rather
