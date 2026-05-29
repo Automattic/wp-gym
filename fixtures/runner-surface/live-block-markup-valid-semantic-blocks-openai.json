@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "name": "visible-agent-surface",
+    "wp_gym_issue": "https://github.com/Automattic/wp-gym/issues/22",
+    "producer_issue": "https://github.com/Extra-Chill/homeboy-extensions/issues/842",
+    "generated_at": "2026-05-29T13:52:09Z",
+    "redaction_status": "redacted"
+  },
+  "run": {
+    "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/26641080784",
+    "scenario_id": "block-markup-valid-semantic-blocks",
+    "task_set_id": "custom",
+    "runner": "homeboy-extensions-datamachine-agent",
+    "provider": "openai",
+    "model": "gpt-5.5"
+  },
+  "instructions": [
+    {
+      "id": "task-prompt",
+      "source": "metadata.runner_evidence.prompt_surface.prompt",
+      "sha256": "de8c70cee213ef70fea78a895ce15da8cf27a08a650c0322bcba76e50ab25cb2",
+      "excerpt": "Build a Neighborhood Cookout Page with independently editable heading, paragraph, preparation list, and View menu button.",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "The visible user task describes normal WordPress editing requirements and does not mention benchmark, grading, hidden tests, artifacts, or PR mechanics.",
+      "redaction_status": "no_sensitive_values_observed"
+    },
+    {
+      "id": "instruction-sources",
+      "source": "metadata.runner_evidence.prompt_surface.instruction_sources",
+      "sha256": "c53441150adf00819fd6e5621bee5f7bb35c6f57c7c23f9db61020e42bc12366",
+      "excerpt": "bundle:/wordpress/wp-content/plugins/datamachine-task-runner; flow:wordpress-task-runner-flow; agent:wordpress-task-runner",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "The runner exposes generic Data Machine agent provenance only; it does not reveal grader, scenario, or benchmark internals.",
+      "redaction_status": "no_sensitive_values_observed"
+    }
+  ],
+  "tools": [
+    {
+      "id": "required-abilities",
+      "name": "datamachine-runner-required-abilities",
+      "source": "metadata.runner_evidence.tool_surface.required_abilities",
+      "sha256": "996b0010fa53d4d89da17e7e3e51a9bff4a85c676d598c7b1859abfbe2eecd10",
+      "input_schema_sha256": null,
+      "excerpt": "datamachine/import-agent, datamachine/run-flow, datamachine/drain-job",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "These are runner-owned setup operations recorded as evidence; they are not task tools exposed as WordPress editing choices.",
+      "redaction_status": "no_sensitive_values_observed"
+    },
+    {
+      "id": "tool-upsert-post",
+      "name": "upsert_post",
+      "source": "metadata.runner_evidence.tool_surface.audit_summary.events",
+      "sha256": "2867033c12c07d43cbd3eb22e4cf429464e30725b9b117357b3de73f0c6913ef",
+      "input_schema_sha256": null,
+      "excerpt": "Used successfully with parameters redacted.",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "A WordPress content mutation tool is part of the site-content task surface and matches the requested outcome.",
+      "redaction_status": "redacted"
+    },
+    {
+      "id": "tool-create-github-pull-request",
+      "name": "create_github_pull_request",
+      "source": "metadata.runner_evidence.tool_surface.audit_summary.events",
+      "sha256": "14e1cdfccb294c6519ba91d56652d6a0eb8e3d87db95cdb1500cfd082ac5bcc6",
+      "input_schema_sha256": null,
+      "excerpt": "Used successfully with parameters redacted.",
+      "classification": "task_sandbox_interference",
+      "classification_note": "A GitHub PR tool is orchestration language visible in the task tool surface; keep these rows as audit/calibration evidence until the runner can keep PR publication outside the task-facing tool set.",
+      "redaction_status": "redacted"
+    }
+  ],
+  "workspace": {
+    "uses_workspace": false,
+    "allowed_tools": [],
+    "writable_roots": [],
+    "hidden_paths": [],
+    "dirty_state_visible": false,
+    "workspace_ref_sha256": "d717fb0ebb795fa9a229c6ea2773ea467e41a86f9bf1773d2b40ed5154ef7ce1",
+    "captured": {
+      "enabled": false,
+      "changed": false,
+      "diff_redacted": false
+    }
+  },
+  "audit": {
+    "classification_counts": {
+      "acceptable_scaffolding": 4,
+      "task_sandbox_interference": 1,
+      "unknown": 0
+    },
+    "interference_findings": ["github_pr_tool_visible"]
+  },
+  "recommendation": {
+    "minimal_live_run_config": ["disable_datamachine_directives", "scenario_allowed_tools_only", "hide_grader_and_task_metadata", "publish_pr_outside_task_surface"],
+    "producer_status": "producer_artifact_available",
+    "notes": "Homeboy Extensions #842 now emits runner_evidence inside run-results.json. This live row is useful audit evidence, but the PR-publication tool should move outside the task-facing tool surface before rows count as clean benchmark signal. Upstream tracker: https://github.com/Extra-Chill/homeboy-extensions/issues/852"
+  }
+}
