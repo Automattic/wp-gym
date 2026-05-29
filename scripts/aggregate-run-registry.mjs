@@ -1,0 +1,329 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { validateRunRegistryEntry } from './validate-run-registry.mjs';
+
+const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+
+function readJson(file) {
+	return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function writeFile(file, value) {
+	fs.mkdirSync(path.dirname(file), { recursive: true });
+	fs.writeFileSync(file, value);
+}
+
+function repoRelative(file) {
+	return path.relative(root, file).replace(/\\/g, '/');
+}
+
+function collectJsonFiles(input) {
+	const resolved = path.resolve(input);
+	const stat = fs.statSync(resolved);
+	if (stat.isFile()) {
+		return [resolved];
+	}
+	const files = [];
+	for (const entry of fs.readdirSync(resolved, { withFileTypes: true })) {
+		const entryPath = path.join(resolved, entry.name);
+		if (entry.isDirectory()) {
+			files.push(...collectJsonFiles(entryPath));
+		} else if (entry.isFile() && entry.name.endsWith('.json')) {
+			files.push(entryPath);
+		}
+	}
+	return files.sort();
+}
+
+function percent(value) {
+	return `${(value * 100).toFixed(1)}%`;
+}
+
+function confidenceInterval(successes, total) {
+	if (total < 2) {
+		return null;
+	}
+	const rate = successes / total;
+	const margin = 1.96 * Math.sqrt((rate * (1 - rate)) / total);
+	return [Math.max(0, rate - margin), Math.min(1, rate + margin)];
+}
+
+function emptySummary(key = '') {
+	return {
+		key,
+		runs: 0,
+		passed: 0,
+		failed: 0,
+		errored: 0,
+		reward_sum: 0,
+		reward_mean: 0,
+		pass_rate: 0,
+		confidence_interval_95: null,
+		failure_classes: {},
+		failed_checks: {},
+		data_quality_gaps: {},
+	};
+}
+
+function addCount(object, key, amount = 1) {
+	const normalized = key || 'unknown';
+	object[normalized] = (object[normalized] || 0) + amount;
+}
+
+function addEntry(summary, row) {
+	summary.runs += 1;
+	const outcome = row.run?.outcome || 'errored';
+	if (outcome === 'passed') {
+		summary.passed += 1;
+	} else if (outcome === 'failed') {
+		summary.failed += 1;
+	} else {
+		summary.errored += 1;
+	}
+	summary.reward_sum += Number(row.grade_identity?.reward || 0);
+	addCount(summary.failure_classes, row.grade_identity?.failure_class || 'unknown');
+	for (const reason of row.benchmark?.exclusion_reasons || []) {
+		addCount(summary.data_quality_gaps, reason);
+	}
+}
+
+function finalizeSummary(summary) {
+	summary.reward_mean = summary.runs > 0 ? Number((summary.reward_sum / summary.runs).toFixed(4)) : 0;
+	summary.pass_rate = summary.runs > 0 ? Number((summary.passed / summary.runs).toFixed(4)) : 0;
+	summary.confidence_interval_95 = confidenceInterval(summary.passed, summary.runs);
+	delete summary.reward_sum;
+	return summary;
+}
+
+function scopeIncludes(row, scope) {
+	if (scope === 'all') {
+		return true;
+	}
+	if (scope === 'headline') {
+		return row.benchmark?.eligible === true && row.benchmark?.headline_score_eligible === true;
+	}
+	if (scope === 'benchmark') {
+		return row.benchmark?.eligible === true;
+	}
+	return row.task_set?.benchmark_status === 'pilot' || row.calibration?.status === 'pilot' || row.benchmark?.eligible !== true;
+}
+
+function groupBy(rows, keyFn) {
+	const groups = new Map();
+	for (const row of rows) {
+		const key = keyFn(row);
+		if (!groups.has(key)) {
+			groups.set(key, emptySummary(key));
+		}
+		addEntry(groups.get(key), row);
+	}
+	return Object.fromEntries([...groups.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([key, summary]) => [key, finalizeSummary(summary)]));
+}
+
+function rowFailedChecks(row) {
+	const evalArtifactPath = row.eval_artifact?.path_or_url;
+	if (!evalArtifactPath || /^https?:\/\//i.test(evalArtifactPath)) {
+		return [];
+	}
+	const resolved = path.resolve(root, evalArtifactPath);
+	if (!fs.existsSync(resolved)) {
+		return [];
+	}
+	const evalArtifact = readJson(resolved);
+	return (evalArtifact.grader?.checks || [])
+		.filter((check) => check.passed === false)
+		.map((check) => check.id || 'unknown_check');
+}
+
+function aggregate(entries, options) {
+	const rows = [];
+	const rejected = [];
+	for (const file of entries) {
+		const row = readJson(file);
+		const validation = validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: root });
+		const rowSummary = { file: repoRelative(file), ok: validation.ok, compatibility_gaps: validation.compatibility_gaps };
+		if (!validation.ok) {
+			rejected.push(rowSummary);
+			if (!options.includeInvalid) {
+				continue;
+			}
+		}
+		if (!scopeIncludes(row, options.scope)) {
+			continue;
+		}
+		for (const check of rowFailedChecks(row)) {
+			row._failed_checks = [...(row._failed_checks || []), check];
+		}
+		rows.push(row);
+	}
+
+	const overall = finalizeSummary(rows.reduce((summary, row) => {
+		addEntry(summary, row);
+		for (const check of row._failed_checks || []) {
+			addCount(summary.failed_checks, check);
+		}
+		return summary;
+	}, emptySummary('overall')));
+
+	return {
+		schema_version: 1,
+		report: {
+			name: 'wp-gym-run-registry-report',
+			created_at: new Date().toISOString(),
+			scope: options.scope,
+			benchmark_mode: options.benchmarkMode,
+		},
+		inputs: {
+			inspected: entries.length,
+			accepted: rows.length,
+			rejected: rejected.length,
+		},
+		overall,
+		by_provider_model: groupBy(rows, (row) => `${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
+		by_task: groupBy(rows, (row) => row.scenario?.id || 'unknown'),
+		by_task_family: groupBy(rows, (row) => row.scenario?.task_family || 'unknown'),
+		rejected,
+		rows: rows.map((row) => ({
+			run_id: row.run?.id,
+			task_set: row.task_set?.id,
+			scenario: row.scenario?.id,
+			task_family: row.scenario?.task_family,
+			provider: row.runner?.provider,
+			model: row.runner?.model,
+			outcome: row.run?.outcome,
+			reward: row.grade_identity?.reward,
+			failure_class: row.grade_identity?.failure_class,
+			benchmark_eligible: row.benchmark?.eligible,
+			headline_score_eligible: row.benchmark?.headline_score_eligible,
+			exclusion_reasons: row.benchmark?.exclusion_reasons || [],
+			failed_checks: row._failed_checks || [],
+		})),
+	};
+}
+
+function renderTable(headers, rows) {
+	return [
+		`| ${headers.join(' | ')} |`,
+		`| ${headers.map(() => '---').join(' | ')} |`,
+		...rows.map((row) => `| ${row.join(' | ')} |`),
+	].join('\n');
+}
+
+function renderSummaryMap(map) {
+	return Object.values(map).map((summary) => [
+		summary.key,
+		String(summary.runs),
+		percent(summary.pass_rate),
+		String(summary.reward_mean),
+		String(summary.failed),
+		String(summary.errored),
+	]);
+}
+
+function renderMarkdown(report) {
+	const lines = [
+		'# WP Gym Run Registry Report',
+		'',
+		`- **Scope:** \`${report.report.scope}\``,
+		`- **Benchmark mode:** \`${report.report.benchmark_mode}\``,
+		`- **Rows:** ${report.inputs.accepted} accepted / ${report.inputs.inspected} inspected`,
+		`- **Rejected rows:** ${report.inputs.rejected}`,
+		'',
+		'## Overall',
+		'',
+		renderTable(['Runs', 'Pass rate', 'Reward mean', 'Passed', 'Failed', 'Errored'], [[
+			String(report.overall.runs),
+			percent(report.overall.pass_rate),
+			String(report.overall.reward_mean),
+			String(report.overall.passed),
+			String(report.overall.failed),
+			String(report.overall.errored),
+		]]),
+		'',
+		'## Provider / Model',
+		'',
+		renderTable(['Provider/model', 'Runs', 'Pass rate', 'Reward mean', 'Failed', 'Errored'], renderSummaryMap(report.by_provider_model)),
+		'',
+		'## Tasks',
+		'',
+		renderTable(['Task', 'Runs', 'Pass rate', 'Reward mean', 'Failed', 'Errored'], renderSummaryMap(report.by_task)),
+		'',
+		'## Task Families',
+		'',
+		renderTable(['Family', 'Runs', 'Pass rate', 'Reward mean', 'Failed', 'Errored'], renderSummaryMap(report.by_task_family)),
+		'',
+		'## Rows',
+		'',
+		renderTable(['Task', 'Provider/model', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
+			row.scenario || '',
+			`${row.provider || 'unknown'}/${row.model || 'unknown'}`,
+			row.outcome || '',
+			String(row.reward ?? ''),
+			row.failure_class || '',
+			row.headline_score_eligible ? 'yes' : 'no',
+			(row.exclusion_reasons || []).join(', ') || 'none',
+		])),
+	];
+
+	if (report.rejected.length > 0) {
+		lines.push('', '## Data Quality Gaps', '');
+		lines.push(renderTable(['File', 'Gap codes'], report.rejected.map((row) => [row.file, row.compatibility_gaps.map((gap) => gap.code).join(', ')])));
+	}
+
+	return `${lines.join('\n')}\n`;
+}
+
+function parseArgs(argv) {
+	const args = { registry: '', json: '', markdown: '', scope: 'pilot', benchmarkMode: false, includeInvalid: false };
+	for (let index = 0; index < argv.length; index += 1) {
+		const arg = argv[index];
+		if (arg === '--registry' || arg === '--input') {
+			args.registry = argv[++index];
+		} else if (arg === '--json') {
+			args.json = argv[++index];
+		} else if (arg === '--markdown') {
+			args.markdown = argv[++index];
+		} else if (arg === '--scope') {
+			args.scope = argv[++index];
+		} else if (arg === '--benchmark-mode') {
+			args.benchmarkMode = true;
+		} else if (arg === '--include-invalid') {
+			args.includeInvalid = true;
+		} else if (arg === '--help' || arg === '-h') {
+			args.help = true;
+		} else if (!args.registry) {
+			args.registry = arg;
+		} else {
+			throw new Error(`Unknown argument: ${arg}`);
+		}
+	}
+	if (!['pilot', 'benchmark', 'headline', 'all'].includes(args.scope)) {
+		throw new Error('--scope must be one of: pilot, benchmark, headline, all');
+	}
+	return args;
+}
+
+async function main() {
+	const args = parseArgs(process.argv.slice(2));
+	if (args.help || !args.registry) {
+		console.error('Usage: node scripts/aggregate-run-registry.mjs --registry <registry-json-or-dir> [--scope pilot|benchmark|headline|all] [--json <file>] [--markdown <file>] [--benchmark-mode]');
+		process.exit(args.help ? 0 : 2);
+	}
+	const report = aggregate(collectJsonFiles(args.registry), args);
+	const json = `${JSON.stringify(report, null, 2)}\n`;
+	const markdown = renderMarkdown(report);
+	if (args.json) {
+		writeFile(path.resolve(args.json), json);
+	}
+	if (args.markdown) {
+		writeFile(path.resolve(args.markdown), markdown);
+	}
+	if (!args.json && !args.markdown) {
+		console.log(json);
+	}
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+	await main();
+}

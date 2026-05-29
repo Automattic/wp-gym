@@ -145,7 +145,22 @@ Expected live artifacts:
 
 ## Pilot Summary Template
 
-After a live pilot, summarize results in the tracking issue with this table:
+After a live pilot, generate the registry-backed summary first:
+
+```sh
+gh run download <run-id> --repo Automattic/wp-gym --dir artifacts/<run-id>
+npm run run-registry:emit -- \
+  --input artifacts/<run-id> \
+  --output artifacts/<run-id>/wp-gym-run-registry
+npm run run-registry:report -- \
+  --registry artifacts/<run-id>/wp-gym-run-registry/entries \
+  --json artifacts/<run-id>/wp-gym-report.json \
+  --markdown artifacts/<run-id>/wp-gym-report.md \
+  --scope pilot
+```
+
+Post the generated Markdown report in the tracking issue. If a manual summary is
+needed while runner artifacts are still being shaped, use this table:
 
 | Task | Provider/model | Outcome | Reward | Failure class | Failed checks | PR | Replay artifact |
 | --- | --- | --- | --- | --- | --- | --- | --- |

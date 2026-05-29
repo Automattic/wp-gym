@@ -69,6 +69,77 @@ they own, then expose the directory or JSONL stream to comparison tooling. A
 completed run becomes discoverable when its registry entry validates and points to
 the full annotated artifact bundle.
 
+## Emitting Entries
+
+Use the repo-native emitter after downloading live workflow artifacts, or against
+local canonical eval fixtures while shaping the workflow path:
+
+```bash
+npm run run-registry:emit -- \
+  --input artifacts/<workflow-run-id> \
+  --output artifacts/<workflow-run-id>/wp-gym-run-registry
+```
+
+The emitter scans JSON files for a canonical `metadata.eval_artifact`, top-level
+canonical eval artifact, or Homeboy `homeboy.sealed_eval_artifact` wrapper. For
+each recovered row it writes:
+
+- `eval-artifacts/<run>.json`: the canonical `wp-gym` eval artifact projection.
+- `entries/<run>.json`: the durable run registry entry.
+
+When a row does not yet carry a replay reference, pass a local replay bundle for
+fixture or pilot validation:
+
+```bash
+npm run run-registry:emit -- \
+  --input fixtures/eval-artifacts/direct-wp-gym-row.json \
+  --replay fixtures/replay-regrade/replay.zip \
+  --output artifacts/local-registry-smoke
+```
+
+Benchmark-mode emission is fail-closed for live artifact compatibility:
+
+```bash
+npm run run-registry:emit -- \
+  --input artifacts/<workflow-run-id> \
+  --output artifacts/<workflow-run-id>/wp-gym-run-registry \
+  --benchmark-mode
+```
+
+Pilot emission may surface live artifact compatibility gaps while still writing
+non-headline registry entries. Benchmark evidence must clear both live artifact
+validation and registry validation.
+
+## Aggregating Reports
+
+Use the report command to turn validated registry entries into JSON and Markdown:
+
+```bash
+npm run run-registry:report -- \
+  --registry artifacts/<workflow-run-id>/wp-gym-run-registry/entries \
+  --json artifacts/<workflow-run-id>/wp-gym-report.json \
+  --markdown artifacts/<workflow-run-id>/wp-gym-report.md \
+  --scope pilot
+```
+
+Supported scopes:
+
+- `pilot`: diagnostic rows and non-headline evidence.
+- `benchmark`: rows with `benchmark.eligible=true`.
+- `headline`: benchmark rows that are also headline-score eligible.
+- `all`: every valid row.
+
+Headline reports should use benchmark mode:
+
+```bash
+npm run run-registry:report -- \
+  --registry runs/registry/entries \
+  --json reports/headline.json \
+  --markdown reports/headline.md \
+  --scope headline \
+  --benchmark-mode
+```
+
 ## Validation
 
 Run:
