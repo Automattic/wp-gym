@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "completed",
+    "status": "failed - tool_result_failed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -8,206 +8,52 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "workspace_show",
-            "success": true,
-            "turn_count": 1
-        },
-        {
-            "tool_name": "workspace_ls",
-            "success": true,
-            "turn_count": 1
-        },
-        {
-            "tool_name": "workspace_ls",
+            "tool_name": "upsert_post",
             "success": true,
             "turn_count": 2
-        },
-        {
-            "tool_name": "workspace_ls",
-            "success": true,
-            "turn_count": 3
-        },
-        {
-            "tool_name": "wordpress_runtime_ls",
-            "success": true,
-            "turn_count": 3
-        },
-        {
-            "tool_name": "workspace_ls",
-            "success": true,
-            "turn_count": 4
-        },
-        {
-            "tool_name": "wordpress_runtime_ls",
-            "success": true,
-            "turn_count": 4
-        },
-        {
-            "tool_name": "workspace_grep",
-            "success": true,
-            "turn_count": 5
-        },
-        {
-            "tool_name": "workspace_grep",
-            "success": true,
-            "turn_count": 5
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "toolu_01Lz2mv3h6yBDVa5h445Fqsb",
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01FgjPspqLnfXYU9JNvJqzF6",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:15:17+00:00",
-            "ended_at": "2026-05-29T22:15:17+00:00",
-            "duration_ms": 10,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "421c185a0921a7670e1863ea776a6970ef4a60f07fe11fdc769f3f5a133cd04e",
+            "status": "failed",
+            "started_at": "2026-05-29T22:52:18+00:00",
+            "ended_at": "2026-05-29T22:52:18+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "08d83b88a7aed36b21f410018c9b6a8004aede9bdabfb0aa3df7dac037d64736",
+            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+            "output_summary": "Declared blocks content does not contain serialized block comments.",
             "arguments_redacted": {
-                "name": "current-project"
+                "post_type": "page",
+                "slug": "neighborhood-cookout-plan",
+                "title": "Neighborhood Cookout Plan",
+                "content": "## Summer Cookout Plan\n\nJoin your neighbors for a relaxed summer cookout in the community park. We'll fire up the grills, share potluck sides, and enjoy a long afternoon of food, games, and good conversation with the people who live closest to us.\n\n### Preparation Checklist\n\n- Confirm headcount and gather RSVPs from each household\n- Coordinate the grill, drinks, and potluck side dishes\n- Set up tables, seating, and shade in the park by mid-morning\n\n[View menu](#menu)\n"
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "toolu_01FX8dBkVeRKnznVMhHkZWjX",
-            "turn_count": 1,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:15:17+00:00",
-            "ended_at": "2026-05-29T22:15:17+00:00",
-            "duration_ms": 490,
-            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-            "result_sha256": "6e213db64e95134aa3c5ed7db3c7852388f15aed2816b57135dcf6e82f90b913",
-            "arguments_redacted": {
-                "repo": "current-project"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "toolu_01RY6om85vwVE2dTud3Hh5FM",
+            "tool_name": "upsert_post",
+            "tool_call_id": "toolu_01W9L1tVefdP6VMXKYJXyVjA",
             "turn_count": 2,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T22:15:19+00:00",
-            "ended_at": "2026-05-29T22:15:20+00:00",
-            "duration_ms": 439,
-            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-            "result_sha256": "6e213db64e95134aa3c5ed7db3c7852388f15aed2816b57135dcf6e82f90b913",
+            "started_at": "2026-05-29T22:52:26+00:00",
+            "ended_at": "2026-05-29T22:52:26+00:00",
+            "duration_ms": 43,
+            "arguments_sha256": "7fe768085133c31f6d8b0aa11635af4e2f47281aef7f3be409e327b8625eaa14",
+            "result_sha256": "a93dbd872afecf8dcbcb82a5bb93f8c9d6762434c22c034ae0d03ff57372c18b",
             "arguments_redacted": {
-                "repo": "current-project"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "toolu_01UKhhmsKYPfguCYPq3iio5j",
-            "turn_count": 3,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:15:23+00:00",
-            "ended_at": "2026-05-29T22:15:23+00:00",
-            "duration_ms": 456,
-            "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
-            "result_sha256": "981d342ae2a2362ee773437b9f75f57d5968436cc6e09c6ac6cfd1b208729c72",
-            "arguments_redacted": {
-                "repo": "current-project",
-                "path": "."
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "toolu_01TN3bhKPLcgBPbvMbzm1rXi",
-            "turn_count": 3,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:15:23+00:00",
-            "ended_at": "2026-05-29T22:15:23+00:00",
-            "duration_ms": 13,
-            "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
-            "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
-            "arguments_redacted": {
-                "path": "wp-content/plugins"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "toolu_01SnF8DGV2ejpesqoApQhfrV",
-            "turn_count": 4,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:15:26+00:00",
-            "ended_at": "2026-05-29T22:15:26+00:00",
-            "duration_ms": 439,
-            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-            "result_sha256": "6e213db64e95134aa3c5ed7db3c7852388f15aed2816b57135dcf6e82f90b913",
-            "arguments_redacted": {
-                "repo": "current-project"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "toolu_01YRZD33bNAnRGNNfprjMkXW",
-            "turn_count": 4,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:15:26+00:00",
-            "ended_at": "2026-05-29T22:15:26+00:00",
-            "duration_ms": 10,
-            "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
-            "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
-            "arguments_redacted": {
-                "path": "wp-content/plugins"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_grep",
-            "tool_call_id": "toolu_01CPf85CYRcAyP2hM4z3SLP1",
-            "turn_count": 5,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:15:29+00:00",
-            "ended_at": "2026-05-29T22:16:23+00:00",
-            "duration_ms": 53402,
-            "arguments_sha256": "e6d7beabeeb8e0a30b9a9b52c19641b4e59e71db98c2c1323d98726ca486e711",
-            "result_sha256": "fdeb60551f32c9c2152a8e769dc3de2b3ee2771fc28dc9b3f3a4451aea336c26",
-            "arguments_redacted": {
-                "repo": "current-project",
-                "pattern": "wp_abilities_api_init"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_grep",
-            "tool_call_id": "toolu_01RtDgfxPrScwNFXLduqbEyi",
-            "turn_count": 5,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T22:16:23+00:00",
-            "ended_at": "2026-05-29T22:17:15+00:00",
-            "duration_ms": 52563,
-            "arguments_sha256": "ce89e22e6b6a4f73dc11d65e2863c917b1b30cc5f1750a8a0e6c7df6a6cd3811",
-            "result_sha256": "c483e6f00e25a52ddc3fb2675716c92d30d2ef3b7012d988fd6394b4dc7525bc",
-            "arguments_redacted": {
-                "repo": "current-project",
-                "pattern": "wp_register_ability"
+                "post_type": "page",
+                "slug": "neighborhood-cookout-plan",
+                "title": "Neighborhood Cookout Plan",
+                "content_format": "blocks",
+                "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join your neighbors for a relaxed summer cookout in the community park. We'll fire up the grills, share potluck sides, and enjoy a long afternoon of food, games, and good conversation with the people who live closest to us.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Confirm headcount and gather RSVPs from each household</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate the grill, drinks, and potluck side dishes</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up tables, seating, and shade in the park by mid-morning</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->"
             }
         }
     ],
@@ -217,7 +63,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "9ea1e72951a859f85375b6fb84831a14bd32f90a036759550d563313688cacab",
+            "sha256": "e4066c89be0ecdb2c82176904377a07821b89308b1b9399d9d6505e3915091a6",
             "bounded": true,
             "redacted": true
         }
@@ -228,11 +74,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:45543/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "1a85b7ae1c8570a03df15cf4508335b1a75a7b2c48e67667df2d4c2b04975c3d",
-            "payload_sha256": "f18f9d0831704d1b95aab89ea3c5c595d9d6043579f340f414ccc054f354137c",
-            "bytes": 8298,
-            "written_at": "2026-05-29T22:17:17+00:00"
+            "url": "http://127.0.0.1:46521/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "b0ae2d0ea137321bb5d60380048730c6ce300d6bc3b71e546f0d858a4c968aed",
+            "payload_sha256": "1d6ef8f7109dba507d7e8fd88cc6ba89137d9c017237d5c1c9fc3bac013f6a96",
+            "bytes": 4226,
+            "written_at": "2026-05-29T22:52:31+00:00"
         }
     },
     "transcript_artifact": null,
@@ -242,197 +88,69 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "completed",
+            "job_status": "failed - tool_result_failed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 22:15:14",
-            "completed_at": "2026-05-29 22:17:17"
+            "created_at": "2026-05-29 22:52:11",
+            "completed_at": "2026-05-29 22:52:31"
         },
-        "trace_count": 9,
-        "entries_emitted": 9,
+        "trace_count": 2,
+        "entries_emitted": 2,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "toolu_01Lz2mv3h6yBDVa5h445Fqsb",
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01FgjPspqLnfXYU9JNvJqzF6",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:15:17+00:00",
-                "ended_at": "2026-05-29T22:15:17+00:00",
-                "duration_ms": 10,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "421c185a0921a7670e1863ea776a6970ef4a60f07fe11fdc769f3f5a133cd04e",
+                "status": "failed",
+                "started_at": "2026-05-29T22:52:18+00:00",
+                "ended_at": "2026-05-29T22:52:18+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "08d83b88a7aed36b21f410018c9b6a8004aede9bdabfb0aa3df7dac037d64736",
+                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
+                "output_summary": "Declared blocks content does not contain serialized block comments.",
                 "arguments_redacted": {
-                    "name": "current-project"
+                    "post_type": "page",
+                    "slug": "neighborhood-cookout-plan",
+                    "title": "Neighborhood Cookout Plan",
+                    "content": "## Summer Cookout Plan\n\nJoin your neighbors for a relaxed summer cookout in the community park. We'll fire up the grills, share potluck sides, and enjoy a long afternoon of food, games, and good conversation with the people who live closest to us.\n\n### Preparation Checklist\n\n- Confirm headcount and gather RSVPs from each household\n- Coordinate the grill, drinks, and potluck side dishes\n- Set up tables, seating, and shade in the park by mid-morning\n\n[View menu](#menu)\n"
                 },
-                "entry_sha256": "968ee609cb644ad9162fda7f5027d4345a73a6cbf023e349e8c148772de991a9"
+                "entry_sha256": "69ff1dc99bc6569353b99a527572ca5f3afff225cc86639019a4fb2b0e755367"
             },
             {
                 "index": 1,
                 "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "toolu_01FX8dBkVeRKnznVMhHkZWjX",
-                "turn_count": 1,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:15:17+00:00",
-                "ended_at": "2026-05-29T22:15:17+00:00",
-                "duration_ms": 490,
-                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-                "result_sha256": "6e213db64e95134aa3c5ed7db3c7852388f15aed2816b57135dcf6e82f90b913",
-                "arguments_redacted": {
-                    "repo": "current-project"
-                },
-                "entry_sha256": "5a10b189a679a85a60ef105d55d9e2e8088b1c44bc516da97166b318977b9ece"
-            },
-            {
-                "index": 2,
-                "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "toolu_01RY6om85vwVE2dTud3Hh5FM",
+                "tool_name": "upsert_post",
+                "tool_call_id": "toolu_01W9L1tVefdP6VMXKYJXyVjA",
                 "turn_count": 2,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T22:15:19+00:00",
-                "ended_at": "2026-05-29T22:15:20+00:00",
-                "duration_ms": 439,
-                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-                "result_sha256": "6e213db64e95134aa3c5ed7db3c7852388f15aed2816b57135dcf6e82f90b913",
+                "started_at": "2026-05-29T22:52:26+00:00",
+                "ended_at": "2026-05-29T22:52:26+00:00",
+                "duration_ms": 43,
+                "arguments_sha256": "7fe768085133c31f6d8b0aa11635af4e2f47281aef7f3be409e327b8625eaa14",
+                "result_sha256": "a93dbd872afecf8dcbcb82a5bb93f8c9d6762434c22c034ae0d03ff57372c18b",
                 "arguments_redacted": {
-                    "repo": "current-project"
+                    "post_type": "page",
+                    "slug": "neighborhood-cookout-plan",
+                    "title": "Neighborhood Cookout Plan",
+                    "content_format": "blocks",
+                    "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join your neighbors for a relaxed summer cookout in the community park. We'll fire up the grills, share potluck sides, and enjoy a long afternoon of food, games, and good conversation with the people who live closest to us.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Confirm headcount and gather RSVPs from each household</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate the grill, drinks, and potluck side dishes</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up tables, seating, and shade in the park by mid-morning</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->"
                 },
-                "entry_sha256": "91e66bbedde1f5c38417a39ef1ec8c438fd2a8653358a655d8606671e635bc09"
-            },
-            {
-                "index": 3,
-                "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "toolu_01UKhhmsKYPfguCYPq3iio5j",
-                "turn_count": 3,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:15:23+00:00",
-                "ended_at": "2026-05-29T22:15:23+00:00",
-                "duration_ms": 456,
-                "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
-                "result_sha256": "981d342ae2a2362ee773437b9f75f57d5968436cc6e09c6ac6cfd1b208729c72",
-                "arguments_redacted": {
-                    "repo": "current-project",
-                    "path": "."
-                },
-                "entry_sha256": "6736b10da6fe0fc3d584fc5848f0840f94f48f52380ac1ae2e7a4787736f2805"
-            },
-            {
-                "index": 4,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "toolu_01TN3bhKPLcgBPbvMbzm1rXi",
-                "turn_count": 3,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:15:23+00:00",
-                "ended_at": "2026-05-29T22:15:23+00:00",
-                "duration_ms": 13,
-                "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
-                "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
-                "arguments_redacted": {
-                    "path": "wp-content/plugins"
-                },
-                "entry_sha256": "e7aedb2ab54011fb77097c54b8d1372c0bc7aa5c2b8fa7718f55489ff3c2d6f6"
-            },
-            {
-                "index": 5,
-                "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "toolu_01SnF8DGV2ejpesqoApQhfrV",
-                "turn_count": 4,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:15:26+00:00",
-                "ended_at": "2026-05-29T22:15:26+00:00",
-                "duration_ms": 439,
-                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
-                "result_sha256": "6e213db64e95134aa3c5ed7db3c7852388f15aed2816b57135dcf6e82f90b913",
-                "arguments_redacted": {
-                    "repo": "current-project"
-                },
-                "entry_sha256": "ba2aed5d5f764e34c6d2189984aa66dee185c232704b982231f35d8eb54acc7e"
-            },
-            {
-                "index": 6,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "toolu_01YRZD33bNAnRGNNfprjMkXW",
-                "turn_count": 4,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:15:26+00:00",
-                "ended_at": "2026-05-29T22:15:26+00:00",
-                "duration_ms": 10,
-                "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
-                "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
-                "arguments_redacted": {
-                    "path": "wp-content/plugins"
-                },
-                "entry_sha256": "8b9de298880f9b6750df6abecfd9fe30756d5a75a4cee71e31a63317c9df632f"
-            },
-            {
-                "index": 7,
-                "schema_version": 1,
-                "tool_name": "workspace_grep",
-                "tool_call_id": "toolu_01CPf85CYRcAyP2hM4z3SLP1",
-                "turn_count": 5,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:15:29+00:00",
-                "ended_at": "2026-05-29T22:16:23+00:00",
-                "duration_ms": 53402,
-                "arguments_sha256": "e6d7beabeeb8e0a30b9a9b52c19641b4e59e71db98c2c1323d98726ca486e711",
-                "result_sha256": "fdeb60551f32c9c2152a8e769dc3de2b3ee2771fc28dc9b3f3a4451aea336c26",
-                "arguments_redacted": {
-                    "repo": "current-project",
-                    "pattern": "wp_abilities_api_init"
-                },
-                "entry_sha256": "8a777852ae4bb3860c4ead85574fc9186bd378d543656f85d350467d81b3282e"
-            },
-            {
-                "index": 8,
-                "schema_version": 1,
-                "tool_name": "workspace_grep",
-                "tool_call_id": "toolu_01RtDgfxPrScwNFXLduqbEyi",
-                "turn_count": 5,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T22:16:23+00:00",
-                "ended_at": "2026-05-29T22:17:15+00:00",
-                "duration_ms": 52563,
-                "arguments_sha256": "ce89e22e6b6a4f73dc11d65e2863c917b1b30cc5f1750a8a0e6c7df6a6cd3811",
-                "result_sha256": "c483e6f00e25a52ddc3fb2675716c92d30d2ef3b7012d988fd6394b4dc7525bc",
-                "arguments_redacted": {
-                    "repo": "current-project",
-                    "pattern": "wp_register_ability"
-                },
-                "entry_sha256": "b9676000bdf5ac6459ce24e3cda25e4fb58181d9f3cade8b948858f6f74f4474"
+                "entry_sha256": "4ecac454fedea7b5c7baa6f084f72db7aaccf298eed01070613115344feb5c5b"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "9ea1e72951a859f85375b6fb84831a14bd32f90a036759550d563313688cacab"
+        "sha256": "e4066c89be0ecdb2c82176904377a07821b89308b1b9399d9d6505e3915091a6"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
