@@ -10,32 +10,17 @@
         {
             "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 4
-        },
-        {
-            "tool_name": "wordpress_runtime_ls",
-            "success": true,
-            "turn_count": 5
-        },
-        {
-            "tool_name": "wordpress_runtime_ls",
-            "success": true,
-            "turn_count": 7
-        },
-        {
-            "tool_name": "wordpress_runtime_ls",
-            "success": true,
-            "turn_count": 9
-        },
-        {
-            "tool_name": "wordpress_runtime_ls",
-            "success": true,
             "turn_count": 10
         },
         {
             "tool_name": "wordpress_runtime_ls",
             "success": true,
             "turn_count": 11
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 12
         },
         {
             "tool_name": "wordpress_runtime_ls",
@@ -55,7 +40,12 @@
         {
             "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 20
+            "turn_count": 17
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 19
         },
         {
             "tool_name": "wordpress_runtime_ls",
@@ -65,26 +55,80 @@
         {
             "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 22
+            "turn_count": 23
         },
         {
             "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 24
+            "turn_count": 25
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
             "tool_name": "workspace_show",
-            "tool_call_id": "call_MaEjS1JyI1PttoI0knOo5ssS",
+            "tool_call_id": "call_RfBsdzFv3Z7PSLEQZTe7E6v4",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T18:53:23+00:00",
-            "ended_at": "2026-05-29T18:53:23+00:00",
-            "duration_ms": 9,
+            "started_at": "2026-05-29T19:03:27+00:00",
+            "ended_at": "2026-05-29T19:03:27+00:00",
+            "duration_ms": 8,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_pUVxa39KaqE9fTqmqoGxLZfp",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T19:03:28+00:00",
+            "ended_at": "2026-05-29T19:03:28+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_L6NrPPsGGSBjRxCeYM5DPdiD",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T19:03:31+00:00",
+            "ended_at": "2026-05-29T19:03:31+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_BZkZW6mHKPYPb8ITq7WBTnBa",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T19:03:33+00:00",
+            "ended_at": "2026-05-29T19:03:33+00:00",
+            "duration_ms": 2,
             "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
             "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
             "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
@@ -95,13 +139,13 @@
         {
             "schema_version": 1,
             "tool_name": "workspace_ls",
-            "tool_call_id": "call_tpm1Qe6aFhPNyFnLqvoQBBF6",
-            "turn_count": 2,
+            "tool_call_id": "call_BsAGteZAv5LlKPw1j8C2kvKo",
+            "turn_count": 5,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T18:53:26+00:00",
-            "ended_at": "2026-05-29T18:53:26+00:00",
+            "started_at": "2026-05-29T19:03:35+00:00",
+            "ended_at": "2026-05-29T19:03:35+00:00",
             "duration_ms": 3,
             "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
             "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
@@ -114,13 +158,67 @@
         {
             "schema_version": 1,
             "tool_name": "workspace_show",
-            "tool_call_id": "call_8xVPsR9qNb2BoMQa9vIyAYuZ",
-            "turn_count": 3,
+            "tool_call_id": "call_ox175sMKnjhZlIavKhdhmrk9",
+            "turn_count": 6,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T18:53:29+00:00",
-            "ended_at": "2026-05-29T18:53:29+00:00",
+            "started_at": "2026-05-29T19:03:38+00:00",
+            "ended_at": "2026-05-29T19:03:38+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_9u1dGbCYbQmdCfRc6kkfMfPM",
+            "turn_count": 7,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T19:03:41+00:00",
+            "ended_at": "2026-05-29T19:03:41+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_r3sVGLeHDDlcUdz3nvJFR2IG",
+            "turn_count": 8,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T19:03:43+00:00",
+            "ended_at": "2026-05-29T19:03:43+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_1huDNqiqbLNRYZvQeIQ1tJXX",
+            "turn_count": 9,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T19:03:46+00:00",
+            "ended_at": "2026-05-29T19:03:46+00:00",
             "duration_ms": 3,
             "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
             "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
@@ -132,13 +230,13 @@
         {
             "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_snkuLWpVtaDTKAiiC74QZZFX",
-            "turn_count": 4,
+            "tool_call_id": "call_W8Nrfrrc04V7CEbRj9jTThxd",
+            "turn_count": 10,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:53:34+00:00",
-            "ended_at": "2026-05-29T18:53:34+00:00",
+            "started_at": "2026-05-29T19:03:50+00:00",
+            "ended_at": "2026-05-29T19:03:50+00:00",
             "duration_ms": 7,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
@@ -150,122 +248,14 @@
         {
             "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_Sqhf6SgUgpzI3o97EJ4VtNpM",
-            "turn_count": 5,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:53:38+00:00",
-            "ended_at": "2026-05-29T18:53:38+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-            "arguments_redacted": {
-                "path": "wp-content/plugins",
-                "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_8ECjXQQaf57ckRltsKXI2VSV",
-            "turn_count": 6,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T18:53:40+00:00",
-            "ended_at": "2026-05-29T18:53:40+00:00",
-            "duration_ms": 2,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-            "arguments_redacted": {
-                "name": "current-project"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_wxzGlb20tW7dnBQEMZ1JoFOq",
-            "turn_count": 7,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:53:43+00:00",
-            "ended_at": "2026-05-29T18:53:43+00:00",
-            "duration_ms": 2,
-            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-            "arguments_redacted": {
-                "path": "wp-content/plugins",
-                "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_31XSrLnOKigjQF0koi94VIqW",
-            "turn_count": 8,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T18:53:47+00:00",
-            "ended_at": "2026-05-29T18:53:47+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-            "arguments_redacted": {
-                "name": "current-project"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_JMdbIh6CLivTR8VkCfW3OC3s",
-            "turn_count": 9,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:53:51+00:00",
-            "ended_at": "2026-05-29T18:53:51+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-            "arguments_redacted": {
-                "path": "wp-content/plugins",
-                "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_UVS61hJaAhjohTngK95w8tKp",
-            "turn_count": 10,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:53:54+00:00",
-            "ended_at": "2026-05-29T18:53:54+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-            "arguments_redacted": {
-                "path": "wp-content/plugins",
-                "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_LKqXRs98LfsvLBbf1NERwDXQ",
+            "tool_call_id": "call_IzWRreLqvcDg9wPnHE1hb5Lm",
             "turn_count": 11,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:53:57+00:00",
-            "ended_at": "2026-05-29T18:53:57+00:00",
-            "duration_ms": 4,
+            "started_at": "2026-05-29T19:03:53+00:00",
+            "ended_at": "2026-05-29T19:03:53+00:00",
+            "duration_ms": 3,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
             "arguments_redacted": {
@@ -275,33 +265,33 @@
         },
         {
             "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_sedaWO29UBAzt79vWJdJCfrA",
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_5UWW1MBZPRWvWFOF0MSLrpzZ",
             "turn_count": 12,
             "actor": "agent",
             "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T18:54:02+00:00",
-            "ended_at": "2026-05-29T18:54:02+00:00",
+            "status": "success",
+            "started_at": "2026-05-29T19:03:57+00:00",
+            "ended_at": "2026-05-29T19:03:57+00:00",
             "duration_ms": 2,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
             "arguments_redacted": {
-                "name": "current-project"
+                "path": "wp-content/plugins",
+                "max_entries": 200
             }
         },
         {
             "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_MeGrACWfCjreERMzOegxJlIP",
+            "tool_call_id": "call_XvzvRQcJFJg3pvNnJplKrGuR",
             "turn_count": 13,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:54:05+00:00",
-            "ended_at": "2026-05-29T18:54:05+00:00",
-            "duration_ms": 3,
+            "started_at": "2026-05-29T19:04:00+00:00",
+            "ended_at": "2026-05-29T19:04:00+00:00",
+            "duration_ms": 2,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
             "arguments_redacted": {
@@ -312,14 +302,14 @@
         {
             "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_rPO0n0yEXtGFlI8x1T6wLk5M",
+            "tool_call_id": "call_A3orlGCkvY57WPvCLfsODdlW",
             "turn_count": 14,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:54:08+00:00",
-            "ended_at": "2026-05-29T18:54:08+00:00",
-            "duration_ms": 3,
+            "started_at": "2026-05-29T19:04:04+00:00",
+            "ended_at": "2026-05-29T19:04:04+00:00",
+            "duration_ms": 2,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
             "arguments_redacted": {
@@ -330,50 +320,32 @@
         {
             "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_LAvbqkDCgiIzSFz1fzPhAYi4",
+            "tool_call_id": "call_zqf106gXKOOlbagEWf1fkHvb",
             "turn_count": 15,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:54:13+00:00",
-            "ended_at": "2026-05-29T18:54:13+00:00",
+            "started_at": "2026-05-29T19:04:10+00:00",
+            "ended_at": "2026-05-29T19:04:10+00:00",
             "duration_ms": 3,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
             "arguments_redacted": {
                 "path": "wp-content/plugins",
                 "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_gDhqtkvfcfKtQTXuvcxXgsIP",
-            "turn_count": 16,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T18:54:15+00:00",
-            "ended_at": "2026-05-29T18:54:15+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-            "arguments_redacted": {
-                "name": "current-project"
             }
         },
         {
             "schema_version": 1,
             "tool_name": "workspace_ls",
-            "tool_call_id": "call_PgSNYoVa7msvFTHMxfRclzWH",
-            "turn_count": 17,
+            "tool_call_id": "call_KA5oO0DDMFQqFBzuZYHPyafg",
+            "turn_count": 16,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T18:54:18+00:00",
-            "ended_at": "2026-05-29T18:54:18+00:00",
-            "duration_ms": 2,
+            "started_at": "2026-05-29T19:04:13+00:00",
+            "ended_at": "2026-05-29T19:04:13+00:00",
+            "duration_ms": 3,
             "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
             "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
             "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
@@ -384,50 +356,51 @@
         },
         {
             "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_OYPVJnK4i7No7FCCjcttz6PY",
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_1waodSGgcArOTlzUDVT3KBG8",
+            "turn_count": 17,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T19:04:17+00:00",
+            "ended_at": "2026-05-29T19:04:17+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_git_status",
+            "tool_call_id": "call_m5341Lx5G5C7dCSgdA5TtIN7",
             "turn_count": 18,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T18:54:23+00:00",
-            "ended_at": "2026-05-29T18:54:23+00:00",
+            "started_at": "2026-05-29T19:04:20+00:00",
+            "ended_at": "2026-05-29T19:04:20+00:00",
             "duration_ms": 3,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+            "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
             "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "name": "current-project"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_JusA8iVMMKqw6TbSMPQqNJfr",
-            "turn_count": 19,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T18:54:28+00:00",
-            "ended_at": "2026-05-29T18:54:28+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "ec0307801764922d97556b2663a27eae5a3db1c9a65a59eca5de4a70da30289e",
-            "result_sha256": "a0ac59210e69e8750ed174a3b1af9fcf6826bf5d9bec6889ce9aeb646feafee4",
-            "output_summary": "Remote workspace repository \".\" is not registered. Call workspace_clone first.",
-            "arguments_redacted": {
-                "name": "."
+                "name": "current-project",
+                "repo": "current-project"
             }
         },
         {
             "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_Vnk7raF5Sr7C4NOv7ODZVlqp",
-            "turn_count": 20,
+            "tool_call_id": "call_GElzdxtkAzMExnKIPgO0sQQT",
+            "turn_count": 19,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:54:33+00:00",
-            "ended_at": "2026-05-29T18:54:33+00:00",
+            "started_at": "2026-05-29T19:04:26+00:00",
+            "ended_at": "2026-05-29T19:04:26+00:00",
             "duration_ms": 3,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
@@ -438,15 +411,34 @@
         },
         {
             "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_sEnu1GWpETbCxMjEmI5NoLti",
+            "turn_count": 20,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T19:04:30+00:00",
+            "ended_at": "2026-05-29T19:04:30+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": ""
+            }
+        },
+        {
+            "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_uzrteDYRJMkuOsow8okIrBq2",
+            "tool_call_id": "call_TcHSThtaBGJeDsWFN7HMWL7L",
             "turn_count": 21,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:54:41+00:00",
-            "ended_at": "2026-05-29T18:54:41+00:00",
-            "duration_ms": 3,
+            "started_at": "2026-05-29T19:04:34+00:00",
+            "ended_at": "2026-05-29T19:04:34+00:00",
+            "duration_ms": 2,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
             "arguments_redacted": {
@@ -456,32 +448,14 @@
         },
         {
             "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_vPSTai6eDfmzZXqsnS85UTCt",
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_5vYgUAbSddhiHTvyYfe9JitF",
             "turn_count": 22,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:54:44+00:00",
-            "ended_at": "2026-05-29T18:54:44+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-            "arguments_redacted": {
-                "path": "wp-content/plugins",
-                "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_heDKyp8CNCL6ceRSVL3fWoQp",
-            "turn_count": 23,
-            "actor": "agent",
-            "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T18:54:47+00:00",
-            "ended_at": "2026-05-29T18:54:47+00:00",
+            "started_at": "2026-05-29T19:04:40+00:00",
+            "ended_at": "2026-05-29T19:04:40+00:00",
             "duration_ms": 3,
             "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
             "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
@@ -493,14 +467,14 @@
         {
             "schema_version": 1,
             "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_b16Pj3yxTDNNIE78yF0fbkP2",
-            "turn_count": 24,
+            "tool_call_id": "call_3wp2CVfY9OGUZCVIbLILHvOA",
+            "turn_count": 23,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:54:51+00:00",
-            "ended_at": "2026-05-29T18:54:51+00:00",
-            "duration_ms": 3,
+            "started_at": "2026-05-29T19:04:45+00:00",
+            "ended_at": "2026-05-29T19:04:45+00:00",
+            "duration_ms": 2,
             "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
             "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
             "arguments_redacted": {
@@ -510,20 +484,39 @@
         },
         {
             "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_bXWVMgZGSmyCcl2OLH1vzAHk",
-            "turn_count": 25,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_8BQeoi6F4tZ8vwUUk7PK4olC",
+            "turn_count": 24,
             "actor": "agent",
             "source": "data_machine",
             "status": "failed",
-            "started_at": "2026-05-29T18:54:55+00:00",
-            "ended_at": "2026-05-29T18:54:55+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "started_at": "2026-05-29T19:04:49+00:00",
+            "ended_at": "2026-05-29T19:04:49+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "73f331f9b4653180dea98db1cb297b87b2f69c82c845bfa8601e7d0cddc4c6a4",
+            "result_sha256": "d3e93db472374868a632f21d7c658852d7d964af878e35285379018d015a6e8c",
+            "output_summary": "Remote workspace repository \".\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "name": "current-project"
+                "repo": ".",
+                "path": ""
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "call_tWT0h5OoID1t8Pgi9aLGH51c",
+            "turn_count": 25,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T19:04:54+00:00",
+            "ended_at": "2026-05-29T19:04:54+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "arguments_redacted": {
+                "path": "wp-content/plugins",
+                "max_entries": 200
             }
         }
     ],
@@ -533,7 +526,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "9cab0502f4120e287756c0f4536143e84263ba9c2244073a46433493088ecbc0",
+            "sha256": "5f4b5c0d6a645dfaf66e6af91b6a138e647005487b3d9035efde3b09a202b72a",
             "bounded": true,
             "redacted": true
         }
@@ -544,11 +537,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:36459/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "d40c664feacf6db6616c4d6518b026c8fc570bffaa7635dfe4151abfb245a791",
-            "payload_sha256": "b4f73f77ed8a69a40f96f4ec8756bdb5497dac34c6176cf9634770560a096225",
-            "bytes": 23655,
-            "written_at": "2026-05-29T18:54:55+00:00"
+            "url": "http://127.0.0.1:41421/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "29ecb44cb3d21d4f722677d534dd48d2b996d89e9bab7c941119bff7860f700c",
+            "payload_sha256": "8d26c81dda34e25f08fdabdb6b4b79286e760c76fe88be363989b93379b052da",
+            "bytes": 23920,
+            "written_at": "2026-05-29T19:04:54+00:00"
         }
     },
     "transcript_artifact": null,
@@ -564,8 +557,8 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 18:53:20",
-            "completed_at": "2026-05-29 18:54:55"
+            "created_at": "2026-05-29 19:03:24",
+            "completed_at": "2026-05-29 19:04:54"
         },
         "trace_count": 25,
         "entries_emitted": 25,
@@ -575,33 +568,93 @@
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "workspace_show",
-                "tool_call_id": "call_MaEjS1JyI1PttoI0knOo5ssS",
+                "tool_call_id": "call_RfBsdzFv3Z7PSLEQZTe7E6v4",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "failed",
-                "started_at": "2026-05-29T18:53:23+00:00",
-                "ended_at": "2026-05-29T18:53:23+00:00",
-                "duration_ms": 9,
+                "started_at": "2026-05-29T19:03:27+00:00",
+                "ended_at": "2026-05-29T19:03:27+00:00",
+                "duration_ms": 8,
                 "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
                 "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
                 "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
                     "name": "current-project"
                 },
-                "entry_sha256": "7daf53fc0e8cccbd3b50dce319293db56159619ba472250801a438be60d62eb4"
+                "entry_sha256": "19d50866f5614aca66dc4993603230d233eeac26e69cdd60802e86e71065ee54"
             },
             {
                 "index": 1,
                 "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "call_tpm1Qe6aFhPNyFnLqvoQBBF6",
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_pUVxa39KaqE9fTqmqoGxLZfp",
                 "turn_count": 2,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "failed",
-                "started_at": "2026-05-29T18:53:26+00:00",
-                "ended_at": "2026-05-29T18:53:26+00:00",
+                "started_at": "2026-05-29T19:03:28+00:00",
+                "ended_at": "2026-05-29T19:03:28+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "ef24ca387f35c95ff7fa53446236dda0c2b29da84e4f280e92838e4f91a7beb9"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_L6NrPPsGGSBjRxCeYM5DPdiD",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:03:31+00:00",
+                "ended_at": "2026-05-29T19:03:31+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "97ab9954678921fa8d808f9ce78725fb217fae6533f227dadcdaef7aa3b1d8cf"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_BZkZW6mHKPYPb8ITq7WBTnBa",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:03:33+00:00",
+                "ended_at": "2026-05-29T19:03:33+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "932c2b3ae5c4aa86e59c87b9c9b452bcf82aa8a6ca2856940af15dfcde5a8c40"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_BsAGteZAv5LlKPw1j8C2kvKo",
+                "turn_count": 5,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:03:35+00:00",
+                "ended_at": "2026-05-29T19:03:35+00:00",
                 "duration_ms": 3,
                 "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
                 "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
@@ -610,19 +663,79 @@
                     "repo": "current-project",
                     "path": ""
                 },
-                "entry_sha256": "ee38177cfc183a0000d42b7acd3764d4b40a99a53df4e6ac103dbfb8218d65ac"
+                "entry_sha256": "3373aafba7e9af6c65bf2bdce25ac095d5d79375b977181d50ebb9a984d631ef"
             },
             {
-                "index": 2,
+                "index": 5,
                 "schema_version": 1,
                 "tool_name": "workspace_show",
-                "tool_call_id": "call_8xVPsR9qNb2BoMQa9vIyAYuZ",
-                "turn_count": 3,
+                "tool_call_id": "call_ox175sMKnjhZlIavKhdhmrk9",
+                "turn_count": 6,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "failed",
-                "started_at": "2026-05-29T18:53:29+00:00",
-                "ended_at": "2026-05-29T18:53:29+00:00",
+                "started_at": "2026-05-29T19:03:38+00:00",
+                "ended_at": "2026-05-29T19:03:38+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "d8773a6d2e3f73a1de22e734cab6e89fdbd643f87942fcaccbf612ef572e0e22"
+            },
+            {
+                "index": 6,
+                "schema_version": 1,
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_9u1dGbCYbQmdCfRc6kkfMfPM",
+                "turn_count": 7,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:03:41+00:00",
+                "ended_at": "2026-05-29T19:03:41+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "f433e03d384a2af474feaa4ab7adbde463cc1b5d90c96b95bf44a47da16781ea"
+            },
+            {
+                "index": 7,
+                "schema_version": 1,
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_r3sVGLeHDDlcUdz3nvJFR2IG",
+                "turn_count": 8,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:03:43+00:00",
+                "ended_at": "2026-05-29T19:03:43+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "5295bea9bff13da7a14604899fc695959d34c42ea07c8f4957024939d3c55f58"
+            },
+            {
+                "index": 8,
+                "schema_version": 1,
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_1huDNqiqbLNRYZvQeIQ1tJXX",
+                "turn_count": 9,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:03:46+00:00",
+                "ended_at": "2026-05-29T19:03:46+00:00",
                 "duration_ms": 3,
                 "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
                 "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
@@ -630,19 +743,19 @@
                 "arguments_redacted": {
                     "name": "current-project"
                 },
-                "entry_sha256": "177bda13b529a01f8f2d41e54e4720b5a77fb3043f0bd341242cf656ef65af9f"
+                "entry_sha256": "33fcbc29a9da183eac232619f17e4caa41dea03214de053fe21beb2de93ddd75"
             },
             {
-                "index": 3,
+                "index": 9,
                 "schema_version": 1,
                 "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_snkuLWpVtaDTKAiiC74QZZFX",
-                "turn_count": 4,
+                "tool_call_id": "call_W8Nrfrrc04V7CEbRj9jTThxd",
+                "turn_count": 10,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:53:34+00:00",
-                "ended_at": "2026-05-29T18:53:34+00:00",
+                "started_at": "2026-05-29T19:03:50+00:00",
+                "ended_at": "2026-05-29T19:03:50+00:00",
                 "duration_ms": 7,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
@@ -650,219 +763,99 @@
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "f4442c465ee99d6c18a8ce616d7083a0fa5437af34b60a2e77e2603945d8e14f"
-            },
-            {
-                "index": 4,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_Sqhf6SgUgpzI3o97EJ4VtNpM",
-                "turn_count": 5,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:53:38+00:00",
-                "ended_at": "2026-05-29T18:53:38+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-                "arguments_redacted": {
-                    "path": "wp-content/plugins",
-                    "max_entries": 200
-                },
-                "entry_sha256": "e038cddb9a4aa8a460f1d04e6198544b56a0c5842e57e4d50561e88b734951b5"
-            },
-            {
-                "index": 5,
-                "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_8ECjXQQaf57ckRltsKXI2VSV",
-                "turn_count": 6,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:53:40+00:00",
-                "ended_at": "2026-05-29T18:53:40+00:00",
-                "duration_ms": 2,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-                "arguments_redacted": {
-                    "name": "current-project"
-                },
-                "entry_sha256": "3292d8532ee469601d1eb68a49a049f1709d0ff101413822006198aeaf9b1a77"
-            },
-            {
-                "index": 6,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_wxzGlb20tW7dnBQEMZ1JoFOq",
-                "turn_count": 7,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:53:43+00:00",
-                "ended_at": "2026-05-29T18:53:43+00:00",
-                "duration_ms": 2,
-                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-                "arguments_redacted": {
-                    "path": "wp-content/plugins",
-                    "max_entries": 200
-                },
-                "entry_sha256": "cddde1621cad261679fe8642de1fc337ba953005093c1c99308a2937aa3f9e7f"
-            },
-            {
-                "index": 7,
-                "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_31XSrLnOKigjQF0koi94VIqW",
-                "turn_count": 8,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:53:47+00:00",
-                "ended_at": "2026-05-29T18:53:47+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-                "arguments_redacted": {
-                    "name": "current-project"
-                },
-                "entry_sha256": "dda5e5dbf183a7f1f1182b93e47a2e1c7b8f0b2cd94c3e9a70dc493bf684972b"
-            },
-            {
-                "index": 8,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_JMdbIh6CLivTR8VkCfW3OC3s",
-                "turn_count": 9,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:53:51+00:00",
-                "ended_at": "2026-05-29T18:53:51+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-                "arguments_redacted": {
-                    "path": "wp-content/plugins",
-                    "max_entries": 200
-                },
-                "entry_sha256": "fd0069c2c85491f2dfdee78a4bdde2b27d2c9952feb0db147466f7cddd161118"
-            },
-            {
-                "index": 9,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_UVS61hJaAhjohTngK95w8tKp",
-                "turn_count": 10,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:53:54+00:00",
-                "ended_at": "2026-05-29T18:53:54+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-                "arguments_redacted": {
-                    "path": "wp-content/plugins",
-                    "max_entries": 200
-                },
-                "entry_sha256": "c1e4f3dcb68606a0abdd84849eadf6bc4e76cf8e8471e5219ff934df3deb4d0f"
+                "entry_sha256": "b302d72e1d326bc9693b0d8d92de3dce9b09201c4fec25471312ac5200da840e"
             },
             {
                 "index": 10,
                 "schema_version": 1,
                 "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_LKqXRs98LfsvLBbf1NERwDXQ",
+                "tool_call_id": "call_IzWRreLqvcDg9wPnHE1hb5Lm",
                 "turn_count": 11,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:53:57+00:00",
-                "ended_at": "2026-05-29T18:53:57+00:00",
-                "duration_ms": 4,
+                "started_at": "2026-05-29T19:03:53+00:00",
+                "ended_at": "2026-05-29T19:03:53+00:00",
+                "duration_ms": 3,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
                 "arguments_redacted": {
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "2bc1edfaf98fc030559d3cee9b99532a39a195db83837cc27b875b7b906616b6"
+                "entry_sha256": "c59f34ff4b5fbc75eb37017f4cf2df3194f6e21120ce63b187d23af11ea726a4"
             },
             {
                 "index": 11,
                 "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_sedaWO29UBAzt79vWJdJCfrA",
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_5UWW1MBZPRWvWFOF0MSLrpzZ",
                 "turn_count": 12,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:54:02+00:00",
-                "ended_at": "2026-05-29T18:54:02+00:00",
+                "status": "success",
+                "started_at": "2026-05-29T19:03:57+00:00",
+                "ended_at": "2026-05-29T19:03:57+00:00",
                 "duration_ms": 2,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
                 "arguments_redacted": {
-                    "name": "current-project"
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
                 },
-                "entry_sha256": "a5b2d3d298bb82ce3c4299edb711b6cdf47b9308dd7e10ad45fe7bb3096c4e93"
+                "entry_sha256": "28d0d4cd18d653f08f33b2fde4ef8ac99e86b02ac48550a7906df8e7a59ad533"
             },
             {
                 "index": 12,
                 "schema_version": 1,
                 "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_MeGrACWfCjreERMzOegxJlIP",
+                "tool_call_id": "call_XvzvRQcJFJg3pvNnJplKrGuR",
                 "turn_count": 13,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:54:05+00:00",
-                "ended_at": "2026-05-29T18:54:05+00:00",
-                "duration_ms": 3,
+                "started_at": "2026-05-29T19:04:00+00:00",
+                "ended_at": "2026-05-29T19:04:00+00:00",
+                "duration_ms": 2,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
                 "arguments_redacted": {
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "050288973948e2507d052c54de6b918e78585d1fe24830e352dc01392e337405"
+                "entry_sha256": "54cdc1af4ae8927acf872b94f59be2050a2c8787895a51b613f224f260706d28"
             },
             {
                 "index": 13,
                 "schema_version": 1,
                 "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_rPO0n0yEXtGFlI8x1T6wLk5M",
+                "tool_call_id": "call_A3orlGCkvY57WPvCLfsODdlW",
                 "turn_count": 14,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:54:08+00:00",
-                "ended_at": "2026-05-29T18:54:08+00:00",
-                "duration_ms": 3,
+                "started_at": "2026-05-29T19:04:04+00:00",
+                "ended_at": "2026-05-29T19:04:04+00:00",
+                "duration_ms": 2,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
                 "arguments_redacted": {
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "f26285e03ea8b5f4f75420d2ba791f4d382f4450523139bc8fb6d2e2d9b3c4bc"
+                "entry_sha256": "4f85a315b41a2ccecf77ccab786a86ab856cc0a8408a44743a2658fb9793d005"
             },
             {
                 "index": 14,
                 "schema_version": 1,
                 "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_LAvbqkDCgiIzSFz1fzPhAYi4",
+                "tool_call_id": "call_zqf106gXKOOlbagEWf1fkHvb",
                 "turn_count": 15,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:54:13+00:00",
-                "ended_at": "2026-05-29T18:54:13+00:00",
+                "started_at": "2026-05-29T19:04:10+00:00",
+                "ended_at": "2026-05-29T19:04:10+00:00",
                 "duration_ms": 3,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
@@ -870,40 +863,20 @@
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "0fee37ec2e4fb970a1b413d6cf7a93a36fd3f76824225c16f43a273d6c7e8eaf"
+                "entry_sha256": "39f3897c532f418aa0c7b733130fe659c418c400565565dd6f8e3e6399f53354"
             },
             {
                 "index": 15,
                 "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_gDhqtkvfcfKtQTXuvcxXgsIP",
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_KA5oO0DDMFQqFBzuZYHPyafg",
                 "turn_count": 16,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "failed",
-                "started_at": "2026-05-29T18:54:15+00:00",
-                "ended_at": "2026-05-29T18:54:15+00:00",
+                "started_at": "2026-05-29T19:04:13+00:00",
+                "ended_at": "2026-05-29T19:04:13+00:00",
                 "duration_ms": 3,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-                "arguments_redacted": {
-                    "name": "current-project"
-                },
-                "entry_sha256": "9060237347c460b8c748bf80d7f4edeeeb09dd0906bca9235146d57037a4a422"
-            },
-            {
-                "index": 16,
-                "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "call_PgSNYoVa7msvFTHMxfRclzWH",
-                "turn_count": 17,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:54:18+00:00",
-                "ended_at": "2026-05-29T18:54:18+00:00",
-                "duration_ms": 2,
                 "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
                 "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
                 "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
@@ -911,59 +884,19 @@
                     "repo": "current-project",
                     "path": ""
                 },
-                "entry_sha256": "ec3f35bc8d3a33ad51f245d8a0e8a5afc635f7ec3771a694dbe9485a1579a515"
+                "entry_sha256": "cc968221d0e3a0ae6d4c6b6b7a0e0e13afe788ee6dc3cba6b5143ed8b02c50c8"
             },
             {
-                "index": 17,
-                "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_OYPVJnK4i7No7FCCjcttz6PY",
-                "turn_count": 18,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:54:23+00:00",
-                "ended_at": "2026-05-29T18:54:23+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-                "arguments_redacted": {
-                    "name": "current-project"
-                },
-                "entry_sha256": "d31b3a052e3cbd754f623149fb6f37db947763ebda5eec965ab665cfb80c746c"
-            },
-            {
-                "index": 18,
-                "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_JusA8iVMMKqw6TbSMPQqNJfr",
-                "turn_count": 19,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:54:28+00:00",
-                "ended_at": "2026-05-29T18:54:28+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "ec0307801764922d97556b2663a27eae5a3db1c9a65a59eca5de4a70da30289e",
-                "result_sha256": "a0ac59210e69e8750ed174a3b1af9fcf6826bf5d9bec6889ce9aeb646feafee4",
-                "output_summary": "Remote workspace repository \".\" is not registered. Call workspace_clone first.",
-                "arguments_redacted": {
-                    "name": "."
-                },
-                "entry_sha256": "d98f694ec700f45caa9a337443c7400fe5d09f8d732b993d24d09eb1b62ccebc"
-            },
-            {
-                "index": 19,
+                "index": 16,
                 "schema_version": 1,
                 "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_Vnk7raF5Sr7C4NOv7ODZVlqp",
-                "turn_count": 20,
+                "tool_call_id": "call_1waodSGgcArOTlzUDVT3KBG8",
+                "turn_count": 17,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:54:33+00:00",
-                "ended_at": "2026-05-29T18:54:33+00:00",
+                "started_at": "2026-05-29T19:04:17+00:00",
+                "ended_at": "2026-05-29T19:04:17+00:00",
                 "duration_ms": 3,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
@@ -971,79 +904,162 @@
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "6683878ee24f183d4c5128dc6cc6fa361e4fb7baadbb048d1b683d055a467918"
+                "entry_sha256": "60ccca99b192da151aee1b8345aa6a3b4984454afc4e9797a1486314b6ae1fd9"
+            },
+            {
+                "index": 17,
+                "schema_version": 1,
+                "tool_name": "workspace_git_status",
+                "tool_call_id": "call_m5341Lx5G5C7dCSgdA5TtIN7",
+                "turn_count": 18,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:04:20+00:00",
+                "ended_at": "2026-05-29T19:04:20+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+                "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project",
+                    "repo": "current-project"
+                },
+                "entry_sha256": "f73d3f3002ce9f4ffbc259420efa21b74022502a7281d9ee8ce2220ba27b4b4f"
+            },
+            {
+                "index": 18,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_GElzdxtkAzMExnKIPgO0sQQT",
+                "turn_count": 19,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T19:04:26+00:00",
+                "ended_at": "2026-05-29T19:04:26+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
+                },
+                "entry_sha256": "a0285ed61cc62d9a79619213089024a7e9a9263df6b6c1071713913e4b5f92c1"
+            },
+            {
+                "index": 19,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_sEnu1GWpETbCxMjEmI5NoLti",
+                "turn_count": 20,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:04:30+00:00",
+                "ended_at": "2026-05-29T19:04:30+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": ""
+                },
+                "entry_sha256": "a8f81770a977e14d517e8a67a348a09ffca1c67faaadffdfac10f46bd503b20b"
             },
             {
                 "index": 20,
                 "schema_version": 1,
                 "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_uzrteDYRJMkuOsow8okIrBq2",
+                "tool_call_id": "call_TcHSThtaBGJeDsWFN7HMWL7L",
                 "turn_count": 21,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:54:41+00:00",
-                "ended_at": "2026-05-29T18:54:41+00:00",
-                "duration_ms": 3,
+                "started_at": "2026-05-29T19:04:34+00:00",
+                "ended_at": "2026-05-29T19:04:34+00:00",
+                "duration_ms": 2,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
                 "arguments_redacted": {
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "f2b5baee645959d31543d6f8b2c8ea6f7b59b0e01315541a6056ec1abd425d70"
+                "entry_sha256": "1c52a7b84c00f6f763bb9e9f7af49959bca8d59e50f181a3ec561fa52e4fe24c"
             },
             {
                 "index": 21,
                 "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_vPSTai6eDfmzZXqsnS85UTCt",
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_5vYgUAbSddhiHTvyYfe9JitF",
                 "turn_count": 22,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:54:44+00:00",
-                "ended_at": "2026-05-29T18:54:44+00:00",
+                "status": "failed",
+                "started_at": "2026-05-29T19:04:40+00:00",
+                "ended_at": "2026-05-29T19:04:40+00:00",
                 "duration_ms": 3,
-                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "path": "wp-content/plugins",
-                    "max_entries": 200
+                    "name": "current-project"
                 },
-                "entry_sha256": "17504b89b749e319e60e50a8bb5e3ee1555b975f30fc3d02ff65253f31f1009c"
+                "entry_sha256": "0a784d85151d996741d6bc2cd02b56a18b4f4580028dce07dc2e1558b47464e1"
             },
             {
                 "index": 22,
                 "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_heDKyp8CNCL6ceRSVL3fWoQp",
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_3wp2CVfY9OGUZCVIbLILHvOA",
                 "turn_count": 23,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:54:47+00:00",
-                "ended_at": "2026-05-29T18:54:47+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "status": "success",
+                "started_at": "2026-05-29T19:04:45+00:00",
+                "ended_at": "2026-05-29T19:04:45+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
+                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
                 "arguments_redacted": {
-                    "name": "current-project"
+                    "path": "wp-content/plugins",
+                    "max_entries": 200
                 },
-                "entry_sha256": "0469cc5e4f4fac3c95e9d1619f7dd8055f41879f8c7f1798d58f739dd1717afb"
+                "entry_sha256": "8030c508832c1f49533350d84534b58ab9624025e12f543ba7d21db52295cc2b"
             },
             {
                 "index": 23,
                 "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_b16Pj3yxTDNNIE78yF0fbkP2",
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_8BQeoi6F4tZ8vwUUk7PK4olC",
                 "turn_count": 24,
                 "actor": "agent",
                 "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T19:04:49+00:00",
+                "ended_at": "2026-05-29T19:04:49+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "73f331f9b4653180dea98db1cb297b87b2f69c82c845bfa8601e7d0cddc4c6a4",
+                "result_sha256": "d3e93db472374868a632f21d7c658852d7d964af878e35285379018d015a6e8c",
+                "output_summary": "Remote workspace repository \".\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": ".",
+                    "path": ""
+                },
+                "entry_sha256": "5423df9e7933151fc9e1ad4a97a8c60da9769abd21f5f36e1261ee55f2fb6794"
+            },
+            {
+                "index": 24,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "call_tWT0h5OoID1t8Pgi9aLGH51c",
+                "turn_count": 25,
+                "actor": "agent",
+                "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:54:51+00:00",
-                "ended_at": "2026-05-29T18:54:51+00:00",
+                "started_at": "2026-05-29T19:04:54+00:00",
+                "ended_at": "2026-05-29T19:04:54+00:00",
                 "duration_ms": 3,
                 "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
                 "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
@@ -1051,32 +1067,12 @@
                     "path": "wp-content/plugins",
                     "max_entries": 200
                 },
-                "entry_sha256": "bf4021375aaa50975659ac656bf2b1922d52a8fd5b7f253d174495fef1b2b889"
-            },
-            {
-                "index": 24,
-                "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_bXWVMgZGSmyCcl2OLH1vzAHk",
-                "turn_count": 25,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T18:54:55+00:00",
-                "ended_at": "2026-05-29T18:54:55+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-                "arguments_redacted": {
-                    "name": "current-project"
-                },
-                "entry_sha256": "191042e6415ae45521b04a88f6a84f058dc0823b05111ead78bfc6dc2f15b6d8"
+                "entry_sha256": "5a1b75cc038875991918e72a9e397af0b8a1769c57825e804f445c29afa6f7c3"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "9cab0502f4120e287756c0f4536143e84263ba9c2244073a46433493088ecbc0"
+        "sha256": "5f4b5c0d6a645dfaf66e6af91b6a138e647005487b3d9035efde3b09a202b72a"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
