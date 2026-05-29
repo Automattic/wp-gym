@@ -226,6 +226,13 @@ function aggregate(entries, options) {
 			run_id: row.run?.id,
 			task_set: row.task_set?.id,
 			scenario: row.scenario?.id,
+			held_out_pack: row.held_out ? {
+				pack_id: row.held_out.pack_id,
+				pack_version: row.held_out.pack_version,
+				entry_id: row.held_out.entry_id,
+				public_reference: row.held_out.public_reference,
+				sealed_hashes: row.held_out.sealed_hashes,
+			} : null,
 			task_family: row.scenario?.task_family,
 			provider: row.runner?.provider,
 			model: row.runner?.model,
@@ -312,8 +319,9 @@ function renderMarkdown(report) {
 		'',
 		'## Rows',
 		'',
-		renderTable(['Task', 'Provider/model', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
+		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
 			row.scenario || '',
+			row.held_out_pack?.pack_id || '',
 			`${row.provider || 'unknown'}/${row.model || 'unknown'}`,
 			row.attempt_index ? `${row.attempt_index}/${row.attempt_count || '?'}` : '',
 			row.result_set_id || '',

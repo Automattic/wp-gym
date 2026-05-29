@@ -176,6 +176,37 @@
         }
       },
       "additionalProperties": true
+    },
+    "held_out": {
+      "type": "object",
+      "required": ["pack_id", "pack_version", "entry_id", "scenario_id", "split_membership", "sealed_hashes"],
+      "properties": {
+        "pack_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "pack_version": { "type": "string", "minLength": 1 },
+        "public_reference": { "type": ["string", "null"] },
+        "compatibility_group": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "entry_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "scenario_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "parent_scenario_id": { "type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "variant_family": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "variant_seed": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$" },
+        "split_membership": { "const": "held_out_private" },
+        "public_report_policy": { "enum": ["aggregate_only", "aggregate_plus_hashes"] },
+        "sealed_hashes": {
+          "type": "object",
+          "required": ["scenario_manifest", "prompt", "grader", "setup", "expected_artifacts", "replay_contract"],
+          "properties": {
+            "scenario_manifest": { "$ref": "#/$defs/sha256" },
+            "prompt": { "$ref": "#/$defs/sha256" },
+            "grader": { "$ref": "#/$defs/sha256" },
+            "setup": { "$ref": "#/$defs/sha256" },
+            "expected_artifacts": { "$ref": "#/$defs/sha256" },
+            "replay_contract": { "$ref": "#/$defs/sha256" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
     }
   },
   "$defs": {

@@ -1,6 +1,7 @@
 # Private Held-Out Pack Workflow
 
-Issue: [#165](https://github.com/Automattic/wp-gym/issues/165)
+Issues: [#165](https://github.com/Automattic/wp-gym/issues/165),
+[#204](https://github.com/Automattic/wp-gym/issues/204)
 
 Private held-out packs let `wp-gym` run headline benchmark rows without putting
 private prompts, fixtures, expected strings, screenshots, replay bundles, or
@@ -72,6 +73,13 @@ Validate a private pack manifest without committing private contents:
 node scripts/validate-held-out-packs.mjs --input /path/to/private-pack/manifest.json --require-local-artifacts
 ```
 
+Resolve a private pack without printing private prompts, grader paths, fixture paths,
+or private filesystem roots:
+
+```sh
+node scripts/resolve-held-out-pack.mjs --input /path/to/private-pack/manifest.json --dry-run
+```
+
 The validator checks:
 
 - Manifest schema compatibility.
@@ -102,6 +110,37 @@ A held-out pack can support headline benchmark claims only when:
 - Public reports expose only aggregate outcomes, confidence intervals,
   compatibility metadata, non-sensitive IDs, and sealed hashes.
 
+## Execution
+
+Private execution is opt-in. Supply a private manifest path through
+`WP_GYM_HELD_OUT_PACK` or `HELD_OUT_PACK_MANIFEST`:
+
+```sh
+WP_GYM_HELD_OUT_PACK=/path/to/private-pack/manifest.json \
+  TASK_IDS=private-entry-id \
+  node scripts/resolve-live-run-matrix.mjs --check
+```
+
+Without `GITHUB_OUTPUT`, held-out matrix output is a dry run: it validates and
+resolves rows while replacing private prompt and grader fields with redaction
+sentinels. With `GITHUB_OUTPUT`, the matrix writer emits runner inputs to the
+workflow output file so the private lab can execute the task without printing the
+raw prompt or grader path to stdout.
+
+After a held-out live run, project the result into the run registry and aggregate
+public-safe reports the same way as public runs:
+
+```sh
+node scripts/emit-run-registry.mjs --input /path/to/eval-artifacts --output /path/to/registry --require-entry
+node scripts/aggregate-run-registry.mjs --registry /path/to/registry/entries --scope headline --json /path/to/public-report.json
+```
+
+Held-out registry rows may use `sealed://...` source paths for private task-set
+and scenario manifests. Validators accept those sealed sources when the row keeps
+the corresponding SHA-256 identity and `held_out.sealed_hashes` metadata. Public
+reports include pack IDs, entry IDs, aggregate outcomes, confidence intervals,
+compatibility metadata, and sealed hashes only.
+
 ## Local Behavior
 
 Public validation remains useful without private access: it proves the schema,
@@ -113,3 +152,15 @@ No loader in the public repo assumes a private repo name, artifact host, secret
 manager, CI provider, or Automattic-only infrastructure. Private labs can map the
 manifest to their own storage as long as they preserve the public-safe schema and
 hash/provenance policy.
+
+## Public Fixture Coverage
+
+`npm run held-out-packs:test` creates a synthetic private pack in a temporary
+directory, then verifies the full public-safe path:
+
+- local private pack validation with `--require-local-artifacts` semantics;
+- dry-run resolution without leaking prompt text or private filesystem paths;
+- CI-style `GITHUB_OUTPUT` matrix resolution for live execution;
+- run-registry projection with sealed held-out metadata;
+- aggregate public report output that preserves sealed hashes without private
+  materials.
