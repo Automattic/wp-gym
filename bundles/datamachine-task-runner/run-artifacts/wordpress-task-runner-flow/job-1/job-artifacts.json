@@ -8,26 +8,137 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "upsert_post",
+            "tool_name": "local_search",
             "success": true,
             "turn_count": 1
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 3
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 5
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 7
+        },
+        {
+            "tool_name": "local_search",
+            "success": true,
+            "turn_count": 10
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_qxdgQjoEjV1NOOqM3e5RsFZs",
+            "tool_name": "local_search",
+            "tool_call_id": "call_liANeilxjqmSw6FqR4aef8ei",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:59:31+00:00",
-            "ended_at": "2026-05-29T17:59:32+00:00",
-            "duration_ms": 370,
-            "arguments_sha256": "75874783863db77a2530705ff83e6798d97933dffaf014e2ca67297b09945cbe",
-            "result_sha256": "0d41cad0b68dad2e9a1579887d048cb6962b1bf512b494e924d0e22bdfc9faa5",
-            "arguments_omitted": "redacted_arguments_too_large"
+            "started_at": "2026-05-29T18:00:53+00:00",
+            "ended_at": "2026-05-29T18:00:53+00:00",
+            "duration_ms": 20,
+            "arguments_sha256": "111955d40bd0374b48f2b876bf37f07b52bb5c1991ecf8b4393d92d92850942d",
+            "result_sha256": "30e851b3ffbb62ba08ea874670a47a06a34b9e554ac3df9f77cdc0702decd87e",
+            "arguments_redacted": {
+                "query": "Luma Studio",
+                "post_types": [
+                    "page",
+                    "post"
+                ],
+                "title_only": false
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_tH7iI2fnPbRyupUwvvogXBb5",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T18:01:00+00:00",
+            "ended_at": "2026-05-29T18:01:00+00:00",
+            "duration_ms": 11,
+            "arguments_sha256": "ea0318e30c85f0c39b6c4cd2ce201167bf0cab0cee0b47385d90620a80bebb58",
+            "result_sha256": "67358040634f7ee5ec3a5550d5bc52c8a3e52810407ed50a3493e625f7f8bb9d",
+            "arguments_redacted": {
+                "query": "Luma Studio",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": false
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_J9Cdao861VjfsWhNSPChRkj0",
+            "turn_count": 5,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T18:01:08+00:00",
+            "ended_at": "2026-05-29T18:01:08+00:00",
+            "duration_ms": 8,
+            "arguments_sha256": "10b9e8a1ee56db36f7536bfe0efa00984856b31b9af8fee8e3b5ba7a64b7d793",
+            "result_sha256": "9aa28a72809c8f2b057f42515eb17f886e3b79b061076853cb70a57c013e03c6",
+            "arguments_redacted": {
+                "query": "Luma",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": false
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_vPNUOefwWraYEvbc58DS23lJ",
+            "turn_count": 7,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T18:01:17+00:00",
+            "ended_at": "2026-05-29T18:01:17+00:00",
+            "duration_ms": 4,
+            "arguments_sha256": "e3f053a8bc1e2189481a09394113b82a00e9494189183eb32b3bb7f3cbf6de59",
+            "result_sha256": "58532f392e2adfb8acf3f5357fbefed116ca21d851bdf56bd0c2d8f196bc8d0c",
+            "arguments_redacted": {
+                "query": "Luma Studio",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": true
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "local_search",
+            "tool_call_id": "call_1J91chmtKM5OrTDSjIXrUzLu",
+            "turn_count": 10,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T18:01:34+00:00",
+            "ended_at": "2026-05-29T18:01:34+00:00",
+            "duration_ms": 11,
+            "arguments_sha256": "eac9130c8f62d47d930802694a4105024e3fcf5fbd656ed2df11681eb84d6da9",
+            "result_sha256": "3d714400b2aa949adaa3ea0c81b2a0001231714f629206cd44aee7eedd487bd8",
+            "arguments_redacted": {
+                "query": "brand photography",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": false
+            }
         }
     ],
     "transcript": null,
@@ -36,7 +147,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "69ad99b05d78412f9fe4cd2edcd6755b27bfcc7a0d1689f63d587370c72f4912",
+            "sha256": "0abe58daa4d43c6c8922513daee7638f02a81f91414404ac086990b7a62ae39c",
             "bounded": true,
             "redacted": true
         }
@@ -47,11 +158,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:36397/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "60822ae4bef4f2bc7938b46cbc7a860df7322d123350a6ffe6b64f2af41f79f9",
-            "payload_sha256": "5330c6acb3996638661a08185473fe223ef252a5a32f94fd3ebc150918e38132",
-            "bytes": 1420,
-            "written_at": "2026-05-29T17:59:45+00:00"
+            "url": "http://127.0.0.1:38437/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "c4488bc47e6d139ca65459117a3478192d293978b3b928c60396876ebab47938",
+            "payload_sha256": "e2411161765b27347278a3824d5b96a1343ae4e7e38ae2495a0d59d65dddae5e",
+            "bytes": 5369,
+            "written_at": "2026-05-29T18:01:43+00:00"
         }
     },
     "transcript_artifact": null,
@@ -67,34 +178,133 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:58:33",
-            "completed_at": "2026-05-29 17:59:45"
+            "created_at": "2026-05-29 18:00:48",
+            "completed_at": "2026-05-29 18:01:43"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 5,
+        "entries_emitted": 5,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_qxdgQjoEjV1NOOqM3e5RsFZs",
+                "tool_name": "local_search",
+                "tool_call_id": "call_liANeilxjqmSw6FqR4aef8ei",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:59:31+00:00",
-                "ended_at": "2026-05-29T17:59:32+00:00",
-                "duration_ms": 370,
-                "arguments_sha256": "75874783863db77a2530705ff83e6798d97933dffaf014e2ca67297b09945cbe",
-                "result_sha256": "0d41cad0b68dad2e9a1579887d048cb6962b1bf512b494e924d0e22bdfc9faa5",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "1765b35ced6b43c879a9b73b7b2e78d87f6d51abe38261ce2c120640e33a9f8e"
+                "started_at": "2026-05-29T18:00:53+00:00",
+                "ended_at": "2026-05-29T18:00:53+00:00",
+                "duration_ms": 20,
+                "arguments_sha256": "111955d40bd0374b48f2b876bf37f07b52bb5c1991ecf8b4393d92d92850942d",
+                "result_sha256": "30e851b3ffbb62ba08ea874670a47a06a34b9e554ac3df9f77cdc0702decd87e",
+                "arguments_redacted": {
+                    "query": "Luma Studio",
+                    "post_types": [
+                        "page",
+                        "post"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "c87c604f47c2bb1840c8f8ee21456cd7302b3b73609e3a3618bbc3ea6787daca"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_tH7iI2fnPbRyupUwvvogXBb5",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T18:01:00+00:00",
+                "ended_at": "2026-05-29T18:01:00+00:00",
+                "duration_ms": 11,
+                "arguments_sha256": "ea0318e30c85f0c39b6c4cd2ce201167bf0cab0cee0b47385d90620a80bebb58",
+                "result_sha256": "67358040634f7ee5ec3a5550d5bc52c8a3e52810407ed50a3493e625f7f8bb9d",
+                "arguments_redacted": {
+                    "query": "Luma Studio",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "87bf0a090e3053e0f8ee5881dddf10152f09f050ee5ff597f9162aa6a92a9ea9"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_J9Cdao861VjfsWhNSPChRkj0",
+                "turn_count": 5,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T18:01:08+00:00",
+                "ended_at": "2026-05-29T18:01:08+00:00",
+                "duration_ms": 8,
+                "arguments_sha256": "10b9e8a1ee56db36f7536bfe0efa00984856b31b9af8fee8e3b5ba7a64b7d793",
+                "result_sha256": "9aa28a72809c8f2b057f42515eb17f886e3b79b061076853cb70a57c013e03c6",
+                "arguments_redacted": {
+                    "query": "Luma",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "0fa7c8e10f3e7ee46468f296bd0c9f2397df1c7a7f2e43eff621ef325ca1014e"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_vPNUOefwWraYEvbc58DS23lJ",
+                "turn_count": 7,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T18:01:17+00:00",
+                "ended_at": "2026-05-29T18:01:17+00:00",
+                "duration_ms": 4,
+                "arguments_sha256": "e3f053a8bc1e2189481a09394113b82a00e9494189183eb32b3bb7f3cbf6de59",
+                "result_sha256": "58532f392e2adfb8acf3f5357fbefed116ca21d851bdf56bd0c2d8f196bc8d0c",
+                "arguments_redacted": {
+                    "query": "Luma Studio",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": true
+                },
+                "entry_sha256": "2753b9f5a1efe5ce5575cdadb93ef791669c0e2c3b42e38e7f93363ea4334409"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "local_search",
+                "tool_call_id": "call_1J91chmtKM5OrTDSjIXrUzLu",
+                "turn_count": 10,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T18:01:34+00:00",
+                "ended_at": "2026-05-29T18:01:34+00:00",
+                "duration_ms": 11,
+                "arguments_sha256": "eac9130c8f62d47d930802694a4105024e3fcf5fbd656ed2df11681eb84d6da9",
+                "result_sha256": "3d714400b2aa949adaa3ea0c81b2a0001231714f629206cd44aee7eedd487bd8",
+                "arguments_redacted": {
+                    "query": "brand photography",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": false
+                },
+                "entry_sha256": "4f85266c87087e8751ba4639bf49890c92d8c408350f5dad7df1893f8b9f805e"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "69ad99b05d78412f9fe4cd2edcd6755b27bfcc7a0d1689f63d587370c72f4912"
+        "sha256": "0abe58daa4d43c6c8922513daee7638f02a81f91414404ac086990b7a62ae39c"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
