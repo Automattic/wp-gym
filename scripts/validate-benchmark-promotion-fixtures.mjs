@@ -15,7 +15,7 @@ assert.equal(pilotReport.target_id, 'benchmark-readiness-pilot');
 assert.equal(pilotReport.status, 'fail');
 assert.ok(pilotReport.blockers.includes('task_set_not_benchmark_ready'));
 assert.ok(!pilotReport.blockers.some((blocker) => blocker.includes('missing_calibration_results')));
-assert.ok(pilotReport.blockers.some((blocker) => blocker.includes('workspace_diff_diagnostic_only')));
+assert.ok(!pilotReport.blockers.some((blocker) => blocker.includes('workspace_diff_diagnostic_only')));
 assert.ok(pilotReport.scenarios.length >= 1);
 
 const scenarioReport = evaluatePromotionTarget({ root, scenarioId: 'block-markup-no-fallback-pricing-section' });
