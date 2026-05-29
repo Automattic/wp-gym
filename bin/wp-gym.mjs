@@ -22,6 +22,7 @@ function usage() {
 		'  wp-gym capabilities <scenario-id>',
 		'  wp-gym demo [scenario-id]',
 		'  wp-gym replay-regrade --input <eval-artifact-json-or-dir> [--benchmark-mode]',
+		'  wp-gym run-registry emit|report|validate [args...]',
 	].join('\n'));
 }
 
@@ -70,6 +71,24 @@ if (command === 'replay-regrade') {
 	printJson(await WPGym.capabilities(scenarioId, { root }));
 	process.exit(0);
 
+} else if (command === 'run-registry') {
+	const subcommand = process.argv[3];
+	const script = subcommand === 'emit'
+		? 'emit-run-registry.mjs'
+		: subcommand === 'report'
+			? 'aggregate-run-registry.mjs'
+			: subcommand === 'validate'
+				? 'validate-run-registry.mjs'
+				: '';
+	if (!script) {
+		console.error('Usage: wp-gym run-registry emit|report|validate [args...]');
+		process.exit(2);
+	}
+	const result = spawnSync(process.execPath, [path.join(root, 'scripts', script), ...process.argv.slice(4)], {
+		cwd: root,
+		stdio: 'inherit',
+	});
+	process.exit(result.status ?? 1);
 } else if (command !== 'demo') {
 	usage();
 	process.exit(2);

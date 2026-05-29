@@ -119,7 +119,9 @@ Durable run registry entries are defined in
 `schemas/run-registry-entry.v1.schema.json` and documented in
 `docs/run-registry.md`. Use `npm run run-registry:validate` to compile the
 contract and validate registry fixtures, including benchmark-mode artifact hash
-and replay-bundle checks.
+and replay-bundle checks. Use `npm run run-registry:emit` to project live or
+fixture eval outputs into registry entries, and `npm run run-registry:report` to
+produce JSON/Markdown summaries from validated entries.
 
 The local Gym-like `WPGym.listScenarios()` / `listTaskSets()` / `make()` /
 `reset()` / `step()` / `grade()` API is documented in `docs/local-api.md`;
