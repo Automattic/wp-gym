@@ -17,23 +17,17 @@
         {
             "schema_version": 1,
             "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01HegU98ogz6UJcdxz8Ptsxy",
+            "tool_call_id": "toolu_01WCQP1QB4AobetM8hxFJdh7",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T22:12:05+00:00",
-            "ended_at": "2026-05-29T22:12:05+00:00",
-            "duration_ms": 50,
-            "arguments_sha256": "d726d82eb6381efc9459d2c305d677784cf74371d08ee6162d1da65ac0c9d775",
-            "result_sha256": "6eebd6fb7615dd9263d95d5a977e31fa412e7226fbb0e4128743810fb59ef580",
-            "arguments_redacted": {
-                "title": "Neighborhood Cookout Plan",
-                "slug": "neighborhood-cookout-plan",
-                "post_type": "page",
-                "content_format": "blocks",
-                "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join us for a relaxed afternoon in the neighborhood with grilled favorites, cold drinks, and lawn games for all ages. Bring a side dish to share if you'd like, and don't forget a chair \u2014 we'll set up under the shade trees by the cul-de-sac.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li>Confirm the headcount and assign side dishes one week ahead.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Pick up burgers, buns, charcoal, and drinks the day before.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up tables, the grill, and lawn games the morning of the cookout.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->"
-            }
+            "started_at": "2026-05-29T22:13:50+00:00",
+            "ended_at": "2026-05-29T22:13:50+00:00",
+            "duration_ms": 47,
+            "arguments_sha256": "9fb80442938702cf303c5d19e73a5bb3e7640f8d15f97ef647ee6d855bd96695",
+            "result_sha256": "29e99e830c2aa4afd3d0972b3463d913f4c703a97907d514f7faaaf1b4a9f795",
+            "arguments_omitted": "redacted_arguments_too_large"
         }
     ],
     "transcript": null,
@@ -42,7 +36,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "9a14b7b3a34fc62b883cda76601faae921ede69e03507f52365d58c0baeda137",
+            "sha256": "8c95f279796d8d26132445872775b84ff03beaa718c4fe00cd985e5500c86c98",
             "bounded": true,
             "redacted": true
         }
@@ -53,11 +47,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:46791/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "37abff0dc25f5ea28481238422a39a0d6355b4908b1d090b65d1807797699e67",
-            "payload_sha256": "c695969e2f585673de1395d886a8c9117efc9a0c917e192f9d8791cca8df1459",
-            "bytes": 2721,
-            "written_at": "2026-05-29T22:12:12+00:00"
+            "url": "http://127.0.0.1:40397/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "7d0ad70fe7cd740ca1771daf52f1d1ce768cc0d15aa158603f506d27b3b5a78c",
+            "payload_sha256": "baf4aeac6ba0fc110f3eede209aca6c3ff3bdb6ee1ba2747eaad8b3106679e79",
+            "bytes": 1420,
+            "written_at": "2026-05-29T22:13:59+00:00"
         }
     },
     "transcript_artifact": null,
@@ -73,8 +67,8 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 22:11:55",
-            "completed_at": "2026-05-29 22:12:12"
+            "created_at": "2026-05-29 22:13:25",
+            "completed_at": "2026-05-29 22:13:59"
         },
         "trace_count": 1,
         "entries_emitted": 1,
@@ -84,29 +78,23 @@
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01HegU98ogz6UJcdxz8Ptsxy",
+                "tool_call_id": "toolu_01WCQP1QB4AobetM8hxFJdh7",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T22:12:05+00:00",
-                "ended_at": "2026-05-29T22:12:05+00:00",
-                "duration_ms": 50,
-                "arguments_sha256": "d726d82eb6381efc9459d2c305d677784cf74371d08ee6162d1da65ac0c9d775",
-                "result_sha256": "6eebd6fb7615dd9263d95d5a977e31fa412e7226fbb0e4128743810fb59ef580",
-                "arguments_redacted": {
-                    "title": "Neighborhood Cookout Plan",
-                    "slug": "neighborhood-cookout-plan",
-                    "post_type": "page",
-                    "content_format": "blocks",
-                    "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join us for a relaxed afternoon in the neighborhood with grilled favorites, cold drinks, and lawn games for all ages. Bring a side dish to share if you'd like, and don't forget a chair \u2014 we'll set up under the shade trees by the cul-de-sac.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li>Confirm the headcount and assign side dishes one week ahead.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Pick up burgers, buns, charcoal, and drinks the day before.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up tables, the grill, and lawn games the morning of the cookout.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->"
-                },
-                "entry_sha256": "0d824cb68bc890839112d74379160116f70fc69006586506cb5cf20fce88a3c2"
+                "started_at": "2026-05-29T22:13:50+00:00",
+                "ended_at": "2026-05-29T22:13:50+00:00",
+                "duration_ms": 47,
+                "arguments_sha256": "9fb80442938702cf303c5d19e73a5bb3e7640f8d15f97ef647ee6d855bd96695",
+                "result_sha256": "29e99e830c2aa4afd3d0972b3463d913f4c703a97907d514f7faaaf1b4a9f795",
+                "arguments_omitted": "redacted_arguments_too_large",
+                "entry_sha256": "95317a0605ab7f29f9792629c4515d7433dd7ce5c47c744da1683f2b3caf6008"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "9a14b7b3a34fc62b883cda76601faae921ede69e03507f52365d58c0baeda137"
+        "sha256": "8c95f279796d8d26132445872775b84ff03beaa718c4fe00cd985e5500c86c98"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
