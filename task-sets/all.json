@@ -1,0 +1,71 @@
+{
+  "id": "all",
+  "label": "All public pilot scenarios",
+  "issue": "https://github.com/Automattic/wp-gym/issues/127",
+  "description": "Broad live fanout over every public wp-gym scenario currently wired into the local runtime harness. This is a lab/proving task set, not a headline benchmark set.",
+  "benchmark_status": "pilot",
+  "benchmark": false,
+  "headline_score_eligible": false,
+  "aggregate_score": false,
+  "score_scope": "pilot",
+  "task_contract_level": "mixed_diagnostic",
+  "split_policy": {
+    "lane": "public",
+    "allowed_splits": ["public", "calibration"],
+    "requires_held_out_private": false,
+    "contamination_controls": ["public_tasks_are_training_visible", "headline_scores_blocked_until_held_out_private_ready"]
+  },
+  "benchmark_metadata": {
+    "benchmark_version": "0.0.0-pilot.1",
+    "compatibility_group": "all-public-pilot",
+    "compatible_with": []
+  },
+  "capability_coverage": {
+    "schema_version": 1,
+    "primary": [
+      "agent_tooling_automation_surfaces",
+      "cli_operational_tooling",
+      "custom_admin_ui",
+      "data_interaction_apis",
+      "gutenberg_blocks",
+      "plugin_quality_wordpress_standards",
+      "theme_site_building"
+    ],
+    "secondary": [
+      "data_interaction_apis",
+      "gutenberg_blocks",
+      "plugin_quality_wordpress_standards",
+      "theme_site_building"
+    ]
+  },
+  "benchmark_blockers": [
+    "pilot_task_set",
+    "diagnostic_contract_only",
+    "missing_repeated_attempts",
+    "held_out_private_variants_not_ready"
+  ],
+  "scenario_manifests": [
+    "../scenarios/block-markup/valid-semantic-blocks.json",
+    "../scenarios/block-markup/nested-layout-blocks.json",
+    "../scenarios/block-markup/no-fallback-pricing-section.json",
+    "../scenarios/site-building/community-garden.json",
+    "../scenarios/visual-builder/elementor-hero-refresh.json",
+    "../scenarios/content-migration/media-attachment-import.json",
+    "../scenarios/site-understanding/service-relationship-map.json",
+    "../scenarios/modern-wordpress-api/abilities-site-summary.json",
+    "../scenarios/modern-wordpress-api/rest-route-status.json",
+    "../scenarios/wordpress-investigation/homepage-source-diagnosis.json"
+  ],
+  "tasks": [
+    { "scenario_id": "block-markup-valid-semantic-blocks", "role": "editable-block-page", "summary": "Create a neighborhood cookout page using semantic editable core blocks." },
+    { "scenario_id": "block-markup-nested-layout-blocks", "role": "editable-layout-page", "summary": "Create a nested service overview page using semantic editable core blocks." },
+    { "scenario_id": "block-markup-no-fallback-pricing-section", "role": "editable-page-layout", "summary": "Create an editable pricing page with a structured three-plan layout." },
+    { "scenario_id": "site-building-community-garden", "role": "site-building", "summary": "Build a welcoming community garden site with core visitor information." },
+    { "scenario_id": "visual-builder-elementor-hero-refresh", "role": "visual-builder", "summary": "Refresh an Elementor-style hero section while preserving visual intent." },
+    { "scenario_id": "content-migration-media-attachment-import", "role": "content-migration", "summary": "Import content with local media attachments into WordPress." },
+    { "scenario_id": "site-understanding-service-relationship-map", "role": "site-understanding", "summary": "Extract service company entity relationships from site content." },
+    { "scenario_id": "modern-wordpress-api-abilities-site-summary", "role": "developer-api-tooling", "summary": "Expose a small site summary automation surface through the Abilities API." },
+    { "scenario_id": "modern-wordpress-api-rest-route-status", "role": "developer-rest-plugin", "summary": "Expose a public read-only WordPress REST status endpoint from a plugin." },
+    { "scenario_id": "wordpress-investigation-homepage-source-diagnosis", "role": "wordpress-investigation", "summary": "Diagnose why the homepage content is coming from its current source." }
+  ]
+}

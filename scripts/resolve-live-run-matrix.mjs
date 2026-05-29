@@ -65,7 +65,7 @@ function fallbackTaskSetMetadata(id) {
 
 function taskSetMetadata() {
 	const taskSet = currentTaskSetId();
-	if (taskSet === 'custom' || taskSet === 'smoke' || taskSet === 'all') {
+	if (taskSet === 'custom' || taskSet === 'smoke') {
 		return fallbackTaskSetMetadata(taskSet);
 	}
 
