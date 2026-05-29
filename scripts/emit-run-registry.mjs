@@ -330,7 +330,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			failure_class: evalArtifact.status?.failure_class || (evalArtifact.grader?.success ? 'none' : 'task_failure'),
 		},
 		calibration: {
-			row_type: evalArtifact.provenance?.provider?.calibration_row_type || (provider.includes('human') ? 'human_reference' : attempt.count > 1 ? 'repeated_attempts' : 'frontier_model'),
+			row_type: evalArtifact.reports?.template_values?.calibration_row_type || evalArtifact.provenance?.provider?.calibration_row_type || (provider.includes('human') ? 'human_reference' : attempt.count > 1 ? 'repeated_attempts' : 'frontier_model'),
 			included: taskSet.benchmark_status !== 'excluded',
 			status: taskSet.benchmark_status,
 			result_set_id: attempt.resultSetId || scenario.calibration?.baseline_result_sets?.[0] || null,

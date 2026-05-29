@@ -433,6 +433,7 @@ function artifactExportConfig(task, provider, metadata) {
 			'- **Task ID:** `{task_id}`',
 			'- **Provider:** `{provider}`',
 			'- **Model:** `{model}`',
+			'- **Calibration row type:** `{calibration_row_type}`',
 			'- **Agent:** `{agent_slug}`',
 			'- **Workflow:** {workflow_run_url}',
 			'',
@@ -499,6 +500,7 @@ function artifactExportConfig(task, provider, metadata) {
 			provider: provider.provider,
 			model: provider.model,
 			model_label: `${provider.provider}/${provider.model}`,
+			calibration_row_type: provider.calibrationRowType || 'frontier_model',
 			task_set_id: metadata.taskSet.id,
 			task_set_benchmark_status: metadata.taskSet.benchmark_status,
 			task_set_benchmark_version: metadata.taskSet.benchmark_metadata?.benchmark_version || 'unversioned',
@@ -911,6 +913,7 @@ function assertLiveRunMatrix(matrix) {
 		const artifactExport = parseJsonField(row, 'artifact_export_config');
 		assert(artifactExport.include_job_artifacts === true, `${row.task_id} must export job artifacts`);
 		assert(artifactExport.pr_template_values?.task_id === row.task_id, `${row.task_id} artifact export task id mismatch`);
+		assert(artifactExport.pr_template_values?.calibration_row_type === row.calibration_row_type, `${row.task_id} artifact export calibration row type mismatch`);
 		assert(artifactExport.pr_template_values?.benchmark_eligible === row.benchmark_eligible, `${row.task_id} artifact export benchmark eligibility mismatch`);
 		assert(artifactExport.pr_template_values?.score_scope === row.score_scope, `${row.task_id} artifact export score scope mismatch`);
 		assert(artifactExport.pr_template_values?.attempt_id === row.attempt_id, `${row.task_id} artifact export attempt id mismatch`);
