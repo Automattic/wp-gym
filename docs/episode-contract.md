@@ -1,7 +1,10 @@
 # Episode Contract
 
 Issue #80 defines the canonical versioned contract for wp-gym episode actions,
-observations, step results, and replay traces.
+observations, step results, and replay traces. Issue
+[#134](https://github.com/Automattic/wp-gym/issues/134) tightens those contracts
+so malformed or unknown action and observation fields fail validation instead of
+quietly entering traces.
 
 Schemas live in `schemas/`:
 
@@ -35,10 +38,56 @@ The action records the intended command and timeout. Command status, stdout,
 stderr, timeout outcome, and error details are observation evidence, not action
 inputs.
 
+Action records are strict: unknown top-level fields are rejected. Use
+`metadata` for runner-specific debug data. `metadata` must not contain `reward`,
+`success`, or `score`.
+
+`filesystem` actions are relative to the scenario workspace and cannot use
+absolute paths or `..` segments:
+
+```json
+{
+  "schema_version": 1,
+  "type": "filesystem",
+  "operation": "write",
+  "path": "plugins/example/example.php",
+  "content": "<?php\n"
+}
+```
+
+`rest` actions preserve sandbox-relative HTTP intent for runners that can issue
+requests against the WordPress runtime:
+
+```json
+{
+  "schema_version": 1,
+  "type": "rest",
+  "method": "GET",
+  "path": "/wp-json/wp/v2/posts",
+  "timeout_ms": 30000
+}
+```
+
+`browser` actions declare replayability explicitly. Use `evidence_only` when the
+runner can capture browser/editor evidence but the local replay harness cannot
+yet deterministically replay the interaction:
+
+```json
+{
+  "schema_version": 1,
+  "type": "browser",
+  "operation": "capture",
+  "replayability": "evidence_only",
+  "url": "/",
+  "capture": ["html", "screenshot"]
+}
+```
+
 ## Observation
 
 An observation is the replay evidence produced by the runtime. Version 1 supports
-`command_result`, `logs`, `wp_state`, `files`, `html`, and `screenshot`.
+`command_result`, `logs`, `wp_state`, `files`, `rest_response`, `html`,
+`screenshot`, and `browser_result`.
 Observations can include sensitive runtime output, so traces and exported
 artifacts must follow the
 [`artifact redaction and sharing policy`](artifact-redaction-sharing-policy.md)
@@ -61,6 +110,69 @@ The `command_result` observation maps directly to `wp_cli` actions:
   "error": null
 }
 ```
+
+Filesystem observations include the action type and operation so trace readers do
+not need to infer intent from file payloads:
+
+```json
+{
+  "schema_version": 1,
+  "type": "files",
+  "action_type": "filesystem",
+  "operation": "write",
+  "files": [
+    {
+      "path": "plugins/example/example.php",
+      "kind": "file",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}
+```
+
+REST response observations preserve response evidence without turning it into a
+reward signal:
+
+```json
+{
+  "schema_version": 1,
+  "type": "rest_response",
+  "action_type": "rest",
+  "method": "GET",
+  "path": "/wp-json/wp/v2/posts",
+  "status": 200,
+  "headers": { "content-type": "application/json" },
+  "body": [],
+  "timed_out": false,
+  "error": null
+}
+```
+
+Browser result observations preserve interaction/capture evidence and artifact
+references. They also repeat replayability so downstream replay tools can fail
+or warn clearly:
+
+```json
+{
+  "schema_version": 1,
+  "type": "browser_result",
+  "action_type": "browser",
+  "operation": "capture",
+  "replayability": "evidence_only",
+  "url": "/",
+  "artifacts": [
+    {
+      "path": "files/browser/screenshot.png",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "mime_type": "image/png"
+    }
+  ],
+  "error": null
+}
+```
+
+Observation records are also strict: unknown top-level fields are rejected. Use
+`metadata` for runner-specific diagnostics, not scoring data.
 
 ## Step Result
 

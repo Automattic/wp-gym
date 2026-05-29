@@ -41,6 +41,32 @@ instead of chat transcripts.
 
 Use `npm run validate` for the local manifest and PHP syntax check.
 
+## External API Quickstart
+
+Install dependencies, discover the available scenarios, then run a no-model
+episode locally:
+
+```sh
+npm ci
+node bin/wp-gym.mjs list scenarios
+node bin/wp-gym.mjs list task-sets
+node bin/wp-gym.mjs show scenario block-markup-no-fallback-pricing-section
+node examples/no-model-episode.mjs block-markup-no-fallback-pricing-section
+```
+
+External Node runners can use the same discovery and environment API:
+
+```js
+import { WPGym } from './src/index.js';
+
+const scenarios = await WPGym.listScenarios();
+const capabilities = await WPGym.capabilities(scenarios[0].id);
+const env = await WPGym.make(scenarios[0].id);
+```
+
+The supported external surface is JavaScript plus JSON CLI output. A Python or
+Gymnasium wrapper is deferred until the JSON action/observation contract settles.
+
 The `wp-gym` adapter boundary for consuming WP Codebox is documented in
 `docs/sandbox-runtime-adapter-contract.md`. WP Codebox remains the generic
 isolated WordPress runtime substrate; `wp-gym` owns scenario, trace, grader,
@@ -95,6 +121,6 @@ Durable run registry entries are defined in
 contract and validate registry fixtures, including benchmark-mode artifact hash
 and replay-bundle checks.
 
-The local Gym-like `WPGym.make()` / `reset()` / `step()` / `grade()` API is
-documented in `docs/local-api.md`; WordPress scenarios use WP Codebox's native
-runtime episode API.
+The local Gym-like `WPGym.listScenarios()` / `listTaskSets()` / `make()` /
+`reset()` / `step()` / `grade()` API is documented in `docs/local-api.md`;
+WordPress scenarios use WP Codebox's native runtime episode API.
