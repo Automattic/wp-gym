@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "completed",
+    "status": "failed - tool_result_failed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -8,94 +8,118 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "local_search",
-            "success": true,
-            "turn_count": 1
-        },
-        {
-            "tool_name": "local_search",
-            "success": true,
-            "turn_count": 3
-        },
-        {
-            "tool_name": "local_search",
+            "tool_name": "run_wp_cli",
             "success": true,
             "turn_count": 4
-        },
-        {
-            "tool_name": "local_search",
-            "success": true,
-            "turn_count": 5
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "local_search",
-            "tool_call_id": "toolu_01E13LEU4ND8ZWsBfq8YvSkL",
+            "tool_name": "workspace_show",
+            "tool_call_id": "toolu_01GubcHPgVc68vCWPgdqmEdo",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:02:02+00:00",
-            "ended_at": "2026-05-29T18:02:02+00:00",
-            "duration_ms": 19,
-            "arguments_sha256": "580c1255889e940cefecae7cd6657a24eaf8ed35626158f60c3bfd0b909d9c1e",
-            "result_sha256": "8793c0a2cd3e029b92d5d01332922d907032d4df032297665385ba2e8cdc1ec2",
+            "status": "failed",
+            "started_at": "2026-05-29T18:03:47+00:00",
+            "ended_at": "2026-05-29T18:03:47+00:00",
+            "duration_ms": 7,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "query": "Luma Studio"
+                "name": "current-project"
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "local_search",
-            "tool_call_id": "toolu_01RXwYG35WDFx2xKbYv8gMD1",
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_015Y8VfZSdcyUMNkNTyzNuQM",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T18:03:47+00:00",
+            "ended_at": "2026-05-29T18:03:47+00:00",
+            "duration_ms": 11,
+            "arguments_sha256": "0efedc0a73294078872e005cd7d6e8c9dc89fed472c292a5e8a412025ae2b4b6",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "import-package"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_git_status",
+            "tool_call_id": "toolu_01Qeua3aeXZsb7Y8wMPsbTmg",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T18:03:52+00:00",
+            "ended_at": "2026-05-29T18:03:52+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "toolu_01JYrPEfaHp8WcTvhe51aDic",
             "turn_count": 3,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:02:05+00:00",
-            "ended_at": "2026-05-29T18:02:05+00:00",
-            "duration_ms": 13,
-            "arguments_sha256": "36ec303203277620a15f84590cac386a2b10da140aa6e9a1875c8f4aafd28c0d",
-            "result_sha256": "f80acbeb8b00e53ab989937050e8bd5eb9fc66e89005d0a54443e293393555bb",
+            "status": "failed",
+            "started_at": "2026-05-29T18:03:54+00:00",
+            "ended_at": "2026-05-29T18:03:54+00:00",
+            "duration_ms": 5,
+            "arguments_sha256": "518341a7f82a294570cc3ba8ae0eec8f157d80c390e56cad16702940266a4eba",
+            "result_sha256": "3b896c3702d429585bfb5d56b0d20a977ef45e47390d335c1bbef33a513baf27",
+            "output_summary": "A runtime path is required.",
             "arguments_redacted": {
-                "query": "Luma Studio brand photography"
+                "path": ""
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "local_search",
-            "tool_call_id": "toolu_019abvSMMtxNZ8LPXdXJrYwL",
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "toolu_01XiXP8n6B6cpBuwScNRS219",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T18:03:56+00:00",
+            "ended_at": "2026-05-29T18:03:56+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "b05a51a70e2fb7667ed7be038fd76d494375f69c9281a80747571dbe38c72abd",
+            "result_sha256": "5cce21b6fba73c2a2eca7bd3fc576d7c845b228cd0016b6e03faed6205cb012c",
+            "output_summary": "Path is outside the allowlisted WordPress runtime roots.",
+            "arguments_redacted": {
+                "path": "wp-content"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "run_wp_cli",
+            "tool_call_id": "toolu_01BPheJV7sHo9PEJ23LwQubA",
             "turn_count": 4,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:02:08+00:00",
-            "ended_at": "2026-05-29T18:02:08+00:00",
-            "duration_ms": 4,
-            "arguments_sha256": "91a7c91617a01c942236f3330ebcd503a0da1153df4d832bcf6bc25f32b434be",
-            "result_sha256": "0ecda67643992880ba0816029f8055f3a1733ab8295a10d3b2a97f419f93489f",
+            "started_at": "2026-05-29T18:03:56+00:00",
+            "ended_at": "2026-05-29T18:03:56+00:00",
+            "duration_ms": 10,
+            "arguments_sha256": "0e17d8846a40c59d93fdd8ec75b2820ff59202e9ddf339d9a580c24cd5c5519c",
+            "result_sha256": "6a34cc2c28ad12a6295782fee985aab5227636aabcc10d348192e8a2a442f813",
             "arguments_redacted": {
-                "query": "Luma",
-                "title_only": true
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "local_search",
-            "tool_call_id": "toolu_01WkbUQm2TmTBtQmxinzLS41",
-            "turn_count": 5,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:02:09+00:00",
-            "ended_at": "2026-05-29T18:02:09+00:00",
-            "duration_ms": 12,
-            "arguments_sha256": "c980244f62bbaf58fc26f04249ebbccc9a48dcb5dd00639aa01a2ada04599dac",
-            "result_sha256": "8d0c1da996c685a216c7009e5cbcc35b70c611f1bb4b4bf9bc322b88cb47355d",
-            "arguments_redacted": {
-                "query": "brand photos effortless"
+                "command": "eval 'echo ABSPATH;'"
             }
         }
     ],
@@ -105,7 +129,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "27935043be4e1c5d6a2074af2c8c0933294b142a193957998da9ee29377cb6b8",
+            "sha256": "58765cd4b3b2d5994b71ae8acc781e0a21d670c5432c60e22a0217c5ae88635b",
             "bounded": true,
             "redacted": true
         }
@@ -116,11 +140,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:36099/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "0fd36985417fdf6a3e6d5c204a175d7b34eaf9db90544a4ae15713c0a5f97239",
-            "payload_sha256": "4ea25b75380e45c33cd7182d321d483ff3bfabdacdeed54aa5e70790f953beca",
-            "bytes": 4000,
-            "written_at": "2026-05-29T18:02:30+00:00"
+            "url": "http://127.0.0.1:33511/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "f9b609a57fd2e88d389437f8f4bbc5a28865c62ecee1c9ad56dd183690159e42",
+            "payload_sha256": "98c95c0f9415c2aa9918956c95dd5476ae82fc93ba5b044406cdac046d38c0ce",
+            "bytes": 6204,
+            "written_at": "2026-05-29T18:04:02+00:00"
         }
     },
     "transcript_artifact": null,
@@ -130,100 +154,143 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "completed",
+            "job_status": "failed - tool_result_failed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 18:01:59",
-            "completed_at": "2026-05-29 18:02:30"
+            "created_at": "2026-05-29 18:03:44",
+            "completed_at": "2026-05-29 18:04:02"
         },
-        "trace_count": 4,
-        "entries_emitted": 4,
+        "trace_count": 6,
+        "entries_emitted": 6,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "local_search",
-                "tool_call_id": "toolu_01E13LEU4ND8ZWsBfq8YvSkL",
+                "tool_name": "workspace_show",
+                "tool_call_id": "toolu_01GubcHPgVc68vCWPgdqmEdo",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:02:02+00:00",
-                "ended_at": "2026-05-29T18:02:02+00:00",
-                "duration_ms": 19,
-                "arguments_sha256": "580c1255889e940cefecae7cd6657a24eaf8ed35626158f60c3bfd0b909d9c1e",
-                "result_sha256": "8793c0a2cd3e029b92d5d01332922d907032d4df032297665385ba2e8cdc1ec2",
+                "status": "failed",
+                "started_at": "2026-05-29T18:03:47+00:00",
+                "ended_at": "2026-05-29T18:03:47+00:00",
+                "duration_ms": 7,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "query": "Luma Studio"
+                    "name": "current-project"
                 },
-                "entry_sha256": "030481b95acc5d40bb69ee156d3c8db395c576c6408d8e083f274070eaf3ddd1"
+                "entry_sha256": "7af43a307d9671fee6966aefcc220184928ed8eed6f3bc76cdb75aadb29bd223"
             },
             {
                 "index": 1,
                 "schema_version": 1,
-                "tool_name": "local_search",
-                "tool_call_id": "toolu_01RXwYG35WDFx2xKbYv8gMD1",
-                "turn_count": 3,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_015Y8VfZSdcyUMNkNTyzNuQM",
+                "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:02:05+00:00",
-                "ended_at": "2026-05-29T18:02:05+00:00",
-                "duration_ms": 13,
-                "arguments_sha256": "36ec303203277620a15f84590cac386a2b10da140aa6e9a1875c8f4aafd28c0d",
-                "result_sha256": "f80acbeb8b00e53ab989937050e8bd5eb9fc66e89005d0a54443e293393555bb",
+                "status": "failed",
+                "started_at": "2026-05-29T18:03:47+00:00",
+                "ended_at": "2026-05-29T18:03:47+00:00",
+                "duration_ms": 11,
+                "arguments_sha256": "0efedc0a73294078872e005cd7d6e8c9dc89fed472c292a5e8a412025ae2b4b6",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "query": "Luma Studio brand photography"
+                    "repo": "current-project",
+                    "path": "import-package"
                 },
-                "entry_sha256": "3ce9079f7f5f895bfff0e8af5606e109a55989cef30df9d4cdf81edc195ea44d"
+                "entry_sha256": "c036a1cdd248aade3ddb461c0709592adecc0490a4a3bd92f9b8581f8091a03a"
             },
             {
                 "index": 2,
                 "schema_version": 1,
-                "tool_name": "local_search",
-                "tool_call_id": "toolu_019abvSMMtxNZ8LPXdXJrYwL",
-                "turn_count": 4,
+                "tool_name": "workspace_git_status",
+                "tool_call_id": "toolu_01Qeua3aeXZsb7Y8wMPsbTmg",
+                "turn_count": 2,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:02:08+00:00",
-                "ended_at": "2026-05-29T18:02:08+00:00",
-                "duration_ms": 4,
-                "arguments_sha256": "91a7c91617a01c942236f3330ebcd503a0da1153df4d832bcf6bc25f32b434be",
-                "result_sha256": "0ecda67643992880ba0816029f8055f3a1733ab8295a10d3b2a97f419f93489f",
+                "status": "failed",
+                "started_at": "2026-05-29T18:03:52+00:00",
+                "ended_at": "2026-05-29T18:03:52+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "query": "Luma",
-                    "title_only": true
+                    "name": "current-project"
                 },
-                "entry_sha256": "e0b0a2efe7826434092db27d40ef9b9d2ecbcc4ffa961822230b1b3b6cd152d9"
+                "entry_sha256": "fa3a70f0a2c639961743f62b5c59603b6f41b578434d52960e93e2ac5fb346e9"
             },
             {
                 "index": 3,
                 "schema_version": 1,
-                "tool_name": "local_search",
-                "tool_call_id": "toolu_01WkbUQm2TmTBtQmxinzLS41",
-                "turn_count": 5,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "toolu_01JYrPEfaHp8WcTvhe51aDic",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T18:03:54+00:00",
+                "ended_at": "2026-05-29T18:03:54+00:00",
+                "duration_ms": 5,
+                "arguments_sha256": "518341a7f82a294570cc3ba8ae0eec8f157d80c390e56cad16702940266a4eba",
+                "result_sha256": "3b896c3702d429585bfb5d56b0d20a977ef45e47390d335c1bbef33a513baf27",
+                "output_summary": "A runtime path is required.",
+                "arguments_redacted": {
+                    "path": ""
+                },
+                "entry_sha256": "db2cebd31f7d6dccfde97b76c62348f22badc678cc250e99b981e26aecc04af8"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "toolu_01XiXP8n6B6cpBuwScNRS219",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T18:03:56+00:00",
+                "ended_at": "2026-05-29T18:03:56+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "b05a51a70e2fb7667ed7be038fd76d494375f69c9281a80747571dbe38c72abd",
+                "result_sha256": "5cce21b6fba73c2a2eca7bd3fc576d7c845b228cd0016b6e03faed6205cb012c",
+                "output_summary": "Path is outside the allowlisted WordPress runtime roots.",
+                "arguments_redacted": {
+                    "path": "wp-content"
+                },
+                "entry_sha256": "7c1c76411fda761e32d56b397f956b8ce1c05f7e632aa2e75d69e883ab6fbe2d"
+            },
+            {
+                "index": 5,
+                "schema_version": 1,
+                "tool_name": "run_wp_cli",
+                "tool_call_id": "toolu_01BPheJV7sHo9PEJ23LwQubA",
+                "turn_count": 4,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T18:02:09+00:00",
-                "ended_at": "2026-05-29T18:02:09+00:00",
-                "duration_ms": 12,
-                "arguments_sha256": "c980244f62bbaf58fc26f04249ebbccc9a48dcb5dd00639aa01a2ada04599dac",
-                "result_sha256": "8d0c1da996c685a216c7009e5cbcc35b70c611f1bb4b4bf9bc322b88cb47355d",
+                "started_at": "2026-05-29T18:03:56+00:00",
+                "ended_at": "2026-05-29T18:03:56+00:00",
+                "duration_ms": 10,
+                "arguments_sha256": "0e17d8846a40c59d93fdd8ec75b2820ff59202e9ddf339d9a580c24cd5c5519c",
+                "result_sha256": "6a34cc2c28ad12a6295782fee985aab5227636aabcc10d348192e8a2a442f813",
                 "arguments_redacted": {
-                    "query": "brand photos effortless"
+                    "command": "eval 'echo ABSPATH;'"
                 },
-                "entry_sha256": "4de82414a952beaae2077098875a4c054c0235d27bcd18dd3f339281c723883d"
+                "entry_sha256": "2f62f9540c4dec197161e6a19d735e26749a31ccf13f3f2d7435cdecdfc69bd2"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "27935043be4e1c5d6a2074af2c8c0933294b142a193957998da9ee29377cb6b8"
+        "sha256": "58765cd4b3b2d5994b71ae8acc781e0a21d670c5432c60e22a0217c5ae88635b"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
