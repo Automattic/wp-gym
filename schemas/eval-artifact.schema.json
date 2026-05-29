@@ -105,6 +105,93 @@
       },
       "additionalProperties": true
     },
+    "provenance": {
+      "type": "object",
+      "description": "Benchmark-mode reproducibility metadata. Non-benchmark rows may omit this while runner integrations are still being shaped; benchmark-mode validation requires the pinned fields documented in docs/eval-artifact-projection.md.",
+      "properties": {
+        "workflow": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 },
+            "path": { "type": ["string", "null"] },
+            "ref": { "type": ["string", "null"] },
+            "sha": { "$ref": "#/$defs/git_sha_or_null" }
+          },
+          "additionalProperties": true
+        },
+        "runner": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "version": { "type": ["string", "null"] },
+            "ref": { "type": ["string", "null"] },
+            "sha": { "$ref": "#/$defs/git_sha_or_null" }
+          },
+          "additionalProperties": true
+        },
+        "runtime": {
+          "type": "object",
+          "properties": {
+            "wordpress_version": { "type": "string", "minLength": 1 },
+            "php_version": { "type": "string", "minLength": 1 },
+            "node_version": { "type": "string", "minLength": 1 },
+            "wp_codebox_version": { "type": "string", "minLength": 1 },
+            "playground_version": { "type": ["string", "null"] },
+            "package_lock_sha256": { "$ref": "#/$defs/sha256" }
+          },
+          "additionalProperties": true
+        },
+        "provider": {
+          "type": "object",
+          "properties": {
+            "provider": { "type": "string", "minLength": 1 },
+            "model": { "type": "string", "minLength": 1 },
+            "model_version": { "type": ["string", "null"] },
+            "model_snapshot": { "type": ["string", "null"] }
+          },
+          "additionalProperties": true
+        },
+        "provider_plugins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": ["string", "null"] },
+              "repo": { "type": ["string", "null"] },
+              "ref": { "type": ["string", "null"] },
+              "sha": { "$ref": "#/$defs/git_sha_or_null" },
+              "digest": { "type": ["string", "null"] }
+            },
+            "additionalProperties": true
+          }
+        },
+        "tool_policy": {
+          "type": "object",
+          "properties": {
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "enabled_tools_sha256": { "$ref": "#/$defs/sha256" },
+            "agent_instructions_sha256": { "$ref": "#/$defs/sha256" }
+          },
+          "additionalProperties": true
+        },
+        "inputs": {
+          "type": "object",
+          "properties": {
+            "scenario_sha256": { "$ref": "#/$defs/sha256" },
+            "prompt_sha256": { "$ref": "#/$defs/sha256" },
+            "grader_sha256": { "$ref": "#/$defs/sha256" },
+            "task_set_sha256": { "$ref": "#/$defs/sha256" },
+            "bundle_sha256": { "$ref": "#/$defs/sha256" }
+          },
+          "additionalProperties": true
+        },
+        "source_fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/source_field" }
+        }
+      },
+      "additionalProperties": true
+    },
     "scenario": {
       "type": "object",
       "required": ["id", "label", "task_family", "prompt_sha256", "rules"],
@@ -234,6 +321,7 @@
       },
       "additionalProperties": true
     },
+    "git_sha_or_null": { "type": ["string", "null"], "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$" },
     "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "sha256_or_null": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
   },

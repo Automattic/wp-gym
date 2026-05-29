@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 
 const root = process.cwd();
@@ -10,6 +11,10 @@ function readJson(file) {
 
 function readText(file) {
 	return fs.readFileSync(path.join(root, file), 'utf8').trim();
+}
+
+function sha256File(file) {
+	return createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex');
 }
 
 function truthyEnv(value) {
@@ -46,6 +51,7 @@ function fallbackTaskSetMetadata(id) {
 
 	return {
 		id,
+		sourcePath: '',
 		benchmark_status: scope,
 		benchmark: false,
 		headline_score_eligible: false,
@@ -66,6 +72,7 @@ function taskSetMetadata() {
 
 	return {
 		id: manifest.id,
+		sourcePath: `task-sets/${taskSet}.json`,
 		benchmark_status: manifest.benchmark_status || 'pilot',
 		benchmark: Boolean(manifest.benchmark),
 		headline_score_eligible: Boolean(manifest.headline_score_eligible),
@@ -123,6 +130,7 @@ function scenarioTask(scenarioFile) {
 	return {
 		id: scenario.id,
 		label: scenario.label || scenario.id,
+		scenarioFile,
 		promptFile: resolveFrom(scenarioFile, scenario.prompt_file || scenario.prompt),
 		graderFile: resolveFrom(scenarioFile, scenario.grader_file || scenario.grader),
 		usesWorkspace: Boolean(environment.uses_workspace),
@@ -148,6 +156,7 @@ function smokeTask() {
 	return {
 		id: smoke.id,
 		label: smoke.label,
+		scenarioFile: 'tasks/smoke-homepage/manifest.json',
 		promptFile: smoke.prompt,
 		graderFile: smoke.check,
 		usesWorkspace: false,
@@ -174,12 +183,16 @@ function smokeTask() {
 }
 
 function providers() {
+	const anthropicProviderRef = process.env.ANTHROPIC_PROVIDER_SHA || process.env.ANTHROPIC_PROVIDER_REF || 'trunk';
+	const anthropicProviderSha = process.env.ANTHROPIC_PROVIDER_SHA || '';
+
 	return [
 		{
 			provider: 'openai',
 			model: 'gpt-5.5',
 			label: 'openai-gpt-5-5',
 			providerPlugin: '{}',
+			providerPlugins: [],
 		},
 		{
 			provider: 'anthropic',
@@ -187,15 +200,90 @@ function providers() {
 			label: 'anthropic-claude-opus-4-7',
 			providerPlugin: JSON.stringify({
 				repo: 'WordPress/ai-provider-for-anthropic',
-				ref: 'trunk',
+				ref: anthropicProviderRef,
 				path: '.',
 				register_function: 'WordPress\\AnthropicAiProvider\\register_provider',
 				credentials: {
 					connectors_ai_anthropic_api_key: 'PROVIDER_SECRET_1',
 				},
 			}),
+			providerPlugins: [{
+				name: 'ai-provider-for-anthropic',
+				repo: 'WordPress/ai-provider-for-anthropic',
+				ref: anthropicProviderRef,
+				sha: anthropicProviderSha,
+			}],
 		},
 	];
+}
+
+function isGitSha(value) {
+	return /^[a-f0-9]{40}([a-f0-9]{24})?$/i.test(String(value || ''));
+}
+
+function isMutableRef(ref) {
+	const normalized = String(ref || '').trim();
+	if (!normalized || isGitSha(normalized) || /^sha256:[a-f0-9]{64}$/i.test(normalized)) {
+		return false;
+	}
+	const refPart = normalized.includes('@') ? normalized.split('@').pop() : normalized;
+	return /^(HEAD|main|master|trunk|dev|develop|latest)$/i.test(refPart)
+		|| /^refs\/heads\//.test(refPart)
+		|| /^release\//i.test(refPart);
+}
+
+function providerProvenanceRejectReasons(provider) {
+	const reasons = [];
+	for (const plugin of provider.providerPlugins || []) {
+		if (isMutableRef(plugin.ref) && !plugin.sha && !plugin.digest) {
+			reasons.push(`mutable_provider_ref_${plugin.name || plugin.repo || 'unknown'}`.replace(/[^a-z0-9_]+/gi, '_').toLowerCase());
+		}
+	}
+	return reasons;
+}
+
+function provenanceConfig(task, provider, metadata) {
+	return JSON.stringify({
+		workflow: {
+			repository: process.env.GITHUB_REPOSITORY || 'Automattic/wp-gym',
+			path: '.github/workflows/datamachine-live-run.yml',
+			ref: process.env.GITHUB_WORKFLOW_REF || process.env.GITHUB_REF || '',
+			sha: process.env.GITHUB_SHA || '',
+		},
+		runner: {
+			name: 'homeboy',
+			version: process.env.HOMEBOY_VERSION || '',
+			ref: process.env.HOMEBOY_RUNNER_REF || '',
+			sha: process.env.HOMEBOY_RUNNER_SHA || '',
+		},
+		runtime: {
+			wordpress_version: process.env.WP_GYM_WORDPRESS_VERSION || '',
+			php_version: process.env.PHP_VERSION || '',
+			node_version: process.version,
+			wp_codebox_version: process.env.WP_CODEBOX_VERSION || '',
+			playground_version: process.env.WORDPRESS_PLAYGROUND_VERSION || '',
+			package_lock_sha256: sha256File('package-lock.json'),
+		},
+		provider: {
+			provider: provider.provider,
+			model: provider.model,
+			model_version: process.env.MODEL_VERSION || '',
+			model_snapshot: process.env.MODEL_SNAPSHOT || '',
+		},
+		provider_plugins: provider.providerPlugins || [],
+		tool_policy: {
+			sha256: process.env.TOOL_POLICY_SHA256 || '',
+			enabled_tools_sha256: createHash('sha256').update(JSON.stringify(task.allowedTools || [])).digest('hex'),
+			agent_instructions_sha256: process.env.AGENT_INSTRUCTIONS_SHA256 || '',
+		},
+		inputs: {
+			scenario_sha256: sha256File(task.scenarioFile),
+			prompt_sha256: sha256File(task.promptFile),
+			grader_sha256: sha256File(task.graderFile),
+			task_set_sha256: metadata.taskSet.sourcePath ? sha256File(metadata.taskSet.sourcePath) : '',
+			bundle_sha256: sha256File('bundle-validator.json'),
+		},
+	});
 }
 
 function workspaceConfig(task, branchSlug) {
@@ -292,6 +380,7 @@ function artifactExportConfig(task, provider, metadata) {
 			'- **Prompt fingerprint:** `metadata.fingerprints.prompt.sha256`.',
 			'- **Bundle fingerprint:** `metadata.fingerprints.bundle.sha256`.',
 			'- **Tool policy fingerprint:** `metadata.fingerprints.tool_policy.sha256`.',
+			'- **Benchmark provenance:** `metadata.eval_artifact.provenance` pins workflow, runner, runtime, provider, tool-policy, and input hashes for benchmark-mode rows.',
 			'- **Rule policy:** `rules`, `general_rules`, and `task_rules` from the resolved matrix row.',
 			'- **Behavioral probes:** `probes` from the resolved matrix row.',
 			'',
@@ -453,7 +542,10 @@ function resolveMatrix() {
 
 		for (const provider of providers()) {
 			const branchSlug = `${task.id}-${provider.label}`.replace(/[^A-Za-z0-9_.-]+/g, '-');
-			const benchmarkRejectReasonList = benchmarkRejectReasons(task, taskSet);
+			const benchmarkRejectReasonList = [...new Set([
+				...benchmarkRejectReasons(task, taskSet),
+				...providerProvenanceRejectReasons(provider),
+			])].sort();
 			const benchmarkEligible = benchmarkRejectReasonList.length === 0;
 			const artifactSuffix = runPrefix ? `${runPrefix}-${branchSlug}` : branchSlug;
 			const rowMetadata = {
@@ -473,6 +565,7 @@ function resolveMatrix() {
 				model: provider.model,
 				provider_label: provider.label,
 				provider_plugin: provider.providerPlugin,
+				provenance: provenanceConfig(task, provider, rowMetadata),
 				prompt,
 				workload_run_after: workloadRunAfter,
 				rules: JSON.stringify(task.rules),
@@ -608,6 +701,22 @@ function assertLiveRunMatrix(matrix) {
 		assert(artifactExport.pr_template_values?.task_id === row.task_id, `${row.task_id} artifact export task id mismatch`);
 		assert(artifactExport.pr_template_values?.benchmark_eligible === row.benchmark_eligible, `${row.task_id} artifact export benchmark eligibility mismatch`);
 		assert(artifactExport.pr_template_values?.score_scope === row.score_scope, `${row.task_id} artifact export score scope mismatch`);
+
+		const provenance = parseJsonField(row, 'provenance');
+		assert(provenance.provider?.provider === row.provider, `${row.task_id} provenance provider mismatch`);
+		assert(provenance.provider?.model === row.model, `${row.task_id} provenance model mismatch`);
+		assert(/^[a-f0-9]{64}$/.test(provenance.inputs?.scenario_sha256 || ''), `${row.task_id} provenance scenario hash missing`);
+		assert(/^[a-f0-9]{64}$/.test(provenance.inputs?.prompt_sha256 || ''), `${row.task_id} provenance prompt hash missing`);
+		assert(/^[a-f0-9]{64}$/.test(provenance.inputs?.grader_sha256 || ''), `${row.task_id} provenance grader hash missing`);
+		assert(/^[a-f0-9]{64}$/.test(provenance.runtime?.package_lock_sha256 || ''), `${row.task_id} provenance package lock hash missing`);
+		for (const [index, plugin] of (provenance.provider_plugins || []).entries()) {
+			if (isMutableRef(plugin.ref) && !plugin.sha && !plugin.digest) {
+				assert(
+					row.benchmark_reject_reasons.some((reason) => reason.startsWith('mutable_provider_ref_')),
+					`${row.task_id} provider plugin ${index} mutable ref must block benchmark eligibility`
+				);
+			}
+		}
 		if (runSegment()) {
 			assert(row.artifact_suffix.startsWith(`${runSegment()}-`), `${row.task_id} artifact_suffix must include run id and attempt`);
 		}

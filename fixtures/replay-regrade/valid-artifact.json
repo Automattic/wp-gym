@@ -61,6 +61,46 @@
       "run_url": "https://github.com/Automattic/wp-gym/actions/runs/119"
     }
   },
+  "provenance": {
+    "workflow": {
+      "repository": "Automattic/wp-gym",
+      "path": ".github/workflows/datamachine-live-run.yml",
+      "ref": "Automattic/wp-gym/.github/workflows/datamachine-live-run.yml@abcdef1234567890abcdef1234567890abcdef12",
+      "sha": "abcdef1234567890abcdef1234567890abcdef12"
+    },
+    "runner": {
+      "name": "homeboy",
+      "version": "1.0.0-fixture",
+      "ref": "abcdef1234567890abcdef1234567890abcdef12",
+      "sha": "abcdef1234567890abcdef1234567890abcdef12"
+    },
+    "runtime": {
+      "wordpress_version": "6.9.0-fixture",
+      "php_version": "8.3.0",
+      "node_version": "20.19.0",
+      "wp_codebox_version": "1.0.0-fixture",
+      "playground_version": "0.0.0-fixture",
+      "package_lock_sha256": "3da60c4e5ee6cae7822c77742d13a77ac7dcadfea7f022ba0a1a637580a7bbe8"
+    },
+    "provider": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "model_snapshot": "gpt-5.5-2026-05-27-fixture"
+    },
+    "provider_plugins": [],
+    "tool_policy": {
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "enabled_tools_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "agent_instructions_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "inputs": {
+      "scenario_sha256": "3164081a1c9f26fddf60b3c79b054f8c10fe760b14e3ea8870964784fa9fb209",
+      "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e",
+      "task_set_sha256": "016ef1f14ea60a6dc2a1395aff61230894dfbba965f83c5d80a365a4eb2cb6ef",
+      "bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
   "scenario": {
     "id": "block-markup-valid-semantic-blocks",
     "label": "Neighborhood cookout page",

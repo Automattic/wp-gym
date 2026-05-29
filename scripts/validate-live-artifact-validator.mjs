@@ -10,6 +10,50 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const hash64 = (digit) => digit.repeat(64);
 
+function validProvenance(overrides = {}) {
+	return {
+		workflow: {
+			repository: 'Automattic/wp-gym',
+			path: '.github/workflows/datamachine-live-run.yml',
+			ref: 'Automattic/wp-gym/.github/workflows/datamachine-live-run.yml@abcdef1234567890abcdef1234567890abcdef12',
+			sha: 'abcdef1234567890abcdef1234567890abcdef12',
+		},
+		runner: {
+			name: 'homeboy',
+			version: '1.0.0-fixture',
+			ref: 'abcdef1234567890abcdef1234567890abcdef12',
+			sha: 'abcdef1234567890abcdef1234567890abcdef12',
+		},
+		runtime: {
+			wordpress_version: '6.9.0-fixture',
+			php_version: '8.3.0',
+			node_version: '20.19.0',
+			wp_codebox_version: '1.0.0-fixture',
+			playground_version: '0.0.0-fixture',
+			package_lock_sha256: '3da60c4e5ee6cae7822c77742d13a77ac7dcadfea7f022ba0a1a637580a7bbe8',
+		},
+		provider: {
+			provider: 'openai',
+			model: 'gpt-5.5',
+			model_snapshot: 'gpt-5.5-2026-05-27-fixture',
+		},
+		provider_plugins: [],
+		tool_policy: {
+			sha256: hash64('b'),
+			enabled_tools_sha256: 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+			agent_instructions_sha256: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+		},
+		inputs: {
+			scenario_sha256: '3164081a1c9f26fddf60b3c79b054f8c10fe760b14e3ea8870964784fa9fb209',
+			prompt_sha256: hash64('c'),
+			grader_sha256: '9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e',
+			task_set_sha256: '016ef1f14ea60a6dc2a1395aff61230894dfbba965f83c5d80a365a4eb2cb6ef',
+			bundle_sha256: hash64('a'),
+		},
+		...overrides,
+	};
+}
+
 function baseArtifact(overrides = {}) {
 	return {
 		schema_version: 1,
@@ -61,6 +105,7 @@ function baseArtifact(overrides = {}) {
 			checks: [{ id: 'semantic_blocks', passed: true, score: 1, max_score: 1, failure_reason: null, message: null }],
 			failure_reasons: [],
 		},
+		provenance: validProvenance(),
 		reports: {},
 		...overrides,
 	};
@@ -102,6 +147,39 @@ assert(missingProjectionNonBenchmark.compatibility_gaps.some((item) => item.code
 const missingProjectionBenchmark = validateLiveArtifact(missingProjectionFixture, { benchmarkMode: true });
 assert.equal(missingProjectionBenchmark.ok, false);
 assert(missingProjectionBenchmark.compatibility_gaps.some((item) => item.code === 'missing_homeboy_projection_field' && item.severity === 'error'));
+
+const validProvenanceFixture = await readProvenanceFixture('valid-immutable.json');
+const validProvenanceResult = validateLiveArtifact(baseArtifact({ provenance: validProvenanceFixture }));
+assert.equal(validProvenanceResult.ok, true);
+
+const missingToolPolicyFixture = await readProvenanceFixture('missing-tool-policy-hash.json');
+const missingToolPolicy = validateLiveArtifact(baseArtifact({ provenance: missingToolPolicyFixture }), { benchmarkMode: true });
+assert.equal(missingToolPolicy.ok, false);
+assert(missingToolPolicy.compatibility_gaps.some((item) => item.code === 'missing_benchmark_provenance_field' && item.field === 'provenance.tool_policy.sha256'));
+
+const mutableWorkflowFixture = await readProvenanceFixture('mutable-workflow-ref.json');
+const mutableWorkflow = validateLiveArtifact(baseArtifact({ provenance: mutableWorkflowFixture }), { benchmarkMode: true });
+assert.equal(mutableWorkflow.ok, false);
+assert(mutableWorkflow.compatibility_gaps.some((item) => item.code === 'missing_benchmark_provenance_field' && item.field === 'provenance.workflow.sha'));
+assert(mutableWorkflow.compatibility_gaps.some((item) => item.code === 'mutable_provenance_ref' && item.field === 'provenance.workflow.ref'));
+
+const mutableProviderFixture = await readProvenanceFixture('mutable-provider-ref.json');
+const mutableProvider = validateLiveArtifact(baseArtifact({ provenance: mutableProviderFixture }), { benchmarkMode: true });
+assert.equal(mutableProvider.ok, false);
+assert(mutableProvider.compatibility_gaps.some((item) => item.code === 'mutable_provenance_ref' && item.field === 'provenance.provider_plugins[0].ref'));
+
+const missingInputHash = validateLiveArtifact(baseArtifact({
+	provenance: validProvenance({
+		inputs: {
+			...validProvenance().inputs,
+			prompt_sha256: undefined,
+			grader_sha256: undefined,
+		},
+	}),
+}), { benchmarkMode: true });
+assert.equal(missingInputHash.ok, false);
+assert(missingInputHash.compatibility_gaps.some((item) => item.field === 'provenance.inputs.prompt_sha256'));
+assert(missingInputHash.compatibility_gaps.some((item) => item.field === 'provenance.inputs.grader_sha256'));
 
 const temp = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-live-artifacts-'));
 try {
@@ -214,6 +292,10 @@ try {
 
 async function readFixture(name) {
 	return JSON.parse(await readFile(path.join(root, 'fixtures/eval-artifacts', name), 'utf8'));
+}
+
+async function readProvenanceFixture(name) {
+	return JSON.parse(await readFile(path.join(root, 'fixtures/provenance', name), 'utf8'));
 }
 
 console.log('Validated live artifact validator scaffold.');

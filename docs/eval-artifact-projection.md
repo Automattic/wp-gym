@@ -1,6 +1,6 @@
 # Eval Artifact Projection
 
-Issue: [#117](https://github.com/Automattic/wp-gym/issues/117)
+Issues: [#117](https://github.com/Automattic/wp-gym/issues/117), [#140](https://github.com/Automattic/wp-gym/issues/140)
 
 `wp-gym` owns the canonical eval artifact / episode result row. Direct wp-gym
 runners emit this row as `metadata.eval_artifact` or as the top-level JSON value.
@@ -28,6 +28,8 @@ The runner owns execution facts:
 
 - Provider, model, agent slug, workflow run ID or URL, and job ID.
 - Prompt, bundle, and tool-policy fingerprints.
+- Workflow, runner, runtime, provider, and tool-surface provenance when a row is
+  submitted as benchmark-mode evidence.
 - Generated PR URL, result JSON reference, and replay/report links.
 
 `wp-gym` owns eval facts:
@@ -62,6 +64,7 @@ generic fields only:
 | `task_set.*` | `sealed_eval_artifact.wp_gym.task_set` |
 | `grader.*` | `sealed_eval_artifact.wp_gym.grader` with grade fallback |
 | `reports.*` | Homeboy result/replay references and workflow URL |
+| `provenance.*` | Runner-provided pinned workflow/runtime/provider/tool-policy/input metadata |
 
 The Homeboy wrapper may contain Homeboy-specific fields such as `integration_seams`,
 `termination`, or replay tool-audit metadata. Those fields are not required by the
@@ -71,6 +74,49 @@ must be preserved for Homeboy replay, they remain in the sealed artifact envelop
 Benchmark mode treats missing required projection fields as errors. This prevents
 a Homeboy wrapper from being accepted as benchmark evidence when scenario, task
 set, prompt, grader, runner, or replay-critical references are absent.
+
+## Benchmark-Mode Provenance
+
+Issue [#140](https://github.com/Automattic/wp-gym/issues/140) adds a stricter
+benchmark-mode contract on top of the canonical row. Non-benchmark pilot rows may
+omit `provenance` while runners are still being shaped, but benchmark-mode rows
+must include a `provenance` object with immutable, auditable execution inputs.
+
+Required benchmark provenance groups:
+
+- `provenance.workflow`: GitHub Actions or local workflow repository, workflow
+  path, executed ref, and immutable commit `sha`.
+- `provenance.runner`: orchestrator name plus runner version/ref/sha when the
+  runner is package-backed or checked out from source.
+- `provenance.runtime`: WordPress, PHP, Node.js, WP Codebox/Playground/runtime,
+  relevant plugin/package versions, and `package_lock_sha256`.
+- `provenance.provider`: provider, model, and model version or snapshot when the
+  provider exposes one.
+- `provenance.provider_plugins[]`: provider plugin repo/name plus an immutable
+  commit `sha` or digest when a plugin is installed from source.
+- `provenance.tool_policy`: effective tool-policy hash, enabled-tool-surface
+  hash, and agent-instruction hash.
+- `provenance.inputs`: scenario manifest, model prompt, hidden grader, task-set
+  manifest, and bundle hashes.
+
+Benchmark-mode validation fails when required provenance is missing, when SHA
+fields are malformed, when provider/model/prompt/bundle/tool-policy hashes do not
+match the canonical row, or when workflow/provider/runner refs use mutable names
+such as `main`, `trunk`, `HEAD`, `refs/heads/*`, or `latest` without a commit sha
+or digest beside them.
+
+Runner interpretation stays substrate-neutral:
+
+- GitHub Actions runners should map `GITHUB_WORKFLOW_REF`, `GITHUB_SHA`, workflow
+  path, matrix provider/model values, and uploaded artifact hashes into
+  `provenance`.
+- Local Homeboy runs should record the local runner version/ref/sha, runtime
+  package versions, package-lock hash, task input hashes, and local tool-policy
+  fingerprints.
+- SSH or fleet Homeboy runs should record the remote runner checkout, remote
+  runtime versions, and package/plugin digests used on the worker host.
+- Other runners may add runner-specific fields, but benchmark-mode acceptance
+  depends on the generic groups above rather than runner-specific envelopes.
 
 ## Failure Classes
 
@@ -157,6 +203,35 @@ Expected source examples:
     "workflow": {
       "run_id": "123456789",
       "run_url": "https://github.com/Automattic/wp-gym/actions/runs/123456789"
+    }
+  },
+  "provenance": {
+    "workflow": {
+      "repository": "Automattic/wp-gym",
+      "path": ".github/workflows/datamachine-live-run.yml",
+      "ref": "Automattic/wp-gym/.github/workflows/datamachine-live-run.yml@abcdef1234567890abcdef1234567890abcdef12",
+      "sha": "abcdef1234567890abcdef1234567890abcdef12"
+    },
+    "runtime": {
+      "wordpress_version": "6.9.0-fixture",
+      "php_version": "8.3.0",
+      "node_version": "20.19.0",
+      "wp_codebox_version": "1.0.0-fixture",
+      "package_lock_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "provider": { "provider": "openai", "model": "gpt-5.5" },
+    "provider_plugins": [],
+    "tool_policy": {
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "enabled_tools_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "agent_instructions_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "inputs": {
+      "scenario_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "prompt_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "grader_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+      "task_set_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "bundle_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
     }
   },
   "scenario": {
