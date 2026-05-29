@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "failed - tool_result_failed",
+    "status": "completed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -10,72 +10,24 @@
         {
             "tool_name": "upsert_post",
             "success": true,
-            "turn_count": 3
+            "turn_count": 1
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
             "tool_name": "upsert_post",
-            "tool_call_id": "toolu_0115KkQmE2kN6i5PuWNuJKaD",
+            "tool_call_id": "toolu_01HWD8sUDVRMARH4eQd4bviM",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T23:18:51+00:00",
-            "ended_at": "2026-05-29T23:18:51+00:00",
-            "duration_ms": 10,
-            "arguments_sha256": "83348004f3f3b399c3c8be1ee6c2253f9ed0f2f87f5f9c21978d50fc9db6ba2c",
-            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-            "output_summary": "Declared blocks content does not contain serialized block comments.",
-            "arguments_redacted": {
-                "post_type": "page",
-                "title": "Neighborhood Cookout Plan",
-                "slug": "neighborhood-cookout-plan",
-                "content": "## Summer Cookout Plan\n\nJoin us for a relaxed summer afternoon in the park as neighbors gather around the grill, share homemade sides, and enjoy lawn games together. Bring your family, a folding chair, and an appetite \u2014 we'll handle the rest.\n\n### Preparation Checklist\n\n- Confirm headcount and any dietary restrictions one week ahead.\n- Pick up grill supplies, drinks, ice, and disposable plates the day before.\n- Set up tables, coolers, and lawn games one hour before guests arrive.\n\n[View menu](/cookout-menu/)\n"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01HnXymRmpfPrpzsawTbxQxP",
-            "turn_count": 2,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T23:18:56+00:00",
-            "ended_at": "2026-05-29T23:18:56+00:00",
-            "duration_ms": 2,
-            "arguments_sha256": "d2c9387f5f60e60ddd1704284f967805d2779e2a6c8f942514caaf45d703477c",
-            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-            "output_summary": "Declared blocks content does not contain serialized block comments.",
-            "arguments_redacted": {
-                "post_type": "page",
-                "title": "Neighborhood Cookout Plan",
-                "slug": "neighborhood-cookout-plan",
-                "content": "## Summer Cookout Plan\n\nJoin us for a relaxed summer afternoon in the park as neighbors gather around the grill, share homemade sides, and enjoy lawn games together. Bring your family, a folding chair, and an appetite \u2014 we'll handle the rest.\n\n### Preparation Checklist\n\n- Confirm headcount and any dietary restrictions one week ahead.\n- Pick up grill supplies, drinks, ice, and disposable plates the day before.\n- Set up tables, coolers, and lawn games one hour before guests arrive.\n\n[View menu](/cookout-menu/)"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01AjgJwxk662TD2X7LXnUGe2",
-            "turn_count": 3,
-            "actor": "agent",
-            "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T23:19:03+00:00",
-            "ended_at": "2026-05-29T23:19:03+00:00",
-            "duration_ms": 314,
-            "arguments_sha256": "8d8ddd934f91a22b7ec90acfe289b1f7027a61ec745aea1b9e386de14a2b0882",
-            "result_sha256": "09e65ef5c1eb0a1faa6ce13a2a689c0c9fdafc8db4745e2f099710875a5135d1",
-            "arguments_redacted": {
-                "post_type": "page",
-                "title": "Neighborhood Cookout Plan",
-                "slug": "neighborhood-cookout-plan",
-                "content_format": "markdown",
-                "content": "## Summer Cookout Plan\n\nJoin us for a relaxed summer afternoon in the park as neighbors gather around the grill, share homemade sides, and enjoy lawn games together. Bring your family, a folding chair, and an appetite \u2014 we'll handle the rest.\n\n### Preparation Checklist\n\n- Confirm headcount and any dietary restrictions one week ahead.\n- Pick up grill supplies, drinks, ice, and disposable plates the day before.\n- Set up tables, coolers, and lawn games one hour before guests arrive.\n\n[View menu](/cookout-menu/)\n"
-            }
+            "started_at": "2026-05-29T23:21:42+00:00",
+            "ended_at": "2026-05-29T23:21:42+00:00",
+            "duration_ms": 49,
+            "arguments_sha256": "330d0647e756b0a0e987c465f37036acd337aeff94f833bb0d2970250506347d",
+            "result_sha256": "270f02feb9fb93f1d507de0c5df9e534124fb05360dd347827b159bb24853f3a",
+            "arguments_omitted": "redacted_arguments_too_large"
         }
     ],
     "transcript": null,
@@ -84,7 +36,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "e7cdeda20e862f54add0cab2b4920c546c8aa9100d0dd1824dbe0b784e1d57c9",
+            "sha256": "fec3f85c97d14fd9e38de7a1b1ce0b96731b05c94e8e3f496073cc640d3711e6",
             "bounded": true,
             "redacted": true
         }
@@ -95,11 +47,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:37567/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "c6d3f5b6b81d2c9d726675b0b46ffe0d13fd59d98cc7828d83e91f892ec1fb93",
-            "payload_sha256": "a872bd6f8dde1db86c8607094c7356bd0507c22a8740c9df455c7e64f1f1279c",
-            "bytes": 5337,
-            "written_at": "2026-05-29T23:19:11+00:00"
+            "url": "http://127.0.0.1:40127/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "7dfd69024f7cfb3f5f07f7c63f403ac2ca65f393728e56ccd958cf73295e81b4",
+            "payload_sha256": "f40f88d421dd12d99b24f50e049e370f41ac1c637786956c3f75be80b2922238",
+            "bytes": 1420,
+            "written_at": "2026-05-29T23:21:55+00:00"
         }
     },
     "transcript_artifact": null,
@@ -109,92 +61,40 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "failed - tool_result_failed",
+            "job_status": "completed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 23:18:45",
-            "completed_at": "2026-05-29 23:19:11"
+            "created_at": "2026-05-29 23:21:16",
+            "completed_at": "2026-05-29 23:21:55"
         },
-        "trace_count": 3,
-        "entries_emitted": 3,
+        "trace_count": 1,
+        "entries_emitted": 1,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "upsert_post",
-                "tool_call_id": "toolu_0115KkQmE2kN6i5PuWNuJKaD",
+                "tool_call_id": "toolu_01HWD8sUDVRMARH4eQd4bviM",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T23:18:51+00:00",
-                "ended_at": "2026-05-29T23:18:51+00:00",
-                "duration_ms": 10,
-                "arguments_sha256": "83348004f3f3b399c3c8be1ee6c2253f9ed0f2f87f5f9c21978d50fc9db6ba2c",
-                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-                "output_summary": "Declared blocks content does not contain serialized block comments.",
-                "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Neighborhood Cookout Plan",
-                    "slug": "neighborhood-cookout-plan",
-                    "content": "## Summer Cookout Plan\n\nJoin us for a relaxed summer afternoon in the park as neighbors gather around the grill, share homemade sides, and enjoy lawn games together. Bring your family, a folding chair, and an appetite \u2014 we'll handle the rest.\n\n### Preparation Checklist\n\n- Confirm headcount and any dietary restrictions one week ahead.\n- Pick up grill supplies, drinks, ice, and disposable plates the day before.\n- Set up tables, coolers, and lawn games one hour before guests arrive.\n\n[View menu](/cookout-menu/)\n"
-                },
-                "entry_sha256": "a7873d4cb41628f67b0286b48b499fa372f8dd54c7c7c3219f929e75d98946dc"
-            },
-            {
-                "index": 1,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01HnXymRmpfPrpzsawTbxQxP",
-                "turn_count": 2,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T23:18:56+00:00",
-                "ended_at": "2026-05-29T23:18:56+00:00",
-                "duration_ms": 2,
-                "arguments_sha256": "d2c9387f5f60e60ddd1704284f967805d2779e2a6c8f942514caaf45d703477c",
-                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-                "output_summary": "Declared blocks content does not contain serialized block comments.",
-                "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Neighborhood Cookout Plan",
-                    "slug": "neighborhood-cookout-plan",
-                    "content": "## Summer Cookout Plan\n\nJoin us for a relaxed summer afternoon in the park as neighbors gather around the grill, share homemade sides, and enjoy lawn games together. Bring your family, a folding chair, and an appetite \u2014 we'll handle the rest.\n\n### Preparation Checklist\n\n- Confirm headcount and any dietary restrictions one week ahead.\n- Pick up grill supplies, drinks, ice, and disposable plates the day before.\n- Set up tables, coolers, and lawn games one hour before guests arrive.\n\n[View menu](/cookout-menu/)"
-                },
-                "entry_sha256": "9c86c20b9da36cfa495ba682ed0be6e157f66b0a199b4fb59ccfa6d7d01cf500"
-            },
-            {
-                "index": 2,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01AjgJwxk662TD2X7LXnUGe2",
-                "turn_count": 3,
-                "actor": "agent",
-                "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T23:19:03+00:00",
-                "ended_at": "2026-05-29T23:19:03+00:00",
-                "duration_ms": 314,
-                "arguments_sha256": "8d8ddd934f91a22b7ec90acfe289b1f7027a61ec745aea1b9e386de14a2b0882",
-                "result_sha256": "09e65ef5c1eb0a1faa6ce13a2a689c0c9fdafc8db4745e2f099710875a5135d1",
-                "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Neighborhood Cookout Plan",
-                    "slug": "neighborhood-cookout-plan",
-                    "content_format": "markdown",
-                    "content": "## Summer Cookout Plan\n\nJoin us for a relaxed summer afternoon in the park as neighbors gather around the grill, share homemade sides, and enjoy lawn games together. Bring your family, a folding chair, and an appetite \u2014 we'll handle the rest.\n\n### Preparation Checklist\n\n- Confirm headcount and any dietary restrictions one week ahead.\n- Pick up grill supplies, drinks, ice, and disposable plates the day before.\n- Set up tables, coolers, and lawn games one hour before guests arrive.\n\n[View menu](/cookout-menu/)\n"
-                },
-                "entry_sha256": "012678cbc4166122ded0f92a83b4946f308769177607f7edcef7e781952df726"
+                "started_at": "2026-05-29T23:21:42+00:00",
+                "ended_at": "2026-05-29T23:21:42+00:00",
+                "duration_ms": 49,
+                "arguments_sha256": "330d0647e756b0a0e987c465f37036acd337aeff94f833bb0d2970250506347d",
+                "result_sha256": "270f02feb9fb93f1d507de0c5df9e534124fb05360dd347827b159bb24853f3a",
+                "arguments_omitted": "redacted_arguments_too_large",
+                "entry_sha256": "63a9d858f45086713ff012cc776a87a08906888c7412e270d70a68d318b902d2"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "e7cdeda20e862f54add0cab2b4920c546c8aa9100d0dd1824dbe0b784e1d57c9"
+        "sha256": "fec3f85c97d14fd9e38de7a1b1ce0b96731b05c94e8e3f496073cc640d3711e6"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
