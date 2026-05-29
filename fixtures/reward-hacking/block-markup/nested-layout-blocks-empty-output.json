@@ -1,0 +1,12 @@
+{
+  "id": "block-markup-nested-layout-blocks-empty-output",
+  "scenario_id": "block-markup-nested-layout-blocks",
+  "grader_file": "graders/block-markup/nested-layout-blocks.php",
+  "type": "adversarial_negative_fixture",
+  "adversarial_case": "empty_output",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["missing_block_markup", "missing_required_blocks", "layout_structure_mismatch"],
+  "post_title": "Community Services Overview",
+  "description": "A no-op empty-output fixture proving the grader rejects a target page with no editable blocks or nested layout structure.",
+  "content_file": "fixtures/reward-hacking/block-markup/nested-layout-blocks-empty-output.wp.html"
+}

@@ -6,6 +6,8 @@ import path from 'node:path';
 const root = process.cwd();
 const fixtureRoot = path.join(root, 'fixtures', 'reward-hacking');
 const scenarioRoot = path.join(root, 'scenarios');
+const benchmarkCandidateScopes = new Set(['calibration', 'benchmark']);
+const knownAdversarialCases = new Set(['empty_output']);
 
 function assert(condition, message) {
 	if (!condition) {
@@ -104,7 +106,11 @@ function validateFixture(file, fixture, scenarios) {
 	assert(['fail', 'pass'].includes(fixture.expected_result), `${file} expected_result must be pass or fail`);
 	if (fixture.type === 'adversarial_negative_fixture') {
 		assert(fixture.expected_result === 'fail', `${file} adversarial_negative_fixture must expect fail`);
-		assert(typeof fixture.shortcut_id === 'string' && fixture.shortcut_id.length > 0, `${file} adversarial_negative_fixture must declare shortcut_id`);
+		assert(
+			typeof fixture.shortcut_id === 'string' && fixture.shortcut_id.length > 0 ||
+				typeof fixture.adversarial_case === 'string' && fixture.adversarial_case.length > 0,
+			`${file} adversarial_negative_fixture must declare shortcut_id or adversarial_case`
+		);
 	}
 	if (fixture.type === 'positive_control_fixture') {
 		assert(fixture.expected_result === 'pass', `${file} positive_control_fixture must expect pass`);
@@ -121,11 +127,19 @@ function validateFixture(file, fixture, scenarios) {
 	const contentFile = normalizeRepoRelativePath(fixture.content_file, `${file} content_file`);
 	assert(resolveFrom(scenario.file, scenario.manifest.grader_file, `${scenario.file} grader_file`) === graderFile, `${file} grader_file must match scenario grader_file`);
 	if (fixture.type === 'adversarial_negative_fixture') {
-		assert(
-			Array.isArray(scenario.manifest.calibration?.known_shortcuts) &&
-				scenario.manifest.calibration.known_shortcuts.includes(fixture.shortcut_id),
-			`${file} shortcut_id must be declared in scenario calibration.known_shortcuts`
-		);
+		if (fixture.shortcut_id) {
+			assert(
+				Array.isArray(scenario.manifest.calibration?.known_shortcuts) &&
+					scenario.manifest.calibration.known_shortcuts.includes(fixture.shortcut_id),
+				`${file} shortcut_id must be declared in scenario calibration.known_shortcuts`
+			);
+		}
+		if (fixture.adversarial_case) {
+			assert(
+				knownAdversarialCases.has(fixture.adversarial_case),
+				`${file} adversarial_case must be one of: ${[...knownAdversarialCases].join(', ')}`
+			);
+		}
 	}
 	if (fixture.type === 'positive_control_fixture') {
 		for (const shortcutId of fixture.covers_shortcut_ids) {
@@ -150,7 +164,7 @@ function assertShortcutCoverage(fixtures, scenarios) {
 		}
 
 		const scenarioCoverage = coverage.get(fixture.scenario_id);
-		if (fixture.type === 'adversarial_negative_fixture') {
+		if (fixture.type === 'adversarial_negative_fixture' && fixture.shortcut_id) {
 			if (!scenarioCoverage.negative.has(fixture.shortcut_id)) {
 				scenarioCoverage.negative.set(fixture.shortcut_id, []);
 			}
@@ -179,6 +193,55 @@ function assertShortcutCoverage(fixtures, scenarios) {
 				`${scenario.file} calibration.known_shortcuts ${shortcutId} needs nearby positive_control_fixture coverage`
 			);
 		}
+	}
+}
+
+function assertBenchmarkCandidateCoverage(fixtures, scenarios) {
+	const coverage = new Map();
+
+	for (const { file, fixture } of fixtures) {
+		if (!coverage.has(fixture.scenario_id)) {
+			coverage.set(fixture.scenario_id, {
+				positive: [],
+				negative: [],
+				emptyOutputNegative: [],
+			});
+		}
+
+		const scenarioCoverage = coverage.get(fixture.scenario_id);
+		if (fixture.type === 'positive_control_fixture') {
+			scenarioCoverage.positive.push(file);
+		}
+		if (fixture.type === 'adversarial_negative_fixture') {
+			scenarioCoverage.negative.push(file);
+			if (fixture.adversarial_case === 'empty_output') {
+				scenarioCoverage.emptyOutputNegative.push(file);
+			}
+		}
+	}
+
+	for (const scenario of scenarios.values()) {
+		if (!benchmarkCandidateScopes.has(scenario.manifest.calibration?.benchmark_scope)) {
+			continue;
+		}
+
+		const scenarioCoverage = coverage.get(scenario.manifest.id) || {
+			positive: [],
+			negative: [],
+			emptyOutputNegative: [],
+		};
+		assert(
+			scenarioCoverage.positive.length > 0,
+			`${scenario.file} benchmark-candidate scenarios need a positive_control_fixture`
+		);
+		assert(
+			scenarioCoverage.negative.length > 0,
+			`${scenario.file} benchmark-candidate scenarios need an adversarial_negative_fixture`
+		);
+		assert(
+			scenarioCoverage.emptyOutputNegative.length > 0,
+			`${scenario.file} benchmark-candidate scenarios need an empty_output adversarial_negative_fixture`
+		);
 	}
 }
 
@@ -227,5 +290,6 @@ for (const file of files) {
 }
 
 assertShortcutCoverage(fixtures, scenarios);
+assertBenchmarkCandidateCoverage(fixtures, scenarios);
 
 console.log(`Validated and executed ${files.length} reward-hacking fixture(s).`);

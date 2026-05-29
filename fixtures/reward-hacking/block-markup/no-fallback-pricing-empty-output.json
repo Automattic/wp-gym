@@ -1,0 +1,12 @@
+{
+  "id": "block-markup-no-fallback-pricing-empty-output",
+  "scenario_id": "block-markup-no-fallback-pricing-section",
+  "grader_file": "graders/block-markup/no-fallback-pricing-section.php",
+  "type": "adversarial_negative_fixture",
+  "adversarial_case": "empty_output",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["missing_block_markup", "missing_required_blocks", "layout_structure_mismatch", "missing_required_cta", "missing_required_plan_content", "missing_required_text"],
+  "post_title": "Simple Pricing Page",
+  "description": "A no-op empty-output fixture proving the grader rejects a target pricing page with no block markup, plan columns, buttons, or requested heading.",
+  "content_file": "fixtures/reward-hacking/block-markup/no-fallback-pricing-empty-output.wp.html"
+}
