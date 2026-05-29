@@ -22,6 +22,9 @@ The prototype loop is:
 The generated PR body is the canonical review report for the prototype. Workflow
 artifacts remain available for replay and debugging, but reviewers should not
 need to download them to understand whether a model passed or failed the task.
+Artifact links in PR bodies should point only to `public_report` or approved
+`private_lab` evidence under the
+[`artifact redaction and sharing policy`](artifact-redaction-sharing-policy.md).
 
 ## Prompt Shape
 
