@@ -248,6 +248,33 @@ establish benchmark readiness because they are single attempts on a public
 diagnostic scenario and do not include a cheap-model row, repeated-attempt
 variance, or held-out private variants.
 
+## Live Model Matrix Evidence
+
+Issue [#9](https://github.com/Automattic/wp-gym/issues/9) has a first full
+side-by-side Data Machine live matrix run for `benchmark-readiness-pilot`:
+
+| Evidence | Value |
+| --- | --- |
+| Workflow run | https://github.com/Automattic/wp-gym/actions/runs/26641473628 |
+| Registry artifact | `wp-gym-run-registry-26641473628` |
+| Task set | `benchmark-readiness-pilot` |
+| Models | OpenAI `gpt-5.5`, Anthropic `claude-opus-4-7` |
+| Rows | 8 accepted / 8 inspected |
+| Overall result | 4 passed, 4 runtime failures, reward mean `0.5` |
+
+Registry report summary:
+
+| Family | Rows | Pass rate | Notes |
+| --- | --- | --- | --- |
+| `block-markup` | 4 | 100% | Both block tasks passed on both models. |
+| `modern-wordpress` | 4 | 0% | Both API/plugin tasks errored with `runtime_failure`; tracked in [#184](https://github.com/Automattic/wp-gym/issues/184). |
+
+This satisfies the first side-by-side matrix evidence requirement: the workflow
+can run the selected task set against both configured providers, produce accepted
+registry rows, and upload replay/report artifacts. The runtime failures are kept
+as pilot evidence rather than hidden, because failed rows are part of the eval
+signal. They do not make the task set benchmark-ready.
+
 ## Benchmark-Ready Gates
 
 The pilot becomes benchmark-ready only after these gates are complete:
