@@ -8,26 +8,556 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "upsert_post",
+            "tool_name": "workspace_show",
             "success": true,
             "turn_count": 1
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 1
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 2
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 3
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 4
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 5
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 6
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 7
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 8
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 9
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 10
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 11
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 12
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 13
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 14
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 15
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 16
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 17
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 18
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 19
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 20
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 21
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 22
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 23
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 25
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01XAtNGjSXphANCJWyLFFykn",
+            "tool_name": "workspace_show",
+            "tool_call_id": "toolu_01SXTPuPCcbVFjVWQNi6puiq",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T23:00:31+00:00",
-            "ended_at": "2026-05-29T23:00:31+00:00",
-            "duration_ms": 51,
-            "arguments_sha256": "b59fc8e3fe49369976043e225368c254127e9e618a451a79993e1c0dceb5d01d",
-            "result_sha256": "0088e73aa60b4855d5552b79ef713c8b6c5ad692d98419a5cb8f8aabc88dd01b",
-            "arguments_omitted": "redacted_arguments_too_large"
+            "started_at": "2026-05-29T23:02:31+00:00",
+            "ended_at": "2026-05-29T23:02:31+00:00",
+            "duration_ms": 10,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "7a5b65690729e5fcd960ff556fd54a30c81925dc95eb86d89dadae09343889c4",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01MfQnv9jdDJYchDTBQxmJZT",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:02:31+00:00",
+            "ended_at": "2026-05-29T23:02:31+00:00",
+            "duration_ms": 639,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01Bdxhufk8B2BNADaCPdBT29",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:02:33+00:00",
+            "ended_at": "2026-05-29T23:02:34+00:00",
+            "duration_ms": 586,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_016dm4g4J5fRV3zx2XdpnCtm",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:02:36+00:00",
+            "ended_at": "2026-05-29T23:02:36+00:00",
+            "duration_ms": 615,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01PAyoxTiVqpZ3EgaNmcw66Q",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:02:38+00:00",
+            "ended_at": "2026-05-29T23:02:39+00:00",
+            "duration_ms": 644,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01PFjZxV89zDeD4F7FeWLWHP",
+            "turn_count": 5,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:02:41+00:00",
+            "ended_at": "2026-05-29T23:02:41+00:00",
+            "duration_ms": 689,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01P1ZFWjHGtYh9cqN9gb4B3X",
+            "turn_count": 6,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:14+00:00",
+            "ended_at": "2026-05-29T23:03:14+00:00",
+            "duration_ms": 668,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01TeuBVK9ccJAVVwThFcvHaw",
+            "turn_count": 7,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:16+00:00",
+            "ended_at": "2026-05-29T23:03:17+00:00",
+            "duration_ms": 589,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01UfFaf4EsRduys4ES7UfZNv",
+            "turn_count": 8,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:19+00:00",
+            "ended_at": "2026-05-29T23:03:20+00:00",
+            "duration_ms": 597,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_014RCa1n73JNZ71tBpSY6HHs",
+            "turn_count": 9,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:22+00:00",
+            "ended_at": "2026-05-29T23:03:23+00:00",
+            "duration_ms": 574,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01XuEwC6TT3C5pYdyRxqV8Sz",
+            "turn_count": 10,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:25+00:00",
+            "ended_at": "2026-05-29T23:03:25+00:00",
+            "duration_ms": 573,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_016fx39dEtb2WtzUe5WypDLK",
+            "turn_count": 11,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:27+00:00",
+            "ended_at": "2026-05-29T23:03:28+00:00",
+            "duration_ms": 525,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_017wBWtU9L4nrkaWk7MhZ691",
+            "turn_count": 12,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:30+00:00",
+            "ended_at": "2026-05-29T23:03:31+00:00",
+            "duration_ms": 577,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01M7dju1Z34NUvCcSZ6kziZ1",
+            "turn_count": 13,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:33+00:00",
+            "ended_at": "2026-05-29T23:03:33+00:00",
+            "duration_ms": 613,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01MmT64edm45fLdspA7qPV1G",
+            "turn_count": 14,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:36+00:00",
+            "ended_at": "2026-05-29T23:03:37+00:00",
+            "duration_ms": 555,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_015nmenfHdAXiL5EUbeyDxWN",
+            "turn_count": 15,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:39+00:00",
+            "ended_at": "2026-05-29T23:03:39+00:00",
+            "duration_ms": 608,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_014gHUuF7mfNeiiXu5JZTf6C",
+            "turn_count": 16,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:41+00:00",
+            "ended_at": "2026-05-29T23:03:42+00:00",
+            "duration_ms": 594,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01PM1wj5ejjeUjk4SdK13DGP",
+            "turn_count": 17,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:44+00:00",
+            "ended_at": "2026-05-29T23:03:45+00:00",
+            "duration_ms": 577,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01E3FefKWpjvPS3FPxevdc5P",
+            "turn_count": 18,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:47+00:00",
+            "ended_at": "2026-05-29T23:03:47+00:00",
+            "duration_ms": 575,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01MuCvX3WP25iiSRZPJfd5k9",
+            "turn_count": 19,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:49+00:00",
+            "ended_at": "2026-05-29T23:03:49+00:00",
+            "duration_ms": 543,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01AjnWJrVRjkwZo1qBcDV37w",
+            "turn_count": 20,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:53+00:00",
+            "ended_at": "2026-05-29T23:03:53+00:00",
+            "duration_ms": 576,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01UbpGCf68DRspydWzAD29jN",
+            "turn_count": 21,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:55+00:00",
+            "ended_at": "2026-05-29T23:03:56+00:00",
+            "duration_ms": 558,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01CDvo5VF88DDYdbkQGJGGLU",
+            "turn_count": 22,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:03:58+00:00",
+            "ended_at": "2026-05-29T23:03:59+00:00",
+            "duration_ms": 562,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01B4Fdw4TaJcZYfjPDRriVUY",
+            "turn_count": 23,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:04:00+00:00",
+            "ended_at": "2026-05-29T23:04:01+00:00",
+            "duration_ms": 608,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01YDcHt784d5oFJaF1Z11ot7",
+            "turn_count": 25,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:04:05+00:00",
+            "ended_at": "2026-05-29T23:04:06+00:00",
+            "duration_ms": 561,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
         }
     ],
     "transcript": null,
@@ -36,7 +566,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "e4f0dfddca5fbf1c0a7d81904bd77e22ebf41712996b932658caa75811edcf7a",
+            "sha256": "c8019592cb74c32b5d0334ba59967997fd5e80bd4e2d8853c5cea1a90e6c6475",
             "bounded": true,
             "redacted": true
         }
@@ -47,11 +577,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:38909/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "a0dcd1db939d4ee62a5a458dbe9774d2027bd7876abbe49e0a64d2ce6351b41a",
-            "payload_sha256": "c004341b9f63b6e0705db834e993fbee4cffca9b38e92706a77a31a154b7ef49",
-            "bytes": 1420,
-            "written_at": "2026-05-29T23:00:43+00:00"
+            "url": "http://127.0.0.1:39949/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "65400b35d19a04f49b52cb00e294ebb2c56c977b7c50b16891bafb8417dcce6e",
+            "payload_sha256": "c8689e2c11a6df9bfb76b8cc895feabcc90138d63c6c6906c09df015a125174e",
+            "bytes": 21547,
+            "written_at": "2026-05-29T23:04:06+00:00"
         }
     },
     "transcript_artifact": null,
@@ -67,34 +597,492 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 23:00:01",
-            "completed_at": "2026-05-29 23:00:43"
+            "created_at": "2026-05-29 23:01:58",
+            "completed_at": "2026-05-29 23:04:06"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 25,
+        "entries_emitted": 25,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01XAtNGjSXphANCJWyLFFykn",
+                "tool_name": "workspace_show",
+                "tool_call_id": "toolu_01SXTPuPCcbVFjVWQNi6puiq",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T23:00:31+00:00",
-                "ended_at": "2026-05-29T23:00:31+00:00",
-                "duration_ms": 51,
-                "arguments_sha256": "b59fc8e3fe49369976043e225368c254127e9e618a451a79993e1c0dceb5d01d",
-                "result_sha256": "0088e73aa60b4855d5552b79ef713c8b6c5ad692d98419a5cb8f8aabc88dd01b",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "9ee487eb1263d027fda16d3d7f05ca8fb9e5728dc04e65c6618d5b551557d9e2"
+                "started_at": "2026-05-29T23:02:31+00:00",
+                "ended_at": "2026-05-29T23:02:31+00:00",
+                "duration_ms": 10,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "7a5b65690729e5fcd960ff556fd54a30c81925dc95eb86d89dadae09343889c4",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "66ddad129368c6771e6b3228d36497f5b2505997b7fdac8702e522e6b38bfc2f"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01MfQnv9jdDJYchDTBQxmJZT",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:02:31+00:00",
+                "ended_at": "2026-05-29T23:02:31+00:00",
+                "duration_ms": 639,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "ee408ea747cae4a6cfb051e1f2d23e498d04a6c7380c39c7a54957f9dbcf361f"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01Bdxhufk8B2BNADaCPdBT29",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:02:33+00:00",
+                "ended_at": "2026-05-29T23:02:34+00:00",
+                "duration_ms": 586,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "4aa24cc081ba969203e3503cd2a7ed6cce9d787a221ee2995209b7548a106d13"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_016dm4g4J5fRV3zx2XdpnCtm",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:02:36+00:00",
+                "ended_at": "2026-05-29T23:02:36+00:00",
+                "duration_ms": 615,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "c688199810d434f12c1664a95a5ded81073913e013d8703129926d5404829a4b"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01PAyoxTiVqpZ3EgaNmcw66Q",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:02:38+00:00",
+                "ended_at": "2026-05-29T23:02:39+00:00",
+                "duration_ms": 644,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "fe6ae2681deadb9664819a125180e78334b7cf3eae8d95580c4b9061716dcc62"
+            },
+            {
+                "index": 5,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01PFjZxV89zDeD4F7FeWLWHP",
+                "turn_count": 5,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:02:41+00:00",
+                "ended_at": "2026-05-29T23:02:41+00:00",
+                "duration_ms": 689,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "6a098f3383314a718e88dc4191a8cb6fbe66f6b5f9f29c2fab06352a84fff58a"
+            },
+            {
+                "index": 6,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01P1ZFWjHGtYh9cqN9gb4B3X",
+                "turn_count": 6,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:14+00:00",
+                "ended_at": "2026-05-29T23:03:14+00:00",
+                "duration_ms": 668,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "ac81eb8f2501d6f9e08ac175e7f36c58ce55ed20487aabe0a5fb50e1d29e93d5"
+            },
+            {
+                "index": 7,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01TeuBVK9ccJAVVwThFcvHaw",
+                "turn_count": 7,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:16+00:00",
+                "ended_at": "2026-05-29T23:03:17+00:00",
+                "duration_ms": 589,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "5e0beab7f501c7772c9fe4e940dabf9607603ffc1873b1f42a6575b5087e9856"
+            },
+            {
+                "index": 8,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01UfFaf4EsRduys4ES7UfZNv",
+                "turn_count": 8,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:19+00:00",
+                "ended_at": "2026-05-29T23:03:20+00:00",
+                "duration_ms": 597,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "5313d27777922bc1ff014c0c258c6bd2da5d786528ad0aa32f41a14094909752"
+            },
+            {
+                "index": 9,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_014RCa1n73JNZ71tBpSY6HHs",
+                "turn_count": 9,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:22+00:00",
+                "ended_at": "2026-05-29T23:03:23+00:00",
+                "duration_ms": 574,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "89ccb6d908d4b7b11f404bb8c6496ae521c974236855073fc618ca35bb323eec"
+            },
+            {
+                "index": 10,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01XuEwC6TT3C5pYdyRxqV8Sz",
+                "turn_count": 10,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:25+00:00",
+                "ended_at": "2026-05-29T23:03:25+00:00",
+                "duration_ms": 573,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "6e631c827e612043407a73f72d251301563e415f14a3b96322c68dce578a374e"
+            },
+            {
+                "index": 11,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_016fx39dEtb2WtzUe5WypDLK",
+                "turn_count": 11,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:27+00:00",
+                "ended_at": "2026-05-29T23:03:28+00:00",
+                "duration_ms": 525,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "371894abb5dbbb5188e0f71751f29777a4f3d3d2a6c949e203aedad23435e298"
+            },
+            {
+                "index": 12,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_017wBWtU9L4nrkaWk7MhZ691",
+                "turn_count": 12,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:30+00:00",
+                "ended_at": "2026-05-29T23:03:31+00:00",
+                "duration_ms": 577,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "99a2882d15bdde683ab08786afa3ca2c77a6d34bc54a318fc0ab013b1bc08381"
+            },
+            {
+                "index": 13,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01M7dju1Z34NUvCcSZ6kziZ1",
+                "turn_count": 13,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:33+00:00",
+                "ended_at": "2026-05-29T23:03:33+00:00",
+                "duration_ms": 613,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "ba50455ccb4f0d91bc4f8db161451e5228092e99455e971853f518e9127e399d"
+            },
+            {
+                "index": 14,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01MmT64edm45fLdspA7qPV1G",
+                "turn_count": 14,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:36+00:00",
+                "ended_at": "2026-05-29T23:03:37+00:00",
+                "duration_ms": 555,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "d091e50362a7ce03f4cc854e7ca46d5fab33c1f2ac89bf4d919ac5674e43339d"
+            },
+            {
+                "index": 15,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_015nmenfHdAXiL5EUbeyDxWN",
+                "turn_count": 15,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:39+00:00",
+                "ended_at": "2026-05-29T23:03:39+00:00",
+                "duration_ms": 608,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "0b8e224662d15620f68f01189b388e7d9642dc2993306f552537119567455a71"
+            },
+            {
+                "index": 16,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_014gHUuF7mfNeiiXu5JZTf6C",
+                "turn_count": 16,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:41+00:00",
+                "ended_at": "2026-05-29T23:03:42+00:00",
+                "duration_ms": 594,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "1819028a93308ed1c2777f8fdcbfa0c3f3caae4118fc94f61fca9aef81e62b93"
+            },
+            {
+                "index": 17,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01PM1wj5ejjeUjk4SdK13DGP",
+                "turn_count": 17,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:44+00:00",
+                "ended_at": "2026-05-29T23:03:45+00:00",
+                "duration_ms": 577,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "eee75ff578ec86a33cc021af21648dd12a313f29d253242a2ae3516feceb0938"
+            },
+            {
+                "index": 18,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01E3FefKWpjvPS3FPxevdc5P",
+                "turn_count": 18,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:47+00:00",
+                "ended_at": "2026-05-29T23:03:47+00:00",
+                "duration_ms": 575,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "48fcbb6e8b44384006ad02df1154bdb9e93fea55ec2502a9d08c404b57901580"
+            },
+            {
+                "index": 19,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01MuCvX3WP25iiSRZPJfd5k9",
+                "turn_count": 19,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:49+00:00",
+                "ended_at": "2026-05-29T23:03:49+00:00",
+                "duration_ms": 543,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "0cc78f80a64bb1ff3fe2c4d1cced85386f2a420d5a699aba9fa86e3db126ede6"
+            },
+            {
+                "index": 20,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01AjnWJrVRjkwZo1qBcDV37w",
+                "turn_count": 20,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:53+00:00",
+                "ended_at": "2026-05-29T23:03:53+00:00",
+                "duration_ms": 576,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "a9efa266b2d47674782c0ffb762ee20b440347e20e867d1be0a20c304beeb4ff"
+            },
+            {
+                "index": 21,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01UbpGCf68DRspydWzAD29jN",
+                "turn_count": 21,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:55+00:00",
+                "ended_at": "2026-05-29T23:03:56+00:00",
+                "duration_ms": 558,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "822722e8502c52a9e9b8cdcbedc22e58187cfe839ac45debae1af7784efa9786"
+            },
+            {
+                "index": 22,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01CDvo5VF88DDYdbkQGJGGLU",
+                "turn_count": 22,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:03:58+00:00",
+                "ended_at": "2026-05-29T23:03:59+00:00",
+                "duration_ms": 562,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "4b051717baeb30bcea815f910c49c8761506ae6e76c87a0fd48b735e3049971c"
+            },
+            {
+                "index": 23,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01B4Fdw4TaJcZYfjPDRriVUY",
+                "turn_count": 23,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:04:00+00:00",
+                "ended_at": "2026-05-29T23:04:01+00:00",
+                "duration_ms": 608,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "425558d4ed000df6674d54abccea3b63e7ee5f71b3d4d1045d765d3d86fa43bc"
+            },
+            {
+                "index": 24,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01YDcHt784d5oFJaF1Z11ot7",
+                "turn_count": 25,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:04:05+00:00",
+                "ended_at": "2026-05-29T23:04:06+00:00",
+                "duration_ms": 561,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "bd36c17fa441769695bb9e868a5d4f6ebb2636f8b94fcebd5d8dd1a9c28c9e8c"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "e4f0dfddca5fbf1c0a7d81904bd77e22ebf41712996b932658caa75811edcf7a"
+        "sha256": "c8019592cb74c32b5d0334ba59967997fd5e80bd4e2d8853c5cea1a90e6c6475"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
