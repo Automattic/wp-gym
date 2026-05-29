@@ -29,6 +29,11 @@ on:
         required: true
         default: true
         type: boolean
+      attempts_per_model:
+        description: Number of repeated attempts to run for each task/model row.
+        required: true
+        default: 1
+        type: number
 permissions:
   actions: read
   contents: write
@@ -36,7 +41,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: wp-gym-live-${{ github.ref }}-${{ inputs.task_set }}-${{ inputs.task_ids }}
+  group: wp-gym-live-${{ github.ref }}-${{ inputs.task_set }}-${{ inputs.task_ids }}-${{ inputs.attempts_per_model }}
   cancel-in-progress: false
 
 jobs:
@@ -60,6 +65,7 @@ jobs:
         env:
           TASK_SET: ${{ inputs.task_set }}
           TASK_IDS: ${{ inputs.task_ids }}
+          ATTEMPTS_PER_MODEL: ${{ inputs.attempts_per_model }}
         run: |
           npm run lint
           npm run validate
