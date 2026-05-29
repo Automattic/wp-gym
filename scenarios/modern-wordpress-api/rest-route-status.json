@@ -160,9 +160,8 @@
       "hard_coded_clean_site_state",
       "extra_output_fields"
     ],
-    "task_contract_level": "workspace_diff_diagnostic",
+    "task_contract_level": "benchmark_replay",
     "benchmark_blockers": [
-      "workspace_diff_diagnostic_only",
       "missing_baseline_results",
       "uncalibrated_difficulty"
     ]
@@ -170,6 +169,8 @@
   "expected_artifacts": [
     "workspace_diff",
     "plugin_files",
+    "replay_trace",
+    "replay_bundle",
     "grader_result"
   ],
   "expected": {

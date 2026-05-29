@@ -352,7 +352,8 @@
     "expected_artifacts": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+      "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+      "uniqueItems": true
     },
     "episode_contract": {
       "type": "object",
@@ -407,5 +408,43 @@
       "additionalProperties": true
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "calibration": {
+            "properties": {
+              "task_contract_level": { "const": "benchmark_replay" }
+            },
+            "required": ["task_contract_level"]
+          }
+        },
+        "required": ["calibration"]
+      },
+      "then": {
+        "properties": {
+          "expected_artifacts": {
+            "allOf": [
+              { "contains": { "const": "grader_result" } },
+              { "contains": { "const": "replay_bundle" } },
+              { "contains": { "const": "replay_trace" } },
+              {
+                "contains": {
+                  "enum": ["wordpress_state", "workspace_diff", "plugin_files", "media_library"]
+                }
+              }
+            ]
+          },
+          "episode_contract": {
+            "properties": {
+              "allowed_action_types": {
+                "items": { "enum": ["wp_cli", "filesystem"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "additionalProperties": true
 }

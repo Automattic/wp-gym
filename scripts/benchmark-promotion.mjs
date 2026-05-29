@@ -14,6 +14,9 @@ const hashFields = [
 	'replay_contract_sha256',
 ];
 const hashPattern = /^[a-f0-9]{64}$/;
+const benchmarkReplayRequiredArtifacts = ['grader_result', 'replay_bundle', 'replay_trace'];
+const benchmarkReplayStateArtifacts = ['wordpress_state', 'workspace_diff', 'plugin_files', 'media_library'];
+const benchmarkReplayActionTypes = ['wp_cli', 'filesystem'];
 
 function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -215,6 +218,20 @@ function evaluateScenario(scenario, context = {}) {
 	gates.push(calibration.task_contract_level === 'benchmark_replay'
 		? pass('replay_contract_benchmark', 'Replay contract is benchmark_replay.')
 		: fail('replay_contract_benchmark', 'Scenario task_contract_level must be benchmark_replay.', ['diagnostic_contract_only']));
+
+	const expectedArtifacts = manifest.expected_artifacts || [];
+	const missingReplayArtifacts = benchmarkReplayRequiredArtifacts.filter((artifact) => !expectedArtifacts.includes(artifact));
+	gates.push(missingReplayArtifacts.length === 0 && expectedArtifacts.some((artifact) => benchmarkReplayStateArtifacts.includes(artifact))
+		? pass('replay_artifacts_present', 'Scenario declares replay bundle, trace, grader result, and replayable state artifacts.', expectedArtifacts)
+		: fail('replay_artifacts_present', 'Benchmark replay scenarios must declare replay-critical expected artifacts.', [
+			...missingReplayArtifacts.map((artifact) => `missing_expected_artifact:${artifact}`),
+			...(expectedArtifacts.some((artifact) => benchmarkReplayStateArtifacts.includes(artifact)) ? [] : ['missing_replayable_state_artifact']),
+		], expectedArtifacts));
+
+	const unsupportedActions = (manifest.episode_contract?.allowed_action_types || []).filter((actionType) => !benchmarkReplayActionTypes.includes(actionType));
+	gates.push(unsupportedActions.length === 0
+		? pass('replay_actions_supported', 'Scenario episode actions are supported by local replay.', manifest.episode_contract?.allowed_action_types || [])
+		: fail('replay_actions_supported', 'Benchmark replay scenarios may only use locally replayable action types.', unsupportedActions.map((actionType) => `non_replayable_action_type:${actionType}`), manifest.episode_contract?.allowed_action_types || []));
 
 	gates.push(hasVersionIdentity(calibration.benchmark_metadata)
 		? pass('version_identity_present', 'Scenario benchmark metadata includes version identity hashes.')
