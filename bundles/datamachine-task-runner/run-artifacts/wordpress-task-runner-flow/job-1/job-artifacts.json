@@ -8,31 +8,50 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "local_search",
+            "tool_name": "workspace_show",
             "success": true,
             "turn_count": 1
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 2
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "local_search",
-            "tool_call_id": "call_A0YQYcRE7XZH0KY5y35zJUVy",
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_Lu4IF7rHoSZmFPsntl7QN85d",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T23:00:42+00:00",
-            "ended_at": "2026-05-29T23:00:42+00:00",
-            "duration_ms": 11,
-            "arguments_sha256": "c67dc12c9b3db39efb9a98c0c040b186f405703559bfd7ae109b5c6f11100b68",
-            "result_sha256": "9583feca41a4d9d7559d6fd1f1a3711aeb62ff454980eb50ca553512a0bb06e2",
+            "started_at": "2026-05-29T23:07:39+00:00",
+            "ended_at": "2026-05-29T23:07:39+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "a0e2da84baddcf555d4ebe47efb9fe41c4bea19306edf254acde0328b285bd87",
             "arguments_redacted": {
-                "query": "Simple Pricing Page",
-                "post_types": [
-                    "page"
-                ],
-                "title_only": true
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_pbvcdgM3AdI11eX3olnejaJ9",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:07:40+00:00",
+            "ended_at": "2026-05-29T23:07:41+00:00",
+            "duration_ms": 716,
+            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": ""
             }
         }
     ],
@@ -42,7 +61,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "d506e7a6eb40dff8add3876622dde7cdc8557d4dace0fe585ab71356f3ab8607",
+            "sha256": "d5e215075fb57499bbaa76f87f6126a0bc152b6ef4c4a735a110d35e1d94d38c",
             "bounded": true,
             "redacted": true
         }
@@ -53,11 +72,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:34867/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "f99c8b1fd252c2a9f6627c4b0eb7f7dbc8e1075df7946e0d62a39391dae2c3ed",
-            "payload_sha256": "436681b80422182e299a37c30d089ad85002076291caa724de3d7751d0146804",
-            "bytes": 1567,
-            "written_at": "2026-05-29T23:00:47+00:00"
+            "url": "http://127.0.0.1:43255/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "5a665fac21f7792dd6d4a8b3fc9bbc0483c4d76ada6e19b93e3d033fc8d0e831",
+            "payload_sha256": "de611aeac416101f05625b6fefe97522510d83386107475ccca7aaf0515bc738",
+            "bytes": 2312,
+            "written_at": "2026-05-29T23:07:42+00:00"
         }
     },
     "transcript_artifact": null,
@@ -73,40 +92,56 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 23:00:40",
-            "completed_at": "2026-05-29 23:00:47"
+            "created_at": "2026-05-29 23:07:35",
+            "completed_at": "2026-05-29 23:07:42"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 2,
+        "entries_emitted": 2,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "local_search",
-                "tool_call_id": "call_A0YQYcRE7XZH0KY5y35zJUVy",
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_Lu4IF7rHoSZmFPsntl7QN85d",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T23:00:42+00:00",
-                "ended_at": "2026-05-29T23:00:42+00:00",
-                "duration_ms": 11,
-                "arguments_sha256": "c67dc12c9b3db39efb9a98c0c040b186f405703559bfd7ae109b5c6f11100b68",
-                "result_sha256": "9583feca41a4d9d7559d6fd1f1a3711aeb62ff454980eb50ca553512a0bb06e2",
+                "started_at": "2026-05-29T23:07:39+00:00",
+                "ended_at": "2026-05-29T23:07:39+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "a0e2da84baddcf555d4ebe47efb9fe41c4bea19306edf254acde0328b285bd87",
                 "arguments_redacted": {
-                    "query": "Simple Pricing Page",
-                    "post_types": [
-                        "page"
-                    ],
-                    "title_only": true
+                    "name": "current-project"
                 },
-                "entry_sha256": "b937bc835edb9349d20ce8461adeba5f43becb7d968dcc7fced9ee89bd2b5f47"
+                "entry_sha256": "2150f5080fcd0ce884d9c49a196bdf323c13bc07a8f987714bc4ddef55a7a114"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_pbvcdgM3AdI11eX3olnejaJ9",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:07:40+00:00",
+                "ended_at": "2026-05-29T23:07:41+00:00",
+                "duration_ms": 716,
+                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": ""
+                },
+                "entry_sha256": "82619db559c20032aec5f22d5e5796a2a909f124e79780d8037793df38cc4e19"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "d506e7a6eb40dff8add3876622dde7cdc8557d4dace0fe585ab71356f3ab8607"
+        "sha256": "d5e215075fb57499bbaa76f87f6126a0bc152b6ef4c4a735a110d35e1d94d38c"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
