@@ -43,6 +43,87 @@ function repoRelative(root, file) {
 	return path.relative(root, file).replace(/\\/g, '/');
 }
 
+function normalizeRoot(options = {}) {
+	return path.resolve(options.root || moduleRoot);
+}
+
+function schemaReferences() {
+	return {
+		action: 'schemas/action.v1.schema.json',
+		observation: 'schemas/observation.v1.schema.json',
+		step_result: 'schemas/step-result.v1.schema.json',
+		trace: 'schemas/trace.v1.schema.json',
+	};
+}
+
+function actionCapabilitiesForScenario(manifest) {
+	if (manifest.episode_contract?.allowed_action_types?.length) {
+		return manifest.episode_contract.allowed_action_types;
+	}
+
+	if (manifest.environment?.action_mode === 'workspace') {
+		return manifest.environment.allowed_tools?.includes('run_wp_cli')
+			? ['filesystem', 'wp_cli']
+			: ['filesystem'];
+	}
+
+	return ['wp_cli'];
+}
+
+function scenarioSummary(root, scenario) {
+	const { manifest, file } = scenario;
+	const allowedActionTypes = actionCapabilitiesForScenario(manifest);
+
+	return {
+		id: manifest.id,
+		label: manifest.label,
+		description: manifest.description || '',
+		file: repoRelative(root, file),
+		split: manifest.split?.membership || null,
+		task_contract_level: manifest.calibration?.task_contract_level || null,
+		benchmark_scope: manifest.calibration?.benchmark_scope || null,
+		environment: {
+			action_mode: manifest.environment?.action_mode || null,
+			uses_workspace: Boolean(manifest.environment?.uses_workspace),
+			reset_fixture: manifest.environment?.reset_fixture || null,
+			observation_channels: manifest.environment?.observation_channels || [],
+			allowed_action_types: allowedActionTypes,
+		},
+		schemas: schemaReferences(),
+	};
+}
+
+function scenarioCapabilities(manifest) {
+	const allowedActionTypes = actionCapabilitiesForScenario(manifest);
+	const replayableActionTypes = allowedActionTypes.filter((type) => ['wp_cli', 'filesystem'].includes(type));
+	const evidenceOnlyActionTypes = allowedActionTypes.filter((type) => !replayableActionTypes.includes(type));
+
+	return {
+		schema_version: 1,
+		scenario_id: manifest.id,
+		allowed_action_types: allowedActionTypes,
+		replayable_action_types: replayableActionTypes,
+		evidence_only_action_types: evidenceOnlyActionTypes,
+		implemented_local_action_types: ['wp_cli', 'filesystem'],
+		observation_types: ['command_result', 'files', 'html', 'logs', 'rest_response', 'screenshot', 'wp_state', 'browser_result'],
+		schemas: schemaReferences(),
+	};
+}
+
+function taskSetSummary(root, taskSet) {
+	const { manifest, file } = taskSet;
+
+	return {
+		id: manifest.id,
+		label: manifest.label,
+		description: manifest.description || '',
+		file: repoRelative(root, file),
+		benchmark_status: manifest.benchmark_status || null,
+		task_contract_level: manifest.task_contract_level || null,
+		scenario_ids: (manifest.tasks || []).map((task) => task.scenario_id),
+	};
+}
+
 function createEpisodeId(scenarioId, seed = null) {
 	const suffixInput = seed === null
 		? `${scenarioId}:${Date.now()}:${Math.random()}`
@@ -408,9 +489,65 @@ async function runCommand(command, args, options = {}) {
 
 export class WPGym {
 	static async make(scenarioId, options = {}) {
-		const root = path.resolve(options.root || moduleRoot);
+		const root = normalizeRoot(options);
 		const scenario = await WPGym.findScenario(root, scenarioId);
 		return new WPGymEnvironment({ root, scenario, options });
+	}
+
+	static async listScenarios(options = {}) {
+		const root = normalizeRoot(options);
+		const scenarios = [];
+		for (const file of await listJsonFiles(path.join(root, 'scenarios'))) {
+			scenarios.push({ file, manifest: await readJson(file) });
+		}
+
+		return scenarios.map((scenario) => scenarioSummary(root, scenario));
+	}
+
+	static async listTaskSets(options = {}) {
+		const root = normalizeRoot(options);
+		const taskSets = [];
+		for (const file of await listJsonFiles(path.join(root, 'task-sets'))) {
+			taskSets.push({ file, manifest: await readJson(file) });
+		}
+
+		return taskSets.map((taskSet) => taskSetSummary(root, taskSet));
+	}
+
+	static async describeScenario(scenarioId, options = {}) {
+		const root = normalizeRoot(options);
+		const scenario = await WPGym.findScenario(root, scenarioId);
+
+		return {
+			...scenarioSummary(root, scenario),
+			prompt_file: repoRelative(root, resolveFrom(scenario.file, scenario.manifest.prompt_file)),
+			grader_file: repoRelative(root, resolveFrom(scenario.file, scenario.manifest.grader_file)),
+			rules: scenario.manifest.rules || {},
+			expected_artifacts: scenario.manifest.expected_artifacts || [],
+			capabilities: scenarioCapabilities(scenario.manifest),
+		};
+	}
+
+	static async describeTaskSet(taskSetId, options = {}) {
+		const root = normalizeRoot(options);
+		for (const file of await listJsonFiles(path.join(root, 'task-sets'))) {
+			const manifest = await readJson(file);
+			if (manifest.id === taskSetId) {
+				return {
+					...taskSetSummary(root, { file, manifest }),
+					tasks: manifest.tasks || [],
+					scenario_manifests: manifest.scenario_manifests || [],
+				};
+			}
+		}
+
+		throw new Error(`Unknown wp-gym task set: ${taskSetId}`);
+	}
+
+	static async capabilities(scenarioId, options = {}) {
+		const root = normalizeRoot(options);
+		const scenario = await WPGym.findScenario(root, scenarioId);
+		return scenarioCapabilities(scenario.manifest);
 	}
 
 	static async findScenario(root, scenarioId) {
@@ -700,7 +837,12 @@ export class WPGymEnvironment {
 			return {
 				schema_version: 1,
 				type: 'files',
-				files: entries.map((entry) => ({ path: path.posix.join(action.path, entry.name) })),
+				action_type: 'filesystem',
+				operation: 'list',
+				files: entries.map((entry) => ({
+					path: path.posix.join(action.path, entry.name),
+					kind: entry.isDirectory() ? 'directory' : 'file',
+				})),
 			};
 		}
 
@@ -709,7 +851,9 @@ export class WPGymEnvironment {
 			return {
 				schema_version: 1,
 				type: 'files',
-				files: [{ path: action.path, content, sha256: createHash('sha256').update(content).digest('hex') }],
+				action_type: 'filesystem',
+				operation: 'read',
+				files: [{ path: action.path, kind: 'file', content, sha256: createHash('sha256').update(content).digest('hex') }],
 			};
 		}
 
@@ -719,13 +863,15 @@ export class WPGymEnvironment {
 			return {
 				schema_version: 1,
 				type: 'files',
-				files: [{ path: action.path, sha256: createHash('sha256').update(String(action.content || '')).digest('hex') }],
+				action_type: 'filesystem',
+				operation: 'write',
+				files: [{ path: action.path, kind: 'file', sha256: createHash('sha256').update(String(action.content || '')).digest('hex') }],
 			};
 		}
 
 		if (action.operation === 'delete') {
 			await rm(target, { recursive: true, force: true });
-			return { schema_version: 1, type: 'files', files: [{ path: action.path }] };
+			return { schema_version: 1, type: 'files', action_type: 'filesystem', operation: 'delete', files: [{ path: action.path, kind: 'unknown' }] };
 		}
 
 		throw new Error(`Local WPGym does not implement filesystem ${action.operation} yet.`);
@@ -947,17 +1093,7 @@ echo wp_json_encode(array('documents' => $documents));
 	}
 
 	allowedActionTypes() {
-		if (this.scenario.episode_contract?.allowed_action_types?.length) {
-			return this.scenario.episode_contract.allowed_action_types;
-		}
-
-		if (this.scenario.environment.action_mode === 'workspace') {
-			return this.scenario.environment.allowed_tools?.includes('run_wp_cli')
-				? ['filesystem', 'wp_cli']
-				: ['filesystem'];
-		}
-
-		return ['wp_cli'];
+		return actionCapabilitiesForScenario(this.scenario);
 	}
 
 	maxSteps() {

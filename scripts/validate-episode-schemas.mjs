@@ -61,6 +61,31 @@ const wpCliAction = {
 	timeout_ms: 30000,
 };
 
+const filesystemAction = {
+	schema_version: 1,
+	type: 'filesystem',
+	operation: 'write',
+	path: 'plugins/example/example.php',
+	content: '<?php\n',
+};
+
+const restAction = {
+	schema_version: 1,
+	type: 'rest',
+	method: 'GET',
+	path: '/wp-json/wp/v2/posts',
+	timeout_ms: 30000,
+};
+
+const browserAction = {
+	schema_version: 1,
+	type: 'browser',
+	operation: 'capture',
+	replayability: 'evidence_only',
+	url: '/',
+	capture: ['html', 'screenshot'],
+};
+
 const commandObservation = {
 	schema_version: 1,
 	type: 'command_result',
@@ -72,6 +97,52 @@ const commandObservation = {
 	timeout_ms: 30000,
 	timed_out: false,
 	duration_ms: 84,
+	error: null,
+};
+
+const filesObservation = {
+	schema_version: 1,
+	type: 'files',
+	action_type: 'filesystem',
+	operation: 'write',
+	files: [
+		{
+			path: 'plugins/example/example.php',
+			kind: 'file',
+			sha256: '0'.repeat(64),
+		},
+	],
+};
+
+const restObservation = {
+	schema_version: 1,
+	type: 'rest_response',
+	action_type: 'rest',
+	method: 'GET',
+	path: '/wp-json/wp/v2/posts',
+	status: 200,
+	headers: { 'content-type': 'application/json' },
+	body: [],
+	timed_out: false,
+	duration_ms: 42,
+	error: null,
+};
+
+const browserObservation = {
+	schema_version: 1,
+	type: 'browser_result',
+	action_type: 'browser',
+	operation: 'capture',
+	replayability: 'evidence_only',
+	url: '/',
+	artifacts: [
+		{
+			path: 'files/browser/screenshot.png',
+			sha256: '1'.repeat(64),
+			mime_type: 'image/png',
+		},
+	],
+	duration_ms: 100,
 	error: null,
 };
 
@@ -113,12 +184,26 @@ const trace = {
 const { stdout, ...missingStdoutObservation } = commandObservation;
 
 assertValid(actionSchemaId, wpCliAction, 'wp_cli action');
+assertValid(actionSchemaId, filesystemAction, 'filesystem action');
+assertValid(actionSchemaId, restAction, 'rest action');
+assertValid(actionSchemaId, browserAction, 'browser action');
 assertValid(observationSchemaId, commandObservation, 'command_result observation');
+assertValid(observationSchemaId, filesObservation, 'files observation');
+assertValid(observationSchemaId, restObservation, 'rest_response observation');
+assertValid(observationSchemaId, browserObservation, 'browser_result observation');
 assertValid(stepResultSchemaId, stepResult, 'step result');
 assertValid(traceSchemaId, trace, 'trace');
 
 assertInvalid(actionSchemaId, { schema_version: 1, type: 'wp_cli' }, 'wp_cli action without command');
+assertInvalid(actionSchemaId, { ...wpCliAction, command: 'wp post list' }, 'wp_cli action with leading wp');
+assertInvalid(actionSchemaId, { ...wpCliAction, unknown: true }, 'wp_cli action with unknown property');
+assertInvalid(actionSchemaId, { ...filesystemAction, path: '../secret.php' }, 'filesystem action escaping workspace');
+assertInvalid(actionSchemaId, { ...filesystemAction, operation: 'patch' }, 'filesystem patch action before runtime support');
+assertInvalid(actionSchemaId, { ...restAction, method: 'TRACE' }, 'rest action with unsupported method');
+assertInvalid(actionSchemaId, { ...browserAction, operation: 'drag' }, 'browser action with unsupported operation');
 assertInvalid(observationSchemaId, missingStdoutObservation, 'command_result observation without stdout');
+assertInvalid(observationSchemaId, { ...filesObservation, extra: true }, 'files observation with unknown property');
+assertInvalid(observationSchemaId, { ...restObservation, action_type: 'wp_cli' }, 'rest observation with wrong action type');
 assertInvalid(
 	stepResultSchemaId,
 	{

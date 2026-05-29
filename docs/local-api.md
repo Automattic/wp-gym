@@ -1,10 +1,37 @@
 # Local WPGym API
 
-Issue: [#79](https://github.com/Automattic/wp-gym/issues/79)
+Issues: [#79](https://github.com/Automattic/wp-gym/issues/79),
+[#162](https://github.com/Automattic/wp-gym/issues/162)
 
 `wp-gym` exposes a small Gym-like JavaScript API for local experiments against the
 same scenario manifests, action schemas, observation schemas, and hidden graders
 used by CI runners.
+
+## Discovery
+
+External runners should discover tasks before constructing an environment:
+
+```js
+import { WPGym } from './src/index.js';
+
+const scenarios = await WPGym.listScenarios();
+const taskSets = await WPGym.listTaskSets();
+const scenario = await WPGym.describeScenario('block-markup-no-fallback-pricing-section');
+const capabilities = await WPGym.capabilities('block-markup-no-fallback-pricing-section');
+```
+
+The same discovery surface is available from the CLI:
+
+```sh
+node bin/wp-gym.mjs list scenarios
+node bin/wp-gym.mjs list task-sets
+node bin/wp-gym.mjs show scenario block-markup-no-fallback-pricing-section
+node bin/wp-gym.mjs capabilities block-markup-no-fallback-pricing-section
+```
+
+Discovery output includes scenario ids, task-set ids, split metadata,
+environment mode, allowed action types, replayability, observation types, and the
+schema files a runner should validate against.
 
 ```js
 import { WPGym } from './src/index.js';
@@ -22,6 +49,17 @@ await env.close();
 
 ## Contract
 
+- `WPGym.listScenarios(options)` returns public scenario summaries from
+  `scenarios/`.
+- `WPGym.listTaskSets(options)` returns task-set summaries from `task-sets/`.
+- `WPGym.describeScenario(scenarioId, options)` returns a single scenario's
+  public runner metadata, including prompt/grader file references and
+  capabilities.
+- `WPGym.describeTaskSet(taskSetId, options)` returns one task set and its task
+  entries.
+- `WPGym.capabilities(scenarioId, options)` returns allowed action types,
+  replayable action types, evidence-only action types, observation types, and
+  schema file references.
 - `WPGym.make(scenarioId, options)` loads one scenario manifest from `scenarios/`.
 - `env.reset(options)` creates an isolated local episode and returns an
   observation. Pass `{ seed }` when a model loop needs deterministic reset
@@ -57,6 +95,16 @@ The local adapter is intentionally thin. It currently supports:
 - `filesystem` actions inside scenario `environment.writable_roots` for workspace
   scenarios.
 
+The schemas also define `rest` and `browser` actions so traces can preserve
+evidence from richer runners. This Node slice does not execute those actions
+locally yet; if a task requires generic REST or interactive browser execution,
+the missing primitive belongs in WP Codebox as runtime functionality, while
+`wp-gym` keeps only the eval-layer action and observation records.
+
+A Python or Gymnasium wrapper is intentionally deferred. The supported external
+surface for this slice is the Node API plus JSON CLI output; a Python wrapper can
+be a thin consumer later once the JSON contract settles.
+
 `env.runtimePlan()` exports a generic `wp-gym/runtime-plan/v1` record for replay
 and debugging. Normal local execution uses WP Codebox's native runtime episode
 API directly; CI orchestration can call the same `wp-gym` API or CLI without
@@ -72,3 +120,9 @@ node bin/wp-gym.mjs demo block-markup-no-fallback-pricing-section
 
 The command prints the reset observation, step result, hidden grade, and replay
 trace as JSON.
+
+The same no-model flow is available as a small example:
+
+```sh
+node examples/no-model-episode.mjs block-markup-no-fallback-pricing-section
+```
