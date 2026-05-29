@@ -51,6 +51,27 @@ const knownProbeTypes = new Set(['rendered_site_design']);
 const versionPattern = /^\d+\.\d+\.\d+(?:-[a-z0-9][a-z0-9.-]*)?$/;
 const compatibilityGroupPattern = /^[a-z0-9][a-z0-9-]*$/;
 const hashPattern = /^[a-f0-9]{64}$/;
+const knownCapabilityAreas = new Set([
+	'ai_features',
+	'agent_tooling_automation_surfaces',
+	'custom_admin_ui',
+	'data_interaction_apis',
+	'cli_operational_tooling',
+	'theme_site_building',
+	'gutenberg_blocks',
+	'plugin_quality_wordpress_standards',
+]);
+const knownSourceInputTypes = new Set([
+	'wordpress_core_source',
+	'gutenberg_source',
+	'wp_cli_source',
+	'developer_docs',
+	'canonical_plugin_source',
+	'modern_api_repository',
+]);
+const knownFreshnessStatuses = new Set(['fresh', 'watch', 'stale', 'retired']);
+const knownCurriculumLifecycleStatuses = new Set(['proposed', 'pilot', 'calibrating', 'benchmark_ready', 'retired']);
+const isoDatePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 
 function assertObject(value, label) {
 	if (!value || Array.isArray(value) || typeof value !== 'object') {
@@ -146,6 +167,18 @@ function validateBenchmarkMetadata(metadata, label, { requireVersionIdentity = f
 	}
 }
 
+function assertIsoDate(value, label) {
+	if (typeof value !== 'string' || !isoDatePattern.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) {
+		throw new Error(`${label} must be an ISO date in YYYY-MM-DD format`);
+	}
+}
+
+function assertNonEmptyString(value, label) {
+	if (typeof value !== 'string' || value.length < 1) {
+		throw new Error(`${label} must be a non-empty string`);
+	}
+}
+
 for (const repoFile of requiredRepoFiles) {
 	if (!existsSync(path.join(root, repoFile))) {
 		throw new Error(`Required repository contract file is missing: ${repoFile}`);
@@ -155,6 +188,14 @@ for (const repoFile of requiredRepoFiles) {
 function validateScenarioContract(file, manifest) {
 	if (!Number.isInteger(manifest.schema_version) || manifest.schema_version < 1) {
 		throw new Error(`${file} must declare schema_version as a positive integer`);
+	}
+
+	if (Array.isArray(manifest.tags) && manifest.tags.includes('modern-api') && !manifest.api_provenance) {
+		throw new Error(`${file} modern-api scenarios must declare api_provenance`);
+	}
+
+	if (manifest.api_provenance !== undefined) {
+		validateApiProvenance(file, manifest.api_provenance);
 	}
 
 	assertObject(manifest.environment, `${file} environment`);
@@ -440,6 +481,49 @@ function validateScenarioContract(file, manifest) {
 			}
 		}
 	}
+}
+
+function validateApiProvenance(file, provenance) {
+	assertObject(provenance, `${file} api_provenance`);
+	assertKnown(provenance.capability_area, knownCapabilityAreas, `${file} api_provenance.capability_area`);
+	assertNonEmptyString(provenance.api_surface, `${file} api_provenance.api_surface`);
+
+	if (!Array.isArray(provenance.source_inputs) || provenance.source_inputs.length < 1) {
+		throw new Error(`${file} api_provenance.source_inputs must include at least one source input`);
+	}
+
+	const sourceInputIds = new Set();
+	for (const [index, sourceInput] of provenance.source_inputs.entries()) {
+		const label = `${file} api_provenance.source_inputs[${index}]`;
+		assertObject(sourceInput, label);
+		assertNonEmptyString(sourceInput.id, `${label}.id`);
+		if (!/^[a-z0-9][a-z0-9-]*$/.test(sourceInput.id)) {
+			throw new Error(`${label}.id must be kebab-case`);
+		}
+		if (sourceInputIds.has(sourceInput.id)) {
+			throw new Error(`${file} api_provenance.source_inputs contains duplicate id: ${sourceInput.id}`);
+		}
+		sourceInputIds.add(sourceInput.id);
+		assertKnown(sourceInput.type, knownSourceInputTypes, `${label}.type`);
+		assertNonEmptyString(sourceInput.url, `${label}.url`);
+		assertNonEmptyString(sourceInput.ref, `${label}.ref`);
+		assertIsoDate(sourceInput.checked_at, `${label}.checked_at`);
+		assertNonEmptyString(sourceInput.evidence, `${label}.evidence`);
+	}
+
+	assertObject(provenance.freshness, `${file} api_provenance.freshness`);
+	assertKnown(provenance.freshness.status, knownFreshnessStatuses, `${file} api_provenance.freshness.status`);
+	assertIsoDate(provenance.freshness.last_reviewed, `${file} api_provenance.freshness.last_reviewed`);
+	assertIsoDate(provenance.freshness.next_review_due, `${file} api_provenance.freshness.next_review_due`);
+	assertPositiveInteger(provenance.freshness.cadence_days, `${file} api_provenance.freshness.cadence_days`);
+	if (provenance.freshness.next_review_due < provenance.freshness.last_reviewed) {
+		throw new Error(`${file} api_provenance.freshness.next_review_due must not be before last_reviewed`);
+	}
+
+	assertObject(provenance.curriculum, `${file} api_provenance.curriculum`);
+	assertKnown(provenance.curriculum.lifecycle_status, knownCurriculumLifecycleStatuses, `${file} api_provenance.curriculum.lifecycle_status`);
+	assertNonEmptyString(provenance.curriculum.candidate_from_source_change, `${file} api_provenance.curriculum.candidate_from_source_change`);
+	assertNonEmptyString(provenance.curriculum.promotion_next_step, `${file} api_provenance.curriculum.promotion_next_step`);
 }
 
 async function listScenarioFiles(dir, relativeDir = 'scenarios') {

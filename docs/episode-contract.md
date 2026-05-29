@@ -39,6 +39,10 @@ inputs.
 
 An observation is the replay evidence produced by the runtime. Version 1 supports
 `command_result`, `logs`, `wp_state`, `files`, `html`, and `screenshot`.
+Observations can include sensitive runtime output, so traces and exported
+artifacts must follow the
+[`artifact redaction and sharing policy`](artifact-redaction-sharing-policy.md)
+before they are linked from public reports.
 
 The `command_result` observation maps directly to `wp_cli` actions:
 
