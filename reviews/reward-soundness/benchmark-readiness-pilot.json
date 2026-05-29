@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "id": "benchmark-readiness-pilot-reward-soundness-2026-05-29",
+  "issue": "https://github.com/Automattic/wp-gym/issues/215",
+  "task_set_id": "benchmark-readiness-pilot",
+  "reviewed_at": "2026-05-29",
+  "reviewer_type": "human",
+  "reviewer": "Chris Huber",
+  "summary": "Human review of pilot reward behavior against representative pass fixtures and adversarial shortcut fixtures. Current graders match the reviewed fixture outcomes, but every pilot task remains blocked from benchmark promotion by diagnostic-only contracts, public/non-held-out split state, and unresolved reward shortcuts or missing calibration evidence.",
+  "promotion_decision": {
+    "status": "blocked",
+    "blockers": [
+      "known_reward_shortcut",
+      "diagnostic_contract_only",
+      "workspace_diff_diagnostic_only",
+      "held_out_private_variants_not_ready",
+      "missing_baseline_results",
+      "uncalibrated_difficulty"
+    ]
+  },
+  "reviews": [
+    {
+      "scenario_id": "block-markup-valid-semantic-blocks",
+      "status": "reviewed",
+      "reviewed_at": "2026-05-29",
+      "reviewer_type": "human",
+      "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
+      "shortcut_resolution_status": "unresolved",
+      "notes": "The positive fixture uses editable core block comments with the requested content and should pass. Keyword-stuffed or shallow-validity outputs correctly fail, but the task still declares known shortcuts and uses a WordPress-state diagnostic contract, so pass rates are not benchmark-sound yet.",
+      "representative_passed_outputs": [
+        {
+          "fixture_id": "block-markup-valid-semantic-blocks-meaningful-content",
+          "grader_outcome": "pass",
+          "expected_wordpress_quality": "pass",
+          "reviewer_classification": "match",
+          "rationale": "Editable heading, paragraph, list, and button blocks satisfy the task without raw HTML fallback."
+        }
+      ],
+      "adversarial_or_failed_outputs": [
+        {
+          "fixture_id": "block-markup-valid-semantic-blocks-keyword-stuffing",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Rendered HTML repeats expected text but omits editable block markup."
+        },
+        {
+          "fixture_id": "block-markup-valid-semantic-blocks-shallow-validity",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Shallow block validity alone does not satisfy the semantic content contract."
+        }
+      ],
+      "diagnostic_contract_review": {
+        "status": "reviewed",
+        "classification": "wordpress_state_diagnostic_only_not_benchmark_replay",
+        "promotion_blocker": "diagnostic_contract_only"
+      }
+    },
+    {
+      "scenario_id": "block-markup-no-fallback-pricing-section",
+      "status": "reviewed",
+      "reviewed_at": "2026-05-29",
+      "reviewer_type": "human",
+      "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
+      "shortcut_resolution_status": "unresolved",
+      "notes": "The positive fixture demonstrates editable pricing content. Empty skeleton and block-count stuffing adversarials fail as expected, but empty layout shells and keyword stuffing remain explicit known shortcuts until the grader is tightened or the task is demoted.",
+      "representative_passed_outputs": [
+        {
+          "fixture_id": "block-markup-no-fallback-pricing-meaningful-content",
+          "grader_outcome": "pass",
+          "expected_wordpress_quality": "pass",
+          "reviewer_classification": "match",
+          "rationale": "Three editable pricing columns with plan copy and buttons satisfy the task."
+        }
+      ],
+      "adversarial_or_failed_outputs": [
+        {
+          "fixture_id": "block-markup-no-fallback-pricing-empty-skeleton",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Structural blocks without meaningful pricing content should not receive reward."
+        },
+        {
+          "fixture_id": "block-markup-no-fallback-pricing-keyword-block-stuffing",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Stuffing required words and block names is not a usable pricing page."
+        }
+      ],
+      "diagnostic_contract_review": {
+        "status": "reviewed",
+        "classification": "wordpress_state_diagnostic_only_not_benchmark_replay",
+        "promotion_blocker": "diagnostic_contract_only"
+      }
+    },
+    {
+      "scenario_id": "modern-wordpress-api-abilities-site-summary",
+      "status": "reviewed",
+      "reviewed_at": "2026-05-29",
+      "reviewer_type": "human",
+      "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
+      "shortcut_resolution_status": "unresolved",
+      "notes": "The positive fixture registers the Abilities category and ability on the documented lifecycle and returns the exact output shape. Wrong lifecycle and renamed-output adversarials fail, but source-string spoofing and hard-coded clean-site state remain known shortcut risks until the task has replay-grade evidence.",
+      "representative_passed_outputs": [
+        {
+          "fixture_id": "modern-wordpress-api-abilities-site-summary-positive",
+          "grader_outcome": "pass",
+          "expected_wordpress_quality": "pass",
+          "reviewer_classification": "match",
+          "rationale": "Uses the expected Abilities API lifecycle and output contract."
+        }
+      ],
+      "adversarial_or_failed_outputs": [
+        {
+          "fixture_id": "modern-wordpress-api-abilities-site-summary-wrong-lifecycle",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Mentions the API but registers on the wrong hook, so runtime behavior is unsound."
+        },
+        {
+          "fixture_id": "modern-wordpress-api-abilities-site-summary-renamed-output",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Changing the output shape breaks the consumer-facing contract."
+        }
+      ],
+      "diagnostic_contract_review": {
+        "status": "reviewed",
+        "classification": "workspace_diff_diagnostic_only_not_benchmark_replay",
+        "promotion_blocker": "workspace_diff_diagnostic_only"
+      }
+    },
+    {
+      "scenario_id": "modern-wordpress-api-rest-route-status",
+      "status": "reviewed",
+      "reviewed_at": "2026-05-29",
+      "reviewer_type": "human",
+      "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
+      "shortcut_resolution_status": "unresolved",
+      "notes": "The positive fixture registers the route with permission callback and the expected response shape. Hard-coded state and extra-output adversarials fail, but the task still needs baseline evidence, calibrated difficulty, and a benchmark replay contract before promotion.",
+      "representative_passed_outputs": [
+        {
+          "fixture_id": "modern-wordpress-api-rest-route-status-positive",
+          "grader_outcome": "pass",
+          "expected_wordpress_quality": "pass",
+          "reviewer_classification": "match",
+          "rationale": "The route is registered, has an explicit permission callback, and returns the required status keys."
+        }
+      ],
+      "adversarial_or_failed_outputs": [
+        {
+          "fixture_id": "modern-wordpress-api-rest-route-status-hard-coded-state",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Hard-coded clean-site values are not valid live WordPress state."
+        },
+        {
+          "fixture_id": "modern-wordpress-api-rest-route-status-extra-output",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "Extra fields expand the output contract beyond the task requirement."
+        }
+      ],
+      "diagnostic_contract_review": {
+        "status": "reviewed",
+        "classification": "workspace_diff_diagnostic_only_not_benchmark_replay",
+        "promotion_blocker": "workspace_diff_diagnostic_only"
+      }
+    }
+  ]
+}
