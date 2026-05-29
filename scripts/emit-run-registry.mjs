@@ -98,9 +98,16 @@ function listScenarioFiles(dir = path.join(root, 'scenarios')) {
 	return files.sort();
 }
 
+function scenarioIndexFiles() {
+	return [
+		...listScenarioFiles(),
+		path.join(root, 'tasks/smoke-homepage/manifest.json'),
+	].filter((file) => fs.existsSync(file));
+}
+
 function loadScenarioIndex() {
 	const index = new Map();
-	for (const file of listScenarioFiles()) {
+	for (const file of scenarioIndexFiles()) {
 		const scenario = readJson(file);
 		if (scenario.id) {
 			index.set(scenario.id, { file: repoRelative(file), manifest: scenario });
@@ -160,10 +167,11 @@ function taskSetMetadata(evalArtifact, sourceFile) {
 		|| (evalArtifact.task_set?.id === 'custom' && sourceFile ? repoRelative(sourceFile) : `task-sets/${evalArtifact.task_set?.id}.json`);
 	const resolved = path.join(root, sourcePath);
 	const manifest = fs.existsSync(resolved) ? readJson(resolved) : {};
+	const provenanceHash = normalizeSha256(evalArtifact.provenance?.inputs?.task_set_sha256);
 	return {
 		id: evalArtifact.task_set?.id || manifest.id || 'unknown-task-set',
 		version: manifest.benchmark_metadata?.benchmark_version || evalArtifact.task_set?.version || 'unversioned',
-		sha256: fs.existsSync(resolved) ? sha256File(resolved) : normalizeSha256(evalArtifact.task_set?.sha256),
+		sha256: fs.existsSync(resolved) ? sha256File(resolved) : normalizeSha256(evalArtifact.task_set?.sha256) || provenanceHash,
 		source_path: sourcePath,
 		benchmark_status: manifest.benchmark_status || evalArtifact.task_set?.benchmark_status || 'pilot',
 		headline_score_eligible: Boolean(manifest.headline_score_eligible || evalArtifact.task_set?.headline_score_eligible),
@@ -178,12 +186,13 @@ function scenarioMetadata(evalArtifact, scenarioIndex) {
 	const indexed = scenarioIndex.get(evalArtifact.scenario?.id) || {};
 	const manifest = indexed.manifest || {};
 	const sourcePath = indexed.file || evalArtifact.scenario?.source_path || '';
+	const provenanceInputs = evalArtifact.provenance?.inputs || {};
 	return {
 		id: evalArtifact.scenario?.id || manifest.id || 'unknown-scenario',
 		version: manifest.calibration?.benchmark_metadata?.benchmark_version || evalArtifact.scenario?.version || 'unversioned',
-		sha256: sourcePath ? sha256File(path.join(root, sourcePath)) : normalizeSha256(evalArtifact.scenario?.sha256),
+		sha256: sourcePath ? sha256File(path.join(root, sourcePath)) : normalizeSha256(evalArtifact.scenario?.sha256) || normalizeSha256(provenanceInputs.scenario_sha256),
 		source_path: sourcePath,
-		prompt_sha256: normalizeSha256(evalArtifact.scenario?.prompt_sha256 || manifest.prompt_sha256),
+		prompt_sha256: normalizeSha256(evalArtifact.scenario?.prompt_sha256 || provenanceInputs.prompt_sha256 || manifest.prompt_sha256),
 		task_family: evalArtifact.scenario?.task_family || manifest.id?.split('-').slice(0, 2).join('-') || 'unknown',
 		capabilities: evalArtifact.scenario?.capabilities || manifest.capabilities || null,
 		calibration: manifest.calibration || {},
