@@ -123,7 +123,7 @@
         "benchmark_blockers"
       ],
       "properties": {
-        "status": { "enum": ["demo", "pilot", "calibrating", "benchmark_ready", "excluded"] },
+        "status": { "enum": ["demo", "pilot", "calibrating", "benchmark_ready", "deprecated", "retired", "excluded"] },
         "benchmark_scope": { "enum": ["demo", "pilot", "calibration", "benchmark", "excluded"] },
         "difficulty_band": { "enum": ["uncalibrated", "smoke", "easy", "medium", "hard"] },
         "headline_score_eligible": { "type": "boolean" },
@@ -158,6 +158,40 @@
         "benchmark_blockers": {
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "benchmark_metadata": {
+          "type": "object",
+          "description": "Version and compatibility identity used when a scenario is promoted into benchmark comparison.",
+          "required": ["benchmark_version", "compatibility_group"],
+          "properties": {
+            "benchmark_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-z0-9][a-z0-9.-]*)?$" },
+            "compatibility_group": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+            "compatible_with": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "version_identity": {
+              "type": "object",
+              "required": [
+                "manifest_sha256",
+                "prompt_sha256",
+                "grader_sha256",
+                "setup_sha256",
+                "expected_artifacts_sha256",
+                "replay_contract_sha256"
+              ],
+              "properties": {
+                "manifest_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "prompt_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "grader_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "setup_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "expected_artifacts_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "replay_contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true

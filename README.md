@@ -73,6 +73,9 @@ The benchmark-readiness pilot runbook and evidence plan for issue #9 is in
 matrix, safe dry-run checks, live-run command shape, expected artifacts, and the
 remaining gates before results can be called benchmark-ready.
 
+Benchmark versioning, promotion, compatibility, deprecation, and retention policy
+is documented in `docs/benchmark-versioning.md`.
+
 The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
 documented in `docs/grader-handoff.md`.
 
