@@ -17,6 +17,12 @@
   "prompt_file": "../../prompts/wordpress-investigation/homepage-source-diagnosis.md",
   "grader_file": "../../graders/wordpress-investigation/homepage-source-diagnosis.php",
   "tags": ["wordpress", "investigation", "wp-cli", "site-state", "homepage"],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "cli_operational_tooling",
+    "secondary": ["data_interaction_apis"],
+    "criteria": ["bounded_wp_cli_inspection", "structured_site_state", "evidence_backed_answer"]
+  },
   "rules": {
     "general": ["evidence_backed_wordpress_answer", "bounded_wp_cli_inspection"],
     "task_specific": ["homepage_option_diagnosis", "static_front_page_remediation"]

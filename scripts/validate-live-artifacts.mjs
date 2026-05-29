@@ -6,6 +6,7 @@ import Ajv2020 from 'ajv/dist/2020.js';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const schemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/eval-artifact.schema.json';
+const visibleAgentSurfaceSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/visible-agent-surface.v1.schema.json';
 const canonicalProjectionName = 'wp-gym-eval-artifact';
 const canonicalProjectionIssue = 'https://github.com/Automattic/wp-gym/issues/117';
 const criticalReferenceGroups = [
@@ -96,6 +97,10 @@ export function validateLiveArtifact(value, options = {}) {
 		const provenance = validateBenchmarkProvenance(evalArtifact);
 		artifactChecks.push(...provenance.checks);
 		compatibilityGaps.push(...provenance.gaps);
+
+		const runnerSurface = validateRunnerSurface(evalArtifact, baseDir);
+		artifactChecks.push(...runnerSurface.checks);
+		compatibilityGaps.push(...runnerSurface.gaps);
 
 		const expectedArtifacts = scenarioExpectedArtifacts(evalArtifact, options);
 		for (const artifact of expectedArtifacts) {
@@ -669,12 +674,86 @@ function collectArtifactReferences(evalArtifact) {
 		['runtime.references.screenshots', evalArtifact.runtime?.references?.screenshots],
 		['runtime.references.transcript', evalArtifact.runtime?.references?.transcript],
 		['runtime.references.replay_bundle', evalArtifact.runtime?.references?.replay_bundle],
+		['runner.surface.reference', evalArtifact.runner?.surface?.reference ? [evalArtifact.runner.surface.reference] : []],
 	]) {
 		for (const reference of refs || []) {
 			references.push({ field, reference });
 		}
 	}
 	return references;
+}
+
+function validateRunnerSurface(evalArtifact, baseDir) {
+	const surface = evalArtifact.runner?.surface;
+	const checks = [];
+	const gaps = [];
+	if (!surface) {
+		gaps.push(gap(
+			'missing_visible_agent_surface',
+			'warning',
+			'runner.surface',
+			'Benchmark audit cannot inspect the visible prompt/tool/workspace surface until Homeboy Extensions #842 emits the producer artifact.'
+		));
+		return { checks, gaps };
+	}
+
+	if (surface.producer_issue !== 'https://github.com/Extra-Chill/homeboy-extensions/issues/842') {
+		gaps.push(gap('unexpected_runner_surface_producer', 'error', 'runner.surface.producer_issue', 'Runner surface artifacts must point at Homeboy Extensions #842.'));
+	}
+
+	if (surface.status === 'producer_pending' && !surface.reference) {
+		gaps.push(gap('visible_agent_surface_producer_pending', 'warning', 'runner.surface', 'Only the fixture/schema contract is available; leave wp-gym issue #22 open until the producer artifact exists.'));
+		return { checks, gaps };
+	}
+
+	if (surface.status !== 'captured' || !surface.reference) {
+		gaps.push(gap('missing_visible_agent_surface_reference', 'error', 'runner.surface.reference', 'Captured runner surface metadata must include a local, hashable artifact reference.'));
+		return { checks, gaps };
+	}
+
+	const referenceCheck = validateArtifactReference(surface.reference, baseDir, 'runner.surface.reference', 'runner_surface');
+	checks.push(referenceCheck);
+	gaps.push(...referenceCheck.gaps);
+	if (!referenceCheck.ok || /^https?:\/\//i.test(surface.reference.path_or_url || '')) {
+		return { checks, gaps };
+	}
+
+	const resolved = path.resolve(baseDir, surface.reference.path_or_url);
+	const schemaCheck = validateVisibleAgentSurfaceSchema(resolved);
+	checks.push(schemaCheck);
+	gaps.push(...schemaCheck.gaps);
+	return { checks, gaps };
+}
+
+function validateVisibleAgentSurfaceSchema(file) {
+	const result = {
+		field: 'runner.surface.reference',
+		kind: 'visible_agent_surface',
+		path_or_url: file,
+		ok: true,
+		gaps: [],
+	};
+	let value;
+	try {
+		value = JSON.parse(fs.readFileSync(file, 'utf8'));
+	} catch (error) {
+		pushCheckGap(result, 'invalid_visible_agent_surface_json', 'error', 'runner.surface.reference', `Visible agent surface artifact is not valid JSON: ${error.message}`);
+		return result;
+	}
+
+	const ajv = new Ajv2020({ allErrors: true, strict: false, validateFormats: false });
+	const schema = JSON.parse(fs.readFileSync(path.join(root, 'schemas/visible-agent-surface.v1.schema.json'), 'utf8'));
+	ajv.addSchema(schema);
+	const validate = ajv.getSchema(visibleAgentSurfaceSchemaId);
+	if (!validate(value)) {
+		for (const error of validate.errors || []) {
+			pushCheckGap(result, 'visible_agent_surface_schema_mismatch', 'error', error.instancePath || '/', `${error.instancePath || '/'} ${error.message}`);
+		}
+	}
+	if ((value.audit?.classification_counts?.task_sandbox_interference || 0) > 0) {
+		pushCheckGap(result, 'visible_agent_surface_interference_found', 'warning', 'runner.surface.reference', 'Visible agent surface includes task-sandbox interference findings; inspect the audit before using the run as clean benchmark signal.');
+	}
+	return result;
 }
 
 function validateArtifactReference(reference, baseDir, field, expectedArtifact = null) {

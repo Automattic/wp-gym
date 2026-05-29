@@ -15,6 +15,11 @@
     "requires_held_out_private": false,
     "contamination_controls": ["public_tasks_are_training_visible", "headline_scores_blocked_until_held_out_private_ready"]
   },
+  "capability_coverage": {
+    "schema_version": 1,
+    "primary": ["cli_operational_tooling"],
+    "secondary": ["data_interaction_apis"]
+  },
   "benchmark_blockers": [
     "pilot_task_set",
     "diagnostic_contract_only",

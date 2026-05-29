@@ -184,6 +184,7 @@ function scenarioMetadata(evalArtifact, scenarioIndex) {
 		source_path: sourcePath,
 		prompt_sha256: normalizeSha256(evalArtifact.scenario?.prompt_sha256 || manifest.prompt_sha256),
 		task_family: evalArtifact.scenario?.task_family || manifest.id?.split('-').slice(0, 2).join('-') || 'unknown',
+		capabilities: evalArtifact.scenario?.capabilities || manifest.capabilities || null,
 		calibration: manifest.calibration || {},
 	};
 }

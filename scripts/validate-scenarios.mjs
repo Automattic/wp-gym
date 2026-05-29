@@ -198,6 +198,8 @@ function validateScenarioContract(file, manifest) {
 		validateApiProvenance(file, manifest.api_provenance);
 	}
 
+	validateScenarioCapabilities(file, manifest.capabilities);
+
 	assertObject(manifest.environment, `${file} environment`);
 	assertObject(manifest.split, `${file} split`);
 	assertKnown(manifest.split.membership, knownSplitMemberships, `${file} split.membership`);
@@ -483,6 +485,25 @@ function validateScenarioContract(file, manifest) {
 	}
 }
 
+function validateScenarioCapabilities(file, capabilities) {
+	assertObject(capabilities, `${file} capabilities`);
+	if (capabilities.schema_version !== 1) {
+		throw new Error(`${file} capabilities.schema_version must be 1`);
+	}
+	assertKnown(capabilities.primary, knownCapabilityAreas, `${file} capabilities.primary`);
+	assertStringArray(capabilities.secondary || [], `${file} capabilities.secondary`);
+	for (const area of capabilities.secondary || []) {
+		assertKnown(area, knownCapabilityAreas, `${file} capabilities.secondary`);
+		if (area === capabilities.primary) {
+			throw new Error(`${file} capabilities.secondary must not repeat capabilities.primary: ${area}`);
+		}
+	}
+	assertStringArray(capabilities.criteria, `${file} capabilities.criteria`, {
+		minItems: 1,
+		pattern: /^[a-z0-9_]+$/,
+	});
+}
+
 function validateApiProvenance(file, provenance) {
 	assertObject(provenance, `${file} api_provenance`);
 	assertKnown(provenance.capability_area, knownCapabilityAreas, `${file} api_provenance.capability_area`);
@@ -675,6 +696,7 @@ for (const file of taskSetFiles) {
 	if (manifest.benchmark_metadata !== undefined) {
 		validateBenchmarkMetadata(manifest.benchmark_metadata, file);
 	}
+	validateTaskSetCapabilityCoverage(file, manifest, scenarioValuesById);
 	if (manifest.benchmark) {
 		if (manifest.benchmark_status !== 'benchmark_ready') {
 			throw new Error(`${file} benchmark task sets must declare benchmark_status=benchmark_ready`);
@@ -749,6 +771,44 @@ for (const file of taskSetFiles) {
 		if (!manifestScenarioIds.has(scenarioId)) {
 			throw new Error(`${file} has task metadata for a scenario not listed in scenario_manifests: ${scenarioId}`);
 		}
+	}
+}
+
+function uniqueSorted(values) {
+	return [...new Set(values)].sort();
+}
+
+function validateCapabilityArray(value, label, { minItems = 0 } = {}) {
+	assertStringArray(value, label, { minItems });
+	const seen = new Set();
+	for (const area of value) {
+		assertKnown(area, knownCapabilityAreas, label);
+		if (seen.has(area)) {
+			throw new Error(`${label} contains duplicate capability area: ${area}`);
+		}
+		seen.add(area);
+	}
+}
+
+function validateTaskSetCapabilityCoverage(file, manifest, scenarioValues) {
+	assertObject(manifest.capability_coverage, `${file} capability_coverage`);
+	if (manifest.capability_coverage.schema_version !== 1) {
+		throw new Error(`${file} capability_coverage.schema_version must be 1`);
+	}
+	validateCapabilityArray(manifest.capability_coverage.primary, `${file} capability_coverage.primary`, { minItems: 1 });
+	validateCapabilityArray(manifest.capability_coverage.secondary || [], `${file} capability_coverage.secondary`);
+
+	const scenarioIds = (manifest.tasks || []).map((task) => task.scenario_id).filter(Boolean);
+	const expectedPrimary = uniqueSorted(scenarioIds.map((scenarioId) => scenarioValues.get(scenarioId)?.capabilities?.primary).filter(Boolean));
+	const expectedSecondary = uniqueSorted(scenarioIds.flatMap((scenarioId) => scenarioValues.get(scenarioId)?.capabilities?.secondary || []));
+	const declaredPrimary = uniqueSorted(manifest.capability_coverage.primary || []);
+	const declaredSecondary = uniqueSorted(manifest.capability_coverage.secondary || []);
+
+	if (declaredPrimary.join(',') !== expectedPrimary.join(',')) {
+		throw new Error(`${file} capability_coverage.primary must match task scenario primary capabilities: ${expectedPrimary.join(',')}`);
+	}
+	if (declaredSecondary.join(',') !== expectedSecondary.join(',')) {
+		throw new Error(`${file} capability_coverage.secondary must match task scenario secondary capabilities: ${expectedSecondary.join(',')}`);
 	}
 }
 

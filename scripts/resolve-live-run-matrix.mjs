@@ -142,6 +142,7 @@ function scenarioTask(scenarioFile) {
 		hiddenPaths: environment.hidden_paths || [],
 		workspaceTemplate: environment.workspace_template || '',
 		completionPolicy: environment.completion_policy || {},
+		capabilities: scenario.capabilities || null,
 		calibration: scenario.calibration || {},
 		benchmarkMetadata: scenario.calibration?.benchmark_metadata || null,
 		maxTurns: budgets.maxTurns,
@@ -169,6 +170,12 @@ function smokeTask() {
 		hiddenPaths: [],
 		workspaceTemplate: '',
 		completionPolicy: { type: 'agent_final_response' },
+		capabilities: {
+			schema_version: 1,
+			primary: 'theme_site_building',
+			secondary: ['gutenberg_blocks'],
+			criteria: ['homepage_rendering', 'wordpress_native_content'],
+		},
 		calibration: {
 			status: 'demo',
 			benchmark_scope: 'demo',

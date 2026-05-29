@@ -16,6 +16,12 @@
   },
   "prompt_file": "../../prompts/block-markup/nested-layout-blocks.md",
   "grader_file": "../../graders/block-markup/nested-layout-blocks.php",
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "gutenberg_blocks",
+    "secondary": ["theme_site_building"],
+    "criteria": ["nested_block_layout", "parseable_block_markup", "editable_core_blocks"]
+  },
   "rules": {
     "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
     "task_specific": ["required_nested_layout_blocks"]

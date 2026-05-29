@@ -17,6 +17,12 @@
   "prompt_file": "../../prompts/visual-builder/elementor-hero-refresh.md",
   "grader_file": "../../graders/visual-builder/elementor-hero-refresh.php",
   "tags": ["wordpress", "visual-builder", "elementor", "page-builder", "diagnostic"],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "custom_admin_ui",
+    "secondary": ["theme_site_building"],
+    "criteria": ["builder_state_preservation", "rendered_content_quality", "no_raw_html_shortcut"]
+  },
   "rules": {
     "general": ["wordpress_visual_builder_state", "no_raw_html_or_shortcodes"],
     "task_specific": ["elementor_builder_metadata", "campaign_hero_copy", "two_column_hero_structure", "visual_builder_cta"]

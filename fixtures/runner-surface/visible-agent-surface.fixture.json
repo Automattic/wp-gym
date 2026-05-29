@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "name": "visible-agent-surface",
+    "wp_gym_issue": "https://github.com/Automattic/wp-gym/issues/22",
+    "producer_issue": "https://github.com/Extra-Chill/homeboy-extensions/issues/842",
+    "generated_at": "2026-05-29T00:00:00Z",
+    "redaction_status": "no_sensitive_values_observed"
+  },
+  "run": {
+    "scenario_id": "modern-wordpress-api-abilities-site-summary",
+    "task_set_id": "benchmark-readiness-pilot",
+    "runner": "homeboy-extensions-datamachine-agent",
+    "provider": "openai",
+    "model": "gpt-5.5"
+  },
+  "instructions": [
+    {
+      "id": "datamachine-task-runner-soul",
+      "source": "bundles/datamachine-task-runner/memory/agent/SOUL.md",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "excerpt": "Complete the supplied WordPress task.",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "Short task identity instruction with no benchmark, PR, or artifact language.",
+      "redaction_status": "no_sensitive_values_observed"
+    },
+    {
+      "id": "workspace-hidden-paths",
+      "source": "scenario.environment.hidden_paths",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "excerpt": "graders/, scenarios/, prompts/, checks/, task-sets/, .github/, docs/, scripts/",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "Hides grader and benchmark internals from the task workspace.",
+      "redaction_status": "no_sensitive_values_observed"
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-workspace-read",
+      "name": "workspace_read",
+      "source": "scenario.environment.allowed_tools",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "input_schema_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "excerpt": "Read files inside the task workspace.",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "Bounded workspace read surface needed for plugin implementation tasks.",
+      "redaction_status": "no_sensitive_values_observed"
+    },
+    {
+      "id": "tool-run-wp-cli",
+      "name": "run_wp_cli",
+      "source": "scenario.environment.allowed_tools",
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "input_schema_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "excerpt": "Run bounded WP-CLI commands against the sandbox site.",
+      "classification": "acceptable_scaffolding",
+      "classification_note": "WordPress runtime inspection is part of the scenario environment contract.",
+      "redaction_status": "no_sensitive_values_observed"
+    }
+  ],
+  "workspace": {
+    "uses_workspace": true,
+    "allowed_tools": ["workspace_show", "workspace_ls", "workspace_read", "workspace_grep", "workspace_write", "workspace_edit", "workspace_apply_patch", "workspace_git_status", "wordpress_runtime_ls", "run_wp_cli"],
+    "writable_roots": ["plugins/"],
+    "hidden_paths": ["graders/", "scenarios/", "prompts/", "checks/", "task-sets/", ".github/", "docs/", "scripts/"],
+    "dirty_state_visible": false,
+    "workspace_ref_sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+  },
+  "audit": {
+    "classification_counts": {
+      "acceptable_scaffolding": 4,
+      "task_sandbox_interference": 0,
+      "unknown": 0
+    },
+    "interference_findings": []
+  },
+  "recommendation": {
+    "minimal_live_run_config": ["disable_datamachine_directives", "scenario_allowed_tools_only", "hide_grader_and_task_metadata", "workspace_plugins_write_only"],
+    "producer_status": "fixture_contract_only",
+    "notes": "Use this contract until Homeboy Extensions issue #842 emits the real runner artifact. Keep wp-gym focused on validation and benchmark interpretation."
+  }
+}

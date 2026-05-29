@@ -15,6 +15,11 @@
     "requires_held_out_private": false,
     "contamination_controls": ["public_tasks_are_training_visible", "headline_scores_blocked_until_held_out_private_ready"]
   },
+  "capability_coverage": {
+    "schema_version": 1,
+    "primary": ["agent_tooling_automation_surfaces", "gutenberg_blocks", "theme_site_building"],
+    "secondary": ["gutenberg_blocks", "plugin_quality_wordpress_standards", "theme_site_building"]
+  },
   "benchmark_blockers": [
     "pilot_task_set",
     "uncalibrated_difficulty",

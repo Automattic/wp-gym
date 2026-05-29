@@ -43,6 +43,9 @@ function daysUntil(dateString) {
 const report = {
 	generated_at: today.toISOString().slice(0, 10),
 	due_soon_days: dueSoonDays,
+	global_capability_coverage: Object.fromEntries(
+		capabilityAreas.map((area) => [area, { primary: 0, secondary: 0, scenarios: [] }])
+	),
 	capability_areas: Object.fromEntries(
 		capabilityAreas.map((area) => [area, {
 			total: 0,
@@ -56,11 +59,26 @@ const report = {
 	),
 	missing_api_provenance: [],
 	missing_capability_coverage: [],
+	missing_global_capability_metadata: [],
 };
 
 for (const file of await listScenarioFiles(scenarioRoot)) {
 	const manifest = JSON.parse(await readFile(path.join(root, file), 'utf8'));
 	const provenance = manifest.api_provenance;
+	const capabilities = manifest.capabilities;
+
+	if (!capabilities?.primary || !report.global_capability_coverage[capabilities.primary]) {
+		report.missing_global_capability_metadata.push({ file, id: manifest.id });
+	} else {
+		report.global_capability_coverage[capabilities.primary].primary += 1;
+		report.global_capability_coverage[capabilities.primary].scenarios.push({ id: manifest.id, file, role: 'primary' });
+		for (const area of capabilities.secondary || []) {
+			if (report.global_capability_coverage[area]) {
+				report.global_capability_coverage[area].secondary += 1;
+				report.global_capability_coverage[area].scenarios.push({ id: manifest.id, file, role: 'secondary' });
+			}
+		}
+	}
 
 	if (!provenance) {
 		if (Array.isArray(manifest.tags) && manifest.tags.includes('modern-api')) {
@@ -100,7 +118,7 @@ for (const file of await listScenarioFiles(scenarioRoot)) {
 }
 
 for (const [area, summary] of Object.entries(report.capability_areas)) {
-	if (summary.total === 0) {
+	if (report.global_capability_coverage[area].primary === 0 && report.global_capability_coverage[area].secondary === 0) {
 		report.missing_capability_coverage.push(area);
 	}
 }
@@ -109,6 +127,11 @@ if (process.argv.includes('--json')) {
 	console.log(JSON.stringify(report, null, 2));
 } else {
 	console.log(`API curriculum freshness report (${report.generated_at})`);
+	console.log('');
+	console.log('Global scenario capability coverage:');
+	for (const [area, summary] of Object.entries(report.global_capability_coverage)) {
+		console.log(`${area}: primary=${summary.primary} secondary=${summary.secondary}`);
+	}
 	console.log('');
 	for (const [area, summary] of Object.entries(report.capability_areas)) {
 		console.log(`${area}: total=${summary.total} fresh=${summary.fresh} watch=${summary.watch} stale=${summary.stale} due_soon=${summary.due_soon}`);
@@ -128,10 +151,18 @@ if (process.argv.includes('--json')) {
 
 	if (report.missing_capability_coverage.length > 0) {
 		console.log('');
-		console.log(`Capability areas without API provenance coverage: ${report.missing_capability_coverage.join(', ')}`);
+		console.log(`Capability areas without global scenario coverage: ${report.missing_capability_coverage.join(', ')}`);
+	}
+
+	if (report.missing_global_capability_metadata.length > 0) {
+		console.log('');
+		console.log('Scenarios missing global capability metadata:');
+		for (const scenario of report.missing_global_capability_metadata) {
+			console.log(`  - ${scenario.id} (${scenario.file})`);
+		}
 	}
 }
 
-if (process.argv.includes('--check') && report.missing_api_provenance.length > 0) {
+if (process.argv.includes('--check') && (report.missing_api_provenance.length > 0 || report.missing_global_capability_metadata.length > 0)) {
 	process.exitCode = 1;
 }

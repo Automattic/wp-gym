@@ -16,6 +16,12 @@
   },
   "prompt_file": "../../prompts/block-markup/no-fallback-pricing-section.md",
   "grader_file": "../../graders/block-markup/no-fallback-pricing-section.php",
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "gutenberg_blocks",
+    "secondary": ["theme_site_building"],
+    "criteria": ["parseable_block_markup", "no_fallback_blocks", "editable_layout_structure"]
+  },
   "rules": {
     "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
     "task_specific": ["three_pricing_columns", "buttons_for_plans", "expected_heading_text"]

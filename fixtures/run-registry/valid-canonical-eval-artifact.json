@@ -16,7 +16,7 @@
   "task_set": {
     "id": "benchmark-readiness-pilot",
     "version": "fixture-2026-05-28",
-    "sha256": "8d663376633784c11c69f1996a586b1cec2e9055f69f17e3d0cac0f65ae6930b",
+    "sha256": "7307e935896e2c3ae229232c813e1a7f0b28939ebc4096b0e18f24e60a627afd",
     "source_path": "task-sets/benchmark-readiness-pilot.json",
     "benchmark_status": "pilot",
     "headline_score_eligible": false,
@@ -25,7 +25,7 @@
   "scenario": {
     "id": "block-markup-valid-semantic-blocks",
     "version": "fixture-2026-05-28",
-    "sha256": "080ba97f2faa2368550e852a5cff0bd7f58f78215ac494186f922ed74dc30ef4",
+    "sha256": "71bcdfb2932aa350821ba1f3cec99045ecbea40ebffba1004e480aa9ade88264",
     "source_path": "scenarios/block-markup/valid-semantic-blocks.json",
     "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
     "task_family": "block-markup"

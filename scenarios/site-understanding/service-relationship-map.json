@@ -17,6 +17,12 @@
   "prompt_file": "../../prompts/site-understanding/service-relationship-map.md",
   "grader_file": "../../graders/site-understanding/service-relationship-map.php",
   "tags": ["wordpress", "site-understanding", "entity-relationships", "natural-prompt"],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "data_interaction_apis",
+    "secondary": ["theme_site_building"],
+    "criteria": ["wordpress_native_content_model", "taxonomy_relationships", "evidence_grounded_summary"]
+  },
   "rules": {
     "general": ["wordpress_native_content", "evidence_grounded_summary", "no_hallucinated_entities"],
     "task_specific": ["service_entities_created", "staff_location_relationships", "taxonomy_relationships", "source_evidence_present"]

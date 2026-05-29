@@ -204,8 +204,18 @@ try {
 	await writeFile(path.join(temp, 'replay.zip'), 'zip-bytes');
 	await writeFile(path.join(temp, 'events.jsonl'), '{"event":"started"}\n');
 	await writeFile(path.join(temp, 'wordpress-state.json'), '{"posts":[]}\n');
+	const runnerSurface = await readFile(path.join(root, 'fixtures/runner-surface/visible-agent-surface.fixture.json'), 'utf8');
+	await writeFile(path.join(temp, 'visible-agent-surface.json'), runnerSurface);
 
 	const benchmarkArtifact = baseArtifact({
+		runner: {
+			...baseArtifact().runner,
+			surface: {
+				status: 'captured',
+				producer_issue: 'https://github.com/Extra-Chill/homeboy-extensions/issues/842',
+				reference: { kind: 'visible_agent_surface', path_or_url: 'visible-agent-surface.json', sha256: sha256(runnerSurface) },
+			},
+		},
 		runtime: {
 			...baseArtifact().runtime,
 			references: {
@@ -223,6 +233,19 @@ try {
 	assert.equal(benchmarkResult.ok, true);
 	assert(benchmarkResult.artifact_checks.length >= 5);
 	assert.equal(benchmarkResult.artifact_checks.filter((check) => 'hashable' in check).every((check) => check.hashable), true);
+	assert(benchmarkResult.artifact_checks.some((check) => check.kind === 'visible_agent_surface' && check.ok === true));
+
+	const pendingSurface = validateLiveArtifact(baseArtifact({
+		runner: {
+			...baseArtifact().runner,
+			surface: {
+				status: 'producer_pending',
+				producer_issue: 'https://github.com/Extra-Chill/homeboy-extensions/issues/842',
+			},
+		},
+	}), { benchmarkMode: true, baseDir: temp });
+	assert.equal(pendingSurface.ok, false);
+	assert(pendingSurface.compatibility_gaps.some((item) => item.code === 'visible_agent_surface_producer_pending' && item.severity === 'warning'));
 
 	const missingGradePayload = structuredClone(benchmarkArtifact);
 	missingGradePayload.reports.result_json[0] = { kind: 'json', path_or_url: 'result.json', sha256: sha256('{"ok":true}\n') };

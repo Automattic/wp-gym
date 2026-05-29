@@ -17,6 +17,12 @@
   "prompt_file": "../../prompts/content-migration/media-attachment-import.md",
   "grader_file": "../../graders/content-migration/media-attachment-import.php",
   "tags": ["wordpress", "content-migration", "media-import", "attachments"],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "plugin_quality_wordpress_standards",
+    "secondary": ["data_interaction_apis", "gutenberg_blocks"],
+    "criteria": ["media_library_api_usage", "attachment_post_integrity", "sanitized_content_import"]
+  },
   "rules": {
     "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
     "task_specific": ["source_content_imported", "attachment_posts_created", "attachment_files_local", "featured_image_restored", "no_stale_remote_media_urls"]
