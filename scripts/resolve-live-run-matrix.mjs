@@ -173,6 +173,7 @@ function smokeTask() {
 			variant_family: 'smoke-homepage',
 			variant_seed: 'smoke-homepage-public-v1',
 		},
+		benchmarkMetadata: null,
 		maxTurns: 8,
 		stepBudget: 12,
 		timeBudgetMs: 600000,
@@ -538,6 +539,8 @@ function resolveMatrix() {
 				variant_family: task.split?.variant_family || '',
 				variant_seed: task.split?.variant_seed || '',
 				parent_scenario_id: task.split?.parent_scenario_id || '',
+				scenario_benchmark_version: task.calibration.benchmark_metadata?.benchmark_version || '',
+				scenario_compatibility_group: task.calibration.benchmark_metadata?.compatibility_group || '',
 				headline_score_eligible: Boolean(task.calibration.headline_score_eligible),
 				score_scope: taskSet.score_scope,
 				benchmark_eligible: benchmarkEligible,
@@ -629,6 +632,10 @@ function assertLiveRunMatrix(matrix) {
 		assert(row.scenario_benchmark_version === (task.calibration.benchmark_metadata?.benchmark_version || ''), `${row.task_id} scenario_benchmark_version mismatch`);
 		assert(row.scenario_compatibility_group === (task.calibration.benchmark_metadata?.compatibility_group || ''), `${row.task_id} scenario_compatibility_group mismatch`);
 		assert(row.split_membership === (task.split?.membership || 'unknown'), `${row.task_id} split_membership mismatch`);
+		assert(row.task_set_benchmark_version === (taskSetMetadata().benchmark_metadata?.benchmark_version || ''), `${row.task_id} task_set_benchmark_version mismatch`);
+		assert(row.task_set_compatibility_group === (taskSetMetadata().benchmark_metadata?.compatibility_group || ''), `${row.task_id} task_set_compatibility_group mismatch`);
+		assert(row.scenario_benchmark_version === (task.calibration.benchmark_metadata?.benchmark_version || ''), `${row.task_id} scenario_benchmark_version mismatch`);
+		assert(row.scenario_compatibility_group === (task.calibration.benchmark_metadata?.compatibility_group || ''), `${row.task_id} scenario_compatibility_group mismatch`);
 		assert(row.headline_score_eligible === Boolean(task.calibration.headline_score_eligible), `${row.task_id} headline_score_eligible mismatch`);
 		assert(row.task_contract_level === (task.calibration.task_contract_level || 'unknown'), `${row.task_id} task_contract_level mismatch`);
 		assert(row.benchmark_scope !== 'benchmark' || row.headline_score_eligible === true, `${row.task_id} benchmark rows must be headline eligible`);
