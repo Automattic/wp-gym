@@ -22,6 +22,7 @@ function usage() {
 		'  wp-gym capabilities <scenario-id>',
 		'  wp-gym demo [scenario-id]',
 		'  wp-gym replay-regrade --input <eval-artifact-json-or-dir> [--benchmark-mode]',
+		'  wp-gym benchmark-promotion report --scenario <id>|--task-set <id> [--format json|markdown] [--check]',
 		'  wp-gym run-registry emit|report|validate [args...]',
 		'  wp-gym remote-archive triage --input <cycle-dir-or-tar> [args...]',
 	].join('\n'));
@@ -29,6 +30,18 @@ function usage() {
 
 if (command === 'replay-regrade') {
 	const result = spawnSync(process.execPath, [path.join(root, 'scripts/replay-regrade.mjs'), ...process.argv.slice(3)], {
+		cwd: root,
+		stdio: 'inherit',
+	});
+	process.exit(result.status ?? 1);
+
+} else if (command === 'benchmark-promotion') {
+	const subcommand = process.argv[3];
+	if (subcommand !== 'report') {
+		console.error('Usage: wp-gym benchmark-promotion report --scenario <id>|--task-set <id> [--format json|markdown] [--check]');
+		process.exit(2);
+	}
+	const result = spawnSync(process.execPath, [path.join(root, 'scripts/benchmark-promotion.mjs'), ...process.argv.slice(4)], {
 		cwd: root,
 		stdio: 'inherit',
 	});
