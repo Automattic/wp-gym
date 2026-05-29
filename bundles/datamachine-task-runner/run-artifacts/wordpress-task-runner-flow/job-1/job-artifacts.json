@@ -1,45 +1,67 @@
 {
     "job_id": 1,
-    "status": "completed",
+    "status": "failed - tool_result_failed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
     "required_tool_names": [],
     "satisfied_tool_names": [],
-    "successful_tool_calls": [
-        {
-            "tool_name": "upsert_post",
-            "success": true,
-            "turn_count": 1
-        }
-    ],
+    "successful_tool_calls": [],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_3GYWoLYGu9tH5FFuk7LvLLNY",
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_6fiX7Q5vBSwKvfnvG7d1JNA4",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:05:29+00:00",
-            "ended_at": "2026-05-29T18:05:29+00:00",
-            "duration_ms": 320,
-            "arguments_sha256": "4d78a5468757b1e82359ee16f266aa9434fa8086bf05e6e67635bd45c699988a",
-            "result_sha256": "569327a3fa5dba2f043e013b1c8ef54f56b8459761b910af2f14522fb1fe0af4",
+            "status": "failed",
+            "started_at": "2026-05-29T18:05:23+00:00",
+            "ended_at": "2026-05-29T18:05:23+00:00",
+            "duration_ms": 8,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "post_type": "page",
-                "title": "Services",
-                "content": "Harbor Hearth Repair service pages list each offering with the staff member responsible and the neighborhoods served.\n\n- [Boiler Tune-ups](/services/boiler-tune-ups/) \u2014 Maya Ortiz in North Loop and River Market.\n- [Chimney Inspections](/services/chimney-inspections/) \u2014 Theo Grant in South Hill.\n- [Heat Pump Triage](/services/heat-pump-triage/) \u2014 Maya Ortiz in South Hill.\n\nFor the cross-reference of services, staff, and service areas, see the [Service Relationship Map](/service-relationship-map/).",
-                "content_format": "markdown",
-                "slug": "services",
-                "parent_id": 0,
-                "parent_path": "",
-                "post_author": "[redacted]",
-                "content_hash": "harbor-services-v1",
-                "source_url": "",
-                "original_date_gmt": "",
-                "add_source_attribution": false
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_lw9S5UeYyR0Q5RnD0FerzimB",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T18:05:27+00:00",
+            "ended_at": "2026-05-29T18:05:27+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": ""
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_git_status",
+            "tool_call_id": "call_wCDN3ARZVtSUWS8rZmL7MCWM",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T18:05:32+00:00",
+            "ended_at": "2026-05-29T18:05:32+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+            "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project",
+                "repo": "current-project"
             }
         }
     ],
@@ -49,7 +71,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "19f8e34f9c41ab4c1132c32529f4682ff7ae0623c1dec538609470ce0eb7ad66",
+            "sha256": "7127a4c8bad581be8f431933eaa728df995ccdaa4a2fcded1d64a0cd6af49dcd",
             "bounded": true,
             "redacted": true
         }
@@ -60,11 +82,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:33471/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "fdc1822d961671b76dd06546460d4a73471e2615abe7c4c7c7033ea33285b763",
-            "payload_sha256": "a701cc3e4d40a2f887962c8353143372a3fdae3528094fcf1bf9e812f60369e7",
-            "bytes": 2395,
-            "written_at": "2026-05-29T18:05:34+00:00"
+            "url": "http://127.0.0.1:33539/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "e8e988b5114a85c021ab94ba762779aeb00de7a0952d5b25323c24d91063db26",
+            "payload_sha256": "ca20a885e41c03f380616dacb7731caa526da738a76eaaa8a85db483097d4c59",
+            "bytes": 3575,
+            "written_at": "2026-05-29T18:05:43+00:00"
         }
     },
     "transcript_artifact": null,
@@ -74,53 +96,85 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "completed",
+            "job_status": "failed - tool_result_failed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 18:05:07",
-            "completed_at": "2026-05-29 18:05:34"
+            "created_at": "2026-05-29 18:05:20",
+            "completed_at": "2026-05-29 18:05:43"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 3,
+        "entries_emitted": 3,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_3GYWoLYGu9tH5FFuk7LvLLNY",
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_6fiX7Q5vBSwKvfnvG7d1JNA4",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:05:29+00:00",
-                "ended_at": "2026-05-29T18:05:29+00:00",
-                "duration_ms": 320,
-                "arguments_sha256": "4d78a5468757b1e82359ee16f266aa9434fa8086bf05e6e67635bd45c699988a",
-                "result_sha256": "569327a3fa5dba2f043e013b1c8ef54f56b8459761b910af2f14522fb1fe0af4",
+                "status": "failed",
+                "started_at": "2026-05-29T18:05:23+00:00",
+                "ended_at": "2026-05-29T18:05:23+00:00",
+                "duration_ms": 8,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Services",
-                    "content": "Harbor Hearth Repair service pages list each offering with the staff member responsible and the neighborhoods served.\n\n- [Boiler Tune-ups](/services/boiler-tune-ups/) \u2014 Maya Ortiz in North Loop and River Market.\n- [Chimney Inspections](/services/chimney-inspections/) \u2014 Theo Grant in South Hill.\n- [Heat Pump Triage](/services/heat-pump-triage/) \u2014 Maya Ortiz in South Hill.\n\nFor the cross-reference of services, staff, and service areas, see the [Service Relationship Map](/service-relationship-map/).",
-                    "content_format": "markdown",
-                    "slug": "services",
-                    "parent_id": 0,
-                    "parent_path": "",
-                    "post_author": "[redacted]",
-                    "content_hash": "harbor-services-v1",
-                    "source_url": "",
-                    "original_date_gmt": "",
-                    "add_source_attribution": false
+                    "name": "current-project"
                 },
-                "entry_sha256": "b95fa87a9a314bdb267c35e038cd9ad314821379e71f161cc5144dcb41cecc6f"
+                "entry_sha256": "12550a6d98425b264736e9452259a052b7ceacd7cf418e8e25ebec9ad0c423c2"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_lw9S5UeYyR0Q5RnD0FerzimB",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T18:05:27+00:00",
+                "ended_at": "2026-05-29T18:05:27+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": ""
+                },
+                "entry_sha256": "a981368dec376e4ffee205c157470985f3ce591e855065c3abf01ead4f90436f"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "workspace_git_status",
+                "tool_call_id": "call_wCDN3ARZVtSUWS8rZmL7MCWM",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T18:05:32+00:00",
+                "ended_at": "2026-05-29T18:05:32+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+                "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project",
+                    "repo": "current-project"
+                },
+                "entry_sha256": "3da39b61154cbbc123af920cd2ddfd009b851b196cfd2b3d3c96ba07b9129fce"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "19f8e34f9c41ab4c1132c32529f4682ff7ae0623c1dec538609470ce0eb7ad66"
+        "sha256": "7127a4c8bad581be8f431933eaa728df995ccdaa4a2fcded1d64a0cd6af49dcd"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
