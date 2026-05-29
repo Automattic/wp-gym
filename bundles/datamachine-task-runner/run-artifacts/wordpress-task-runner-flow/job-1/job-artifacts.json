@@ -8,50 +8,38 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "workspace_show",
+            "tool_name": "upsert_post",
             "success": true,
             "turn_count": 1
-        },
-        {
-            "tool_name": "workspace_ls",
-            "success": true,
-            "turn_count": 2
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_Lu4IF7rHoSZmFPsntl7QN85d",
+            "tool_name": "upsert_post",
+            "tool_call_id": "call_XvmDrhHnF95O2ElVBrbi6pGo",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T23:07:39+00:00",
-            "ended_at": "2026-05-29T23:07:39+00:00",
-            "duration_ms": 9,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "a0e2da84baddcf555d4ebe47efb9fe41c4bea19306edf254acde0328b285bd87",
+            "started_at": "2026-05-29T23:20:12+00:00",
+            "ended_at": "2026-05-29T23:20:13+00:00",
+            "duration_ms": 304,
+            "arguments_sha256": "9cf2154e34abfdd8c3cd12f1165ee1eed823d129abce970366fafba141f8aa8c",
+            "result_sha256": "dd0af975d0aeb8bccfb598e0c14cda079182248c7fd382b57fb59f5f1d3d664b",
             "arguments_redacted": {
-                "name": "current-project"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "call_pbvcdgM3AdI11eX3olnejaJ9",
-            "turn_count": 2,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T23:07:40+00:00",
-            "ended_at": "2026-05-29T23:07:41+00:00",
-            "duration_ms": 716,
-            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
-            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
-            "arguments_redacted": {
-                "repo": "current-project",
-                "path": ""
+                "post_type": "page",
+                "title": "Neighborhood Cookout Plan",
+                "content": "# Summer Cookout Plan\n\nJoin us for a friendly neighborhood summer cookout with good food, conversation, and time to relax together.\n\n- Confirm the guest list\n- Prep the grill and supplies\n- Set up drinks and seating\n\n[View menu](#)",
+                "content_format": "markdown",
+                "slug": "neighborhood-cookout-plan",
+                "parent_id": 0,
+                "parent_path": "",
+                "post_author": "[redacted]",
+                "content_hash": "neighborhood-cookout-plan-v1",
+                "source_url": "",
+                "original_date_gmt": "",
+                "add_source_attribution": false
             }
         }
     ],
@@ -61,7 +49,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "d5e215075fb57499bbaa76f87f6126a0bc152b6ef4c4a735a110d35e1d94d38c",
+            "sha256": "ed7f4901e90a0709401c25163e360d4cb90ce6bf80d10cf3fe4d99ac8a401b01",
             "bounded": true,
             "redacted": true
         }
@@ -72,11 +60,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:43255/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "5a665fac21f7792dd6d4a8b3fc9bbc0483c4d76ada6e19b93e3d033fc8d0e831",
-            "payload_sha256": "de611aeac416101f05625b6fefe97522510d83386107475ccca7aaf0515bc738",
-            "bytes": 2312,
-            "written_at": "2026-05-29T23:07:42+00:00"
+            "url": "http://127.0.0.1:36753/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "4f4bc2998420f5a59c0740ed9cd4f2a6181a6857895528d851c30ac456797c10",
+            "payload_sha256": "d496bef665711fda6df3df1191aebe532071f147ed1ea3482c5f23b3c101ca09",
+            "bytes": 2165,
+            "written_at": "2026-05-29T23:20:14+00:00"
         }
     },
     "transcript_artifact": null,
@@ -92,56 +80,47 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 23:07:35",
-            "completed_at": "2026-05-29 23:07:42"
+            "created_at": "2026-05-29 23:20:09",
+            "completed_at": "2026-05-29 23:20:14"
         },
-        "trace_count": 2,
-        "entries_emitted": 2,
+        "trace_count": 1,
+        "entries_emitted": 1,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_Lu4IF7rHoSZmFPsntl7QN85d",
+                "tool_name": "upsert_post",
+                "tool_call_id": "call_XvmDrhHnF95O2ElVBrbi6pGo",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T23:07:39+00:00",
-                "ended_at": "2026-05-29T23:07:39+00:00",
-                "duration_ms": 9,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "a0e2da84baddcf555d4ebe47efb9fe41c4bea19306edf254acde0328b285bd87",
+                "started_at": "2026-05-29T23:20:12+00:00",
+                "ended_at": "2026-05-29T23:20:13+00:00",
+                "duration_ms": 304,
+                "arguments_sha256": "9cf2154e34abfdd8c3cd12f1165ee1eed823d129abce970366fafba141f8aa8c",
+                "result_sha256": "dd0af975d0aeb8bccfb598e0c14cda079182248c7fd382b57fb59f5f1d3d664b",
                 "arguments_redacted": {
-                    "name": "current-project"
+                    "post_type": "page",
+                    "title": "Neighborhood Cookout Plan",
+                    "content": "# Summer Cookout Plan\n\nJoin us for a friendly neighborhood summer cookout with good food, conversation, and time to relax together.\n\n- Confirm the guest list\n- Prep the grill and supplies\n- Set up drinks and seating\n\n[View menu](#)",
+                    "content_format": "markdown",
+                    "slug": "neighborhood-cookout-plan",
+                    "parent_id": 0,
+                    "parent_path": "",
+                    "post_author": "[redacted]",
+                    "content_hash": "neighborhood-cookout-plan-v1",
+                    "source_url": "",
+                    "original_date_gmt": "",
+                    "add_source_attribution": false
                 },
-                "entry_sha256": "2150f5080fcd0ce884d9c49a196bdf323c13bc07a8f987714bc4ddef55a7a114"
-            },
-            {
-                "index": 1,
-                "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "call_pbvcdgM3AdI11eX3olnejaJ9",
-                "turn_count": 2,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T23:07:40+00:00",
-                "ended_at": "2026-05-29T23:07:41+00:00",
-                "duration_ms": 716,
-                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
-                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
-                "arguments_redacted": {
-                    "repo": "current-project",
-                    "path": ""
-                },
-                "entry_sha256": "82619db559c20032aec5f22d5e5796a2a909f124e79780d8037793df38cc4e19"
+                "entry_sha256": "406220e3ef8e677c0a80ebfaa0f392cc53fffa4b0f306b8c50870b74f4e86c0c"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "d5e215075fb57499bbaa76f87f6126a0bc152b6ef4c4a735a110d35e1d94d38c"
+        "sha256": "ed7f4901e90a0709401c25163e360d4cb90ce6bf80d10cf3fe4d99ac8a401b01"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
