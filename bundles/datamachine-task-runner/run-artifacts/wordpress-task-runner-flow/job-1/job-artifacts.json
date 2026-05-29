@@ -1,0 +1,395 @@
+{
+    "job_id": 1,
+    "status": "failed - tool_result_failed",
+    "agent_id": 2,
+    "agent_slug": "wordpress-task-runner",
+    "disposition_diagnostic": null,
+    "required_tool_names": [],
+    "satisfied_tool_names": [],
+    "successful_tool_calls": [
+        {
+            "tool_name": "workspace_show",
+            "success": true,
+            "turn_count": 1
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 3
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 4
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 5
+        },
+        {
+            "tool_name": "workspace_write",
+            "success": true,
+            "turn_count": 6
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 8
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 8
+        }
+    ],
+    "tool_trace": [
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "toolu_01AESDb7RGNV668Ndqnqvuz7",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:05:44+00:00",
+            "ended_at": "2026-05-29T23:05:44+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "1f95ca2898b8b7e5a93cf4990559a166deccd4dc1a0d6e000802067537d8b0a7",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01HBPocGZ4WNssttrga1F1YB",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:05:48+00:00",
+            "ended_at": "2026-05-29T23:05:48+00:00",
+            "duration_ms": 673,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01DroBn84Vx1fBSqSSBG1yFa",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:05:50+00:00",
+            "ended_at": "2026-05-29T23:05:51+00:00",
+            "duration_ms": 638,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01U9FDmtvhey2zxAN7rRM3EJ",
+            "turn_count": 5,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:05:53+00:00",
+            "ended_at": "2026-05-29T23:05:54+00:00",
+            "duration_ms": 618,
+            "arguments_sha256": "0ac32de6745dfb5451a97591bdd05cc7c10743fc92e7e9f95b67731c4fb67751",
+            "result_sha256": "2c4bd6957bf3f6a2ab07f0ae0d80bdb206e18426b960ed591103f9e37daa38cc",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "wp-content/plugins"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_write",
+            "tool_call_id": "toolu_01VZ2pBL8HBDgVP7fY2JVLn6",
+            "turn_count": 6,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:06:05+00:00",
+            "ended_at": "2026-05-29T23:06:05+00:00",
+            "duration_ms": 5,
+            "arguments_sha256": "4652546d7259338b6bc8f0cd8f20113351b1def8bce5b84a5cb3b1fa10145eca",
+            "result_sha256": "fd89284e90cd99e4cba08ab459c64dfdc45e3277fe580ecc030cb36736933bfd",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "wp-content/plugins/site-tools-status/site-tools-status.php",
+                "content": "<?php\n/**\n * Plugin Name: Site Tools - Status Endpoint\n * Description: Adds a public read-only site status endpoint at /wp-json/site-tools/v1/status for uptime/dashboard integrations.\n * Version:     1.0.0\n * Author:      Site Tools\n * License:     GPL-2.0-or-later\n * Requires at least: 5.0\n * Requires PHP: 7.2\n *\n * @package SiteTools\\Status\n */\n\n// Prevent direct file access.\nif ( ! defined( 'ABSPATH' ) ) {\n\texit;\n}\n\n/**\n * Register the /site-tools/v1/status REST route.\n *\n * The endpoint is intentionally public (permission_callback returns true) because\n * it only exposes non-sensitive, already-public information: the site name and\n * the count of published posts (which any visitor can already enumerate).\n */\nfunction site_tools_status_register_routes() {\n\tregister_rest_route(\n\t\t'site-tools/v1',\n\t\t'/status',\n\t\tarray(\n\t\t\t'methods'             => WP_REST_Server::READABLE, // GET only.\n\t\t\t'callback'            => 'site_tools_status_get_status',\n\t\t\t'permission_callback' => '__return_true',\n\t\t\t'args'                => array(),\n\t\t)\n\t);\n}\nadd_action( 'rest_api_init', 'site_tools_status_register_routes' );\n\n/**\n * Build the status payload.\n *\n * @return WP_REST_Response Compact status payload.\n */\nfunction site_tools_status_get_status() {\n\t$published_posts = wp_count_posts( 'post' );\n\t$published_count = isset( $published_posts->publish ) ? (int) $published_posts->publish : 0;\n\n\t$data = array(\n\t\t'ok'              => true,\n\t\t'site_name'       => get_bloginfo( 'name' ),\n\t\t'published_posts' => $published_count,\n\t);\n\n\treturn new WP_REST_Response( $data, 200 );\n}\n"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "run_wp_cli",
+            "tool_call_id": "toolu_014yUk3ea8qZVxa46frx8Jz5",
+            "turn_count": 7,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T23:06:07+00:00",
+            "ended_at": "2026-05-29T23:06:10+00:00",
+            "duration_ms": 2929,
+            "arguments_sha256": "9561136b96fc06b25087cc9ffd108bff2b429669a34b95f2b4e46a2869b5a896",
+            "result_sha256": "61894d85e6cb6a865408f53201f2432b63a441c8d4fdb7d3f4ba033e4b6485be",
+            "output_summary": "wordpress.wp-cli crashed before producing a structured response PHP.run() failed with exit code 1. === Stdout === #!/usr/bin/env php === Stderr === Warning: The 'site-tools-status' plugin could not be found. Error: No plugins activated.",
+            "arguments_redacted": {
+                "command": "plugin activate site-tools-status"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "toolu_01F9kUFuT9BnT5atacDEqgbR",
+            "turn_count": 8,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:06:13+00:00",
+            "ended_at": "2026-05-29T23:06:13+00:00",
+            "duration_ms": 5,
+            "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
+            "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
+            "arguments_redacted": {
+                "path": "wp-content/plugins"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_0119fRTYnu9gy6RcgbddpUXG",
+            "turn_count": 8,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:06:13+00:00",
+            "ended_at": "2026-05-29T23:06:13+00:00",
+            "duration_ms": 643,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        }
+    ],
+    "transcript": null,
+    "artifact_refs": {
+        "tool_trace": {
+            "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
+            "artifact_type": "tool_trace",
+            "schema_version": 1,
+            "sha256": "14ab503cae1bde14ce05cc6ce967e95fe2f1c245d593fee80174637ef129e983",
+            "bounded": true,
+            "redacted": true
+        }
+    },
+    "artifact_files": {
+        "tool_trace": {
+            "artifact_type": "tool_trace",
+            "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
+            "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
+            "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "url": "http://127.0.0.1:43303/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "b0cbd4d2ecab4d04d75f72db682c5da1b0ad6a8aad68c2fbe10ee567a6837c4d",
+            "payload_sha256": "7ef0d33c44991d00bb43497ea61eac391a5cff16c9b4e187c4415e71accbae99",
+            "bytes": 9434,
+            "written_at": "2026-05-29T23:06:16+00:00"
+        }
+    },
+    "transcript_artifact": null,
+    "tool_trace_artifact": {
+        "schema_version": 1,
+        "artifact_type": "tool_trace",
+        "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
+        "source": {
+            "job_id": 1,
+            "job_status": "failed - tool_result_failed",
+            "agent_id": 2,
+            "agent_slug": "wordpress-task-runner",
+            "user_id": 1,
+            "pipeline_id": 1,
+            "flow_id": 1,
+            "created_at": "2026-05-29 23:05:42",
+            "completed_at": "2026-05-29 23:06:16"
+        },
+        "trace_count": 8,
+        "entries_emitted": 8,
+        "entries_omitted": 0,
+        "entries": [
+            {
+                "index": 0,
+                "schema_version": 1,
+                "tool_name": "workspace_show",
+                "tool_call_id": "toolu_01AESDb7RGNV668Ndqnqvuz7",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:05:44+00:00",
+                "ended_at": "2026-05-29T23:05:44+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "1f95ca2898b8b7e5a93cf4990559a166deccd4dc1a0d6e000802067537d8b0a7",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "95ed9c3ab677c70cd60e16dc93c8ffeef0dd352a2523f495f5d88560f501d6a8"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01HBPocGZ4WNssttrga1F1YB",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:05:48+00:00",
+                "ended_at": "2026-05-29T23:05:48+00:00",
+                "duration_ms": 673,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "8bb23704630b0677d6fd5f5a20dc09d96c525b85bc38b56e26d98a6653acffe3"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01DroBn84Vx1fBSqSSBG1yFa",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:05:50+00:00",
+                "ended_at": "2026-05-29T23:05:51+00:00",
+                "duration_ms": 638,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "696a2f3237bf805c1b8aa1ee972bf95859fd5b6b3c792b013a7c00858b209dec"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01U9FDmtvhey2zxAN7rRM3EJ",
+                "turn_count": 5,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:05:53+00:00",
+                "ended_at": "2026-05-29T23:05:54+00:00",
+                "duration_ms": 618,
+                "arguments_sha256": "0ac32de6745dfb5451a97591bdd05cc7c10743fc92e7e9f95b67731c4fb67751",
+                "result_sha256": "2c4bd6957bf3f6a2ab07f0ae0d80bdb206e18426b960ed591103f9e37daa38cc",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": "wp-content/plugins"
+                },
+                "entry_sha256": "5ad310264aa6d8b1ff57fec8c0b7401cb5c99cabf26c3bdf3b1e4a4f1f82157b"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "workspace_write",
+                "tool_call_id": "toolu_01VZ2pBL8HBDgVP7fY2JVLn6",
+                "turn_count": 6,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:06:05+00:00",
+                "ended_at": "2026-05-29T23:06:05+00:00",
+                "duration_ms": 5,
+                "arguments_sha256": "4652546d7259338b6bc8f0cd8f20113351b1def8bce5b84a5cb3b1fa10145eca",
+                "result_sha256": "fd89284e90cd99e4cba08ab459c64dfdc45e3277fe580ecc030cb36736933bfd",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": "wp-content/plugins/site-tools-status/site-tools-status.php",
+                    "content": "<?php\n/**\n * Plugin Name: Site Tools - Status Endpoint\n * Description: Adds a public read-only site status endpoint at /wp-json/site-tools/v1/status for uptime/dashboard integrations.\n * Version:     1.0.0\n * Author:      Site Tools\n * License:     GPL-2.0-or-later\n * Requires at least: 5.0\n * Requires PHP: 7.2\n *\n * @package SiteTools\\Status\n */\n\n// Prevent direct file access.\nif ( ! defined( 'ABSPATH' ) ) {\n\texit;\n}\n\n/**\n * Register the /site-tools/v1/status REST route.\n *\n * The endpoint is intentionally public (permission_callback returns true) because\n * it only exposes non-sensitive, already-public information: the site name and\n * the count of published posts (which any visitor can already enumerate).\n */\nfunction site_tools_status_register_routes() {\n\tregister_rest_route(\n\t\t'site-tools/v1',\n\t\t'/status',\n\t\tarray(\n\t\t\t'methods'             => WP_REST_Server::READABLE, // GET only.\n\t\t\t'callback'            => 'site_tools_status_get_status',\n\t\t\t'permission_callback' => '__return_true',\n\t\t\t'args'                => array(),\n\t\t)\n\t);\n}\nadd_action( 'rest_api_init', 'site_tools_status_register_routes' );\n\n/**\n * Build the status payload.\n *\n * @return WP_REST_Response Compact status payload.\n */\nfunction site_tools_status_get_status() {\n\t$published_posts = wp_count_posts( 'post' );\n\t$published_count = isset( $published_posts->publish ) ? (int) $published_posts->publish : 0;\n\n\t$data = array(\n\t\t'ok'              => true,\n\t\t'site_name'       => get_bloginfo( 'name' ),\n\t\t'published_posts' => $published_count,\n\t);\n\n\treturn new WP_REST_Response( $data, 200 );\n}\n"
+                },
+                "entry_sha256": "89a38466282eb8eb4e3b9433c9e82dcec2cb624e21325f87a887faadad148251"
+            },
+            {
+                "index": 5,
+                "schema_version": 1,
+                "tool_name": "run_wp_cli",
+                "tool_call_id": "toolu_014yUk3ea8qZVxa46frx8Jz5",
+                "turn_count": 7,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T23:06:07+00:00",
+                "ended_at": "2026-05-29T23:06:10+00:00",
+                "duration_ms": 2929,
+                "arguments_sha256": "9561136b96fc06b25087cc9ffd108bff2b429669a34b95f2b4e46a2869b5a896",
+                "result_sha256": "61894d85e6cb6a865408f53201f2432b63a441c8d4fdb7d3f4ba033e4b6485be",
+                "output_summary": "wordpress.wp-cli crashed before producing a structured response PHP.run() failed with exit code 1. === Stdout === #!/usr/bin/env php === Stderr === Warning: The 'site-tools-status' plugin could not be found. Error: No plugins activated.",
+                "arguments_redacted": {
+                    "command": "plugin activate site-tools-status"
+                },
+                "entry_sha256": "8942e9cabf49ddcffdc0c44bd70b8fa9ea97bede989674083ae1ddd4e2863085"
+            },
+            {
+                "index": 6,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "toolu_01F9kUFuT9BnT5atacDEqgbR",
+                "turn_count": 8,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:06:13+00:00",
+                "ended_at": "2026-05-29T23:06:13+00:00",
+                "duration_ms": 5,
+                "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
+                "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins"
+                },
+                "entry_sha256": "32aecbb36c7e3656471bc3bd1b3039fc031c2ccb735008d92ccfb5f8708de870"
+            },
+            {
+                "index": 7,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_0119fRTYnu9gy6RcgbddpUXG",
+                "turn_count": 8,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:06:13+00:00",
+                "ended_at": "2026-05-29T23:06:13+00:00",
+                "duration_ms": 643,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "83670b822c6250084d9a892a33cda61fc8e6941111f206dbed250c3a2a3440f3"
+            }
+        ],
+        "bounded": true,
+        "redacted": true,
+        "sha256": "14ab503cae1bde14ce05cc6ce967e95fe2f1c245d593fee80174637ef129e983"
+    },
+    "agent_memory_artifacts": [],
+    "daily_memory_artifacts": []
+}
