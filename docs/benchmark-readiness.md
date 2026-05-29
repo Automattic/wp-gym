@@ -80,8 +80,7 @@ gh workflow run datamachine-live-run.yml \
   -f task_set=benchmark-readiness-pilot \
   -f task_ids= \
   -f bundle_ref= \
-  -f dry_run=true \
-  -f agent_runtime=wp-codebox
+  -f dry_run=true
 ```
 
 Collect the run ID and inspect the resolved matrix:
@@ -116,8 +115,7 @@ gh workflow run datamachine-live-run.yml \
   -f task_set=benchmark-readiness-pilot \
   -f task_ids= \
   -f bundle_ref= \
-  -f dry_run=false \
-  -f agent_runtime=wp-codebox
+  -f dry_run=false
 ```
 
 Watch and collect the run:
