@@ -38,6 +38,10 @@ function sha256Json(value) {
 	return sha256Buffer(Buffer.from(JSON.stringify(stableValue(value))));
 }
 
+function isSealedReference(value) {
+	return String(value || '').startsWith('sealed://');
+}
+
 function repoRelative(file) {
 	return path.relative(root, file).replace(/\\/g, '/');
 }
@@ -168,10 +172,11 @@ function taskSetMetadata(evalArtifact, sourceFile) {
 	const resolved = path.join(root, sourcePath);
 	const manifest = fs.existsSync(resolved) ? readJson(resolved) : {};
 	const provenanceHash = normalizeSha256(evalArtifact.provenance?.inputs?.task_set_sha256);
+	const heldOut = evalArtifact.held_out || evalArtifact.provenance?.held_out || null;
 	return {
 		id: evalArtifact.task_set?.id || manifest.id || 'unknown-task-set',
 		version: manifest.benchmark_metadata?.benchmark_version || evalArtifact.task_set?.version || 'unversioned',
-		sha256: fs.existsSync(resolved) ? sha256File(resolved) : normalizeSha256(evalArtifact.task_set?.sha256) || provenanceHash,
+		sha256: isSealedReference(sourcePath) ? (provenanceHash || heldOut?.sealed_hashes?.scenario_manifest || normalizeSha256(evalArtifact.task_set?.sha256)) : (fs.existsSync(resolved) ? sha256File(resolved) : normalizeSha256(evalArtifact.task_set?.sha256) || provenanceHash),
 		source_path: sourcePath,
 		benchmark_status: manifest.benchmark_status || evalArtifact.task_set?.benchmark_status || 'pilot',
 		headline_score_eligible: Boolean(manifest.headline_score_eligible || evalArtifact.task_set?.headline_score_eligible),
@@ -187,15 +192,17 @@ function scenarioMetadata(evalArtifact, scenarioIndex) {
 	const manifest = indexed.manifest || {};
 	const sourcePath = indexed.file || evalArtifact.scenario?.source_path || '';
 	const provenanceInputs = evalArtifact.provenance?.inputs || {};
+	const heldOut = evalArtifact.held_out || evalArtifact.provenance?.held_out || null;
 	return {
 		id: evalArtifact.scenario?.id || manifest.id || 'unknown-scenario',
 		version: manifest.calibration?.benchmark_metadata?.benchmark_version || evalArtifact.scenario?.version || 'unversioned',
-		sha256: sourcePath ? sha256File(path.join(root, sourcePath)) : normalizeSha256(evalArtifact.scenario?.sha256) || normalizeSha256(provenanceInputs.scenario_sha256),
+		sha256: sourcePath && !isSealedReference(sourcePath) && fs.existsSync(path.join(root, sourcePath)) ? sha256File(path.join(root, sourcePath)) : normalizeSha256(evalArtifact.scenario?.sha256) || normalizeSha256(provenanceInputs.scenario_sha256) || heldOut?.sealed_hashes?.scenario_manifest,
 		source_path: sourcePath,
-		prompt_sha256: normalizeSha256(evalArtifact.scenario?.prompt_sha256 || provenanceInputs.prompt_sha256 || manifest.prompt_sha256),
+		prompt_sha256: normalizeSha256(evalArtifact.scenario?.prompt_sha256 || provenanceInputs.prompt_sha256 || manifest.prompt_sha256 || heldOut?.sealed_hashes?.prompt),
 		task_family: evalArtifact.scenario?.task_family || manifest.id?.split('-').slice(0, 2).join('-') || 'unknown',
 		capabilities: evalArtifact.scenario?.capabilities || manifest.capabilities || null,
-		calibration: manifest.calibration || {},
+		calibration: manifest.calibration || evalArtifact.scenario?.calibration || {},
+		heldOut,
 	};
 }
 
@@ -221,6 +228,9 @@ function benchmarkExclusionReasons(taskSet, scenario) {
 	}
 	if (scenario.calibration?.headline_score_eligible === false) {
 		reasons.push('scenario_not_headline_eligible');
+	}
+	if (scenario.heldOut && scenario.heldOut.split_membership !== 'held_out_private') {
+		reasons.push('split_not_held_out_private');
 	}
 	for (const reason of taskSet.benchmark_blockers || []) {
 		reasons.push(reason);
@@ -304,6 +314,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			compatibility_group: taskSet.compatibility_group,
 			exclusion_reasons: exclusionReasons,
 		},
+		...(scenario.heldOut ? { held_out: scenario.heldOut } : {}),
 		eval_artifact: evalReference,
 		artifact_index: {
 			schema_version: 1,

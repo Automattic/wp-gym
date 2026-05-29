@@ -56,7 +56,7 @@ function validateSchema(entry, validate) {
 
 function localReferencePath(reference, baseDir) {
 	const target = reference?.path_or_url || '';
-	if (!target || /^https?:\/\//i.test(target)) {
+	if (!target || /^https?:\/\//i.test(target) || target.startsWith('sealed://')) {
 		return null;
 	}
 	return path.resolve(baseDir, target);
@@ -71,6 +71,12 @@ function validateReference(reference, baseDir, field, benchmarkMode) {
 	if (/^https?:\/\//i.test(target)) {
 		if (benchmarkMode) {
 			gaps.push(gap('remote_artifact_not_hashable_locally', 'error', field, `${target} is remote; benchmark-mode registry entries require local, hashable artifacts.`));
+		}
+		return gaps;
+	}
+	if (target.startsWith('sealed://')) {
+		if (!reference.sha256) {
+			gaps.push(gap('missing_artifact_hash', 'error', field, `${target} is sealed but does not declare sha256.`));
 		}
 		return gaps;
 	}
@@ -122,6 +128,9 @@ function validateRunRegistryEntry(entry, options = {}) {
 		['task_set', entry.task_set],
 	]) {
 		if (!manifest?.source_path || !manifest?.sha256) {
+			continue;
+		}
+		if (manifest.source_path.startsWith('sealed://')) {
 			continue;
 		}
 		const resolved = path.resolve(baseDir, manifest.source_path);

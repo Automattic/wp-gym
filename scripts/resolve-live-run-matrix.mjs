@@ -1,20 +1,22 @@
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
+import { loadHeldOutPackTasks } from './resolve-held-out-pack.mjs';
 
 const root = process.cwd();
 const checkOnly = process.argv.includes('--check');
+const heldOutPackInput = process.env.WP_GYM_HELD_OUT_PACK || process.env.HELD_OUT_PACK_MANIFEST || '';
 
 function readJson(file) {
-	return JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
+	return JSON.parse(fs.readFileSync(path.isAbsolute(file) ? file : path.join(root, file), 'utf8'));
 }
 
 function readText(file) {
-	return fs.readFileSync(path.join(root, file), 'utf8').trim();
+	return fs.readFileSync(path.isAbsolute(file) ? file : path.join(root, file), 'utf8').trim();
 }
 
 function sha256File(file) {
-	return createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex');
+	return createHash('sha256').update(fs.readFileSync(path.isAbsolute(file) ? file : path.join(root, file))).digest('hex');
 }
 
 function truthyEnv(value) {
@@ -22,6 +24,9 @@ function truthyEnv(value) {
 }
 
 function currentTaskSetId() {
+	if (heldOutPackInput && !process.env.TASK_SET) {
+		return 'held-out-private';
+	}
 	return process.env.TASK_SET || 'first-live-run';
 }
 
@@ -65,6 +70,28 @@ function fallbackTaskSetMetadata(id) {
 
 function taskSetMetadata() {
 	const taskSet = currentTaskSetId();
+	if (heldOutPackInput && taskSet === 'held-out-private') {
+		const { manifest } = loadHeldOutPackTasks(heldOutPackInput);
+		return {
+			id: manifest.pack.id,
+			sourcePath: `sealed://${manifest.pack.public_reference || `${manifest.pack.id}@${manifest.pack.version}`}/task-set`,
+			benchmark_status: 'benchmark_ready',
+			benchmark: true,
+			headline_score_eligible: true,
+			aggregate_score: true,
+			score_scope: 'benchmark',
+			task_contract_level: 'benchmark_replay',
+			benchmark_blockers: [],
+			benchmark_metadata: {
+				benchmark_version: `${manifest.pack.id}@${manifest.pack.version}`,
+				compatibility_group: manifest.pack.compatibility_group,
+				public_reference: manifest.pack.public_reference || null,
+			},
+			split_policy: {
+				requires_held_out_private: true,
+			},
+		};
+	}
 	if (taskSet === 'custom' || taskSet === 'smoke') {
 		return fallbackTaskSetMetadata(taskSet);
 	}
@@ -295,12 +322,16 @@ function provenanceConfig(task, provider, metadata) {
 			agent_instructions_sha256: process.env.AGENT_INSTRUCTIONS_SHA256 || '',
 		},
 		inputs: {
-			scenario_sha256: sha256File(task.scenarioFile),
+			scenario_sha256: task.heldOut?.sealed_hashes?.scenario_manifest || sha256File(task.scenarioFile),
 			prompt_sha256: sha256File(task.promptFile),
 			grader_sha256: sha256File(task.graderFile),
-			task_set_sha256: metadata.taskSet.sourcePath ? sha256File(metadata.taskSet.sourcePath) : '',
+			task_set_sha256: metadata.taskSet.sourcePath && !metadata.taskSet.sourcePath.startsWith('sealed://') ? sha256File(metadata.taskSet.sourcePath) : (task.heldOut?.sealed_hashes?.scenario_manifest || ''),
 			bundle_sha256: sha256File('bundle-validator.json'),
+			held_out_pack_id: task.heldOut?.pack_id || null,
+			held_out_pack_version: task.heldOut?.pack_version || null,
+			held_out_entry_id: task.heldOut?.entry_id || null,
 		},
+		...(task.heldOut ? { held_out: task.heldOut } : {}),
 	});
 }
 
@@ -463,6 +494,22 @@ function artifactExportConfig(task, provider, metadata) {
 }
 
 function resolveTasks() {
+	if (heldOutPackInput) {
+		const { tasks } = loadHeldOutPackTasks(heldOutPackInput);
+		const explicitIds = explicitTaskIds();
+		if (explicitIds.length === 0) {
+			return tasks;
+		}
+		const byId = new Map(tasks.flatMap((task) => [[task.id, task], [task.heldOut.entry_id, task]]));
+		return explicitIds.map((taskId) => {
+			const task = byId.get(taskId);
+			if (!task) {
+				throw new Error(`Unknown held-out task ID: ${taskId}`);
+			}
+			return task;
+		});
+	}
+
 	const homeboy = readJson('homeboy.json');
 	const scenarioFiles = homeboy.extensions.wordpress.settings.playground_scenario_manifests || [];
 	const smoke = smokeTask();
@@ -543,6 +590,12 @@ function benchmarkRejectReasons(task, taskSet) {
 	if (calibration.held_out_private_variants_ready !== true) {
 		reasons.push('held_out_private_variants_not_ready');
 	}
+	if (taskSet.split_policy?.requires_held_out_private === true && !task.heldOut) {
+		reasons.push('missing_private_held_out_pack_row');
+	}
+	if (taskSet.headline_score_eligible && taskSet.split_policy?.requires_held_out_private !== true && !task.heldOut) {
+		reasons.push('task_set_missing_held_out_private_requirement');
+	}
 	if (task.split?.membership !== 'held_out_private') {
 		reasons.push(`split_${task.split?.membership || 'unknown'}_not_held_out_private`);
 	}
@@ -583,6 +636,7 @@ function resolveMatrix() {
 
 	for (const task of resolveTasks()) {
 		const prompt = readText(task.promptFile);
+		const redactPrivateOutput = task.heldOut && !process.env.GITHUB_OUTPUT && !truthyEnv(process.env.WP_GYM_PRINT_PRIVATE_HELD_OUT);
 		const workloadRunAfter = task.graderFile
 			? JSON.stringify([{ type: 'php', file: task.graderFile }])
 			: '[]';
@@ -615,8 +669,8 @@ function resolveMatrix() {
 				provider_label: provider.label,
 				provider_plugin: provider.providerPlugin,
 				provenance: provenanceConfig(task, provider, rowMetadata),
-				prompt,
-				workload_run_after: workloadRunAfter,
+				prompt: redactPrivateOutput ? '[redacted-held-out-private-prompt]' : prompt,
+				workload_run_after: redactPrivateOutput ? '[redacted-held-out-private-grader]' : workloadRunAfter,
 				rules: JSON.stringify(task.rules),
 				general_rules: JSON.stringify(task.generalRules),
 				task_rules: JSON.stringify(task.taskRules),
@@ -647,6 +701,20 @@ function resolveMatrix() {
 				aggregate_score: taskSet.aggregate_score,
 				task_contract_level: task.calibration.task_contract_level || 'unknown',
 				benchmark_reject_reasons: benchmarkRejectReasonList,
+				held_out_pack: task.heldOut ? {
+					pack_id: task.heldOut.pack_id,
+					pack_version: task.heldOut.pack_version,
+					entry_id: task.heldOut.entry_id,
+					scenario_id: task.heldOut.scenario_id,
+					parent_scenario_id: task.heldOut.parent_scenario_id,
+					compatibility_group: task.heldOut.compatibility_group,
+					variant_family: task.heldOut.variant_family,
+					variant_seed: task.heldOut.variant_seed,
+					split_membership: task.heldOut.split_membership,
+					public_report_policy: task.heldOut.public_report_policy,
+					public_reference: task.heldOut.public_reference,
+					sealed_hashes: task.heldOut.sealed_hashes,
+				} : null,
 				run_id: runId,
 				run_attempt: runAttempt,
 				artifact_suffix: artifactSuffix,
@@ -760,6 +828,11 @@ function assertLiveRunMatrix(matrix) {
 			);
 		}
 		assert(row.workload_run_after !== '[]', `${row.task_id} must run a grader`);
+		if (task.heldOut && !process.env.GITHUB_OUTPUT && !truthyEnv(process.env.WP_GYM_PRINT_PRIVATE_HELD_OUT)) {
+			assert(row.prompt === '[redacted-held-out-private-prompt]', `${row.task_id} dry-run output must redact held-out prompt`);
+			assert(row.workload_run_after === '[redacted-held-out-private-grader]', `${row.task_id} dry-run output must redact held-out grader`);
+			assert(row.held_out_pack?.sealed_hashes?.prompt, `${row.task_id} dry-run output must include sealed prompt hash`);
+		}
 		assert(row.enable_terminal_actions === terminalActionsEnabled(task), `${row.task_id} terminal actions flag mismatch`);
 		assert(row.wp_cli_tool_name === 'run_wp_cli', `${row.task_id} wp_cli_tool_name mismatch`);
 
