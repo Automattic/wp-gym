@@ -99,6 +99,11 @@ The benchmark-readiness pilot runbook and evidence plan for issue #9 is in
 matrix, safe dry-run checks, live-run command shape, expected artifacts, and the
 remaining gates before results can be called benchmark-ready.
 
+The external-lab readiness package for RL/eval consumers is in
+`docs/external-lab-readiness.md`. It summarizes current pilot status, local and
+live episode commands, replay and registry inspection, non-benchmark limitations,
+and the #127 calibration child gates.
+
 Held-out variant and contamination-control policy is documented in
 `docs/contamination-controls.md`. Public scenarios are training-visible; headline
 benchmark claims require held-out/private split metadata and readiness gates.

@@ -22,7 +22,10 @@ const scenarioReport = evaluatePromotionTarget({ root, scenarioId: 'block-markup
 assert.equal(scenarioReport.target_type, 'scenario');
 assert.equal(scenarioReport.status, 'fail');
 assert.ok(scenarioReport.gates.some((gate) => gate.code === 'known_shortcuts_fixture_covered' && gate.status === 'pass'));
+assert.ok(scenarioReport.gates.some((gate) => gate.code === 'reward_soundness_reviewed' && gate.status === 'pass'));
+assert.ok(scenarioReport.gates.some((gate) => gate.code === 'reward_shortcuts_review_resolved' && gate.status === 'fail'));
 assert.ok(scenarioReport.blockers.includes('known_shortcuts_unresolved'));
+assert.ok(scenarioReport.blockers.includes('known_reward_shortcut'));
 
 const embeddedTarget = {
 	type: 'task_set',
