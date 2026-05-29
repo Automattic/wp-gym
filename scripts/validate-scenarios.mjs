@@ -73,6 +73,10 @@ const knownSourceInputTypes = new Set([
 ]);
 const knownFreshnessStatuses = new Set(['fresh', 'watch', 'stale', 'retired']);
 const knownCurriculumLifecycleStatuses = new Set(['proposed', 'pilot', 'calibrating', 'benchmark_ready', 'retired']);
+const knownRewardSoundnessReviewStatuses = new Set(['reviewed', 'needs_review']);
+const knownRewardSoundnessReviewerTypes = new Set(['human', 'reference_oracle']);
+const knownRewardSoundnessShortcutStatuses = new Set(['resolved', 'unresolved', 'not_applicable']);
+const knownDiagnosticContractReviewStatuses = new Set(['reviewed', 'not_applicable']);
 const isoDatePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 
 function assertObject(value, label) {
@@ -179,6 +183,30 @@ function assertNonEmptyString(value, label) {
 	if (typeof value !== 'string' || value.length < 1) {
 		throw new Error(`${label} must be a non-empty string`);
 	}
+}
+
+function validateRewardSoundnessReview(file, review) {
+	assertObject(review, `${file} calibration.reward_soundness_review`);
+	assertKnown(review.status, knownRewardSoundnessReviewStatuses, `${file} calibration.reward_soundness_review.status`);
+	assertKnown(review.reviewer_type, knownRewardSoundnessReviewerTypes, `${file} calibration.reward_soundness_review.reviewer_type`);
+	assertIsoDate(review.reviewed_at, `${file} calibration.reward_soundness_review.reviewed_at`);
+	assertNonEmptyString(review.artifact, `${file} calibration.reward_soundness_review.artifact`);
+	if (!existsSync(path.join(root, normalizeRepoRelativePath(review.artifact, `${file} calibration.reward_soundness_review.artifact`)))) {
+		throw new Error(`${file} calibration.reward_soundness_review.artifact does not exist: ${review.artifact}`);
+	}
+	assertNonEmptyString(review.classification, `${file} calibration.reward_soundness_review.classification`);
+	assertKnown(review.shortcut_resolution_status, knownRewardSoundnessShortcutStatuses, `${file} calibration.reward_soundness_review.shortcut_resolution_status`);
+	assertStringArray(review.representative_passed_outputs, `${file} calibration.reward_soundness_review.representative_passed_outputs`, {
+		minItems: 1,
+		pattern: /^[a-z0-9][a-z0-9-]*$/,
+	});
+	assertStringArray(review.adversarial_or_failed_outputs, `${file} calibration.reward_soundness_review.adversarial_or_failed_outputs`, {
+		minItems: 1,
+		pattern: /^[a-z0-9][a-z0-9-]*$/,
+	});
+	assertObject(review.diagnostic_contract_review, `${file} calibration.reward_soundness_review.diagnostic_contract_review`);
+	assertKnown(review.diagnostic_contract_review.status, knownDiagnosticContractReviewStatuses, `${file} calibration.reward_soundness_review.diagnostic_contract_review.status`);
+	assertNonEmptyString(review.diagnostic_contract_review.classification, `${file} calibration.reward_soundness_review.diagnostic_contract_review.classification`);
 }
 
 for (const repoFile of requiredRepoFiles) {
@@ -430,6 +458,9 @@ function validateScenarioContract(file, manifest) {
 	});
 	if (manifest.calibration.benchmark_metadata !== undefined) {
 		validateBenchmarkMetadata(manifest.calibration.benchmark_metadata, `${file} calibration`);
+	}
+	if (manifest.calibration.reward_soundness_review !== undefined) {
+		validateRewardSoundnessReview(file, manifest.calibration.reward_soundness_review);
 	}
 	if (manifest.calibration.status === 'benchmark_ready') {
 		if (!manifest.calibration.headline_score_eligible) {

@@ -73,6 +73,17 @@ function hasVersionIdentity(metadata) {
 	return Boolean(metadata?.version_identity) && hashFields.every((field) => hashPattern.test(metadata.version_identity[field] || ''));
 }
 
+function hasReviewedRewardSoundness(review) {
+	return review?.status === 'reviewed' &&
+		['human', 'reference_oracle'].includes(review.reviewer_type) &&
+		typeof review.artifact === 'string' &&
+		review.artifact.length > 0 &&
+		Array.isArray(review.representative_passed_outputs) &&
+		review.representative_passed_outputs.length > 0 &&
+		Array.isArray(review.adversarial_or_failed_outputs) &&
+		review.adversarial_or_failed_outputs.length > 0;
+}
+
 function loadScenarios(root) {
 	const scenarios = new Map();
 	for (const file of listJsonFiles(path.join(root, 'scenarios'))) {
@@ -207,6 +218,18 @@ function evaluateScenario(scenario, context = {}) {
 	gates.push((calibration.known_shortcuts || []).length === 0
 		? pass('known_shortcuts_resolved', 'No unresolved known shortcuts remain.')
 		: fail('known_shortcuts_resolved', 'Benchmark-ready scenarios must resolve known shortcuts before headline promotion.', ['known_shortcuts_unresolved']));
+
+	gates.push(hasReviewedRewardSoundness(calibration.reward_soundness_review)
+		? pass('reward_soundness_reviewed', 'Human/reference review classified representative pass and adversarial outputs.', [calibration.reward_soundness_review.artifact])
+		: fail('reward_soundness_reviewed', 'Benchmark-ready scenarios must link reviewed reward-soundness evidence.', ['missing_reward_soundness_review']));
+
+	gates.push(calibration.reward_soundness_review?.shortcut_resolution_status === 'resolved' || (calibration.known_shortcuts || []).length === 0
+		? pass('reward_shortcuts_review_resolved', 'Reward-soundness review does not leave known shortcuts unresolved.')
+		: fail('reward_shortcuts_review_resolved', 'Promotion is blocked while review evidence marks reward shortcuts unresolved.', ['known_reward_shortcut']));
+
+	gates.push(calibration.task_contract_level === 'benchmark_replay' || calibration.reward_soundness_review?.diagnostic_contract_review?.status === 'reviewed'
+		? pass('diagnostic_contract_reviewed', 'Diagnostic-only grader contracts have review evidence or are upgraded to benchmark replay.')
+		: fail('diagnostic_contract_reviewed', 'Diagnostic-only graders require review evidence before promotion can be considered.', ['unreviewed_diagnostic_only_grader']));
 
 	gates.push(calibration.held_out_private_variants_ready === true && split.membership === 'held_out_private'
 		? pass('held_out_private_ready', 'Held-out private variants are ready and this scenario is in the held-out private split.', [split.held_out_private_variant?.reference].filter(Boolean))
