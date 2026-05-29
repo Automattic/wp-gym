@@ -123,6 +123,7 @@ function scenarioTask(scenarioFile) {
 	return {
 		id: scenario.id,
 		label: scenario.label || scenario.id,
+		split: scenario.split || {},
 		promptFile: resolveFrom(scenarioFile, scenario.prompt_file || scenario.prompt),
 		graderFile: resolveFrom(scenarioFile, scenario.grader_file || scenario.grader),
 		usesWorkspace: Boolean(environment.uses_workspace),
@@ -162,6 +163,11 @@ function smokeTask() {
 			headline_score_eligible: false,
 			task_contract_level: 'wordpress_state_diagnostic',
 			benchmark_blockers: ['demo_task', 'diagnostic_contract_only', 'missing_baseline_results'],
+		},
+		split: {
+			membership: 'public',
+			variant_family: 'smoke-homepage',
+			variant_seed: 'smoke-homepage-public-v1',
 		},
 		maxTurns: 8,
 		stepBudget: 12,
@@ -280,6 +286,9 @@ function artifactExportConfig(task, provider, metadata) {
 			'- **Benchmark eligible:** `{benchmark_eligible}`',
 			'- **Aggregate score:** `{aggregate_score}`',
 			'- **Task contract:** `{task_contract_level}`',
+			'- **Split:** `{split_membership}`',
+			'- **Variant family:** `{variant_family}`',
+			'- **Variant seed:** `{variant_seed}`',
 			'- **Run:** `{run_id}` attempt `{run_attempt}`',
 			'- **Blockers:** `{benchmark_blockers}`',
 			'',
@@ -325,6 +334,9 @@ function artifactExportConfig(task, provider, metadata) {
 			benchmark_eligible: metadata.benchmarkEligible,
 			aggregate_score: metadata.taskSet.aggregate_score,
 			task_contract_level: task.calibration.task_contract_level || 'unknown',
+			split_membership: task.split?.membership || 'unknown',
+			variant_family: task.split?.variant_family || '',
+			variant_seed: task.split?.variant_seed || '',
 			run_id: metadata.runId,
 			run_attempt: metadata.runAttempt,
 			benchmark_blockers: metadata.benchmarkRejectReasons.join(', ') || 'none',
@@ -422,6 +434,9 @@ function benchmarkRejectReasons(task, taskSet) {
 	if (calibration.held_out_private_variants_ready !== true) {
 		reasons.push('held_out_private_variants_not_ready');
 	}
+	if (task.split?.membership !== 'held_out_private') {
+		reasons.push(`split_${task.split?.membership || 'unknown'}_not_held_out_private`);
+	}
 	if (Array.isArray(calibration.known_shortcuts) && calibration.known_shortcuts.length > 0) {
 		reasons.push('known_reward_shortcut');
 	}
@@ -491,6 +506,10 @@ function resolveMatrix() {
 				time_budget_ms: task.timeBudgetMs,
 				calibration_status: task.calibration.status || 'unknown',
 				benchmark_scope: task.calibration.benchmark_scope || 'unknown',
+				split_membership: task.split?.membership || 'unknown',
+				variant_family: task.split?.variant_family || '',
+				variant_seed: task.split?.variant_seed || '',
+				parent_scenario_id: task.split?.parent_scenario_id || '',
 				headline_score_eligible: Boolean(task.calibration.headline_score_eligible),
 				score_scope: taskSet.score_scope,
 				benchmark_eligible: benchmarkEligible,
@@ -576,6 +595,7 @@ function assertLiveRunMatrix(matrix) {
 		assert(Number(row.time_budget_ms) > 0, `${row.task_id} time_budget_ms must be positive`);
 		assert(row.calibration_status === (task.calibration.status || 'unknown'), `${row.task_id} calibration_status mismatch`);
 		assert(row.benchmark_scope === (task.calibration.benchmark_scope || 'unknown'), `${row.task_id} benchmark_scope mismatch`);
+		assert(row.split_membership === (task.split?.membership || 'unknown'), `${row.task_id} split_membership mismatch`);
 		assert(row.headline_score_eligible === Boolean(task.calibration.headline_score_eligible), `${row.task_id} headline_score_eligible mismatch`);
 		assert(row.task_contract_level === (task.calibration.task_contract_level || 'unknown'), `${row.task_id} task_contract_level mismatch`);
 		assert(row.benchmark_scope !== 'benchmark' || row.headline_score_eligible === true, `${row.task_id} benchmark rows must be headline eligible`);
@@ -589,6 +609,9 @@ function assertLiveRunMatrix(matrix) {
 				row.benchmark_reject_reasons.includes('known_reward_shortcut'),
 				`${row.task_id} known shortcuts must block benchmark eligibility`
 			);
+		}
+		if (row.benchmark_eligible) {
+			assert(row.split_membership === 'held_out_private', `${row.task_id} benchmark eligible rows must use held-out private split membership`);
 		}
 		if (benchmarkMode) {
 			assert(

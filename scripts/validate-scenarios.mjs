@@ -45,6 +45,8 @@ const knownTaskSetContractLevels = new Set([
 	'benchmark_replay',
 ]);
 const knownScoreScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', 'excluded']);
+const knownSplitMemberships = new Set(['public', 'calibration', 'validation', 'held_out_private']);
+const knownGraderExposure = new Set(['full_public', 'summary_public', 'private']);
 const knownProbeTypes = new Set(['rendered_site_design']);
 
 function assertObject(value, label) {
@@ -129,6 +131,37 @@ function validateScenarioContract(file, manifest) {
 	}
 
 	assertObject(manifest.environment, `${file} environment`);
+	assertObject(manifest.split, `${file} split`);
+	assertKnown(manifest.split.membership, knownSplitMemberships, `${file} split.membership`);
+	if (typeof manifest.split.variant_family !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(manifest.split.variant_family)) {
+		throw new Error(`${file} split.variant_family must be kebab-case`);
+	}
+	if (typeof manifest.split.variant_seed !== 'string' || !/^[a-z0-9][a-z0-9_.-]*$/.test(manifest.split.variant_seed)) {
+		throw new Error(`${file} split.variant_seed must be a stable non-secret seed label`);
+	}
+	if (
+		manifest.split.parent_scenario_id !== undefined &&
+		manifest.split.parent_scenario_id !== null &&
+		(typeof manifest.split.parent_scenario_id !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(manifest.split.parent_scenario_id))
+	) {
+		throw new Error(`${file} split.parent_scenario_id must be null or a scenario id`);
+	}
+	assertObject(manifest.split.artifact_policy, `${file} split.artifact_policy`);
+	assertStringArray(manifest.split.artifact_policy.public_artifacts, `${file} split.artifact_policy.public_artifacts`, {
+		pattern: /^[a-z0-9_]+$/,
+	});
+	assertStringArray(manifest.split.artifact_policy.private_artifacts, `${file} split.artifact_policy.private_artifacts`, {
+		pattern: /^[a-z0-9_]+$/,
+	});
+	assertKnown(manifest.split.artifact_policy.grader_exposure, knownGraderExposure, `${file} split.artifact_policy.grader_exposure`);
+	if (manifest.split.membership === 'held_out_private') {
+		if (!manifest.split.parent_scenario_id) {
+			throw new Error(`${file} held-out private variants must declare split.parent_scenario_id`);
+		}
+		if (manifest.split.artifact_policy.grader_exposure !== 'private') {
+			throw new Error(`${file} held-out private variants must keep grader_exposure=private`);
+		}
+	}
 
 	const environment = manifest.environment;
 	if (!['wordpress', 'workspace'].includes(environment.action_mode)) {
@@ -335,6 +368,18 @@ function validateScenarioContract(file, manifest) {
 			throw new Error(`${file} benchmark_ready scenarios must not declare benchmark_blockers`);
 		}
 	}
+	if (
+		manifest.calibration.headline_score_eligible &&
+		manifest.calibration.held_out_private_variants_ready !== true
+	) {
+		throw new Error(`${file} headline_score_eligible scenarios must declare held_out_private_variants_ready=true`);
+	}
+	if (
+		manifest.calibration.headline_score_eligible &&
+		manifest.split.membership !== 'held_out_private'
+	) {
+		throw new Error(`${file} headline_score_eligible scenarios must use split.membership=held_out_private`);
+	}
 
 	if (manifest.probes !== undefined) {
 		assertObject(manifest.probes, `${file} probes`);
@@ -385,6 +430,7 @@ async function listScenarioFiles(dir, relativeDir = 'scenarios') {
 const files = await listScenarioFiles(scenarioRoot);
 const scenarioIdsByManifest = new Map();
 const scenarioManifestsById = new Map();
+const scenarioValuesById = new Map();
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 const validateScenarioSchema = ajv.compile(
 	JSON.parse(await readFile(path.join(root, 'schemas/scenario.schema.json'), 'utf8'))
@@ -412,6 +458,7 @@ for (const file of files) {
 		throw new Error(`${file} duplicates scenario id ${manifest.id} from ${scenarioManifestsById.get(manifest.id)}`);
 	}
 	scenarioManifestsById.set(manifest.id, file);
+	scenarioValuesById.set(manifest.id, manifest);
 
 	validateScenarioContract(file, manifest);
 
@@ -488,6 +535,23 @@ for (const file of taskSetFiles) {
 	}
 	assertKnown(manifest.score_scope, knownScoreScopes, `${file} score_scope`);
 	assertKnown(manifest.task_contract_level, knownTaskSetContractLevels, `${file} task_contract_level`);
+	if (manifest.split_policy !== undefined) {
+		assertObject(manifest.split_policy, `${file} split_policy`);
+		assertKnown(manifest.split_policy.lane, knownSplitMemberships, `${file} split_policy.lane`);
+		assertStringArray(manifest.split_policy.allowed_splits, `${file} split_policy.allowed_splits`, {
+			minItems: 1,
+			pattern: /^[a-z0-9_]+$/,
+		});
+		for (const split of manifest.split_policy.allowed_splits) {
+			assertKnown(split, knownSplitMemberships, `${file} split_policy.allowed_splits`);
+		}
+		if (typeof manifest.split_policy.requires_held_out_private !== 'boolean') {
+			throw new Error(`${file} split_policy.requires_held_out_private must be a boolean`);
+		}
+		assertStringArray(manifest.split_policy.contamination_controls || [], `${file} split_policy.contamination_controls`, {
+			pattern: /^[a-z0-9_]+$/,
+		});
+	}
 	assertStringArray(manifest.benchmark_blockers, `${file} benchmark_blockers`, {
 		pattern: /^[a-z0-9_]+$/,
 	});
@@ -506,6 +570,9 @@ for (const file of taskSetFiles) {
 		}
 		if (manifest.benchmark_blockers.length > 0) {
 			throw new Error(`${file} benchmark task sets must not declare benchmark_blockers`);
+		}
+		if (manifest.split_policy?.requires_held_out_private !== true) {
+			throw new Error(`${file} benchmark task sets must require held-out private splits`);
 		}
 	}
 
@@ -526,6 +593,7 @@ for (const file of taskSetFiles) {
 	}
 
 	const manifestScenarioIds = new Set();
+	const allowedSplits = new Set(manifest.split_policy?.allowed_splits || []);
 	for (const scenarioManifest of manifest.scenario_manifests) {
 		const resolvedScenarioManifest = resolveRepoContained(
 			file,
@@ -547,6 +615,12 @@ for (const file of taskSetFiles) {
 		manifestScenarioIds.add(scenarioId);
 		if (!taskScenarioIds.has(scenarioId)) {
 			throw new Error(`${file} is missing task metadata for scenario: ${scenarioId}`);
+		}
+		if (allowedSplits.size > 0) {
+			const scenario = scenarioValuesById.get(scenarioId);
+			if (!allowedSplits.has(scenario.split.membership)) {
+				throw new Error(`${file} does not allow ${scenarioId} split membership: ${scenario.split.membership}`);
+			}
 		}
 	}
 

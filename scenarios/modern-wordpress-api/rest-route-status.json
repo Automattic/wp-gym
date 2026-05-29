@@ -3,6 +3,17 @@
   "id": "modern-wordpress-api-rest-route-status",
   "label": "Public read-only site status REST endpoint",
   "issue": "https://github.com/Automattic/wp-gym/issues/3",
+  "split": {
+    "membership": "public",
+    "variant_family": "modern-wordpress-api-rest-status",
+    "variant_seed": "rest-route-status-public-v1",
+    "parent_scenario_id": null,
+    "artifact_policy": {
+      "public_artifacts": ["prompt", "scenario_manifest", "grader", "starter_workspace"],
+      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_workspace_fixture"],
+      "grader_exposure": "full_public"
+    }
+  },
   "prompt_file": "../../prompts/modern-wordpress-api/rest-route-status.md",
   "grader_file": "../../graders/modern-wordpress-api/rest-route-status.php",
   "tags": ["wordpress", "rest-api", "plugin-api", "modern-api"],

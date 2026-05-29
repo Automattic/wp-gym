@@ -43,12 +43,24 @@ Before adding a scenario to a repeatable task set, require:
 
 - A model-facing prompt that reads like a normal WordPress user or developer request.
 - A scenario manifest with family tags, environment policy, hidden paths, expected artifacts, reward spec, rules, and calibration status.
+- Split metadata that declares whether the scenario is `public`, `calibration`,
+  `validation`, or `held_out_private`, plus variant-family lineage and public vs
+  private artifact policy.
 - A hidden grader that returns the standard `success`, `reward`, `grade.checks`, and `failure_reasons` shape.
 - Stable `failure_reason` IDs that distinguish task-quality failures from runtime, agent, or grader failures.
 - Final-state checks against WordPress data, workspace files, rendered output, command evidence, or artifacts rather than transcript-only assertions.
 - Expected artifacts that are available to generated PRs and replay/debugging workflows.
 - A documented shortcut list for behavior the grader should catch or the family still cannot evaluate.
 - Inclusion in an experimental task set first, with promotion to benchmark-ready only after baseline runs and calibration.
+
+## Split And Variant Policy
+
+Use `docs/contamination-controls.md` as the source of truth for public,
+calibration, validation, and held-out/private lanes. Existing public scenarios are
+training-visible and may publish full graders. Benchmark-claim variants should be
+separate `held_out_private` manifests in a restricted benchmark pack, linked by
+`split.variant_family` and optional `split.parent_scenario_id` without exposing
+private prompts, fixtures, or grader details.
 
 ## Target Counts
 

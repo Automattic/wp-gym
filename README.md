@@ -73,6 +73,10 @@ The benchmark-readiness pilot runbook and evidence plan for issue #9 is in
 matrix, safe dry-run checks, live-run command shape, expected artifacts, and the
 remaining gates before results can be called benchmark-ready.
 
+Held-out variant and contamination-control policy is documented in
+`docs/contamination-controls.md`. Public scenarios are training-visible; headline
+benchmark claims require held-out/private split metadata and readiness gates.
+
 The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
 documented in `docs/grader-handoff.md`.
 

@@ -3,6 +3,17 @@
   "id": "visual-builder-elementor-hero-refresh",
   "label": "Elementor-style hero refresh",
   "issue": "https://github.com/Automattic/wp-gym/issues/85",
+  "split": {
+    "membership": "public",
+    "variant_family": "visual-builder-hero-refresh",
+    "variant_seed": "elementor-hero-refresh-public-v1",
+    "parent_scenario_id": null,
+    "artifact_policy": {
+      "public_artifacts": ["prompt", "scenario_manifest", "grader"],
+      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "grader_exposure": "full_public"
+    }
+  },
   "prompt_file": "../../prompts/visual-builder/elementor-hero-refresh.md",
   "grader_file": "../../graders/visual-builder/elementor-hero-refresh.php",
   "tags": ["wordpress", "visual-builder", "elementor", "page-builder", "diagnostic"],
