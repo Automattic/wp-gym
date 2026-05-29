@@ -1,0 +1,482 @@
+{
+    "job_id": 1,
+    "status": "completed",
+    "agent_id": 2,
+    "agent_slug": "wordpress-task-runner",
+    "disposition_diagnostic": null,
+    "required_tool_names": [],
+    "satisfied_tool_names": [],
+    "successful_tool_calls": [
+        {
+            "tool_name": "workspace_show",
+            "success": true,
+            "turn_count": 1
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 1
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 2
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 3
+        },
+        {
+            "tool_name": "wordpress_runtime_ls",
+            "success": true,
+            "turn_count": 4
+        },
+        {
+            "tool_name": "workspace_ls",
+            "success": true,
+            "turn_count": 4
+        },
+        {
+            "tool_name": "workspace_grep",
+            "success": true,
+            "turn_count": 5
+        },
+        {
+            "tool_name": "workspace_grep",
+            "success": true,
+            "turn_count": 5
+        },
+        {
+            "tool_name": "workspace_write",
+            "success": true,
+            "turn_count": 6
+        },
+        {
+            "tool_name": "workspace_git_status",
+            "success": true,
+            "turn_count": 7
+        }
+    ],
+    "tool_trace": [
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_show",
+            "tool_call_id": "toolu_011LQZWDAacpQ7EB7H8rx8wX",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T22:59:47+00:00",
+            "ended_at": "2026-05-29T22:59:47+00:00",
+            "duration_ms": 10,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "d5a2f4131a1060d8c5f1b262604d55e001e53824c882b79645ee5e99f9c63858",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_019EKEpBj45ut5ZpJpW6Y2vv",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T22:59:47+00:00",
+            "ended_at": "2026-05-29T22:59:48+00:00",
+            "duration_ms": 635,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01DCCs3VyDzCBjkZ5rJwFp6A",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T22:59:50+00:00",
+            "ended_at": "2026-05-29T22:59:51+00:00",
+            "duration_ms": 554,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01EY5aue96LHjaSwnJhgyaZ1",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T22:59:54+00:00",
+            "ended_at": "2026-05-29T22:59:54+00:00",
+            "duration_ms": 588,
+            "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
+            "result_sha256": "981d342ae2a2362ee773437b9f75f57d5968436cc6e09c6ac6cfd1b208729c72",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "."
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "toolu_01Msso9mff9jngCSmUN7Wbdg",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T22:59:58+00:00",
+            "ended_at": "2026-05-29T22:59:58+00:00",
+            "duration_ms": 6,
+            "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
+            "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
+            "arguments_redacted": {
+                "path": "wp-content/plugins"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_01X5xLY27iExwCcs21D4joiv",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T22:59:58+00:00",
+            "ended_at": "2026-05-29T22:59:59+00:00",
+            "duration_ms": 523,
+            "arguments_sha256": "0ac32de6745dfb5451a97591bdd05cc7c10743fc92e7e9f95b67731c4fb67751",
+            "result_sha256": "2c4bd6957bf3f6a2ab07f0ae0d80bdb206e18426b960ed591103f9e37daa38cc",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "wp-content/plugins"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_grep",
+            "tool_call_id": "toolu_01BB3j4rG3UtWiaXE9S7QuDk",
+            "turn_count": 5,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:00:04+00:00",
+            "ended_at": "2026-05-29T23:00:13+00:00",
+            "duration_ms": 9142,
+            "arguments_sha256": "89ae6d78f1ba45a2fc5fa83cc4901f55b23f8c589875cb91e2bdc3bf55e5a48f",
+            "result_sha256": "ef975c8244d350e40dec3bdd9eb0c6ae00a95969f20fc53f860ad8b06695ef9b",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "pattern": "wp_abilities_api_init",
+                "include": "**/*.php"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_grep",
+            "tool_call_id": "toolu_01MN9JMqFXCbJbbDYEB7ZDkR",
+            "turn_count": 5,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:00:13+00:00",
+            "ended_at": "2026-05-29T23:00:21+00:00",
+            "duration_ms": 8370,
+            "arguments_sha256": "86bbc3c51d14be1296cb64bec552241b3c8449a2b4ef6958b2af278b32a8f91a",
+            "result_sha256": "4d03825328dedc1585510cd6063d6ab0acd4fba30d6aac2c2d631684095402ea",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "pattern": "wp_register_ability",
+                "include": "**/*.php"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_write",
+            "tool_call_id": "toolu_01Goq8XX7i1zCu6EWpBrwFWb",
+            "turn_count": 6,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:00:40+00:00",
+            "ended_at": "2026-05-29T23:00:40+00:00",
+            "duration_ms": 7,
+            "arguments_sha256": "b18cda0360caaf39c37123ef5e033e0d84aacf1295080f9357b79b1aa092a095",
+            "result_sha256": "6dc21fec0e3c88351e6aa01f3ef7661991c96b2f7d742e987e466fbb5ed9abc8",
+            "arguments_omitted": "redacted_arguments_too_large"
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_git_status",
+            "tool_call_id": "toolu_01KEYmgtn5P3TSVCHiSwHo8h",
+            "turn_count": 7,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T23:00:43+00:00",
+            "ended_at": "2026-05-29T23:00:43+00:00",
+            "duration_ms": 3,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "48c488bb941bc4e5d59cef0bd2c5d2cb273f11706610afc446f0d974d3e50751",
+            "arguments_redacted": {
+                "name": "current-project"
+            }
+        }
+    ],
+    "transcript": null,
+    "artifact_refs": {
+        "tool_trace": {
+            "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
+            "artifact_type": "tool_trace",
+            "schema_version": 1,
+            "sha256": "a9013dee6beca9e987bbab696139267dfc8cd0300d0004ee31b0d3c4cddd8753",
+            "bounded": true,
+            "redacted": true
+        }
+    },
+    "artifact_files": {
+        "tool_trace": {
+            "artifact_type": "tool_trace",
+            "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
+            "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
+            "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "url": "http://127.0.0.1:44203/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "d78b08acecdaba18d4226f33913354322956cb5bbe489c07682ad407233dd6fc",
+            "payload_sha256": "537bbacd7285b3ad4cf193be85410766c2d7f80f14f83a3a1efc06cf0a1dbd9d",
+            "bytes": 9226,
+            "written_at": "2026-05-29T23:00:55+00:00"
+        }
+    },
+    "transcript_artifact": null,
+    "tool_trace_artifact": {
+        "schema_version": 1,
+        "artifact_type": "tool_trace",
+        "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
+        "source": {
+            "job_id": 1,
+            "job_status": "completed",
+            "agent_id": 2,
+            "agent_slug": "wordpress-task-runner",
+            "user_id": 1,
+            "pipeline_id": 1,
+            "flow_id": 1,
+            "created_at": "2026-05-29 22:59:42",
+            "completed_at": "2026-05-29 23:00:55"
+        },
+        "trace_count": 10,
+        "entries_emitted": 10,
+        "entries_omitted": 0,
+        "entries": [
+            {
+                "index": 0,
+                "schema_version": 1,
+                "tool_name": "workspace_show",
+                "tool_call_id": "toolu_011LQZWDAacpQ7EB7H8rx8wX",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T22:59:47+00:00",
+                "ended_at": "2026-05-29T22:59:47+00:00",
+                "duration_ms": 10,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "d5a2f4131a1060d8c5f1b262604d55e001e53824c882b79645ee5e99f9c63858",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "df8ecadf771c2ed98729dcfc884807b798fe401e61ae083a0ed68a6bdbeea638"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_019EKEpBj45ut5ZpJpW6Y2vv",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T22:59:47+00:00",
+                "ended_at": "2026-05-29T22:59:48+00:00",
+                "duration_ms": 635,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "0fbc091b1626ca7556d033b7e433303b1e6e12bddfe86e40da34a83523d0ac20"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01DCCs3VyDzCBjkZ5rJwFp6A",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T22:59:50+00:00",
+                "ended_at": "2026-05-29T22:59:51+00:00",
+                "duration_ms": 554,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "f883f4d13d77469b1620b0e87e130f7885994b9bde0ca9a0cf42b1e9adf1cd36",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "1a3444ae2dd7fa2982591aaf5318c9a4c3d4108564a746acfe2168ea2ce0c4e7"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01EY5aue96LHjaSwnJhgyaZ1",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T22:59:54+00:00",
+                "ended_at": "2026-05-29T22:59:54+00:00",
+                "duration_ms": 588,
+                "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
+                "result_sha256": "981d342ae2a2362ee773437b9f75f57d5968436cc6e09c6ac6cfd1b208729c72",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": "."
+                },
+                "entry_sha256": "4aeb583912b12557469efc2ce920c41891115b08691a3a48ae5210f77991a0be"
+            },
+            {
+                "index": 4,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "toolu_01Msso9mff9jngCSmUN7Wbdg",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T22:59:58+00:00",
+                "ended_at": "2026-05-29T22:59:58+00:00",
+                "duration_ms": 6,
+                "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
+                "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins"
+                },
+                "entry_sha256": "4e97d795a7f8ab96a466346939b55be4b2984f7eb080e8bf250881cc70fe8534"
+            },
+            {
+                "index": 5,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_01X5xLY27iExwCcs21D4joiv",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T22:59:58+00:00",
+                "ended_at": "2026-05-29T22:59:59+00:00",
+                "duration_ms": 523,
+                "arguments_sha256": "0ac32de6745dfb5451a97591bdd05cc7c10743fc92e7e9f95b67731c4fb67751",
+                "result_sha256": "2c4bd6957bf3f6a2ab07f0ae0d80bdb206e18426b960ed591103f9e37daa38cc",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": "wp-content/plugins"
+                },
+                "entry_sha256": "c3b698513b903636f73ad98b4e43b0839c8aef51933ea6aad332ca317e3830da"
+            },
+            {
+                "index": 6,
+                "schema_version": 1,
+                "tool_name": "workspace_grep",
+                "tool_call_id": "toolu_01BB3j4rG3UtWiaXE9S7QuDk",
+                "turn_count": 5,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:00:04+00:00",
+                "ended_at": "2026-05-29T23:00:13+00:00",
+                "duration_ms": 9142,
+                "arguments_sha256": "89ae6d78f1ba45a2fc5fa83cc4901f55b23f8c589875cb91e2bdc3bf55e5a48f",
+                "result_sha256": "ef975c8244d350e40dec3bdd9eb0c6ae00a95969f20fc53f860ad8b06695ef9b",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "pattern": "wp_abilities_api_init",
+                    "include": "**/*.php"
+                },
+                "entry_sha256": "f6d37b48631e2187e20e85f8afc4af750cc3ec9ee6ebec116e0b43627ce615ff"
+            },
+            {
+                "index": 7,
+                "schema_version": 1,
+                "tool_name": "workspace_grep",
+                "tool_call_id": "toolu_01MN9JMqFXCbJbbDYEB7ZDkR",
+                "turn_count": 5,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:00:13+00:00",
+                "ended_at": "2026-05-29T23:00:21+00:00",
+                "duration_ms": 8370,
+                "arguments_sha256": "86bbc3c51d14be1296cb64bec552241b3c8449a2b4ef6958b2af278b32a8f91a",
+                "result_sha256": "4d03825328dedc1585510cd6063d6ab0acd4fba30d6aac2c2d631684095402ea",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "pattern": "wp_register_ability",
+                    "include": "**/*.php"
+                },
+                "entry_sha256": "b431b24221f8e8dacece7b2611768f47ce3d6624f9fda58b1aaac58d90b5064f"
+            },
+            {
+                "index": 8,
+                "schema_version": 1,
+                "tool_name": "workspace_write",
+                "tool_call_id": "toolu_01Goq8XX7i1zCu6EWpBrwFWb",
+                "turn_count": 6,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:00:40+00:00",
+                "ended_at": "2026-05-29T23:00:40+00:00",
+                "duration_ms": 7,
+                "arguments_sha256": "b18cda0360caaf39c37123ef5e033e0d84aacf1295080f9357b79b1aa092a095",
+                "result_sha256": "6dc21fec0e3c88351e6aa01f3ef7661991c96b2f7d742e987e466fbb5ed9abc8",
+                "arguments_omitted": "redacted_arguments_too_large",
+                "entry_sha256": "e6dbf225a1f900094bc585f452fbeb95d0627b27b963e32ae25c9efa2cbe514e"
+            },
+            {
+                "index": 9,
+                "schema_version": 1,
+                "tool_name": "workspace_git_status",
+                "tool_call_id": "toolu_01KEYmgtn5P3TSVCHiSwHo8h",
+                "turn_count": 7,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T23:00:43+00:00",
+                "ended_at": "2026-05-29T23:00:43+00:00",
+                "duration_ms": 3,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "48c488bb941bc4e5d59cef0bd2c5d2cb273f11706610afc446f0d974d3e50751",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "1a726b6b2a7987f978f5b38e328294623ef057fca5b6337c3c9b198f4cfa4ad2"
+            }
+        ],
+        "bounded": true,
+        "redacted": true,
+        "sha256": "a9013dee6beca9e987bbab696139267dfc8cd0300d0004ee31b0d3c4cddd8753"
+    },
+    "agent_memory_artifacts": [],
+    "daily_memory_artifacts": []
+}
