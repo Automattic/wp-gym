@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "block-markup-valid-semantic-blocks-live-model-baseline",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "task_set_id": "custom",
+  "created_at": "2026-05-29T13:52:38.737Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/127",
+    "evidence_kind": "live_run_registry",
+    "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/26641080784",
+    "artifact_url": "https://github.com/Automattic/wp-gym/actions/runs/26641080784/artifacts",
+    "registry_artifact": "wp-gym-run-registry-26641080784",
+    "validation_command": "npm run run-registry:validate"
+  },
+  "rows": [
+    {
+      "row_type": "frontier_model",
+      "label": "Live OpenAI frontier model row",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/26641080784",
+      "registry_entry": "wp-gym-run-registry/entries/block-markup-valid-semantic-blocks-openai-gpt-5.5.json",
+      "replay_artifact": "wp-gym-replay-26641080784-1-block-markup-valid-semantic-blocks-openai-gpt-5-5",
+      "notes": "A real live run completed through emit-run-registry after the registry compatibility fix in PR #180. The row is calibration evidence only because the scenario remains public, diagnostic, and not held-out."
+    },
+    {
+      "row_type": "frontier_model",
+      "label": "Live Anthropic frontier model row",
+      "provider": "anthropic",
+      "model": "claude-opus-4-7",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/26641080784",
+      "registry_entry": "wp-gym-run-registry/entries/block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7.json",
+      "replay_artifact": "wp-gym-replay-26641080784-1-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7",
+      "notes": "A real live run completed through emit-run-registry after the registry compatibility fix in PR #180. The row is calibration evidence only because the scenario remains public, diagnostic, and not held-out."
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "too_easy",
+    "confidence_interval_95": [
+      1,
+      1
+    ],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": [
+      "missing_cheap_model_baseline",
+      "missing_repeated_attempts",
+      "held_out_private_variants_not_ready",
+      "diagnostic_contract_only",
+      "known_reward_shortcut"
+    ]
+  }
+}
