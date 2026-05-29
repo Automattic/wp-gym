@@ -154,6 +154,7 @@ jobs:
           set -euo pipefail
           npm run run-registry:emit -- \
             --input artifacts/live-run-results \
+            --replay artifacts/live-replay-bundles \
             --output artifacts/wp-gym-run-registry \
             --require-entry
           node scripts/validate-run-registry.mjs \
