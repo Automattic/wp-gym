@@ -104,11 +104,7 @@ jobs:
         {
           "task_id": "metadata.engine_data.task_id",
           "job_status": "metadata.job_status",
-          "eval_artifact": "metadata.eval_artifact",
-          "provenance": "metadata.eval_artifact.provenance",
           "fingerprints": "metadata.fingerprints",
-          "rules": "metadata.eval_artifact.rules",
-          "probes": "metadata.eval_artifact.probes",
           "prompt_sha256": "metadata.fingerprints.prompt.sha256",
           "bundle_sha256": "metadata.fingerprints.bundle.sha256",
           "tool_policy_sha256": "metadata.fingerprints.tool_policy.sha256"
@@ -136,15 +132,8 @@ jobs:
       - name: Install registry dependencies
         run: npm ci
 
-      - name: Download live result artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: wp-gym-transcript-*-results
-          path: artifacts/live-run-results
-
       - name: Download live replay artifacts
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           pattern: wp-gym-replay-*
           path: artifacts/live-replay-bundles
@@ -153,8 +142,7 @@ jobs:
         run: |
           set -euo pipefail
           npm run run-registry:emit -- \
-            --input artifacts/live-run-results \
-            --replay artifacts/live-replay-bundles \
+            --input artifacts/live-replay-bundles \
             --output artifacts/wp-gym-run-registry \
             --require-entry
           node scripts/validate-run-registry.mjs \
@@ -171,6 +159,5 @@ jobs:
           name: wp-gym-run-registry-${{ github.run_id }}
           path: |
             artifacts/wp-gym-run-registry
-            artifacts/live-run-results
             artifacts/live-replay-bundles
           if-no-files-found: error

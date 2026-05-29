@@ -311,15 +311,13 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 }
 
 function parseArgs(argv) {
-	const args = { input: '', output: path.join(root, 'artifacts', 'wp-gym-run-registry'), replay: '', benchmarkMode: false, requireEntry: false };
+	const args = { input: '', output: path.join(root, 'artifacts', 'wp-gym-run-registry'), benchmarkMode: false, requireEntry: false };
 	for (let index = 0; index < argv.length; index += 1) {
 		const arg = argv[index];
 		if (arg === '--input') {
 			args.input = argv[++index];
 		} else if (arg === '--output') {
 			args.output = argv[++index];
-		} else if (arg === '--replay') {
-			args.replay = argv[++index];
 		} else if (arg === '--benchmark-mode') {
 			args.benchmarkMode = true;
 		} else if (arg === '--require-entry') {
@@ -338,7 +336,7 @@ function parseArgs(argv) {
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
 	if (args.help || !args.input) {
-		console.error('Usage: node scripts/emit-run-registry.mjs --input <eval-json-or-dir> --output <registry-dir> [--replay <local-replay-file>] [--benchmark-mode] [--require-entry]');
+		console.error('Usage: node scripts/emit-run-registry.mjs --input <eval-json-or-dir> --output <registry-dir> [--benchmark-mode] [--require-entry]');
 		process.exit(args.help ? 0 : 2);
 	}
 
@@ -346,18 +344,7 @@ async function main() {
 	const entriesDir = path.join(output, 'entries');
 	const evalDir = path.join(output, 'eval-artifacts');
 	const scenarioIndex = loadScenarioIndex();
-	const inputFiles = collectJsonFiles(args.input);
-	const replayPath = args.replay ? path.resolve(args.replay) : '';
-	const replayIsFile = replayPath && fs.existsSync(replayPath) && fs.statSync(replayPath).isFile();
-	const replayFiles = replayPath && fs.existsSync(replayPath) ? collectJsonFiles(replayPath) : [];
-	const replayFileSet = new Set(replayFiles);
-	const files = [...new Set([...inputFiles, ...replayFiles])];
-	const replayReference = replayIsFile ? {
-		kind: path.extname(replayPath) === '.zip' ? 'zip' : 'json',
-		path_or_url: repoRelative(replayPath),
-		sha256: sha256File(replayPath),
-		media_type: path.extname(replayPath) === '.zip' ? 'application/zip' : 'application/json',
-	} : null;
+	const files = collectJsonFiles(args.input);
 	const results = [];
 
 	for (const file of files) {
@@ -373,12 +360,12 @@ async function main() {
 			const id = slug([evalArtifact.runner?.workflow?.run_id, evalArtifact.scenario?.id, evalArtifact.runner?.provider, evalArtifact.runner?.model].filter(Boolean).join('-'));
 			const evalArtifactFile = path.join(evalDir, `${id}.json`);
 			writeJson(evalArtifactFile, evalArtifact);
-			const recordReplayReference = replayFileSet.has(file) ? {
+			const recordReplayReference = {
 				kind: 'json',
 				path_or_url: repoRelative(file),
 				sha256: sha256File(file),
 				media_type: 'application/json',
-			} : replayReference;
+			};
 			const entry = buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile: file, replayReference: recordReplayReference, scenarioIndex });
 			const registryValidation = validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, baseDir: root });
 			const entryFile = path.join(entriesDir, `${id}.json`);
