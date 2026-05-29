@@ -73,6 +73,7 @@ jobs:
     uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@96f0a107221e2de0e990e1927ce3386bafd57ef2
     with:
       bundle_path: bundles/datamachine-task-runner
+      homeboy_extensions_ref: 96f0a107221e2de0e990e1927ce3386bafd57ef2
       bundle_ref: ${{ inputs.bundle_ref }}
       bundle_validator_spec: bundle-validator.json
       agent_slug: wordpress-task-runner
