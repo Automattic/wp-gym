@@ -17,6 +17,39 @@
   "prompt_file": "../../prompts/modern-wordpress-api/abilities-site-summary.md",
   "grader_file": "../../graders/modern-wordpress-api/abilities-site-summary.php",
   "tags": ["wordpress", "abilities-api", "modern-api"],
+  "api_provenance": {
+    "capability_area": "agent_tooling_automation_surfaces",
+    "api_surface": "WordPress Abilities API",
+    "source_inputs": [
+      {
+        "id": "wordpress-core-abilities-api",
+        "type": "wordpress_core_source",
+        "url": "https://github.com/WordPress/wordpress-develop/blob/trunk/src/wp-includes/abilities-api.php",
+        "ref": "trunk",
+        "checked_at": "2026-05-28",
+        "evidence": "wp_register_ability_category(), wp_register_ability(), wp_get_ability(), wp_abilities_api_categories_init, and wp_abilities_api_init are the source contract checked by the grader."
+      },
+      {
+        "id": "wordpress-core-wp-ability-class",
+        "type": "wordpress_core_source",
+        "url": "https://github.com/WordPress/wordpress-develop/blob/trunk/src/wp-includes/abilities-api/class-wp-ability.php",
+        "ref": "trunk",
+        "checked_at": "2026-05-28",
+        "evidence": "WP_Ability execute_callback, permission_callback, and execute() behavior define the hidden output checks."
+      }
+    ],
+    "freshness": {
+      "status": "fresh",
+      "last_reviewed": "2026-05-28",
+      "next_review_due": "2026-06-27",
+      "cadence_days": 30
+    },
+    "curriculum": {
+      "lifecycle_status": "pilot",
+      "candidate_from_source_change": "Abilities API lifecycle and registry functions are active source surfaces in WordPress trunk and need live benchmark coverage before promotion.",
+      "promotion_next_step": "Collect baseline and shortcut fixture evidence before moving from pilot to calibrating."
+    }
+  },
   "rules": {
     "general": ["wordpress_docs_standards", "no_speculative_plugin_packaging", "supported_plugin_author_metadata"],
     "task_specific": ["abilities_api_lifecycle", "ability_registered", "exact_output_shape"]

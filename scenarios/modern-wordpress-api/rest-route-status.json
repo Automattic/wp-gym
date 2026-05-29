@@ -17,6 +17,39 @@
   "prompt_file": "../../prompts/modern-wordpress-api/rest-route-status.md",
   "grader_file": "../../graders/modern-wordpress-api/rest-route-status.php",
   "tags": ["wordpress", "rest-api", "plugin-api", "modern-api"],
+  "api_provenance": {
+    "capability_area": "data_interaction_apis",
+    "api_surface": "WordPress REST API route registration",
+    "source_inputs": [
+      {
+        "id": "wordpress-core-rest-api-bootstrap",
+        "type": "wordpress_core_source",
+        "url": "https://github.com/WordPress/wordpress-develop/blob/trunk/src/wp-includes/rest-api.php",
+        "ref": "trunk",
+        "checked_at": "2026-05-28",
+        "evidence": "register_rest_route(), rest_get_server(), WP_REST_Request, and rest_do_request() define the route and execution contract checked by the grader."
+      },
+      {
+        "id": "developer-reference-register-rest-route",
+        "type": "developer_docs",
+        "url": "https://developer.wordpress.org/reference/functions/register_rest_route/",
+        "ref": "current",
+        "checked_at": "2026-05-28",
+        "evidence": "The developer reference documents the required permission_callback behavior enforced by the task."
+      }
+    ],
+    "freshness": {
+      "status": "fresh",
+      "last_reviewed": "2026-05-28",
+      "next_review_due": "2026-06-27",
+      "cadence_days": 30
+    },
+    "curriculum": {
+      "lifecycle_status": "pilot",
+      "candidate_from_source_change": "REST route permission and execution contracts remain a baseline modern plugin API surface for detecting legacy AJAX or unsafe route shortcuts.",
+      "promotion_next_step": "Add broader negative fixture coverage and collect baseline rows before moving from pilot to calibrating."
+    }
+  },
   "rules": {
     "general": ["wordpress_docs_standards", "no_speculative_plugin_packaging", "supported_plugin_author_metadata"],
     "task_specific": ["route_registered", "permission_callback_present", "exact_rest_output_shape"]
