@@ -1,45 +1,86 @@
 {
     "job_id": 1,
-    "status": "completed",
+    "status": "failed - tool_result_failed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
     "required_tool_names": [],
     "satisfied_tool_names": [],
-    "successful_tool_calls": [
-        {
-            "tool_name": "upsert_post",
-            "success": true,
-            "turn_count": 1
-        }
-    ],
+    "successful_tool_calls": [],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_A7Jty5UED1ZnLakv7DQ64Yee",
+            "tool_name": "workspace_show",
+            "tool_call_id": "call_3get1JFIXI6u31MDa6Rl7VHo",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T16:20:41+00:00",
-            "ended_at": "2026-05-29T16:20:41+00:00",
-            "duration_ms": 49,
-            "arguments_sha256": "373fe6d40cc8fe29ee078b226a008ceeae488e37f9230f96ee1e8fe838c07975",
-            "result_sha256": "e22875ef4e1f92cb42353fc1c188b88212d56c158eb16de845eda0805b007c5a",
+            "status": "failed",
+            "started_at": "2026-05-29T16:47:21+00:00",
+            "ended_at": "2026-05-29T16:47:21+00:00",
+            "duration_ms": 9,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "post_type": "page",
-                "title": "Neighborhood Cookout Plan",
-                "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with simple grilled favorites, cold drinks, outdoor games, and time to catch up as a community.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Confirm the cookout date, time, and shared outdoor location.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate who will bring main dishes, sides, drinks, and desserts.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up tables, seating, trash bags, coolers, and simple yard games.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
-                "content_format": "blocks",
-                "slug": "neighborhood-cookout-plan",
-                "parent_id": 0,
-                "parent_path": "",
-                "post_author": "[redacted]",
-                "content_hash": "neighborhood-cookout-plan-v1",
-                "source_url": "",
-                "original_date_gmt": "",
-                "add_source_attribution": false
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_amoit5oVe6fsXwtDTOAkA7KA",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T16:47:24+00:00",
+            "ended_at": "2026-05-29T16:47:24+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": ""
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_git_status",
+            "tool_call_id": "call_hSc6Z6fzME94i3EHVxRv4dFf",
+            "turn_count": 4,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T16:47:32+00:00",
+            "ended_at": "2026-05-29T16:47:32+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+            "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project",
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "call_X66GMh68rkLWG4HTsaAITMLI",
+            "turn_count": 5,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T16:47:38+00:00",
+            "ended_at": "2026-05-29T16:47:38+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project",
+                "path": "."
             }
         }
     ],
@@ -49,7 +90,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "f268e4b844831af37799431db307ecaccf7fa8dbf04e78b25ddb834dcd68ae72",
+            "sha256": "6b47c074b5fc0f0a527e9135a4588f31a07dd028ee8261d5115b8a7197618acc",
             "bounded": true,
             "redacted": true
         }
@@ -60,11 +101,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:35899/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "1d51d19fcb37de1c17c0e2ed780c11495b8d4a5fc49435f184485b1e33563846",
-            "payload_sha256": "c608772daa47ced175ac9164e2325348544cd29825f40d823ffd933444418e17",
-            "bytes": 2906,
-            "written_at": "2026-05-29T16:20:45+00:00"
+            "url": "http://127.0.0.1:39503/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "1882f7f27841886d840fa6fea1caaa03a528009bada3e32bdb002456bd936a55",
+            "payload_sha256": "4abb939f39f239625655d038fa05a642f2b3427e6ed9f5acc9df66c75128db8b",
+            "bytes": 4564,
+            "written_at": "2026-05-29T16:48:00+00:00"
         }
     },
     "transcript_artifact": null,
@@ -74,53 +115,106 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "completed",
+            "job_status": "failed - tool_result_failed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 16:20:28",
-            "completed_at": "2026-05-29 16:20:45"
+            "created_at": "2026-05-29 16:47:17",
+            "completed_at": "2026-05-29 16:48:00"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 4,
+        "entries_emitted": 4,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_A7Jty5UED1ZnLakv7DQ64Yee",
+                "tool_name": "workspace_show",
+                "tool_call_id": "call_3get1JFIXI6u31MDa6Rl7VHo",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T16:20:41+00:00",
-                "ended_at": "2026-05-29T16:20:41+00:00",
-                "duration_ms": 49,
-                "arguments_sha256": "373fe6d40cc8fe29ee078b226a008ceeae488e37f9230f96ee1e8fe838c07975",
-                "result_sha256": "e22875ef4e1f92cb42353fc1c188b88212d56c158eb16de845eda0805b007c5a",
+                "status": "failed",
+                "started_at": "2026-05-29T16:47:21+00:00",
+                "ended_at": "2026-05-29T16:47:21+00:00",
+                "duration_ms": 9,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Neighborhood Cookout Plan",
-                    "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with simple grilled favorites, cold drinks, outdoor games, and time to catch up as a community.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Confirm the cookout date, time, and shared outdoor location.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate who will bring main dishes, sides, drinks, and desserts.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up tables, seating, trash bags, coolers, and simple yard games.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
-                    "content_format": "blocks",
-                    "slug": "neighborhood-cookout-plan",
-                    "parent_id": 0,
-                    "parent_path": "",
-                    "post_author": "[redacted]",
-                    "content_hash": "neighborhood-cookout-plan-v1",
-                    "source_url": "",
-                    "original_date_gmt": "",
-                    "add_source_attribution": false
+                    "name": "current-project"
                 },
-                "entry_sha256": "efec8433188c9fa4d5a61fc43f4121dd845d36eaab2c353856797008fb0d7200"
+                "entry_sha256": "747fb2057bafe01c6a22e8e3598cb8f0bc233cbed9cd58fbcadd573871bab7c2"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_amoit5oVe6fsXwtDTOAkA7KA",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T16:47:24+00:00",
+                "ended_at": "2026-05-29T16:47:24+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": ""
+                },
+                "entry_sha256": "4b13169e716e709d3259e020c77ed8b213343ed71d992e8a3e0da868986098d7"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "workspace_git_status",
+                "tool_call_id": "call_hSc6Z6fzME94i3EHVxRv4dFf",
+                "turn_count": 4,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T16:47:32+00:00",
+                "ended_at": "2026-05-29T16:47:32+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "873b2c083636f974896ded65a888e8693442f0f47afc602960a790bbf62fdaf1",
+                "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project",
+                    "repo": "current-project"
+                },
+                "entry_sha256": "9f6683d39ef3064a6fe2a59746bc5d8bca0cc50731769fd7936365824b03eacc"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "call_X66GMh68rkLWG4HTsaAITMLI",
+                "turn_count": 5,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T16:47:38+00:00",
+                "ended_at": "2026-05-29T16:47:38+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "55dbe17e285b790220500d175ff6eda4e860ddfbb2fffb031e1e48a830ac5b08",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project",
+                    "path": "."
+                },
+                "entry_sha256": "f33f1635a3e14f0efff96730929b384027fbb86cd1fcb19c62a8bdf8e653a20c"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "f268e4b844831af37799431db307ecaccf7fa8dbf04e78b25ddb834dcd68ae72"
+        "sha256": "6b47c074b5fc0f0a527e9135a4588f31a07dd028ee8261d5115b8a7197618acc"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
