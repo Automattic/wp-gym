@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "completed",
+    "status": "failed - tool_result_failed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -8,31 +8,81 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "upsert_post",
+            "tool_name": "wordpress_runtime_ls",
             "success": true,
-            "turn_count": 1
+            "turn_count": 2
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_013WnUGqkdq3BHoh3RBsMEom",
+            "tool_name": "workspace_show",
+            "tool_call_id": "toolu_01JT4XnYZ9aHRHLnXRX7vXfS",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T16:20:36+00:00",
-            "ended_at": "2026-05-29T16:20:36+00:00",
-            "duration_ms": 49,
-            "arguments_sha256": "116b1509772865310626339d8322051e89b5387e299d10fb5d9e25db3f3e71d0",
-            "result_sha256": "193e4ddad4392866a69f62dcd5a879c0808caef8514bda3ec4c36b831abb95e7",
+            "status": "failed",
+            "started_at": "2026-05-29T16:47:05+00:00",
+            "ended_at": "2026-05-29T16:47:05+00:00",
+            "duration_ms": 8,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
             "arguments_redacted": {
-                "title": "Neighborhood Cookout Plan",
-                "slug": "neighborhood-cookout-plan",
-                "post_type": "page",
-                "content_format": "blocks",
-                "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join your neighbors for a relaxed afternoon cookout in the park. We'll fire up the grill, share homemade sides, and enjoy lawn games as the sun goes down. Everyone is welcome, and contributions are appreciated but never required.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li>Confirm headcount and dietary needs one week ahead.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Pick up burgers, buns, drinks, and ice the morning of the event.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up grill, tables, and lawn games one hour before guests arrive.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\">\n<!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\">View menu</a></div>\n<!-- /wp:button -->\n</div>\n<!-- /wp:buttons -->"
+                "name": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_ls",
+            "tool_call_id": "toolu_0117uQS7AFZNqSToiT1tRsW5",
+            "turn_count": 1,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T16:47:05+00:00",
+            "ended_at": "2026-05-29T16:47:05+00:00",
+            "duration_ms": 13,
+            "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "repo": "current-project"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "wordpress_runtime_ls",
+            "tool_call_id": "toolu_01WfZ7EF8D6xikj6wceuctQA",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T16:47:07+00:00",
+            "ended_at": "2026-05-29T16:47:07+00:00",
+            "duration_ms": 8,
+            "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
+            "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
+            "arguments_redacted": {
+                "path": "wp-content/plugins"
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "workspace_git_status",
+            "tool_call_id": "toolu_01189XYCmiXPex1RacWg44fh",
+            "turn_count": 3,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "failed",
+            "started_at": "2026-05-29T16:47:11+00:00",
+            "ended_at": "2026-05-29T16:47:11+00:00",
+            "duration_ms": 2,
+            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+            "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "arguments_redacted": {
+                "name": "current-project"
             }
         }
     ],
@@ -42,7 +92,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "c390143a64c5c39f3a7b3272e2ee3b92ac8a965aa22e2c986e88b5b8cdf1f758",
+            "sha256": "847b207371a27ace9287938af9b61fc56ad12392dd9cffb6665b74c38bc5de66",
             "bounded": true,
             "redacted": true
         }
@@ -53,11 +103,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:38475/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "d8454d3d7798a7d880ae95933bc3b7779eba10153fbc0a9743db25ba4d29eaba",
-            "payload_sha256": "8991321686b44c63feff76eafc8aaffafc2b56c29e495dcb9c7a79c86f4c3158",
-            "bytes": 2692,
-            "written_at": "2026-05-29T16:20:43+00:00"
+            "url": "http://127.0.0.1:42419/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "74c263b57d4583f13f1170b1aec78bb0e294e45d13f9deec220465405343afda",
+            "payload_sha256": "d80c4b00d1cc8f7631f45fe76a7ef5cff7325ad92930836c23a16decb0067e6a",
+            "bytes": 4353,
+            "written_at": "2026-05-29T16:47:21+00:00"
         }
     },
     "transcript_artifact": null,
@@ -67,46 +117,102 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "completed",
+            "job_status": "failed - tool_result_failed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 16:20:27",
-            "completed_at": "2026-05-29 16:20:44"
+            "created_at": "2026-05-29 16:47:02",
+            "completed_at": "2026-05-29 16:47:21"
         },
-        "trace_count": 1,
-        "entries_emitted": 1,
+        "trace_count": 4,
+        "entries_emitted": 4,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_013WnUGqkdq3BHoh3RBsMEom",
+                "tool_name": "workspace_show",
+                "tool_call_id": "toolu_01JT4XnYZ9aHRHLnXRX7vXfS",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T16:20:36+00:00",
-                "ended_at": "2026-05-29T16:20:36+00:00",
-                "duration_ms": 49,
-                "arguments_sha256": "116b1509772865310626339d8322051e89b5387e299d10fb5d9e25db3f3e71d0",
-                "result_sha256": "193e4ddad4392866a69f62dcd5a879c0808caef8514bda3ec4c36b831abb95e7",
+                "status": "failed",
+                "started_at": "2026-05-29T16:47:05+00:00",
+                "ended_at": "2026-05-29T16:47:05+00:00",
+                "duration_ms": 8,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
                 "arguments_redacted": {
-                    "title": "Neighborhood Cookout Plan",
-                    "slug": "neighborhood-cookout-plan",
-                    "post_type": "page",
-                    "content_format": "blocks",
-                    "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join your neighbors for a relaxed afternoon cookout in the park. We'll fire up the grill, share homemade sides, and enjoy lawn games as the sun goes down. Everyone is welcome, and contributions are appreciated but never required.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li>Confirm headcount and dietary needs one week ahead.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Pick up burgers, buns, drinks, and ice the morning of the event.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up grill, tables, and lawn games one hour before guests arrive.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\">\n<!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\">View menu</a></div>\n<!-- /wp:button -->\n</div>\n<!-- /wp:buttons -->"
+                    "name": "current-project"
                 },
-                "entry_sha256": "a6d0cb8bdd411feaebc1743f1d8f676fa8c3d22346117903ae79b212c35ac02f"
+                "entry_sha256": "609a02324a3cfa3c99a22d16ea136c095aebc6ce6e7aa2204871d1d5a7e055d6"
+            },
+            {
+                "index": 1,
+                "schema_version": 1,
+                "tool_name": "workspace_ls",
+                "tool_call_id": "toolu_0117uQS7AFZNqSToiT1tRsW5",
+                "turn_count": 1,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T16:47:05+00:00",
+                "ended_at": "2026-05-29T16:47:05+00:00",
+                "duration_ms": 13,
+                "arguments_sha256": "857fe3f375bd40a155f93eb415ff5e6b2b0f6a23b73ff3c4cd3b2b6878a7f467",
+                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "repo": "current-project"
+                },
+                "entry_sha256": "2d4960b3e77aade0dcd13196ce618ff6ef5d175c9dfe447dbe6fb21a90145e4a"
+            },
+            {
+                "index": 2,
+                "schema_version": 1,
+                "tool_name": "wordpress_runtime_ls",
+                "tool_call_id": "toolu_01WfZ7EF8D6xikj6wceuctQA",
+                "turn_count": 2,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "success",
+                "started_at": "2026-05-29T16:47:07+00:00",
+                "ended_at": "2026-05-29T16:47:07+00:00",
+                "duration_ms": 8,
+                "arguments_sha256": "2cec161f13c808f95cbcd2c27de85c9bd659333cb3064e5a3024e743b5e70e72",
+                "result_sha256": "c00d63f6ea6a83653c775e85847b0d54f2bea70a6abba37211643560364cfc4f",
+                "arguments_redacted": {
+                    "path": "wp-content/plugins"
+                },
+                "entry_sha256": "9720daa6de48e2d965a5d0794e813bf66f32981ef781de23db202a4b8fe138e8"
+            },
+            {
+                "index": 3,
+                "schema_version": 1,
+                "tool_name": "workspace_git_status",
+                "tool_call_id": "toolu_01189XYCmiXPex1RacWg44fh",
+                "turn_count": 3,
+                "actor": "agent",
+                "source": "data_machine",
+                "status": "failed",
+                "started_at": "2026-05-29T16:47:11+00:00",
+                "ended_at": "2026-05-29T16:47:11+00:00",
+                "duration_ms": 2,
+                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
+                "result_sha256": "92a4b7cd7a8beac8d998de7e55322be16b8a0dbea2cf8d7b9769a44819520787",
+                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "arguments_redacted": {
+                    "name": "current-project"
+                },
+                "entry_sha256": "f314f8bfbad42d90a7245157358a8711e161f107fd4492e9bab3d8e37d0734cc"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "c390143a64c5c39f3a7b3272e2ee3b92ac8a965aa22e2c986e88b5b8cdf1f758"
+        "sha256": "847b207371a27ace9287938af9b61fc56ad12392dd9cffb6665b74c38bc5de66"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
