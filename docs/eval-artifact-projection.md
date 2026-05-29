@@ -13,6 +13,8 @@ The validator accepts Homeboy-wrapped rows when every required wp-gym semantic
 field can be recovered from the wrapper without losing evidence.
 
 The versioned JSON schema lives at `schemas/eval-artifact.schema.json`.
+Artifact sensitivity, redaction, and sharing rules are defined in
+[`docs/artifact-redaction-sharing-policy.md`](artifact-redaction-sharing-policy.md).
 
 ## Projection Boundary
 
@@ -67,6 +69,8 @@ The Homeboy wrapper may contain Homeboy-specific fields such as `integration_sea
 `termination`, or replay tool-audit metadata. Those fields are not required by the
 wp-gym canonical schema unless they project to generic row fields above. If they
 must be preserved for Homeboy replay, they remain in the sealed artifact envelope.
+Sensitive raw fields that are needed only for private debugging should project as
+`sealed_hash_only` references with hashes, not as public artifact links.
 
 Benchmark mode treats missing required projection fields as errors. This prevents
 a Homeboy wrapper from being accepted as benchmark evidence when scenario, task

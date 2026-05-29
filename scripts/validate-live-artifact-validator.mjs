@@ -80,6 +80,22 @@ const directFixture = await readFixture('direct-wp-gym-row.json');
 const directFixtureResult = validateLiveArtifact(directFixture);
 assert.equal(directFixtureResult.ok, true);
 
+const redactedFixture = await readFixture('redacted-artifact.json');
+const redactedFixtureResult = validateLiveArtifact(redactedFixture, { benchmarkMode: true, baseDir: path.join(root, 'fixtures/eval-artifacts'), expectedArtifacts: [] });
+assert.equal(redactedFixtureResult.ok, true, JSON.stringify(redactedFixtureResult, null, 2));
+assert(redactedFixtureResult.artifact_checks.some((check) => check.sensitive_scan === 'scanned' && check.redaction_status === 'redacted'));
+
+const unsafeFixture = await readFixture('unsafe-artifact.json');
+const unsafeFixtureResult = validateLiveArtifact(unsafeFixture, { benchmarkMode: true, baseDir: path.join(root, 'fixtures/eval-artifacts'), expectedArtifacts: [] });
+assert.equal(unsafeFixtureResult.ok, false);
+assert(unsafeFixtureResult.compatibility_gaps.some((item) => item.code === 'obvious_sensitive_artifact_marker'));
+
+const sealedSensitiveFixture = await readFixture('sealed-sensitive-artifact.json');
+const sealedSensitiveResult = validateLiveArtifact(sealedSensitiveFixture);
+assert.equal(sealedSensitiveResult.ok, true);
+const sealedSensitiveBenchmark = validateLiveArtifact(sealedSensitiveFixture, { benchmarkMode: true, baseDir: path.join(root, 'fixtures/eval-artifacts'), expectedArtifacts: [] });
+assert(sealedSensitiveBenchmark.artifact_checks.some((check) => check.sealed_hash_only === true && check.ok === true));
+
 const homeboyWrappedFixture = await readFixture('homeboy-wrapped-row.json');
 const projectedHomeboy = unwrapEvalArtifact(homeboyWrappedFixture);
 assert.equal(projectedHomeboy?.projection.name, 'wp-gym-eval-artifact');

@@ -119,6 +119,9 @@ finished.
 Trace validation belongs in `wp-gym`. It can reject malformed action,
 observation, StepResult, or eval artifact records without requiring WP Codebox to
 validate eval semantics.
+Artifact redaction and sharing policy also belongs in `wp-gym`; runtime adapters
+should preserve enough provenance for `wp-gym` to classify references as
+`public_report`, `private_lab`, `local_only`, or `sealed_hash_only`.
 
 ## Compatibility Gaps
 
