@@ -8,7 +8,7 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "upsert_post",
+            "tool_name": "local_search",
             "success": true,
             "turn_count": 1
         }
@@ -16,30 +16,23 @@
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "call_pmRB5tOTpePwKlYQi7V32DDn",
+            "tool_name": "local_search",
+            "tool_call_id": "call_A0YQYcRE7XZH0KY5y35zJUVy",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T22:58:54+00:00",
-            "ended_at": "2026-05-29T22:58:55+00:00",
-            "duration_ms": 312,
-            "arguments_sha256": "b6da584d64e414ddfb7eb9cecf98740be0d34d89df3627b314b9a136d0d1029d",
-            "result_sha256": "3aedf6e5fb42548358d94d8d4f6009b17ee7bed10c1784418fd5339994d302fa",
+            "started_at": "2026-05-29T23:00:42+00:00",
+            "ended_at": "2026-05-29T23:00:42+00:00",
+            "duration_ms": 11,
+            "arguments_sha256": "c67dc12c9b3db39efb9a98c0c040b186f405703559bfd7ae109b5c6f11100b68",
+            "result_sha256": "9583feca41a4d9d7559d6fd1f1a3711aeb62ff454980eb50ca553512a0bb06e2",
             "arguments_redacted": {
-                "post_type": "page",
-                "title": "Neighborhood Cookout Plan",
-                "content": "## Summer Cookout Plan\n\nJoin us for a friendly neighborhood summer cookout with good food, easy conversation, and time to relax together.\n\n- Set up seating and shaded tables\n- Prep the grill and ingredients\n- Welcome neighbors and serve drinks\n\n[View menu](#)",
-                "content_format": "markdown",
-                "slug": "neighborhood-cookout-plan",
-                "parent_id": 0,
-                "parent_path": "",
-                "post_author": "[redacted]",
-                "content_hash": "neighborhood-cookout-plan-v1",
-                "source_url": "",
-                "original_date_gmt": "",
-                "add_source_attribution": false
+                "query": "Simple Pricing Page",
+                "post_types": [
+                    "page"
+                ],
+                "title_only": true
             }
         }
     ],
@@ -49,7 +42,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "d90c70b797fb00a2bf0ce23b9c913962e20aa8c86bd5090221e442ba838c4bb1",
+            "sha256": "d506e7a6eb40dff8add3876622dde7cdc8557d4dace0fe585ab71356f3ab8607",
             "bounded": true,
             "redacted": true
         }
@@ -60,11 +53,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:42167/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "a6256666cf9db27f81091652678435adc79b38e9c3fe511ab8ca5fe5e619572b",
-            "payload_sha256": "41c280850630731781c632e86720d7ec24944dc5f87b191dfc511d6a45084b54",
-            "bytes": 2193,
-            "written_at": "2026-05-29T22:58:57+00:00"
+            "url": "http://127.0.0.1:34867/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "f99c8b1fd252c2a9f6627c4b0eb7f7dbc8e1075df7946e0d62a39391dae2c3ed",
+            "payload_sha256": "436681b80422182e299a37c30d089ad85002076291caa724de3d7751d0146804",
+            "bytes": 1567,
+            "written_at": "2026-05-29T23:00:47+00:00"
         }
     },
     "transcript_artifact": null,
@@ -80,8 +73,8 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 22:58:51",
-            "completed_at": "2026-05-29 22:58:57"
+            "created_at": "2026-05-29 23:00:40",
+            "completed_at": "2026-05-29 23:00:47"
         },
         "trace_count": 1,
         "entries_emitted": 1,
@@ -90,37 +83,30 @@
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "call_pmRB5tOTpePwKlYQi7V32DDn",
+                "tool_name": "local_search",
+                "tool_call_id": "call_A0YQYcRE7XZH0KY5y35zJUVy",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T22:58:54+00:00",
-                "ended_at": "2026-05-29T22:58:55+00:00",
-                "duration_ms": 312,
-                "arguments_sha256": "b6da584d64e414ddfb7eb9cecf98740be0d34d89df3627b314b9a136d0d1029d",
-                "result_sha256": "3aedf6e5fb42548358d94d8d4f6009b17ee7bed10c1784418fd5339994d302fa",
+                "started_at": "2026-05-29T23:00:42+00:00",
+                "ended_at": "2026-05-29T23:00:42+00:00",
+                "duration_ms": 11,
+                "arguments_sha256": "c67dc12c9b3db39efb9a98c0c040b186f405703559bfd7ae109b5c6f11100b68",
+                "result_sha256": "9583feca41a4d9d7559d6fd1f1a3711aeb62ff454980eb50ca553512a0bb06e2",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "title": "Neighborhood Cookout Plan",
-                    "content": "## Summer Cookout Plan\n\nJoin us for a friendly neighborhood summer cookout with good food, easy conversation, and time to relax together.\n\n- Set up seating and shaded tables\n- Prep the grill and ingredients\n- Welcome neighbors and serve drinks\n\n[View menu](#)",
-                    "content_format": "markdown",
-                    "slug": "neighborhood-cookout-plan",
-                    "parent_id": 0,
-                    "parent_path": "",
-                    "post_author": "[redacted]",
-                    "content_hash": "neighborhood-cookout-plan-v1",
-                    "source_url": "",
-                    "original_date_gmt": "",
-                    "add_source_attribution": false
+                    "query": "Simple Pricing Page",
+                    "post_types": [
+                        "page"
+                    ],
+                    "title_only": true
                 },
-                "entry_sha256": "15375b7f5f33b1d2a433b9b4f6e2ca23f1e4799ba9906891273937b59a6bb4da"
+                "entry_sha256": "b937bc835edb9349d20ce8461adeba5f43becb7d968dcc7fced9ee89bd2b5f47"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "d90c70b797fb00a2bf0ce23b9c913962e20aa8c86bd5090221e442ba838c4bb1"
+        "sha256": "d506e7a6eb40dff8add3876622dde7cdc8557d4dace0fe585ab71356f3ab8607"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
