@@ -6,6 +6,11 @@ This runbook defines the smallest useful pilot matrix for proving `wp-gym` is
 ready to collect baseline evidence without treating the results as benchmark
 scores yet.
 
+Benchmark versioning and compatibility policy is defined in
+[`benchmark-versioning.md`](benchmark-versioning.md). The pilot task set may
+carry prerelease benchmark metadata for traceability, but headline comparison
+requires the benchmark-ready gates below.
+
 The pilot answers the current review questions:
 
 - Executable local environment shape: every row resolves to a WP Codebox-backed
@@ -185,11 +190,20 @@ The pilot becomes benchmark-ready only after these gates are complete:
 - Scenario calibration records `calibration_result_sets`, a calibrated
   `pass_rate_band`, a 95% confidence interval, and
   `held_out_private_variants_ready=true` before benchmark mode can pass.
+- Headline-eligible benchmark rows use `split.membership=held_out_private`.
+  Public, calibration, and validation lanes remain useful for iteration and
+  promotion evidence, but not final benchmark claims.
+- Task sets that publish aggregate/headline benchmark scores declare
+  `split_policy.requires_held_out_private=true`.
 - Scenario `calibration.task_contract_level` reaches `benchmark_replay` for rows
   that count toward headline scores.
 - The task set flips to `benchmark_status=benchmark_ready`, `benchmark=true`,
   `headline_score_eligible=true`, `aggregate_score=true`, and
   `score_scope=benchmark` only after the gates above are satisfied.
+- The task set and every included headline scenario declare benchmark version and
+  compatibility metadata. Benchmark-ready scenarios also declare version identity
+  hashes for manifest, prompt, grader, setup, expected artifacts, and replay
+  contract inputs.
 
 Until those gates are complete, pilot scores are evidence for runtime shape,
 calibration work, reward-hacking analysis, and replay coverage. They are not a

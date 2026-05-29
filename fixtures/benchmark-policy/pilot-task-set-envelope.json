@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "benchmark-readiness-pilot-envelope",
+  "benchmark_status": "pilot",
+  "benchmark": false,
+  "headline_score_eligible": false,
+  "aggregate_score": false,
+  "score_scope": "pilot",
+  "benchmark_metadata": {
+    "benchmark_version": "0.0.0-pilot.1",
+    "compatibility_group": "benchmark-readiness-pilot",
+    "compatible_with": []
+  },
+  "benchmark_blockers": [
+    "pilot_task_set",
+    "missing_baseline_results",
+    "uncalibrated_difficulty"
+  ]
+}

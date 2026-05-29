@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "benchmark-ready-envelope-example",
+  "benchmark_status": "benchmark_ready",
+  "benchmark": true,
+  "headline_score_eligible": true,
+  "aggregate_score": true,
+  "score_scope": "benchmark",
+  "benchmark_metadata": {
+    "benchmark_version": "1.0.0",
+    "compatibility_group": "core-block-editing-v1",
+    "compatible_with": [],
+    "version_identity": {
+      "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "prompt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "grader_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "setup_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "expected_artifacts_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "replay_contract_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  },
+  "benchmark_blockers": []
+}

@@ -3,6 +3,17 @@
   "id": "block-markup-nested-layout-blocks",
   "label": "Two-service overview page",
   "issue": "https://github.com/Automattic/wp-gym/issues/2",
+  "split": {
+    "membership": "public",
+    "variant_family": "block-markup-service-overview",
+    "variant_seed": "two-service-overview-public-v1",
+    "parent_scenario_id": null,
+    "artifact_policy": {
+      "public_artifacts": ["prompt", "scenario_manifest", "grader"],
+      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "grader_exposure": "full_public"
+    }
+  },
   "prompt_file": "../../prompts/block-markup/nested-layout-blocks.md",
   "grader_file": "../../graders/block-markup/nested-layout-blocks.php",
   "rules": {

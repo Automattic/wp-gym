@@ -1,0 +1,126 @@
+# Benchmark Versioning And Promotion Policy
+
+Issue: [#137](https://github.com/Automattic/wp-gym/issues/137)
+
+`wp-gym` results are comparable only inside an explicit benchmark version and
+compatibility group. Pilot and calibration runs can produce useful evidence, but
+they are not headline scores until the task set and every included scenario pass
+the gates below.
+
+## Metadata Shape
+
+Task sets may declare `benchmark_metadata` at the top level. Scenarios may
+declare `calibration.benchmark_metadata`.
+
+```json
+{
+  "benchmark_metadata": {
+    "benchmark_version": "1.0.0",
+    "compatibility_group": "core-block-editing-v1",
+    "compatible_with": [],
+    "version_identity": {
+      "manifest_sha256": "<sha256>",
+      "prompt_sha256": "<sha256>",
+      "grader_sha256": "<sha256>",
+      "setup_sha256": "<sha256>",
+      "expected_artifacts_sha256": "<sha256>",
+      "replay_contract_sha256": "<sha256>"
+    }
+  }
+}
+```
+
+`benchmark_version` is semver-like. Pre-1.0 prerelease versions such as
+`0.0.0-pilot.1` are allowed for pilot evidence. `compatibility_group` names the
+scoreboard lane where results can be compared. `compatible_with` lists previous
+versions in the same group that remain comparable.
+
+## Scenario Version Identity
+
+A benchmark-ready scenario version is the hash envelope over the task contract:
+
+- `manifest_sha256`: canonical scenario manifest metadata.
+- `prompt_sha256`: user/developer prompt text shown to the agent.
+- `grader_sha256`: hidden terminal grader code.
+- `setup_sha256`: reset fixture, workspace template, allowed tools, hidden paths,
+  writable roots, and runtime setup inputs.
+- `expected_artifacts_sha256`: expected artifact names and replay-critical
+  evidence requirements.
+- `replay_contract_sha256`: episode schema, allowed action types, success checks,
+  replay bundle requirements, and grade identity rules.
+
+Any changed hash creates a new scenario version unless the change is limited to a
+patch-level metadata correction listed below.
+
+## Compatibility Rules
+
+Runs are comparable when all of these match:
+
+- Same task-set `compatibility_group`.
+- Same task-set `benchmark_version`, or the newer task set lists the older version
+  in `compatible_with`.
+- Same scenario `compatibility_group` for each row.
+- Same scenario `benchmark_version`, or the newer scenario lists the older version
+  in `compatible_with`.
+- Same headline eligibility and aggregate-score policy.
+
+Provider/model changes do not require a new benchmark version. Runtime, prompt,
+grader, setup, expected-artifact, or replay-contract changes require a new
+version unless the old and new versions are explicitly listed as compatible.
+
+## Promotion States
+
+- `demo`: examples and smoke tests; never headline eligible.
+- `pilot`: useful live-run evidence; missing one or more benchmark gates.
+- `calibrating`: baseline and repeat-run evidence is being collected.
+- `benchmark_ready`: headline-score eligible after all gates pass.
+- `deprecated`: still retained for historical comparison, but no new headline runs.
+- `retired`: kept only for archived result retention and replay.
+- `excluded`: diagnostic or unsuitable for benchmark scoring.
+
+## Headline And Aggregate Gates
+
+Set `headline_score_eligible=true`, `aggregate_score=true`, and
+`score_scope=benchmark` only when:
+
+- The task set has `benchmark_status=benchmark_ready` and `benchmark=true`.
+- The task set has `benchmark_metadata.benchmark_version` and
+  `benchmark_metadata.compatibility_group`.
+- Every included scenario has `calibration.status=benchmark_ready`,
+  `calibration.benchmark_scope=benchmark`, and
+  `calibration.headline_score_eligible=true`.
+- Every included scenario has `calibration.benchmark_metadata.benchmark_version`,
+  `calibration.benchmark_metadata.compatibility_group`, and full
+  `version_identity` hashes.
+- Every included scenario records baseline result sets, calibration result sets,
+  a calibrated pass-rate band, a 95% confidence interval, and
+  `held_out_private_variants_ready=true`.
+- Known reward shortcuts are either fixed or the scenario remains non-headline.
+- The task-set and scenario `benchmark_blockers` arrays are empty.
+
+Benchmark mode validation fails when a row lacks the version or compatibility
+metadata needed for a headline comparison.
+
+## Version Bumps
+
+New benchmark version required:
+
+- Prompt wording changes that affect task requirements or hints.
+- Grader behavior, score thresholds, or hidden checks change.
+- Scenario manifest rules, runtime setup, fixtures, writable/hidden paths, allowed
+  tools, expected artifacts, or replay contract change.
+- Task-set membership, weighting, aggregate policy, or headline eligibility changes.
+
+Patch-level metadata update allowed:
+
+- Typo fixes in labels, descriptions, docs, issue links, or notes.
+- Adding evidence links or retention notes without changing task behavior.
+- Marking an old version `deprecated` or `retired` while retaining its results.
+
+## Deprecation And Retention
+
+Deprecated benchmark versions remain readable and replayable. They should retain
+their run artifacts, matrix rows, task-set metadata, scenario metadata, and grade
+identity. Retired versions are excluded from new aggregate scoreboards, but their
+artifacts should remain available for historical audits as long as repository and
+artifact retention allow.

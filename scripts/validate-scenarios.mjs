@@ -29,7 +29,7 @@ const knownCompletionPolicies = new Set(['agent_final_response', 'explicit_final
 const knownTerminationPolicies = new Set(['terminal_grader']);
 const knownTruncationPolicies = new Set(['budget']);
 const knownRewardTypes = new Set(['terminal_php_grader']);
-const knownCalibrationStatuses = new Set(['demo', 'pilot', 'calibrating', 'benchmark_ready', 'excluded']);
+const knownCalibrationStatuses = new Set(['demo', 'pilot', 'calibrating', 'benchmark_ready', 'deprecated', 'retired', 'excluded']);
 const knownBenchmarkScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', 'excluded']);
 const knownDifficultyBands = new Set(['uncalibrated', 'smoke', 'easy', 'medium', 'hard']);
 const knownPassRateBands = new Set(['uncalibrated', 'too_easy', 'easy', 'target', 'hard', 'too_hard']);
@@ -45,7 +45,12 @@ const knownTaskSetContractLevels = new Set([
 	'benchmark_replay',
 ]);
 const knownScoreScopes = new Set(['demo', 'pilot', 'calibration', 'benchmark', 'excluded']);
+const knownSplitMemberships = new Set(['public', 'calibration', 'validation', 'held_out_private']);
+const knownGraderExposure = new Set(['full_public', 'summary_public', 'private']);
 const knownProbeTypes = new Set(['rendered_site_design']);
+const versionPattern = /^\d+\.\d+\.\d+(?:-[a-z0-9][a-z0-9.-]*)?$/;
+const compatibilityGroupPattern = /^[a-z0-9][a-z0-9-]*$/;
+const hashPattern = /^[a-f0-9]{64}$/;
 const knownCapabilityAreas = new Set([
 	'ai_features',
 	'agent_tooling_automation_surfaces',
@@ -138,6 +143,30 @@ function assertKnown(value, knownValues, label) {
 	}
 }
 
+function validateBenchmarkMetadata(metadata, label, { requireVersionIdentity = false } = {}) {
+	assertObject(metadata, `${label} benchmark_metadata`);
+
+	if (typeof metadata.benchmark_version !== 'string' || !versionPattern.test(metadata.benchmark_version)) {
+		throw new Error(`${label} benchmark_metadata.benchmark_version must be semver-like`);
+	}
+	if (typeof metadata.compatibility_group !== 'string' || !compatibilityGroupPattern.test(metadata.compatibility_group)) {
+		throw new Error(`${label} benchmark_metadata.compatibility_group must be kebab-case`);
+	}
+
+	if (metadata.compatible_with !== undefined) {
+		assertStringArray(metadata.compatible_with, `${label} benchmark_metadata.compatible_with`);
+	}
+
+	if (metadata.version_identity !== undefined || requireVersionIdentity) {
+		assertObject(metadata.version_identity, `${label} benchmark_metadata.version_identity`);
+		for (const field of ['manifest_sha256', 'prompt_sha256', 'grader_sha256', 'setup_sha256', 'expected_artifacts_sha256', 'replay_contract_sha256']) {
+			if (typeof metadata.version_identity[field] !== 'string' || !hashPattern.test(metadata.version_identity[field])) {
+				throw new Error(`${label} benchmark_metadata.version_identity.${field} must be a sha256 hex digest`);
+			}
+		}
+	}
+}
+
 function assertIsoDate(value, label) {
 	if (typeof value !== 'string' || !isoDatePattern.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) {
 		throw new Error(`${label} must be an ISO date in YYYY-MM-DD format`);
@@ -170,6 +199,37 @@ function validateScenarioContract(file, manifest) {
 	}
 
 	assertObject(manifest.environment, `${file} environment`);
+	assertObject(manifest.split, `${file} split`);
+	assertKnown(manifest.split.membership, knownSplitMemberships, `${file} split.membership`);
+	if (typeof manifest.split.variant_family !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(manifest.split.variant_family)) {
+		throw new Error(`${file} split.variant_family must be kebab-case`);
+	}
+	if (typeof manifest.split.variant_seed !== 'string' || !/^[a-z0-9][a-z0-9_.-]*$/.test(manifest.split.variant_seed)) {
+		throw new Error(`${file} split.variant_seed must be a stable non-secret seed label`);
+	}
+	if (
+		manifest.split.parent_scenario_id !== undefined &&
+		manifest.split.parent_scenario_id !== null &&
+		(typeof manifest.split.parent_scenario_id !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(manifest.split.parent_scenario_id))
+	) {
+		throw new Error(`${file} split.parent_scenario_id must be null or a scenario id`);
+	}
+	assertObject(manifest.split.artifact_policy, `${file} split.artifact_policy`);
+	assertStringArray(manifest.split.artifact_policy.public_artifacts, `${file} split.artifact_policy.public_artifacts`, {
+		pattern: /^[a-z0-9_]+$/,
+	});
+	assertStringArray(manifest.split.artifact_policy.private_artifacts, `${file} split.artifact_policy.private_artifacts`, {
+		pattern: /^[a-z0-9_]+$/,
+	});
+	assertKnown(manifest.split.artifact_policy.grader_exposure, knownGraderExposure, `${file} split.artifact_policy.grader_exposure`);
+	if (manifest.split.membership === 'held_out_private') {
+		if (!manifest.split.parent_scenario_id) {
+			throw new Error(`${file} held-out private variants must declare split.parent_scenario_id`);
+		}
+		if (manifest.split.artifact_policy.grader_exposure !== 'private') {
+			throw new Error(`${file} held-out private variants must keep grader_exposure=private`);
+		}
+	}
 
 	const environment = manifest.environment;
 	if (!['wordpress', 'workspace'].includes(environment.action_mode)) {
@@ -347,6 +407,9 @@ function validateScenarioContract(file, manifest) {
 	assertStringArray(manifest.calibration.benchmark_blockers, `${file} calibration.benchmark_blockers`, {
 		pattern: /^[a-z0-9_]+$/,
 	});
+	if (manifest.calibration.benchmark_metadata !== undefined) {
+		validateBenchmarkMetadata(manifest.calibration.benchmark_metadata, `${file} calibration`);
+	}
 	if (manifest.calibration.status === 'benchmark_ready') {
 		if (!manifest.calibration.headline_score_eligible) {
 			throw new Error(`${file} benchmark_ready scenarios must be headline_score_eligible`);
@@ -375,6 +438,21 @@ function validateScenarioContract(file, manifest) {
 		if (manifest.calibration.benchmark_blockers.length > 0) {
 			throw new Error(`${file} benchmark_ready scenarios must not declare benchmark_blockers`);
 		}
+		validateBenchmarkMetadata(manifest.calibration.benchmark_metadata, `${file} calibration`, {
+			requireVersionIdentity: true,
+		});
+	}
+	if (
+		manifest.calibration.headline_score_eligible &&
+		manifest.calibration.held_out_private_variants_ready !== true
+	) {
+		throw new Error(`${file} headline_score_eligible scenarios must declare held_out_private_variants_ready=true`);
+	}
+	if (
+		manifest.calibration.headline_score_eligible &&
+		manifest.split.membership !== 'held_out_private'
+	) {
+		throw new Error(`${file} headline_score_eligible scenarios must use split.membership=held_out_private`);
 	}
 
 	if (manifest.probes !== undefined) {
@@ -469,6 +547,7 @@ async function listScenarioFiles(dir, relativeDir = 'scenarios') {
 const files = await listScenarioFiles(scenarioRoot);
 const scenarioIdsByManifest = new Map();
 const scenarioManifestsById = new Map();
+const scenarioValuesById = new Map();
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 const validateScenarioSchema = ajv.compile(
 	JSON.parse(await readFile(path.join(root, 'schemas/scenario.schema.json'), 'utf8'))
@@ -496,6 +575,7 @@ for (const file of files) {
 		throw new Error(`${file} duplicates scenario id ${manifest.id} from ${scenarioManifestsById.get(manifest.id)}`);
 	}
 	scenarioManifestsById.set(manifest.id, file);
+	scenarioValuesById.set(manifest.id, manifest);
 
 	validateScenarioContract(file, manifest);
 
@@ -572,9 +652,29 @@ for (const file of taskSetFiles) {
 	}
 	assertKnown(manifest.score_scope, knownScoreScopes, `${file} score_scope`);
 	assertKnown(manifest.task_contract_level, knownTaskSetContractLevels, `${file} task_contract_level`);
+	if (manifest.split_policy !== undefined) {
+		assertObject(manifest.split_policy, `${file} split_policy`);
+		assertKnown(manifest.split_policy.lane, knownSplitMemberships, `${file} split_policy.lane`);
+		assertStringArray(manifest.split_policy.allowed_splits, `${file} split_policy.allowed_splits`, {
+			minItems: 1,
+			pattern: /^[a-z0-9_]+$/,
+		});
+		for (const split of manifest.split_policy.allowed_splits) {
+			assertKnown(split, knownSplitMemberships, `${file} split_policy.allowed_splits`);
+		}
+		if (typeof manifest.split_policy.requires_held_out_private !== 'boolean') {
+			throw new Error(`${file} split_policy.requires_held_out_private must be a boolean`);
+		}
+		assertStringArray(manifest.split_policy.contamination_controls || [], `${file} split_policy.contamination_controls`, {
+			pattern: /^[a-z0-9_]+$/,
+		});
+	}
 	assertStringArray(manifest.benchmark_blockers, `${file} benchmark_blockers`, {
 		pattern: /^[a-z0-9_]+$/,
 	});
+	if (manifest.benchmark_metadata !== undefined) {
+		validateBenchmarkMetadata(manifest.benchmark_metadata, file);
+	}
 	if (manifest.benchmark) {
 		if (manifest.benchmark_status !== 'benchmark_ready') {
 			throw new Error(`${file} benchmark task sets must declare benchmark_status=benchmark_ready`);
@@ -591,6 +691,10 @@ for (const file of taskSetFiles) {
 		if (manifest.benchmark_blockers.length > 0) {
 			throw new Error(`${file} benchmark task sets must not declare benchmark_blockers`);
 		}
+		if (manifest.split_policy?.requires_held_out_private !== true) {
+			throw new Error(`${file} benchmark task sets must require held-out private splits`);
+		}
+		validateBenchmarkMetadata(manifest.benchmark_metadata, file, { requireVersionIdentity: true });
 	}
 
 	if (!Array.isArray(manifest.tasks) || manifest.tasks.length < 1) {
@@ -610,6 +714,7 @@ for (const file of taskSetFiles) {
 	}
 
 	const manifestScenarioIds = new Set();
+	const allowedSplits = new Set(manifest.split_policy?.allowed_splits || []);
 	for (const scenarioManifest of manifest.scenario_manifests) {
 		const resolvedScenarioManifest = resolveRepoContained(
 			file,
@@ -632,6 +737,12 @@ for (const file of taskSetFiles) {
 		if (!taskScenarioIds.has(scenarioId)) {
 			throw new Error(`${file} is missing task metadata for scenario: ${scenarioId}`);
 		}
+		if (allowedSplits.size > 0) {
+			const scenario = scenarioValuesById.get(scenarioId);
+			if (!allowedSplits.has(scenario.split.membership)) {
+				throw new Error(`${file} does not allow ${scenarioId} split membership: ${scenario.split.membership}`);
+			}
+		}
 	}
 
 	for (const scenarioId of taskScenarioIds) {
@@ -639,6 +750,34 @@ for (const file of taskSetFiles) {
 			throw new Error(`${file} has task metadata for a scenario not listed in scenario_manifests: ${scenarioId}`);
 		}
 	}
+}
+
+async function listBenchmarkPolicyFixtureFiles(dir = path.join(root, 'fixtures', 'benchmark-policy'), relativeDir = 'fixtures/benchmark-policy') {
+	if (!existsSync(dir)) {
+		return [];
+	}
+
+	const entries = await readdir(dir, { withFileTypes: true });
+	const files = [];
+
+	for (const entry of entries) {
+		const fullPath = path.join(dir, entry.name);
+		const relativePath = path.join(relativeDir, entry.name);
+		if (entry.isDirectory()) {
+			files.push(...await listBenchmarkPolicyFixtureFiles(fullPath, relativePath));
+		} else if (entry.isFile() && entry.name.endsWith('.json')) {
+			files.push(relativePath);
+		}
+	}
+
+	return files.sort();
+}
+
+for (const file of await listBenchmarkPolicyFixtureFiles()) {
+	const fixture = JSON.parse(await readFile(path.join(root, file), 'utf8'));
+	validateBenchmarkMetadata(fixture.benchmark_metadata, file, {
+		requireVersionIdentity: fixture.benchmark_status === 'benchmark_ready',
+	});
 }
 
 const phpFiles = [

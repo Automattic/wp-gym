@@ -3,6 +3,23 @@
   "id": "block-markup-valid-semantic-blocks",
   "label": "Neighborhood cookout page",
   "issue": "https://github.com/Automattic/wp-gym/issues/2",
+  "split": {
+    "membership": "public",
+    "variant_family": "block-markup-cookout-page",
+    "variant_seed": "neighborhood-cookout-public-v1",
+    "parent_scenario_id": null,
+    "lineage_note": "Public seed task for editable semantic block output. Held-out variants should paraphrase the site brief, content nouns, required block mix, and grader thresholds while preserving the same capability target.",
+    "held_out_private_variant": {
+      "status": "planned",
+      "reference": "private:block-markup-cookout-page/held-out-v1",
+      "notes": "Public metadata may name the variant family and readiness state, but private prompts, fixtures, expected strings, and grader assertions stay outside this repository."
+    },
+    "artifact_policy": {
+      "public_artifacts": ["prompt", "scenario_manifest", "grader", "calibration_fixture"],
+      "private_artifacts": ["held_out_prompt", "held_out_manifest", "held_out_grader", "held_out_fixture"],
+      "grader_exposure": "full_public"
+    }
+  },
   "prompt_file": "../../prompts/block-markup/valid-semantic-blocks.md",
   "grader_file": "../../graders/block-markup/valid-semantic-blocks.php",
   "rules": {
@@ -42,6 +59,11 @@
     "difficulty_band": "smoke",
     "headline_score_eligible": false,
     "baseline_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline"],
+    "benchmark_metadata": {
+      "benchmark_version": "0.0.0-pilot.1",
+      "compatibility_group": "block-markup-valid-semantic-blocks",
+      "compatible_with": []
+    },
     "calibration_result_sets": ["block-markup-valid-semantic-blocks-local-fixture-baseline"],
     "pass_rate_band": "too_easy",
     "confidence_interval_95": [0, 1],
