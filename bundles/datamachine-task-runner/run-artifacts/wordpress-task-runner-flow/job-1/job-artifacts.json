@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "failed - tool_result_failed",
+    "status": "completed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -10,50 +10,29 @@
         {
             "tool_name": "upsert_post",
             "success": true,
-            "turn_count": 2
+            "turn_count": 1
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
             "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01EY6QRMSYAhkRs7aF2fTDmd",
+            "tool_call_id": "toolu_013WnUGqkdq3BHoh3RBsMEom",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T16:09:29+00:00",
-            "ended_at": "2026-05-29T16:09:29+00:00",
-            "duration_ms": 10,
-            "arguments_sha256": "6465630d6f6d4318386a47ecdc096af204cb6d7ae8f94cf6825b194c08fd32b2",
-            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-            "output_summary": "Declared blocks content does not contain serialized block comments.",
-            "arguments_redacted": {
-                "post_type": "page",
-                "slug": "neighborhood-cookout-plan",
-                "title": "Neighborhood Cookout Plan",
-                "content": "## Summer Cookout Plan\n\nJoin your neighbors for a relaxed afternoon of grilling, games, and good conversation at our annual summer cookout. We'll gather in the community green, share a potluck-style meal, and enjoy the longest days of the year together. Bring a folding chair, your favorite side dish, and a friendly attitude.\n\n### Preparation Checklist\n\n- Confirm headcount and collect potluck sign-ups one week ahead.\n- Pick up grilling supplies, drinks, ice, and serving ware two days before.\n- Set up tables, the grill station, and trash and recycling bins the morning of the event.\n\n[View menu](#menu)\n"
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_015KFjxaqLLLr2pAaXB1yGqz",
-            "turn_count": 2,
-            "actor": "agent",
-            "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T16:09:34+00:00",
-            "ended_at": "2026-05-29T16:09:35+00:00",
-            "duration_ms": 336,
-            "arguments_sha256": "badcc59d0055b19025205d990a7427564c9e9d65a6c71a0c9f20937646bfcac7",
-            "result_sha256": "22267041eda5a9e2c816626981ab77ab4237d683e7e99b8bb7330c97e10ea33d",
+            "started_at": "2026-05-29T16:20:36+00:00",
+            "ended_at": "2026-05-29T16:20:36+00:00",
+            "duration_ms": 49,
+            "arguments_sha256": "116b1509772865310626339d8322051e89b5387e299d10fb5d9e25db3f3e71d0",
+            "result_sha256": "193e4ddad4392866a69f62dcd5a879c0808caef8514bda3ec4c36b831abb95e7",
             "arguments_redacted": {
-                "post_type": "page",
-                "slug": "neighborhood-cookout-plan",
                 "title": "Neighborhood Cookout Plan",
-                "content_format": "markdown",
-                "content": "## Summer Cookout Plan\n\nJoin your neighbors for a relaxed afternoon of grilling, games, and good conversation at our annual summer cookout. We'll gather in the community green, share a potluck-style meal, and enjoy the longest days of the year together. Bring a folding chair, your favorite side dish, and a friendly attitude.\n\n### Preparation Checklist\n\n- Confirm headcount and collect potluck sign-ups one week ahead.\n- Pick up grilling supplies, drinks, ice, and serving ware two days before.\n- Set up tables, the grill station, and trash and recycling bins the morning of the event.\n\n[View menu](#menu)\n"
+                "slug": "neighborhood-cookout-plan",
+                "post_type": "page",
+                "content_format": "blocks",
+                "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join your neighbors for a relaxed afternoon cookout in the park. We'll fire up the grill, share homemade sides, and enjoy lawn games as the sun goes down. Everyone is welcome, and contributions are appreciated but never required.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li>Confirm headcount and dietary needs one week ahead.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Pick up burgers, buns, drinks, and ice the morning of the event.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up grill, tables, and lawn games one hour before guests arrive.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\">\n<!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\">View menu</a></div>\n<!-- /wp:button -->\n</div>\n<!-- /wp:buttons -->"
             }
         }
     ],
@@ -63,7 +42,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "190e88e88b556c09829d71bfef2661ca9c1a8395772f4f6a1aeedf08ae29754a",
+            "sha256": "c390143a64c5c39f3a7b3272e2ee3b92ac8a965aa22e2c986e88b5b8cdf1f758",
             "bounded": true,
             "redacted": true
         }
@@ -74,11 +53,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:41459/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "56366bc4e082cb0cc1c520394000f6994c7442de607cdab2fbeed9a186344547",
-            "payload_sha256": "b73959514e052db7671039877d346b14bdcfca3c9a0131b6b1e21f3cc1d660ed",
-            "bytes": 3929,
-            "written_at": "2026-05-29T16:09:41+00:00"
+            "url": "http://127.0.0.1:38475/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "d8454d3d7798a7d880ae95933bc3b7779eba10153fbc0a9743db25ba4d29eaba",
+            "payload_sha256": "8991321686b44c63feff76eafc8aaffafc2b56c29e495dcb9c7a79c86f4c3158",
+            "bytes": 2692,
+            "written_at": "2026-05-29T16:20:43+00:00"
         }
     },
     "transcript_artifact": null,
@@ -88,69 +67,46 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "failed - tool_result_failed",
+            "job_status": "completed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 16:09:21",
-            "completed_at": "2026-05-29 16:09:41"
+            "created_at": "2026-05-29 16:20:27",
+            "completed_at": "2026-05-29 16:20:44"
         },
-        "trace_count": 2,
-        "entries_emitted": 2,
+        "trace_count": 1,
+        "entries_emitted": 1,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01EY6QRMSYAhkRs7aF2fTDmd",
+                "tool_call_id": "toolu_013WnUGqkdq3BHoh3RBsMEom",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T16:09:29+00:00",
-                "ended_at": "2026-05-29T16:09:29+00:00",
-                "duration_ms": 10,
-                "arguments_sha256": "6465630d6f6d4318386a47ecdc096af204cb6d7ae8f94cf6825b194c08fd32b2",
-                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-                "output_summary": "Declared blocks content does not contain serialized block comments.",
-                "arguments_redacted": {
-                    "post_type": "page",
-                    "slug": "neighborhood-cookout-plan",
-                    "title": "Neighborhood Cookout Plan",
-                    "content": "## Summer Cookout Plan\n\nJoin your neighbors for a relaxed afternoon of grilling, games, and good conversation at our annual summer cookout. We'll gather in the community green, share a potluck-style meal, and enjoy the longest days of the year together. Bring a folding chair, your favorite side dish, and a friendly attitude.\n\n### Preparation Checklist\n\n- Confirm headcount and collect potluck sign-ups one week ahead.\n- Pick up grilling supplies, drinks, ice, and serving ware two days before.\n- Set up tables, the grill station, and trash and recycling bins the morning of the event.\n\n[View menu](#menu)\n"
-                },
-                "entry_sha256": "1ff66c13bbc0b1f03ee877b057d26e7126b5bbffdc6ff55f76928af606810991"
-            },
-            {
-                "index": 1,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_015KFjxaqLLLr2pAaXB1yGqz",
-                "turn_count": 2,
-                "actor": "agent",
-                "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T16:09:34+00:00",
-                "ended_at": "2026-05-29T16:09:35+00:00",
-                "duration_ms": 336,
-                "arguments_sha256": "badcc59d0055b19025205d990a7427564c9e9d65a6c71a0c9f20937646bfcac7",
-                "result_sha256": "22267041eda5a9e2c816626981ab77ab4237d683e7e99b8bb7330c97e10ea33d",
+                "started_at": "2026-05-29T16:20:36+00:00",
+                "ended_at": "2026-05-29T16:20:36+00:00",
+                "duration_ms": 49,
+                "arguments_sha256": "116b1509772865310626339d8322051e89b5387e299d10fb5d9e25db3f3e71d0",
+                "result_sha256": "193e4ddad4392866a69f62dcd5a879c0808caef8514bda3ec4c36b831abb95e7",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "slug": "neighborhood-cookout-plan",
                     "title": "Neighborhood Cookout Plan",
-                    "content_format": "markdown",
-                    "content": "## Summer Cookout Plan\n\nJoin your neighbors for a relaxed afternoon of grilling, games, and good conversation at our annual summer cookout. We'll gather in the community green, share a potluck-style meal, and enjoy the longest days of the year together. Bring a folding chair, your favorite side dish, and a friendly attitude.\n\n### Preparation Checklist\n\n- Confirm headcount and collect potluck sign-ups one week ahead.\n- Pick up grilling supplies, drinks, ice, and serving ware two days before.\n- Set up tables, the grill station, and trash and recycling bins the morning of the event.\n\n[View menu](#menu)\n"
+                    "slug": "neighborhood-cookout-plan",
+                    "post_type": "page",
+                    "content_format": "blocks",
+                    "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join your neighbors for a relaxed afternoon cookout in the park. We'll fire up the grill, share homemade sides, and enjoy lawn games as the sun goes down. Everyone is welcome, and contributions are appreciated but never required.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li>Confirm headcount and dietary needs one week ahead.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Pick up burgers, buns, drinks, and ice the morning of the event.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Set up grill, tables, and lawn games one hour before guests arrive.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\">\n<!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\">View menu</a></div>\n<!-- /wp:button -->\n</div>\n<!-- /wp:buttons -->"
                 },
-                "entry_sha256": "18422452f64fb73ec902071dda95b43de0381f239c7acdad01beb7cc93aea60a"
+                "entry_sha256": "a6d0cb8bdd411feaebc1743f1d8f676fa8c3d22346117903ae79b212c35ac02f"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "190e88e88b556c09829d71bfef2661ca9c1a8395772f4f6a1aeedf08ae29754a"
+        "sha256": "c390143a64c5c39f3a7b3272e2ee3b92ac8a965aa22e2c986e88b5b8cdf1f758"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
