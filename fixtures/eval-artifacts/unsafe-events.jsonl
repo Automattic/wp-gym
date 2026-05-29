@@ -1,0 +1,1 @@
+{"event":"request","headers":{"authorization":"Bearer sk-unsafeartifactfixturetoken1234567890","cookie":"wordpress_logged_in_fixture=abc123","x-wp-nonce":"abc123nonce"},"url":"http://localhost:8881/wp-json/wp/v2/pages","local_path":"/Users/chubes/private/site"}

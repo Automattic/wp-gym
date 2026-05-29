@@ -219,7 +219,26 @@
           "kind": { "type": "string", "pattern": "^[a-z0-9_]+$" },
           "path_or_url": { "type": "string", "minLength": 1 },
           "sha256": { "$ref": "#/$defs/sha256_or_null" },
-          "source_field": { "type": ["string", "null"] }
+          "source_field": { "type": ["string", "null"] },
+          "sensitivity": {
+            "type": "array",
+            "items": {
+              "enum": ["public_content", "user_data", "auth_secret", "cookie", "nonce", "local_path", "internal_url", "provider_metadata", "credential", "private_runtime"]
+            },
+            "uniqueItems": true
+          },
+          "sharing_level": { "enum": ["public_report", "private_lab", "local_only", "sealed_hash_only"] },
+          "redaction_status": { "enum": ["not_needed", "redacted", "hashed", "sealed_hash_only"] },
+          "redaction": {
+            "type": "object",
+            "properties": {
+              "status": { "enum": ["not_needed", "redacted", "hashed", "sealed_hash_only"] },
+              "strategy": { "enum": ["none", "field_redaction", "path_redaction", "hash_only", "sealed_hash_only"] },
+              "sharing_level": { "enum": ["public_report", "private_lab", "local_only", "sealed_hash_only"] },
+              "notes": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
         },
         "additionalProperties": true
       }
