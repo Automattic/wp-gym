@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/held-out-pack-manifest.v1.schema.json",
+  "title": "WP Gym held-out benchmark pack manifest",
+  "description": "Public-safe contract for private held-out benchmark packs. The manifest identifies sealed private task materials without requiring those contents to live in the public wp-gym repository.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack",
+    "boundary",
+    "promotion_policy",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "pack": {
+      "type": "object",
+      "required": ["id", "version", "label", "compatibility_group", "created_at"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-z0-9][a-z0-9.-]*)?$" },
+        "label": { "type": "string", "minLength": 1 },
+        "compatibility_group": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "public_reference": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "boundary": {
+      "type": "object",
+      "required": ["storage", "public_safe_fields", "withheld_fields", "artifact_access"],
+      "properties": {
+        "storage": { "enum": ["private_repo", "private_artifact_store", "local_private_pack", "external_lab"] },
+        "public_safe_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "uniqueItems": true
+        },
+        "withheld_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "uniqueItems": true
+        },
+        "artifact_access": { "enum": ["private_lab", "sealed_hash_only"] },
+        "public_report_policy": { "enum": ["aggregate_only", "aggregate_plus_hashes"] }
+      },
+      "additionalProperties": true
+    },
+    "promotion_policy": {
+      "type": "object",
+      "required": ["requires_benchmark_replay", "requires_aggregate_only_public_reports", "requires_version_identity", "requires_hash_locked_artifacts"],
+      "properties": {
+        "requires_benchmark_replay": { "const": true },
+        "requires_aggregate_only_public_reports": { "const": true },
+        "requires_version_identity": { "const": true },
+        "requires_hash_locked_artifacts": { "const": true }
+      },
+      "additionalProperties": true
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "scenario_id", "variant_family", "variant_seed", "split_membership", "task_contract_level", "version_identity", "artifacts"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "scenario_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "parent_scenario_id": { "type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "variant_family": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "variant_seed": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$" },
+          "split_membership": { "const": "held_out_private" },
+          "task_contract_level": { "const": "benchmark_replay" },
+          "calibration_status": { "enum": ["calibrating", "benchmark_ready"] },
+          "version_identity": {
+            "type": "object",
+            "required": ["manifest_sha256", "prompt_sha256", "grader_sha256", "setup_sha256", "expected_artifacts_sha256", "replay_contract_sha256"],
+            "properties": {
+              "manifest_sha256": { "$ref": "#/$defs/sha256" },
+              "prompt_sha256": { "$ref": "#/$defs/sha256" },
+              "grader_sha256": { "$ref": "#/$defs/sha256" },
+              "setup_sha256": { "$ref": "#/$defs/sha256" },
+              "expected_artifacts_sha256": { "$ref": "#/$defs/sha256" },
+              "replay_contract_sha256": { "$ref": "#/$defs/sha256" }
+            },
+            "additionalProperties": true
+          },
+          "artifacts": {
+            "type": "array",
+            "minItems": 6,
+            "items": { "$ref": "#/$defs/artifact_reference" }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "$defs": {
+    "artifact_reference": {
+      "type": "object",
+      "required": ["name", "kind", "sha256", "sharing_level"],
+      "properties": {
+        "name": { "enum": ["scenario_manifest", "prompt", "grader", "setup", "expected_artifacts", "replay_contract", "fixture", "negative_fixture", "screenshot", "replay_bundle"] },
+        "kind": { "enum": ["json", "markdown", "php", "zip", "directory_digest", "binary", "text"] },
+        "path_or_url": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "sharing_level": { "enum": ["private_lab", "local_only", "sealed_hash_only"] },
+        "redaction_status": { "enum": ["raw_private", "sealed_hash_only", "redacted_summary"] }
+      },
+      "additionalProperties": true
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

@@ -107,4 +107,5 @@ Before a result can be a headline benchmark claim:
   contents into public PR bodies or downloadable public artifacts.
 
 The validation scripts enforce the public contract. Private-pack storage and
-access control are intentionally out of scope for this public repository.
+access control are private-lab concerns; the public-safe manifest boundary is
+defined in [`held-out-pack-workflow.md`](held-out-pack-workflow.md).
