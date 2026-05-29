@@ -27,8 +27,6 @@
   },
   "benchmark_blockers": [
     "pilot_task_set",
-    "uncalibrated_difficulty",
-    "missing_baseline_results",
     "diagnostic_contract_only"
   ],
   "scenario_manifests": [

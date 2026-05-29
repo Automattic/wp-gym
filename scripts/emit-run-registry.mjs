@@ -149,6 +149,14 @@ function attemptMetadata(evalArtifact) {
 	};
 }
 
+function registryRecordId(evalArtifact) {
+	const attempt = attemptMetadata(evalArtifact);
+	if (attempt.id) {
+		return slug(attempt.id);
+	}
+	return slug([evalArtifact.runner?.workflow?.run_id, evalArtifact.scenario?.id, evalArtifact.runner?.provider, evalArtifact.runner?.model].filter(Boolean).join('-'));
+}
+
 function firstReference(evalArtifact, groups) {
 	for (const group of groups) {
 		const refs = group(evalArtifact);
@@ -404,7 +412,7 @@ async function main() {
 		for (const record of records) {
 			const { evalArtifact } = record;
 			const liveValidation = validateLiveArtifact(record.raw, { benchmarkMode: args.benchmarkMode, baseDir: path.dirname(file) });
-			const id = slug([evalArtifact.runner?.workflow?.run_id, evalArtifact.scenario?.id, evalArtifact.runner?.provider, evalArtifact.runner?.model].filter(Boolean).join('-'));
+			const id = registryRecordId(evalArtifact);
 			const evalArtifactFile = path.join(evalDir, `${id}.json`);
 			writeJson(evalArtifactFile, evalArtifact);
 			const recordReplayReference = {
