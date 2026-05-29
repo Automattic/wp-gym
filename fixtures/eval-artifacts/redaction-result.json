@@ -1,0 +1,18 @@
+{
+  "grader": {
+    "success": true,
+    "reward": 1,
+    "grade": { "score": 4, "max_score": 4 },
+    "checks": [
+      {
+        "id": "semantic_blocks",
+        "passed": true,
+        "score": 1,
+        "max_score": 1,
+        "failure_reason": null,
+        "message": null
+      }
+    ],
+    "failure_reasons": []
+  }
+}

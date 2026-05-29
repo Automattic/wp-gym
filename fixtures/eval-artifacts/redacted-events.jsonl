@@ -1,0 +1,1 @@
+{"event":"request","headers":{"authorization":"[REDACTED:authorization]","cookie":"[REDACTED:cookie]","x-wp-nonce":"[REDACTED:nonce]"},"url":"https://example.com/wp-json/wp/v2/pages","local_path":"[REDACTED:local_path]"}

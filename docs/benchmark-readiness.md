@@ -161,7 +161,10 @@ Pilot diagnostics may link to remote artifact URLs while the runner plumbing is
 being shaped. Benchmark evidence is stricter: replay-critical artifacts such as
 result JSON, replay bundles, event logs, WordPress state, rendered site evidence,
 and scenario-declared expected artifacts must be local files with declared hashes
-so validators can verify them before a row counts toward benchmark data.
+so validators can verify them before a row counts toward benchmark data. Public
+benchmark reports must also follow the
+[`artifact redaction and sharing policy`](artifact-redaction-sharing-policy.md):
+unsafe raw artifacts stay private or publish only `sealed_hash_only` references.
 
 ## Benchmark-Ready Gates
 

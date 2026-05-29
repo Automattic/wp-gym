@@ -39,6 +39,20 @@ const expectedArtifactReferenceFields = {
 	plugin_files: ['runtime.references.packages', 'runtime.references.mounts'],
 	grader_result: ['reports.result_json'],
 };
+const sensitiveValueRules = [
+	{ code: 'private_key_marker', pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----/i, label: 'private key material' },
+	{ code: 'bearer_token_marker', pattern: /\bBearer\s+[A-Za-z0-9._~+/=-]{12,}/i, label: 'bearer token' },
+	{ code: 'basic_auth_marker', pattern: /\bBasic\s+[A-Za-z0-9+/=]{12,}/i, label: 'basic auth header' },
+	{ code: 'openai_key_marker', pattern: /\bsk-[A-Za-z0-9_-]{16,}\b/, label: 'provider API key' },
+	{ code: 'github_token_marker', pattern: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b/, label: 'GitHub token' },
+	{ code: 'slack_token_marker', pattern: /\bxox(?:b|p|a|r|s)-[A-Za-z0-9-]{16,}\b/, label: 'Slack token' },
+	{ code: 'wordpress_cookie_marker', pattern: /\bwordpress_(?:logged_in|sec|test_cookie|settings)[^=\s]*=/i, label: 'WordPress auth cookie' },
+	{ code: 'nonce_query_marker', pattern: /(?:\?|&|\b)(?:_wpnonce|nonce|wp_nonce)=[A-Za-z0-9_-]{6,}/i, label: 'nonce value' },
+	{ code: 'local_path_marker', pattern: /(?:\/Users\/[^\s"'<>]+|\/home\/[^\s"'<>]+|[A-Z]:\\\\Users\\\\[^\s"'<>]+)/, label: 'local filesystem path' },
+	{ code: 'local_url_marker', pattern: /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0|[^\s/"'<>]+\.(?:local|test|internal))(?:[:/][^\s"'<>]*)?/i, label: 'local or internal URL' },
+];
+const sensitiveKeyPattern = /(?:^|[_-])(?:authorization|cookie|set_cookie|x_wp_nonce|nonce|password|passwd|secret|api_key|apikey|access_token|refresh_token|id_token|client_secret|private_key|auth_token)(?:$|[_-])/i;
+const maxSensitiveScanBytes = 2 * 1024 * 1024;
 
 export function validateLiveArtifact(value, options = {}) {
 	const benchmarkMode = Boolean(options.benchmarkMode);
@@ -75,6 +89,10 @@ export function validateLiveArtifact(value, options = {}) {
 	}
 
 	if (benchmarkMode) {
+		const sensitivity = validateArtifactSensitivity(evalArtifact, baseDir);
+		artifactChecks.push(...sensitivity.checks);
+		compatibilityGaps.push(...sensitivity.gaps);
+
 		const expectedArtifacts = scenarioExpectedArtifacts(evalArtifact, options);
 		for (const artifact of expectedArtifacts) {
 			const matches = expectedArtifactReferences(evalArtifact, artifact);
@@ -553,6 +571,162 @@ function validateArtifactReference(reference, baseDir, field, expectedArtifact =
 	}
 
 	return result;
+}
+
+function validateArtifactSensitivity(evalArtifact, baseDir) {
+	const checks = [];
+	const gaps = [];
+
+	for (const { field, reference } of collectArtifactReferences(evalArtifact)) {
+		const check = validateReferenceSensitivity(reference, baseDir, field);
+		checks.push(check);
+		gaps.push(...check.gaps);
+	}
+
+	return { checks, gaps };
+}
+
+function validateReferenceSensitivity(reference, baseDir, field) {
+	const target = reference?.path_or_url || '';
+	const declared = normalizeSensitivityDeclaration(reference);
+	const check = {
+		field,
+		kind: reference?.kind || null,
+		path_or_url: target,
+		sharing_level: declared.sharingLevel,
+		redaction_status: declared.redactionStatus,
+		sealed_hash_only: declared.sealedHashOnly,
+		sensitive_scan: 'skipped',
+		ok: true,
+		gaps: [],
+	};
+
+	if (declared.sealedHashOnly) {
+		if (!reference?.sha256) {
+			pushCheckGap(check, 'sealed_sensitive_reference_missing_hash', 'error', field, `${target || '(sealed reference)'} is sealed/hash-only but does not declare sha256.`);
+		}
+		return check;
+	}
+
+	if (!target || /^https?:\/\//i.test(target)) {
+		return check;
+	}
+
+	const resolved = path.resolve(baseDir, target);
+	if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) {
+		return check;
+	}
+
+	const size = fs.statSync(resolved).size;
+	if (size > maxSensitiveScanBytes) {
+		check.sensitive_scan = 'skipped_large_file';
+		pushCheckGap(check, 'sensitive_scan_skipped_large_file', 'warning', field, `${target} is larger than ${maxSensitiveScanBytes} bytes and was not scanned for sensitive markers.`);
+		return check;
+	}
+
+	const content = fs.readFileSync(resolved, 'utf8');
+	check.sensitive_scan = 'scanned';
+	const findings = scanSensitiveContent(content);
+	for (const finding of findings) {
+		pushCheckGap(
+			check,
+			'obvious_sensitive_artifact_marker',
+			'error',
+			field,
+			`${target} contains ${finding.label} at ${finding.location}; redact it or publish only a sealed hash reference.`
+		);
+	}
+
+	return check;
+}
+
+function normalizeSensitivityDeclaration(reference = {}) {
+	const redaction = reference.redaction && typeof reference.redaction === 'object' ? reference.redaction : {};
+	const sharingLevel = reference.sharing_level || redaction.sharing_level || null;
+	const redactionStatus = reference.redaction_status || redaction.status || null;
+	const strategy = reference.redaction_strategy || redaction.strategy || null;
+	return {
+		sharingLevel,
+		redactionStatus,
+		sealedHashOnly: sharingLevel === 'sealed_hash_only' || strategy === 'sealed_hash_only',
+	};
+}
+
+function scanSensitiveContent(content) {
+	const findings = [];
+	let parsed = null;
+	try {
+		parsed = JSON.parse(content);
+	} catch {
+		parsed = null;
+	}
+
+	if (parsed) {
+		findings.push(...scanSensitiveJson(parsed));
+	}
+
+	for (const rule of sensitiveValueRules) {
+		const match = content.match(rule.pattern);
+		if (match) {
+			findings.push({ code: rule.code, label: rule.label, location: `text offset ${match.index || 0}` });
+		}
+	}
+
+	return uniqueSensitiveFindings(findings);
+}
+
+function scanSensitiveJson(value, trail = '$') {
+	const findings = [];
+	if (Array.isArray(value)) {
+		value.forEach((item, index) => findings.push(...scanSensitiveJson(item, `${trail}[${index}]`)));
+		return findings;
+	}
+	if (value && typeof value === 'object') {
+		for (const [key, item] of Object.entries(value)) {
+			const location = `${trail}.${key}`;
+			if (sensitiveKeyPattern.test(key) && !isRedactedValue(item)) {
+				findings.push({ code: 'sensitive_json_key', label: `sensitive JSON field ${key}`, location });
+			}
+			findings.push(...scanSensitiveJson(item, location));
+		}
+		return findings;
+	}
+	if (typeof value === 'string' && !isRedactedValue(value)) {
+		for (const rule of sensitiveValueRules) {
+			if (rule.pattern.test(value)) {
+				findings.push({ code: rule.code, label: rule.label, location: trail });
+			}
+		}
+	}
+	return findings;
+}
+
+function isRedactedValue(value) {
+	if (value === null || value === undefined) {
+		return true;
+	}
+	if (typeof value !== 'string') {
+		return false;
+	}
+	return /^\[(?:REDACTED|HASHED|SEALED)(?::[^\]]+)?\]$/i.test(value) || value === '';
+}
+
+function uniqueSensitiveFindings(findings) {
+	const seen = new Set();
+	return findings.filter((finding) => {
+		const key = `${finding.code}\n${finding.location}`;
+		if (seen.has(key)) {
+			return false;
+		}
+		seen.add(key);
+		return true;
+	});
+}
+
+function pushCheckGap(check, code, severity, field, message) {
+	const item = gap(code, severity, field, message);
+	check.ok = false;
+	check.gaps.push(item);
 }
 
 function validateTerminalGradeAgreement(evalArtifact, baseDir) {
