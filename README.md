@@ -89,6 +89,12 @@ evidence, rerun the terminal PHP grader, and fail nonzero when the replayed grad
 does not match the stored success, reward, score, checks, messages, or evidence
 references. Benchmark mode reports missing replay-critical evidence as an error.
 
+Durable run registry entries are defined in
+`schemas/run-registry-entry.v1.schema.json` and documented in
+`docs/run-registry.md`. Use `npm run run-registry:validate` to compile the
+contract and validate registry fixtures, including benchmark-mode artifact hash
+and replay-bundle checks.
+
 The local Gym-like `WPGym.make()` / `reset()` / `step()` / `grade()` API is
 documented in `docs/local-api.md`; WordPress scenarios use WP Codebox's native
 runtime episode API.

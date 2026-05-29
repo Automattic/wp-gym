@@ -136,6 +136,9 @@ Expected live artifacts:
   and artifact hashes.
 - Homeboy result JSON with `metadata.eval_artifact`, `metadata.fingerprints`,
   rule metadata, grader result, failure class, and workflow/report links.
+- `metadata.eval_artifact.provenance` with immutable workflow/runtime/provider,
+  tool-policy, agent-instruction, scenario, prompt, grader, task-set, and bundle
+  hashes before any row is accepted as benchmark-mode evidence.
 - Generated PRs for workspace-backed tasks, with task/model/result labels,
   hidden-grade checks, changed-file summary, tool summary, and artifact links in
   the PR body.
@@ -154,6 +157,7 @@ Include these rollups below the table:
   failures.
 - Repeated failure reasons that indicate task ambiguity or reward shortcuts.
 - Any rows where artifacts are missing or cannot replay the episode.
+- Any rows where benchmark-mode provenance is missing, mutable, or hash-mismatched.
 - Any generated PR that lacks enough evidence in the body for review without
   downloading artifacts.
 

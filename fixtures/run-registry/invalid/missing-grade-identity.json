@@ -1,0 +1,49 @@
+{
+  "_expected_error_codes": ["missing_grade_identity"],
+  "schema_version": 1,
+  "registry": {
+    "name": "wp-gym-run-registry",
+    "issue": "https://github.com/Automattic/wp-gym/issues/136",
+    "created_at": "2026-05-28T00:00:00Z"
+  },
+  "run": {
+    "id": "fixture-missing-grade-identity",
+    "actor": "wordpress-task-runner",
+    "completed_at": "2026-05-28T00:01:00Z",
+    "outcome": "passed"
+  },
+  "task_set": {
+    "id": "benchmark-readiness-pilot",
+    "version": "fixture-2026-05-28",
+    "sha256": "8d663376633784c11c69f1996a586b1cec2e9055f69f17e3d0cac0f65ae6930b",
+    "source_path": "task-sets/benchmark-readiness-pilot.json",
+    "benchmark_status": "pilot",
+    "headline_score_eligible": false,
+    "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28"
+  },
+  "scenario": {
+    "id": "block-markup-valid-semantic-blocks",
+    "version": "fixture-2026-05-28",
+    "sha256": "080ba97f2faa2368550e852a5cff0bd7f58f78215ac494186f922ed74dc30ef4",
+    "source_path": "scenarios/block-markup/valid-semantic-blocks.json",
+    "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "task_family": "block-markup"
+  },
+  "runner": { "provider": "openai", "model": "gpt-5.5" },
+  "runtime": { "id": "wp-codebox", "artifact_bundle_id": "wp-gym-direct-fixture" },
+  "calibration": { "row_type": "frontier_model", "included": true, "status": "pilot" },
+  "benchmark": { "eligible": false, "headline_score_eligible": false, "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28" },
+  "eval_artifact": {
+    "kind": "json",
+    "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json",
+    "sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec"
+  },
+  "artifact_index": {
+    "schema_version": 1,
+    "index_id": "fixture-missing-grade-identity/index",
+    "created_at": "2026-05-28T00:01:00Z",
+    "entries": [
+      { "name": "replay_bundle", "category": "replay", "kind": "zip", "path_or_url": "fixtures/replay-regrade/replay.zip", "sha256": "da2a5bf59c092dc2dfed37eee734b5ee9c42dffefa45a16fa14a3926683955d0", "required": true }
+    ]
+  }
+}
