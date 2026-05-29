@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "failed - tool_result_failed",
+    "status": "completed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -15,200 +15,87 @@
         {
             "tool_name": "local_search",
             "success": true,
-            "turn_count": 1
-        },
-        {
-            "tool_name": "upsert_post",
-            "success": true,
             "turn_count": 3
         },
         {
-            "tool_name": "upsert_post",
+            "tool_name": "local_search",
             "success": true,
-            "turn_count": 3
+            "turn_count": 4
         },
         {
-            "tool_name": "upsert_post",
+            "tool_name": "local_search",
             "success": true,
-            "turn_count": 3
-        },
-        {
-            "tool_name": "upsert_post",
-            "success": true,
-            "turn_count": 3
+            "turn_count": 5
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
             "tool_name": "local_search",
-            "tool_call_id": "toolu_01Mw5mekgeEPUqLoKwZ2zp33",
+            "tool_call_id": "toolu_01E13LEU4ND8ZWsBfq8YvSkL",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:58:55+00:00",
-            "ended_at": "2026-05-29T17:58:55+00:00",
-            "duration_ms": 18,
-            "arguments_sha256": "0b0ab30f9b374e57aec44972e5568def6565adac56bd7feb46a68597dacbf220",
-            "result_sha256": "dda8b4d81274f0d0f66d85ac961cfadb498e6e6d904d70b04131fabf177f4443",
+            "started_at": "2026-05-29T18:02:02+00:00",
+            "ended_at": "2026-05-29T18:02:02+00:00",
+            "duration_ms": 19,
+            "arguments_sha256": "580c1255889e940cefecae7cd6657a24eaf8ed35626158f60c3bfd0b909d9c1e",
+            "result_sha256": "8793c0a2cd3e029b92d5d01332922d907032d4df032297665385ba2e8cdc1ec2",
             "arguments_redacted": {
-                "query": "Marshside garden"
+                "query": "Luma Studio"
             }
         },
         {
             "schema_version": 1,
             "tool_name": "local_search",
-            "tool_call_id": "toolu_01XJkvJBiXNVBsU9Ubh51Pqd",
-            "turn_count": 1,
+            "tool_call_id": "toolu_01RXwYG35WDFx2xKbYv8gMD1",
+            "turn_count": 3,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:58:55+00:00",
-            "ended_at": "2026-05-29T17:58:55+00:00",
-            "duration_ms": 16,
-            "arguments_sha256": "cff5aecbe35a7b2a97bd7553a02a5cc5e6b53dde3ab4b3f3c19239fdd8916192",
-            "result_sha256": "3fd59ca782fff1ec4147780e8f05841ec27656e931638d935aa0373aae7c28f9",
+            "started_at": "2026-05-29T18:02:05+00:00",
+            "ended_at": "2026-05-29T18:02:05+00:00",
+            "duration_ms": 13,
+            "arguments_sha256": "36ec303203277620a15f84590cac386a2b10da140aa6e9a1875c8f4aafd28c0d",
+            "result_sha256": "f80acbeb8b00e53ab989937050e8bd5eb9fc66e89005d0a54443e293393555bb",
             "arguments_redacted": {
-                "query": "home",
-                "post_types": [
-                    "page"
-                ]
+                "query": "Luma Studio brand photography"
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01BAbGMgBUX56sEWhjR67oDQ",
-            "turn_count": 2,
+            "tool_name": "local_search",
+            "tool_call_id": "toolu_019abvSMMtxNZ8LPXdXJrYwL",
+            "turn_count": 4,
             "actor": "agent",
             "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:59:51+00:00",
-            "ended_at": "2026-05-29T17:59:51+00:00",
+            "status": "success",
+            "started_at": "2026-05-29T18:02:08+00:00",
+            "ended_at": "2026-05-29T18:02:08+00:00",
             "duration_ms": 4,
-            "arguments_sha256": "7ca431eb47bfac8c13ec06e0c38a53f9459051c7f0e1db94657c7000fe8537f8",
-            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-            "output_summary": "Declared blocks content does not contain serialized block comments.",
-            "arguments_omitted": "redacted_arguments_too_large"
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01UThwa537YGPHndx3iDVAQH",
-            "turn_count": 2,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:59:51+00:00",
-            "ended_at": "2026-05-29T17:59:51+00:00",
-            "duration_ms": 8,
-            "arguments_sha256": "b1b5bc608e39fce0a96d379857bf4ceca07ee52e9903e6e1b15f67aefb3ad797",
-            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-            "output_summary": "Declared blocks content does not contain serialized block comments.",
-            "arguments_omitted": "redacted_arguments_too_large"
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01PpdVWkL3Lmasb3sJ2yPaxx",
-            "turn_count": 2,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:59:51+00:00",
-            "ended_at": "2026-05-29T17:59:51+00:00",
-            "duration_ms": 8,
-            "arguments_sha256": "0b73e4a47afabd574cf5d307d2ebcf774b213f4a2d00f7fe8de2c6bd972c41e2",
-            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-            "output_summary": "Declared blocks content does not contain serialized block comments.",
-            "arguments_omitted": "redacted_arguments_too_large"
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01EUV35p7iGU8rUkcZw4iDGv",
-            "turn_count": 2,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:59:51+00:00",
-            "ended_at": "2026-05-29T17:59:51+00:00",
-            "duration_ms": 8,
-            "arguments_sha256": "09fff65e189dccb644ede83c4f13b51a902fc0a3a81a8e26cd1c271591884f74",
-            "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-            "output_summary": "Declared blocks content does not contain serialized block comments.",
+            "arguments_sha256": "91a7c91617a01c942236f3330ebcd503a0da1153df4d832bcf6bc25f32b434be",
+            "result_sha256": "0ecda67643992880ba0816029f8055f3a1733ab8295a10d3b2a97f419f93489f",
             "arguments_redacted": {
-                "post_type": "page",
-                "slug": "contact",
-                "title": "Contact",
-                "content": "## Get in touch\n\nWe're a small, volunteer-run garden, so the best way to reach us depends on what you need. Here's where to start.\n\n## Visit us\n\n**Marshside Community Garden**\nBehind the old fire station on Marsh Lane\n(Look for the green gate and the painted sunflower sign)\n\nThe garden is open to the public **dawn to dusk, every day**. Plot keys are needed only for the tool shed and water spigots.\n\n## Saturday workdays\n\nThe easiest way to reach a coordinator is in person.\n**Saturdays, 9am\u201312pm, April through October.** Coffee is usually on by 9:15.\n\n## Email\n\nFor plot requests, volunteer questions, event ideas, or anything else:\n\n**hello@marshsidegarden.org**\n\nWe're all volunteers, so please give us a few days to reply \u2014 especially during the busy spring and fall months.\n\n## Mailing list\n\nWe send a short email roughly once a month with upcoming workdays, seasonal tips, and garden news. To join, email us with \"subscribe\" in the subject line.\n\n## Frequently asked questions\n\n**Can I visit even if I don't have a plot?**\nYes! The garden is open to everyone during daylight hours. Wander the paths, sit on the bench, say hi to whoever's around.\n\n**Can I bring my kids? My dog?**\nKids, absolutely \u2014 we have a small bed set aside for them. Dogs, sorry, not inside the garden fence (it's a food-growing space), but they're welcome on the path outside.\n\n**I'd like to donate. How?**\nThank you! We accept donations of tools, seeds, compostable materials, and money. Email us and we'll point you in the right direction.\n\n**Who runs the garden?**\nA rotating group of about a dozen neighbor-volunteers, with two coordinators each year. It's genuinely a community project \u2014 no nonprofit staff, no city office, just folks who live nearby."
+                "query": "Luma",
+                "title_only": true
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01JmzV7eY5wemuQvubyibcaP",
-            "turn_count": 3,
+            "tool_name": "local_search",
+            "tool_call_id": "toolu_01WkbUQm2TmTBtQmxinzLS41",
+            "turn_count": 5,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T18:00:28+00:00",
-            "ended_at": "2026-05-29T18:00:28+00:00",
-            "duration_ms": 364,
-            "arguments_sha256": "e039826fd582a7c1edf76ecfa4e4539c32433db91ec6a7e4e4906752384961be",
-            "result_sha256": "533cab2e5f2b4a4f4950f14fe09756329085532be545ab39b462bdc4c1b35306",
-            "arguments_omitted": "redacted_arguments_too_large"
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01Cbo6zov2nLVZpteZYvNFSZ",
-            "turn_count": 3,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:00:28+00:00",
-            "ended_at": "2026-05-29T18:00:28+00:00",
-            "duration_ms": 73,
-            "arguments_sha256": "d5b5f538c19bad7295629c1967c000721afeac56ba5f798ceefd810568768f78",
-            "result_sha256": "e8af45c12bf494d0fea73c303c6097be2859cb7a0ace629038a3ac68c8757653",
-            "arguments_omitted": "redacted_arguments_too_large"
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_01LMTf9hE2zomkMZNGKNHndV",
-            "turn_count": 3,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:00:28+00:00",
-            "ended_at": "2026-05-29T18:00:29+00:00",
-            "duration_ms": 63,
-            "arguments_sha256": "d062180c5f701662d38ba5fb891a91672157758041a8aacd8eded4dbb2449b00",
-            "result_sha256": "34e0c84801b44fc2186fc366f86e731eb081c4b62f5b665aa61104fc6ff82817",
-            "arguments_omitted": "redacted_arguments_too_large"
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "upsert_post",
-            "tool_call_id": "toolu_011vzMxdH2u8euY1LZemk8o6",
-            "turn_count": 3,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T18:00:29+00:00",
-            "ended_at": "2026-05-29T18:00:29+00:00",
-            "duration_ms": 68,
-            "arguments_sha256": "748f88519c54a23de8d1e7b4908ddc1b08eef0c70004efa62b9f1d348f780aae",
-            "result_sha256": "91169c623ca5a8fc8aa75a0bc9482652c366be51d335318b78396fd7eaf7b948",
+            "started_at": "2026-05-29T18:02:09+00:00",
+            "ended_at": "2026-05-29T18:02:09+00:00",
+            "duration_ms": 12,
+            "arguments_sha256": "c980244f62bbaf58fc26f04249ebbccc9a48dcb5dd00639aa01a2ada04599dac",
+            "result_sha256": "8d0c1da996c685a216c7009e5cbcc35b70c611f1bb4b4bf9bc322b88cb47355d",
             "arguments_redacted": {
-                "post_type": "page",
-                "slug": "contact",
-                "title": "Contact",
-                "content_format": "markdown",
-                "content": "## Get in touch\n\nWe're a small, volunteer-run garden, so the best way to reach us depends on what you need. Here's where to start.\n\n## Visit us\n\n**Marshside Community Garden**\nBehind the old fire station on Marsh Lane\n(Look for the green gate and the painted sunflower sign)\n\nThe garden is open to the public **dawn to dusk, every day**. Plot keys are needed only for the tool shed and water spigots.\n\n## Saturday workdays\n\nThe easiest way to reach a coordinator is in person.\n**Saturdays, 9am\u201312pm, April through October.** Coffee is usually on by 9:15.\n\n## Email\n\nFor plot requests, volunteer questions, event ideas, or anything else:\n\n**hello@marshsidegarden.org**\n\nWe're all volunteers, so please give us a few days to reply \u2014 especially during the busy spring and fall months.\n\n## Mailing list\n\nWe send a short email roughly once a month with upcoming workdays, seasonal tips, and garden news. To join, email us with \"subscribe\" in the subject line.\n\n## Frequently asked questions\n\n**Can I visit even if I don't have a plot?**\nYes! The garden is open to everyone during daylight hours. Wander the paths, sit on the bench, say hi to whoever's around.\n\n**Can I bring my kids? My dog?**\nKids, absolutely \u2014 we have a small bed set aside for them. Dogs, sorry, not inside the garden fence (it's a food-growing space), but they're welcome on the path outside.\n\n**I'd like to donate. How?**\nThank you! We accept donations of tools, seeds, compostable materials, and money. Email us and we'll point you in the right direction.\n\n**Who runs the garden?**\nA rotating group of about a dozen neighbor-volunteers, with two coordinators each year. It's genuinely a community project \u2014 no nonprofit staff, no city office, just folks who live nearby."
+                "query": "brand photos effortless"
             }
         }
     ],
@@ -218,7 +105,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "e6b959b60e3d3e7b5b3f5554f3040040ac40b6ba58de50f56d1e354eecde8857",
+            "sha256": "27935043be4e1c5d6a2074af2c8c0933294b142a193957998da9ee29377cb6b8",
             "bounded": true,
             "redacted": true
         }
@@ -229,11 +116,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:42267/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "477289fa8ac8e031e569618933f0ab1d16f2d760360d675a44a0588ca2f867b6",
-            "payload_sha256": "dece1edf08e88a7255a8c47fdaa5d12bc8d354fed103a2bf51e122f1ccce17ac",
-            "bytes": 13073,
-            "written_at": "2026-05-29T18:00:41+00:00"
+            "url": "http://127.0.0.1:36099/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "0fd36985417fdf6a3e6d5c204a175d7b34eaf9db90544a4ae15713c0a5f97239",
+            "payload_sha256": "4ea25b75380e45c33cd7182d321d483ff3bfabdacdeed54aa5e70790f953beca",
+            "bytes": 4000,
+            "written_at": "2026-05-29T18:02:30+00:00"
         }
     },
     "transcript_artifact": null,
@@ -243,215 +130,100 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "failed - tool_result_failed",
+            "job_status": "completed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:58:51",
-            "completed_at": "2026-05-29 18:00:41"
+            "created_at": "2026-05-29 18:01:59",
+            "completed_at": "2026-05-29 18:02:30"
         },
-        "trace_count": 10,
-        "entries_emitted": 10,
+        "trace_count": 4,
+        "entries_emitted": 4,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "local_search",
-                "tool_call_id": "toolu_01Mw5mekgeEPUqLoKwZ2zp33",
+                "tool_call_id": "toolu_01E13LEU4ND8ZWsBfq8YvSkL",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:58:55+00:00",
-                "ended_at": "2026-05-29T17:58:55+00:00",
-                "duration_ms": 18,
-                "arguments_sha256": "0b0ab30f9b374e57aec44972e5568def6565adac56bd7feb46a68597dacbf220",
-                "result_sha256": "dda8b4d81274f0d0f66d85ac961cfadb498e6e6d904d70b04131fabf177f4443",
+                "started_at": "2026-05-29T18:02:02+00:00",
+                "ended_at": "2026-05-29T18:02:02+00:00",
+                "duration_ms": 19,
+                "arguments_sha256": "580c1255889e940cefecae7cd6657a24eaf8ed35626158f60c3bfd0b909d9c1e",
+                "result_sha256": "8793c0a2cd3e029b92d5d01332922d907032d4df032297665385ba2e8cdc1ec2",
                 "arguments_redacted": {
-                    "query": "Marshside garden"
+                    "query": "Luma Studio"
                 },
-                "entry_sha256": "e078f698b759161cece9209f1f070200d1abb462a6726afd65d772b169cded37"
+                "entry_sha256": "030481b95acc5d40bb69ee156d3c8db395c576c6408d8e083f274070eaf3ddd1"
             },
             {
                 "index": 1,
                 "schema_version": 1,
                 "tool_name": "local_search",
-                "tool_call_id": "toolu_01XJkvJBiXNVBsU9Ubh51Pqd",
-                "turn_count": 1,
+                "tool_call_id": "toolu_01RXwYG35WDFx2xKbYv8gMD1",
+                "turn_count": 3,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:58:55+00:00",
-                "ended_at": "2026-05-29T17:58:55+00:00",
-                "duration_ms": 16,
-                "arguments_sha256": "cff5aecbe35a7b2a97bd7553a02a5cc5e6b53dde3ab4b3f3c19239fdd8916192",
-                "result_sha256": "3fd59ca782fff1ec4147780e8f05841ec27656e931638d935aa0373aae7c28f9",
+                "started_at": "2026-05-29T18:02:05+00:00",
+                "ended_at": "2026-05-29T18:02:05+00:00",
+                "duration_ms": 13,
+                "arguments_sha256": "36ec303203277620a15f84590cac386a2b10da140aa6e9a1875c8f4aafd28c0d",
+                "result_sha256": "f80acbeb8b00e53ab989937050e8bd5eb9fc66e89005d0a54443e293393555bb",
                 "arguments_redacted": {
-                    "query": "home",
-                    "post_types": [
-                        "page"
-                    ]
+                    "query": "Luma Studio brand photography"
                 },
-                "entry_sha256": "41e4d622cf4a625816c5c211cc4d144c301370e0936006f74093f0f086b081f9"
+                "entry_sha256": "3ce9079f7f5f895bfff0e8af5606e109a55989cef30df9d4cdf81edc195ea44d"
             },
             {
                 "index": 2,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01BAbGMgBUX56sEWhjR67oDQ",
-                "turn_count": 2,
+                "tool_name": "local_search",
+                "tool_call_id": "toolu_019abvSMMtxNZ8LPXdXJrYwL",
+                "turn_count": 4,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:59:51+00:00",
-                "ended_at": "2026-05-29T17:59:51+00:00",
+                "status": "success",
+                "started_at": "2026-05-29T18:02:08+00:00",
+                "ended_at": "2026-05-29T18:02:08+00:00",
                 "duration_ms": 4,
-                "arguments_sha256": "7ca431eb47bfac8c13ec06e0c38a53f9459051c7f0e1db94657c7000fe8537f8",
-                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-                "output_summary": "Declared blocks content does not contain serialized block comments.",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "94f75043fdcf7f4d00815449d51b0f8ea7ce2f2a87096ebfb7a52558e66c55d7"
+                "arguments_sha256": "91a7c91617a01c942236f3330ebcd503a0da1153df4d832bcf6bc25f32b434be",
+                "result_sha256": "0ecda67643992880ba0816029f8055f3a1733ab8295a10d3b2a97f419f93489f",
+                "arguments_redacted": {
+                    "query": "Luma",
+                    "title_only": true
+                },
+                "entry_sha256": "e0b0a2efe7826434092db27d40ef9b9d2ecbcc4ffa961822230b1b3b6cd152d9"
             },
             {
                 "index": 3,
                 "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01UThwa537YGPHndx3iDVAQH",
-                "turn_count": 2,
+                "tool_name": "local_search",
+                "tool_call_id": "toolu_01WkbUQm2TmTBtQmxinzLS41",
+                "turn_count": 5,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:59:51+00:00",
-                "ended_at": "2026-05-29T17:59:51+00:00",
-                "duration_ms": 8,
-                "arguments_sha256": "b1b5bc608e39fce0a96d379857bf4ceca07ee52e9903e6e1b15f67aefb3ad797",
-                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-                "output_summary": "Declared blocks content does not contain serialized block comments.",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "98e06a51e1a090a699fc08809fd9aad00c57f325808756fb57cfdd2f8574b01b"
-            },
-            {
-                "index": 4,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01PpdVWkL3Lmasb3sJ2yPaxx",
-                "turn_count": 2,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:59:51+00:00",
-                "ended_at": "2026-05-29T17:59:51+00:00",
-                "duration_ms": 8,
-                "arguments_sha256": "0b73e4a47afabd574cf5d307d2ebcf774b213f4a2d00f7fe8de2c6bd972c41e2",
-                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-                "output_summary": "Declared blocks content does not contain serialized block comments.",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "3e2128399dfd33988a26d5ec1206a592cef23e4333fa943a960f32b092c5b768"
-            },
-            {
-                "index": 5,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01EUV35p7iGU8rUkcZw4iDGv",
-                "turn_count": 2,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:59:51+00:00",
-                "ended_at": "2026-05-29T17:59:51+00:00",
-                "duration_ms": 8,
-                "arguments_sha256": "09fff65e189dccb644ede83c4f13b51a902fc0a3a81a8e26cd1c271591884f74",
-                "result_sha256": "8c6eefd03e27b190eab03def266aebcc90dfe058a759e864f8ae809f05d9a83f",
-                "output_summary": "Declared blocks content does not contain serialized block comments.",
+                "status": "success",
+                "started_at": "2026-05-29T18:02:09+00:00",
+                "ended_at": "2026-05-29T18:02:09+00:00",
+                "duration_ms": 12,
+                "arguments_sha256": "c980244f62bbaf58fc26f04249ebbccc9a48dcb5dd00639aa01a2ada04599dac",
+                "result_sha256": "8d0c1da996c685a216c7009e5cbcc35b70c611f1bb4b4bf9bc322b88cb47355d",
                 "arguments_redacted": {
-                    "post_type": "page",
-                    "slug": "contact",
-                    "title": "Contact",
-                    "content": "## Get in touch\n\nWe're a small, volunteer-run garden, so the best way to reach us depends on what you need. Here's where to start.\n\n## Visit us\n\n**Marshside Community Garden**\nBehind the old fire station on Marsh Lane\n(Look for the green gate and the painted sunflower sign)\n\nThe garden is open to the public **dawn to dusk, every day**. Plot keys are needed only for the tool shed and water spigots.\n\n## Saturday workdays\n\nThe easiest way to reach a coordinator is in person.\n**Saturdays, 9am\u201312pm, April through October.** Coffee is usually on by 9:15.\n\n## Email\n\nFor plot requests, volunteer questions, event ideas, or anything else:\n\n**hello@marshsidegarden.org**\n\nWe're all volunteers, so please give us a few days to reply \u2014 especially during the busy spring and fall months.\n\n## Mailing list\n\nWe send a short email roughly once a month with upcoming workdays, seasonal tips, and garden news. To join, email us with \"subscribe\" in the subject line.\n\n## Frequently asked questions\n\n**Can I visit even if I don't have a plot?**\nYes! The garden is open to everyone during daylight hours. Wander the paths, sit on the bench, say hi to whoever's around.\n\n**Can I bring my kids? My dog?**\nKids, absolutely \u2014 we have a small bed set aside for them. Dogs, sorry, not inside the garden fence (it's a food-growing space), but they're welcome on the path outside.\n\n**I'd like to donate. How?**\nThank you! We accept donations of tools, seeds, compostable materials, and money. Email us and we'll point you in the right direction.\n\n**Who runs the garden?**\nA rotating group of about a dozen neighbor-volunteers, with two coordinators each year. It's genuinely a community project \u2014 no nonprofit staff, no city office, just folks who live nearby."
+                    "query": "brand photos effortless"
                 },
-                "entry_sha256": "4b90076aa4a0020e81c53d37e09833078b581c90249b7f4964188a85617013dc"
-            },
-            {
-                "index": 6,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01JmzV7eY5wemuQvubyibcaP",
-                "turn_count": 3,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:00:28+00:00",
-                "ended_at": "2026-05-29T18:00:28+00:00",
-                "duration_ms": 364,
-                "arguments_sha256": "e039826fd582a7c1edf76ecfa4e4539c32433db91ec6a7e4e4906752384961be",
-                "result_sha256": "533cab2e5f2b4a4f4950f14fe09756329085532be545ab39b462bdc4c1b35306",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "2e47255d7455db3e8c42ded3048343afb4f451a766f6b1bf94932fe89a200665"
-            },
-            {
-                "index": 7,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01Cbo6zov2nLVZpteZYvNFSZ",
-                "turn_count": 3,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:00:28+00:00",
-                "ended_at": "2026-05-29T18:00:28+00:00",
-                "duration_ms": 73,
-                "arguments_sha256": "d5b5f538c19bad7295629c1967c000721afeac56ba5f798ceefd810568768f78",
-                "result_sha256": "e8af45c12bf494d0fea73c303c6097be2859cb7a0ace629038a3ac68c8757653",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "8b8f70aa57dbd61c845c9ab9df6fcb7c85609fd22a2c7eba56bf27c7abfa3cd0"
-            },
-            {
-                "index": 8,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_01LMTf9hE2zomkMZNGKNHndV",
-                "turn_count": 3,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:00:28+00:00",
-                "ended_at": "2026-05-29T18:00:29+00:00",
-                "duration_ms": 63,
-                "arguments_sha256": "d062180c5f701662d38ba5fb891a91672157758041a8aacd8eded4dbb2449b00",
-                "result_sha256": "34e0c84801b44fc2186fc366f86e731eb081c4b62f5b665aa61104fc6ff82817",
-                "arguments_omitted": "redacted_arguments_too_large",
-                "entry_sha256": "2830f552f87cf63259a0af39310222991954fa078e43e17363d6e82212aed9d8"
-            },
-            {
-                "index": 9,
-                "schema_version": 1,
-                "tool_name": "upsert_post",
-                "tool_call_id": "toolu_011vzMxdH2u8euY1LZemk8o6",
-                "turn_count": 3,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T18:00:29+00:00",
-                "ended_at": "2026-05-29T18:00:29+00:00",
-                "duration_ms": 68,
-                "arguments_sha256": "748f88519c54a23de8d1e7b4908ddc1b08eef0c70004efa62b9f1d348f780aae",
-                "result_sha256": "91169c623ca5a8fc8aa75a0bc9482652c366be51d335318b78396fd7eaf7b948",
-                "arguments_redacted": {
-                    "post_type": "page",
-                    "slug": "contact",
-                    "title": "Contact",
-                    "content_format": "markdown",
-                    "content": "## Get in touch\n\nWe're a small, volunteer-run garden, so the best way to reach us depends on what you need. Here's where to start.\n\n## Visit us\n\n**Marshside Community Garden**\nBehind the old fire station on Marsh Lane\n(Look for the green gate and the painted sunflower sign)\n\nThe garden is open to the public **dawn to dusk, every day**. Plot keys are needed only for the tool shed and water spigots.\n\n## Saturday workdays\n\nThe easiest way to reach a coordinator is in person.\n**Saturdays, 9am\u201312pm, April through October.** Coffee is usually on by 9:15.\n\n## Email\n\nFor plot requests, volunteer questions, event ideas, or anything else:\n\n**hello@marshsidegarden.org**\n\nWe're all volunteers, so please give us a few days to reply \u2014 especially during the busy spring and fall months.\n\n## Mailing list\n\nWe send a short email roughly once a month with upcoming workdays, seasonal tips, and garden news. To join, email us with \"subscribe\" in the subject line.\n\n## Frequently asked questions\n\n**Can I visit even if I don't have a plot?**\nYes! The garden is open to everyone during daylight hours. Wander the paths, sit on the bench, say hi to whoever's around.\n\n**Can I bring my kids? My dog?**\nKids, absolutely \u2014 we have a small bed set aside for them. Dogs, sorry, not inside the garden fence (it's a food-growing space), but they're welcome on the path outside.\n\n**I'd like to donate. How?**\nThank you! We accept donations of tools, seeds, compostable materials, and money. Email us and we'll point you in the right direction.\n\n**Who runs the garden?**\nA rotating group of about a dozen neighbor-volunteers, with two coordinators each year. It's genuinely a community project \u2014 no nonprofit staff, no city office, just folks who live nearby."
-                },
-                "entry_sha256": "645958975babb14ee95e2c519bfbf0b847136001ad33a16fadefe0a30df8318a"
+                "entry_sha256": "4de82414a952beaae2077098875a4c054c0235d27bcd18dd3f339281c723883d"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "e6b959b60e3d3e7b5b3f5554f3040040ac40b6ba58de50f56d1e354eecde8857"
+        "sha256": "27935043be4e1c5d6a2074af2c8c0933294b142a193957998da9ee29377cb6b8"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
