@@ -1,7 +1,8 @@
 # Local WPGym API
 
 Issues: [#79](https://github.com/Automattic/wp-gym/issues/79),
-[#162](https://github.com/Automattic/wp-gym/issues/162)
+[#162](https://github.com/Automattic/wp-gym/issues/162),
+[#201](https://github.com/Automattic/wp-gym/issues/201)
 
 `wp-gym` exposes a small Gym-like JavaScript API for local experiments against the
 same scenario manifests, action schemas, observation schemas, and hidden graders
@@ -94,12 +95,15 @@ The local adapter is intentionally thin. It currently supports:
   recipes against a disposable WordPress runtime.
 - `filesystem` actions inside scenario `environment.writable_roots` for workspace
   scenarios.
+- `rest` actions against the disposable WordPress runtime through WP Codebox HTTP
+  response observation.
+- `browser` `navigate` and `capture` actions through WP Codebox browser probe
+  artifacts, including HTML and screenshot references when requested.
 
-The schemas also define `rest` and `browser` actions so traces can preserve
-evidence from richer runners. This Node slice does not execute those actions
-locally yet; if a task requires generic REST or interactive browser execution,
-the missing primitive belongs in WP Codebox as runtime functionality, while
-`wp-gym` keeps only the eval-layer action and observation records.
+The schemas also define browser interaction operations such as `click`, `fill`,
+and `press` so traces can preserve evidence from richer runners. The local Node
+adapter currently returns a structured `browser_result` error for those
+operations until WP Codebox exposes a generic replay primitive for them.
 
 A Python or Gymnasium wrapper is intentionally deferred. The supported external
 surface for this slice is the Node API plus JSON CLI output; a Python wrapper can
