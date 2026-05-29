@@ -17,22 +17,22 @@
         {
             "schema_version": 1,
             "tool_name": "upsert_post",
-            "tool_call_id": "call_ZYO8JNupJbEN3YRuGzFmYoBa",
+            "tool_call_id": "call_JoBbGy6KHPaI2mJVaDlO7CW9",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:54:04+00:00",
-            "ended_at": "2026-05-29T17:54:04+00:00",
-            "duration_ms": 52,
-            "arguments_sha256": "1becc21018e1386cb2fc82a80683269ec6d07e3ec4c1a9d7cfcc9cc569d020b2",
-            "result_sha256": "596d63e6175cdb3616238a1c18c5d639b11d592c4b20a7a247deb50dc908652b",
+            "started_at": "2026-05-29T17:55:33+00:00",
+            "ended_at": "2026-05-29T17:55:33+00:00",
+            "duration_ms": 42,
+            "arguments_sha256": "6de4bb82058d207765a67cf6e7d3078ea98d8ab36783aed50cd68c3f8b3c74b6",
+            "result_sha256": "9c06f6eda9f046e462b79a165341a5d6e9ab2ccdbd1f7dc925a8860bdf92d90d",
             "arguments_redacted": {
                 "post_type": "page",
-                "title": "Neighborhood Cookout Plan",
-                "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with good food, friendly conversation, and simple activities for all ages.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul><!-- wp:list-item -->\n<li>Confirm the cookout date, time, and shared outdoor space.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate grills, tables, seating, and serving supplies.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Invite neighbors to bring a side dish, dessert, or drinks to share.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
+                "title": "Community Services Overview",
+                "content": "<!-- wp:group {\"layout\":{\"type\":\"constrained\"}} -->\n<div class=\"wp-block-group\"><!-- wp:paragraph -->\n<p>Our community services are designed to make helpful local support easier to understand and access. Explore the two core service areas below to see how each one helps residents connect with practical resources and welcoming guidance.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:columns {\"align\":\"wide\"} -->\n<div class=\"wp-block-columns alignwide\"><!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Resident Support</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Resident Support helps individuals and families find clear next steps when they need assistance, referrals, or answers about available community resources. This service focuses on friendly guidance, practical information, and connections to programs that can help.</p>\n<!-- /wp:paragraph --></div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Community Outreach</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Community Outreach brings people together through local events, partnerships, and neighborhood initiatives. This service supports stronger connections by sharing opportunities, encouraging participation, and helping residents stay informed about what is happening nearby.</p>\n<!-- /wp:paragraph --></div>\n<!-- /wp:column --></div>\n<!-- /wp:columns --></div>\n<!-- /wp:group -->",
                 "content_format": "blocks",
-                "slug": "neighborhood-cookout-plan",
+                "slug": "community-services-overview",
                 "parent_id": 0,
                 "parent_path": "",
                 "post_author": "[redacted]",
@@ -49,7 +49,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "1a9ed7dad765e0a7f138979ae38f0c8ceabe61c78e2ef6608911064a5fde7a87",
+            "sha256": "0bb625e96b7b0fe2917e0890e2a484b83b70a1afc3e9e5d90922a6f4a6edbf16",
             "bounded": true,
             "redacted": true
         }
@@ -60,11 +60,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:34689/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "477342ef738be33a09af7989b3ef4d06276a8057fa68da7b3b545620e7401c47",
-            "payload_sha256": "dc60b540f748cdacaaf553479ae6a1ce7db4128126f84028784d77ee8bfa2bfd",
-            "bytes": 2820,
-            "written_at": "2026-05-29T17:54:11+00:00"
+            "url": "http://127.0.0.1:37363/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "c64b2afde70e8c8df242a06bfdbff2e37b019e10a5998eb68fcec53c8171d227",
+            "payload_sha256": "e4191d035d67eae7b780c6ef873323f2fdca2d4446448869f7ab276320fc9458",
+            "bytes": 3447,
+            "written_at": "2026-05-29T17:55:36+00:00"
         }
     },
     "transcript_artifact": null,
@@ -80,8 +80,8 @@
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:53:54",
-            "completed_at": "2026-05-29 17:54:11"
+            "created_at": "2026-05-29 17:55:20",
+            "completed_at": "2026-05-29 17:55:36"
         },
         "trace_count": 1,
         "entries_emitted": 1,
@@ -91,22 +91,22 @@
                 "index": 0,
                 "schema_version": 1,
                 "tool_name": "upsert_post",
-                "tool_call_id": "call_ZYO8JNupJbEN3YRuGzFmYoBa",
+                "tool_call_id": "call_JoBbGy6KHPaI2mJVaDlO7CW9",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:54:04+00:00",
-                "ended_at": "2026-05-29T17:54:04+00:00",
-                "duration_ms": 52,
-                "arguments_sha256": "1becc21018e1386cb2fc82a80683269ec6d07e3ec4c1a9d7cfcc9cc569d020b2",
-                "result_sha256": "596d63e6175cdb3616238a1c18c5d639b11d592c4b20a7a247deb50dc908652b",
+                "started_at": "2026-05-29T17:55:33+00:00",
+                "ended_at": "2026-05-29T17:55:33+00:00",
+                "duration_ms": 42,
+                "arguments_sha256": "6de4bb82058d207765a67cf6e7d3078ea98d8ab36783aed50cd68c3f8b3c74b6",
+                "result_sha256": "9c06f6eda9f046e462b79a165341a5d6e9ab2ccdbd1f7dc925a8860bdf92d90d",
                 "arguments_redacted": {
                     "post_type": "page",
-                    "title": "Neighborhood Cookout Plan",
-                    "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Join neighbors for a relaxed summer cookout with good food, friendly conversation, and simple activities for all ages.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul><!-- wp:list-item -->\n<li>Confirm the cookout date, time, and shared outdoor space.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Coordinate grills, tables, seating, and serving supplies.</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Invite neighbors to bring a side dish, dessert, or drinks to share.</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link wp-element-button\" href=\"#menu\">View menu</a></div>\n<!-- /wp:button --></div>\n<!-- /wp:buttons -->",
+                    "title": "Community Services Overview",
+                    "content": "<!-- wp:group {\"layout\":{\"type\":\"constrained\"}} -->\n<div class=\"wp-block-group\"><!-- wp:paragraph -->\n<p>Our community services are designed to make helpful local support easier to understand and access. Explore the two core service areas below to see how each one helps residents connect with practical resources and welcoming guidance.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:columns {\"align\":\"wide\"} -->\n<div class=\"wp-block-columns alignwide\"><!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Resident Support</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Resident Support helps individuals and families find clear next steps when they need assistance, referrals, or answers about available community resources. This service focuses on friendly guidance, practical information, and connections to programs that can help.</p>\n<!-- /wp:paragraph --></div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Community Outreach</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Community Outreach brings people together through local events, partnerships, and neighborhood initiatives. This service supports stronger connections by sharing opportunities, encouraging participation, and helping residents stay informed about what is happening nearby.</p>\n<!-- /wp:paragraph --></div>\n<!-- /wp:column --></div>\n<!-- /wp:columns --></div>\n<!-- /wp:group -->",
                     "content_format": "blocks",
-                    "slug": "neighborhood-cookout-plan",
+                    "slug": "community-services-overview",
                     "parent_id": 0,
                     "parent_path": "",
                     "post_author": "[redacted]",
@@ -115,12 +115,12 @@
                     "original_date_gmt": "",
                     "add_source_attribution": false
                 },
-                "entry_sha256": "3887171199208dc83d35e498c46289a96e83843131a220a1d1814ab3d4ab1a0e"
+                "entry_sha256": "052c861b8276672ccd0572a09c65fe916821ad50b84e52eb07cc7acb726a771b"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "1a9ed7dad765e0a7f138979ae38f0c8ceabe61c78e2ef6608911064a5fde7a87"
+        "sha256": "0bb625e96b7b0fe2917e0890e2a484b83b70a1afc3e9e5d90922a6f4a6edbf16"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
