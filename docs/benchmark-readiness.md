@@ -170,6 +170,30 @@ benchmark reports must also follow the
 [`artifact redaction and sharing policy`](artifact-redaction-sharing-policy.md):
 unsafe raw artifacts stay private or publish only `sealed_hash_only` references.
 
+## Fixture-Derived Calibration Rows
+
+Issue [#127](https://github.com/Automattic/wp-gym/issues/127) starts calibration
+with the block-markup family because its graders can run against local fixtures
+without live provider calls. The current real, non-sample calibration result sets
+are fixture-derived only:
+
+| Scenario | Result set | Rows covered | Promotion state |
+| --- | --- | --- | --- |
+| `block-markup-valid-semantic-blocks` | `block-markup-valid-semantic-blocks-local-fixture-baseline` | no-op/shortcut control, scripted positive, human/reference | `calibrating`; marked `too_easy` and blocked from benchmark use |
+| `block-markup-no-fallback-pricing-section` | `block-markup-no-fallback-pricing-section-local-fixture-baseline` | no-op/shortcut controls, scripted positive, human/reference | `calibrating`; model rows still missing |
+| `block-markup-nested-layout-blocks` | `block-markup-nested-layout-blocks-local-fixture-baseline` | no-op/shortcut controls, scripted positive, human/reference | `calibrating`; model rows still missing |
+
+Refresh the fixture-derived rows with:
+
+```sh
+npm run reward-fixtures:validate
+npm run calibration-results:validate
+```
+
+These rows prove the terminal graders reject known shortcut fixtures and accept
+curated positive controls. They do not establish model pass-rate bands,
+repeated-attempt variance, held-out/private readiness, or benchmark readiness.
+
 ## Benchmark-Ready Gates
 
 The pilot becomes benchmark-ready only after these gates are complete:

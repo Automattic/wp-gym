@@ -48,14 +48,18 @@
     "reward_range": [0, 1]
   },
   "calibration": {
-    "status": "demo",
-    "benchmark_scope": "demo",
-    "difficulty_band": "uncalibrated",
+    "status": "calibrating",
+    "benchmark_scope": "calibration",
+    "difficulty_band": "smoke",
     "headline_score_eligible": false,
-    "baseline_result_sets": [],
+    "baseline_result_sets": ["block-markup-no-fallback-pricing-section-local-fixture-baseline"],
+    "calibration_result_sets": ["block-markup-no-fallback-pricing-section-local-fixture-baseline"],
+    "pass_rate_band": "uncalibrated",
+    "confidence_interval_95": [0, 1],
+    "held_out_private_variants_ready": false,
     "known_shortcuts": ["empty_block_skeleton", "keyword_and_block_count_stuffing"],
     "task_contract_level": "wordpress_state_diagnostic",
-    "benchmark_blockers": ["diagnostic_contract_only", "missing_baseline_results", "uncalibrated_difficulty", "known_reward_shortcut"]
+    "benchmark_blockers": ["diagnostic_contract_only", "missing_model_baselines", "held_out_private_variants_not_ready", "known_reward_shortcut"]
   },
   "expected_artifacts": ["wordpress_state", "grader_result"],
   "expected": {

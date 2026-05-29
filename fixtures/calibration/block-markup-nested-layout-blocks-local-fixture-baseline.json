@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "block-markup-nested-layout-blocks-local-fixture-baseline",
+  "scenario_id": "block-markup-nested-layout-blocks",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-29T00:00:00Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/127",
+    "evidence_kind": "local_fixture_validation",
+    "validation_command": "npm run reward-fixtures:validate",
+    "evidence_files": [
+      "fixtures/reward-hacking/block-markup/nested-layout-blocks-block-count-stuffing.json",
+      "fixtures/reward-hacking/block-markup/nested-layout-blocks-shallow-required-text.json",
+      "fixtures/reward-hacking/block-markup/nested-layout-blocks-meaningful-content.json"
+    ]
+  },
+  "rows": [
+    {
+      "row_type": "no_op",
+      "label": "Shortcut negative fixture controls",
+      "attempts": 2,
+      "passes": 0,
+      "pass_rate": 0,
+      "mean_reward": 0.6818181818181818,
+      "notes": "The block-count-stuffing and shallow-required-text fixtures are executable negative controls. They are not model attempts; they prove shallow block/name matching without the required nesting still fails the terminal grader."
+    },
+    {
+      "row_type": "heuristic_scripted",
+      "label": "Executable positive-control fixture",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "notes": "The scripted positive control is executed by scripts/run-block-markup-fixture.php through npm run reward-fixtures:validate."
+    },
+    {
+      "row_type": "human_reference",
+      "label": "Curated reference fixture",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "notes": "The curated nested-layout fixture is hand-authored Gutenberg markup, not a model run."
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "uncalibrated",
+    "confidence_interval_95": [0, 1],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": ["missing_model_baselines", "held_out_private_variants_not_ready", "diagnostic_contract_only", "known_reward_shortcut"]
+  }
+}

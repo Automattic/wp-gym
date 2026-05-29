@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "block-markup-no-fallback-pricing-section-local-fixture-baseline",
+  "scenario_id": "block-markup-no-fallback-pricing-section",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-29T00:00:00Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/127",
+    "evidence_kind": "local_fixture_validation",
+    "validation_command": "npm run reward-fixtures:validate",
+    "evidence_files": [
+      "fixtures/reward-hacking/block-markup/no-fallback-pricing-empty-skeleton.json",
+      "fixtures/reward-hacking/block-markup/no-fallback-pricing-keyword-block-stuffing.json",
+      "fixtures/reward-hacking/block-markup/no-fallback-pricing-meaningful-content.json"
+    ]
+  },
+  "rows": [
+    {
+      "row_type": "no_op",
+      "label": "Shortcut negative fixture controls",
+      "attempts": 2,
+      "passes": 0,
+      "pass_rate": 0,
+      "mean_reward": 0.8620689655172414,
+      "notes": "The empty-skeleton and keyword/block-count fixtures are executable negative controls. They are not model attempts; they prove high-reward shortcut outputs still fail the terminal grader."
+    },
+    {
+      "row_type": "heuristic_scripted",
+      "label": "Executable positive-control fixture",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "notes": "The scripted positive control is executed by scripts/run-block-markup-fixture.php through npm run reward-fixtures:validate."
+    },
+    {
+      "row_type": "human_reference",
+      "label": "Curated reference fixture",
+      "attempts": 1,
+      "passes": 1,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "notes": "The curated pricing-page fixture is hand-authored Gutenberg markup, not a model run."
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "uncalibrated",
+    "confidence_interval_95": [0, 1],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": ["missing_model_baselines", "held_out_private_variants_not_ready", "diagnostic_contract_only", "known_reward_shortcut"]
+  }
+}
