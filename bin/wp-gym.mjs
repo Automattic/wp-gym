@@ -21,6 +21,7 @@ function usage() {
 		'  wp-gym show task-set <task-set-id>',
 		'  wp-gym capabilities <scenario-id>',
 		'  wp-gym demo [scenario-id]',
+		'  wp-gym replay <eval-artifact-json-dir-or-zip> --regrade',
 		'  wp-gym replay-regrade --input <eval-artifact-json-or-dir> [--benchmark-mode]',
 		'  wp-gym benchmark-promotion report --scenario <id>|--task-set <id> [--format json|markdown] [--check]',
 		'  wp-gym run-registry emit|report|validate [args...]',
@@ -28,7 +29,19 @@ function usage() {
 	].join('\n'));
 }
 
-if (command === 'replay-regrade') {
+if (command === 'replay') {
+	const input = process.argv[3];
+	if (!input || !process.argv.slice(4).includes('--regrade')) {
+		console.error('Usage: wp-gym replay <eval-artifact-json-dir-or-zip> --regrade');
+		process.exit(2);
+	}
+	const result = spawnSync(process.execPath, [path.join(root, 'scripts/replay-regrade.mjs'), '--input', input, ...process.argv.slice(4)], {
+		cwd: root,
+		stdio: 'inherit',
+	});
+	process.exit(result.status ?? 1);
+
+} else if (command === 'replay-regrade') {
 	const result = spawnSync(process.execPath, [path.join(root, 'scripts/replay-regrade.mjs'), ...process.argv.slice(3)], {
 		cwd: root,
 		stdio: 'inherit',
