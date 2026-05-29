@@ -1,0 +1,7 @@
+diff --git a/scripts/validate-live-artifacts.mjs b/scripts/validate-live-artifacts.mjs
+index 0000000..1111111 100644
+--- a/scripts/validate-live-artifacts.mjs
++++ b/scripts/validate-live-artifacts.mjs
+@@ -1 +1 @@
+-const requiredReplayArtifacts = [];
++const requiredReplayArtifacts = ['episode_jsonl'];

@@ -7,7 +7,7 @@
     "wp-gym": "./bin/wp-gym.mjs"
   },
   "scripts": {
-    "lint": "node --check scripts/validate-scenarios.mjs && node --check scripts/resolve-live-run-matrix.mjs && node --check scripts/validate-reward-fixtures.mjs && node --check scripts/validate-calibration-results.mjs && node --check scripts/run-local-calibration-baseline.mjs && node --check scripts/validate-episode-schemas.mjs && node --check scripts/validate-local-env-api.mjs && node --check scripts/validate-runtime-plan.mjs && node --check scripts/validate-live-artifacts.mjs && node --check scripts/validate-live-artifact-validator.mjs && node --check scripts/validate-run-registry.mjs && node --check scripts/emit-run-registry.mjs && node --check scripts/aggregate-run-registry.mjs && node --check scripts/replay-regrade.mjs && node --check scripts/validate-replay-regrade-fixtures.mjs && node --check scripts/report-api-curriculum-freshness.mjs && node --check src/index.js && node --check bin/wp-gym.mjs && node --check examples/no-model-episode.mjs",
+    "lint": "node --check scripts/validate-scenarios.mjs && node --check scripts/resolve-live-run-matrix.mjs && node --check scripts/validate-reward-fixtures.mjs && node --check scripts/validate-calibration-results.mjs && node --check scripts/run-local-calibration-baseline.mjs && node --check scripts/validate-episode-schemas.mjs && node --check scripts/validate-local-env-api.mjs && node --check scripts/validate-runtime-plan.mjs && node --check scripts/validate-live-artifacts.mjs && node --check scripts/validate-live-artifact-validator.mjs && node --check scripts/validate-held-out-packs.mjs && node --check scripts/validate-run-registry.mjs && node --check scripts/emit-run-registry.mjs && node --check scripts/aggregate-run-registry.mjs && node --check scripts/replay-regrade.mjs && node --check scripts/validate-replay-regrade-fixtures.mjs && node --check scripts/triage-remote-archive.mjs && node --check scripts/validate-remote-archive-triage-fixtures.mjs && node --check scripts/report-api-curriculum-freshness.mjs && node --check src/index.js && node --check bin/wp-gym.mjs && node --check examples/no-model-episode.mjs",
     "matrix:live-run": "node scripts/resolve-live-run-matrix.mjs",
     "matrix:check": "TASK_SET=first-live-run node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=benchmark-readiness-pilot node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=visual-builder node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=smoke node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=wordpress-investigation node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=all node scripts/resolve-live-run-matrix.mjs --check",
     "reward-fixtures:validate": "node scripts/validate-reward-fixtures.mjs",
@@ -19,12 +19,15 @@
     "curriculum:report": "node scripts/report-api-curriculum-freshness.mjs",
     "live-artifacts:validate": "node scripts/validate-live-artifacts.mjs",
     "live-artifacts:test": "node scripts/validate-live-artifact-validator.mjs",
+    "held-out-packs:validate": "node scripts/validate-held-out-packs.mjs",
     "run-registry:emit": "node scripts/emit-run-registry.mjs",
     "run-registry:validate": "node scripts/validate-run-registry.mjs --benchmark-mode",
     "run-registry:report": "node scripts/aggregate-run-registry.mjs",
     "replay-regrade:test": "node scripts/validate-replay-regrade-fixtures.mjs",
+    "remote-archive:triage": "node scripts/triage-remote-archive.mjs",
+    "remote-archive:test": "node scripts/validate-remote-archive-triage-fixtures.mjs",
     "validate": "node scripts/validate-scenarios.mjs && npm run episode-schemas:validate",
-    "verify": "npm run validate && npm run matrix:check && npm run reward-fixtures:validate && npm run calibration-results:validate && npm run local-env:validate && npm run runtime-plan:validate && npm run curriculum:report && npm run live-artifacts:test && npm run run-registry:validate && npm run replay-regrade:test",
+    "verify": "npm run validate && npm run matrix:check && npm run reward-fixtures:validate && npm run calibration-results:validate && npm run local-env:validate && npm run runtime-plan:validate && npm run curriculum:report && npm run live-artifacts:test && npm run held-out-packs:validate && npm run run-registry:validate && npm run replay-regrade:test && npm run remote-archive:test",
     "test": "npm run lint && npm run verify"
   },
   "devDependencies": {

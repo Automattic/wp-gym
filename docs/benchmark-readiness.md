@@ -255,6 +255,9 @@ The pilot becomes benchmark-ready only after these gates are complete:
 - Headline-eligible benchmark rows use `split.membership=held_out_private`.
   Public, calibration, and validation lanes remain useful for iteration and
   promotion evidence, but not final benchmark claims.
+- Held-out rows resolve through the public-safe private pack contract in
+  [`held-out-pack-workflow.md`](held-out-pack-workflow.md); public reports publish
+  aggregate outcomes and sealed hashes, not raw private task materials.
 - Task sets that publish aggregate/headline benchmark scores declare
   `split_policy.requires_held_out_private=true`.
 - Scenario `calibration.task_contract_level` reaches `benchmark_replay` for rows
