@@ -216,7 +216,7 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 	const taskSet = { ...(wpGym.task_set || {}) };
 	const grader = { ...(wpGym.grader || {}) };
 
-	if (!scenario.id && templateValues.task_id) {
+	if (templateValues.task_id && (!scenario.id || scenario.id === sealed.task?.id)) {
 		scenario.id = String(templateValues.task_id);
 	}
 	if (!scenario.id && sealed.task?.id) {
@@ -282,8 +282,14 @@ function projectHomeboySealedArtifact(sealed, options = {}) {
 	if (grader.success === undefined && sealed.termination?.success === true) {
 		grader.success = true;
 	}
+	if (grader.success === undefined && typeof sealed.termination?.state === 'string' && sealed.termination.state.startsWith('failed')) {
+		grader.success = false;
+	}
 	if (grader.reward === undefined && grader.success === true) {
 		grader.reward = 1;
+	}
+	if (grader.reward === undefined && grader.success === false) {
+		grader.reward = 0;
 	}
 	if (!grader.grade && typeof grader.reward === 'number') {
 		grader.grade = { score: grader.reward, max_score: 1 };

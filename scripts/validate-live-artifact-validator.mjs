@@ -121,6 +121,46 @@ const schemaOnly = validateLiveArtifact(baseArtifact());
 assert.equal(schemaOnly.ok, true);
 assert.equal(schemaOnly.validated_fields.find((field) => field.field === 'runner.model')?.value, 'gpt-5.5');
 
+const projectedFailedSealedArtifact = unwrapEvalArtifact({
+	runner_config: {
+		artifact_export: {
+			pr_template_values: {
+				task_id: 'block-markup-valid-semantic-blocks',
+				task_label: 'Valid semantic blocks',
+				variant_family: 'block-markup-valid-semantic-blocks',
+			},
+		},
+	},
+	sealed_eval_artifact: {
+		schema_name: 'homeboy.sealed_eval_artifact',
+		schema_version: 1,
+		generated_at: '2026-05-27T00:00:00Z',
+		status: 'incomplete',
+		runner: { workflow_run_url: 'https://github.com/Automattic/wp-gym/actions/runs/123', job_id: 'run-agent' },
+		run: { job_status: 'failed - tool_result_failed' },
+		task: { id: 'wordpress-task-runner-flow', label: 'Run wordpress-task-runner Data Machine agent' },
+		model: { provider: 'openai', model: 'gpt-5.5' },
+		hashes: {
+			prompt: { sha256: hash64('c') },
+			bundle: { sha256: hash64('a') },
+			tool_policy: { sha256: hash64('b') },
+		},
+		grade: [],
+		failure_reasons: [],
+		termination: { state: 'failed - tool_result_failed' },
+		wp_gym: {
+			scenario: { id: 'wordpress-task-runner-flow', label: 'Run wordpress-task-runner Data Machine agent' },
+			task_set: {},
+			grader: { failure_reasons: [], checks: [] },
+		},
+	},
+});
+assert.equal(projectedFailedSealedArtifact.scenario.id, 'block-markup-valid-semantic-blocks');
+assert.deepEqual(projectedFailedSealedArtifact.status, { outcome: 'failed', failure_class: 'task_failure', failure_reason: null, message: null });
+assert.equal(projectedFailedSealedArtifact.grader.success, false);
+assert.equal(projectedFailedSealedArtifact.grader.reward, 0);
+assert.deepEqual(projectedFailedSealedArtifact.grader.grade, { score: 0, max_score: 1 });
+
 const directFixture = await readFixture('direct-wp-gym-row.json');
 const directFixtureResult = validateLiveArtifact(directFixture);
 assert.equal(directFixtureResult.ok, true);
