@@ -109,11 +109,14 @@ is documented in `docs/benchmark-versioning.md`.
 The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
 documented in `docs/grader-handoff.md`.
 
-Use `wp-gym replay-regrade --input <eval-artifact-json-or-dir> --benchmark-mode`
-to validate sealed eval artifact references, rehydrate local WordPress state
-evidence, rerun the terminal PHP grader, and fail nonzero when the replayed grade
-does not match the stored success, reward, score, checks, messages, or evidence
-references. Benchmark mode reports missing replay-critical evidence as an error.
+Use `wp-gym replay <eval-artifact-json-dir-or-zip> --regrade` to validate sealed
+eval artifact references, rehydrate local WordPress state evidence, replay local
+actions when possible, rerun the terminal PHP grader, and fail nonzero when the
+replayed grade does not match the stored success, reward, score, checks,
+messages, or evidence references. Replay/regrade output classifies task failures,
+runtime failures, grader failures, replay incompatibility, and grade drift for
+run-registry ingestion. The maintainer runbook is in
+[`docs/replay-regrade.md`](docs/replay-regrade.md).
 
 Durable run registry entries are defined in
 `schemas/run-registry-entry.v1.schema.json` and documented in

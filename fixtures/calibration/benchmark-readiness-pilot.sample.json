@@ -49,10 +49,28 @@
       "label": "Repeated-attempt stability row",
       "provider": "anthropic",
       "model": "claude-opus-4-7",
+      "result_set_id": "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample",
+      "attempt_ids": [
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-1",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-2",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-3",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-4",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-5",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-6",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-7",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-8",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-9",
+        "benchmark-readiness-pilot-block-markup-valid-semantic-blocks-anthropic-claude-opus-4-7-sample-attempt-10"
+      ],
       "attempts": 10,
       "passes": 7,
       "pass_rate": 0.7,
-      "mean_reward": 0.73
+      "pass_at_1": 0.7,
+      "pass_at_n": 1,
+      "mean_reward": 0.73,
+      "reward_variance": 0.0523,
+      "reward_stddev": 0.2287,
+      "confidence_interval_95": [0.42, 0.98]
     },
     {
       "row_type": "human_reference",

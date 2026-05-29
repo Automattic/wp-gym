@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -33,6 +34,13 @@ const valid = await replayRegradeArtifactFile(path.join(fixtureRoot, 'valid-arti
 assert.equal(valid.ok, true, JSON.stringify(valid, null, 2));
 assert.equal(valid.replay.comparison.ok, true);
 assert.equal(valid.replay.phase, 'full_episode_replay_regrade');
+assert.deepEqual(valid.regrade_status, {
+	outcome: 'passed',
+	failure_class: 'none',
+	failure_reason: null,
+	grade_drift: false,
+	compatibility_error_codes: [],
+});
 assert.equal(valid.replay.trace_reference.step_count, 2);
 assert.equal(valid.replay.episode_replay.ok, true);
 assert.equal(valid.replay.episode_replay.step_comparison.ok, true);
@@ -40,6 +48,8 @@ assert.equal(valid.replay.episode_replay.step_comparison.ok, true);
 const tampered = await replayRegradeArtifactFile(path.join(fixtureRoot, 'tampered-grade-mismatch.json'), { benchmarkMode: true });
 assert.equal(tampered.ok, false);
 assert(tampered.compatibility_gaps.some((gap) => gap.code === 'grade_mismatch'));
+assert.equal(tampered.regrade_status.failure_class, 'replay_incompatibility');
+assert.equal(tampered.regrade_status.grade_drift, true);
 assert(tampered.replay.comparison.mismatches.some((mismatch) => mismatch.field === 'success'));
 
 const temp = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-replay-regrade-'));
@@ -51,6 +61,7 @@ try {
 
 	const missingState = await replayRegradeArtifactFile(missingStateFile, { benchmarkMode: true });
 	assert.equal(missingState.ok, false);
+	assert.equal(missingState.regrade_status.failure_class, 'replay_incompatibility');
 	assert(missingState.compatibility_gaps.some((gap) => gap.code === 'missing_wordpress_state_evidence'));
 
 	const missingTraceFile = path.join(temp, 'missing-trace.json');
@@ -96,6 +107,23 @@ try {
 	const tamperedAction = await replayRegradeArtifactFile(tamperedActionArtifactPath, { benchmarkMode: true });
 	assert.equal(tamperedAction.ok, false);
 	assert(tamperedAction.compatibility_gaps.some((gap) => gap.code === 'trace_action_result_mismatch' || gap.code === 'episode_replay_step_mismatch'));
+
+	const archivePath = path.join(temp, 'downloaded-artifact.zip');
+	const zip = spawnSync('zip', ['-X', '-q', archivePath, 'valid-artifact.json', 'episode-trace.json', 'wordpress-state.json', 'events.jsonl', 'result.json', 'replay.zip'], {
+		cwd: fixtureRoot,
+		encoding: 'utf8',
+	});
+	assert.equal(zip.status, 0, zip.stderr || zip.stdout);
+	const replay = spawnSync(process.execPath, ['bin/wp-gym.mjs', 'replay', archivePath, '--regrade'], {
+		cwd: root,
+		encoding: 'utf8',
+	});
+	assert.equal(replay.status, 0, replay.stderr || replay.stdout);
+	const replayOutput = JSON.parse(replay.stdout);
+	assert.equal(replayOutput.ok, true);
+	assert.equal(replayOutput.benchmark_mode, true);
+	assert.equal(replayOutput.regrade, true);
+	assert.equal(replayOutput.summary.failure_classes.none, 1);
 } finally {
 	await rm(temp, { recursive: true, force: true });
 }
