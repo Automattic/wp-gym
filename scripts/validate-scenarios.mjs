@@ -668,6 +668,34 @@ for (const file of taskSetFiles) {
 	}
 }
 
+async function listBenchmarkPolicyFixtureFiles(dir = path.join(root, 'fixtures', 'benchmark-policy'), relativeDir = 'fixtures/benchmark-policy') {
+	if (!existsSync(dir)) {
+		return [];
+	}
+
+	const entries = await readdir(dir, { withFileTypes: true });
+	const files = [];
+
+	for (const entry of entries) {
+		const fullPath = path.join(dir, entry.name);
+		const relativePath = path.join(relativeDir, entry.name);
+		if (entry.isDirectory()) {
+			files.push(...await listBenchmarkPolicyFixtureFiles(fullPath, relativePath));
+		} else if (entry.isFile() && entry.name.endsWith('.json')) {
+			files.push(relativePath);
+		}
+	}
+
+	return files.sort();
+}
+
+for (const file of await listBenchmarkPolicyFixtureFiles()) {
+	const fixture = JSON.parse(await readFile(path.join(root, file), 'utf8'));
+	validateBenchmarkMetadata(fixture.benchmark_metadata, file, {
+		requireVersionIdentity: fixture.benchmark_status === 'benchmark_ready',
+	});
+}
+
 const phpFiles = [
 	path.join('scripts', 'run-block-markup-fixture.php'),
 	path.join('scripts', 'run-local-wordpress-state-grade.php'),

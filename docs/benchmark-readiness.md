@@ -6,6 +6,11 @@ This runbook defines the smallest useful pilot matrix for proving `wp-gym` is
 ready to collect baseline evidence without treating the results as benchmark
 scores yet.
 
+Benchmark versioning and compatibility policy is defined in
+[`benchmark-versioning.md`](benchmark-versioning.md). The pilot task set may
+carry prerelease benchmark metadata for traceability, but headline comparison
+requires the benchmark-ready gates below.
+
 The pilot answers the current review questions:
 
 - Executable local environment shape: every row resolves to a WP Codebox-backed
@@ -192,6 +197,10 @@ The pilot becomes benchmark-ready only after these gates are complete:
 - The task set flips to `benchmark_status=benchmark_ready`, `benchmark=true`,
   `headline_score_eligible=true`, `aggregate_score=true`, and
   `score_scope=benchmark` only after the gates above are satisfied.
+- The task set and every included headline scenario declare benchmark version and
+  compatibility metadata. Benchmark-ready scenarios also declare version identity
+  hashes for manifest, prompt, grader, setup, expected artifacts, and replay
+  contract inputs.
 
 Until those gates are complete, pilot scores are evidence for runtime shape,
 calibration work, reward-hacking analysis, and replay coverage. They are not a
