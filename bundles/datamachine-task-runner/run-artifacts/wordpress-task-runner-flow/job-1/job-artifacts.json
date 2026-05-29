@@ -1,6 +1,6 @@
 {
     "job_id": 1,
-    "status": "failed - tool_result_failed",
+    "status": "completed",
     "agent_id": 2,
     "agent_slug": "wordpress-task-runner",
     "disposition_diagnostic": null,
@@ -8,168 +8,104 @@
     "satisfied_tool_names": [],
     "successful_tool_calls": [
         {
-            "tool_name": "wordpress_runtime_ls",
+            "tool_name": "upsert_post",
             "success": true,
-            "turn_count": 5
+            "turn_count": 1
         },
         {
-            "tool_name": "wordpress_runtime_ls",
+            "tool_name": "upsert_post",
             "success": true,
-            "turn_count": 6
+            "turn_count": 2
         },
         {
-            "tool_name": "run_wp_cli",
+            "tool_name": "upsert_post",
             "success": true,
-            "turn_count": 9
+            "turn_count": 3
         }
     ],
     "tool_trace": [
         {
             "schema_version": 1,
-            "tool_name": "workspace_show",
-            "tool_call_id": "call_Eaa90Qs80Xe1logqZKlugGkR",
+            "tool_name": "upsert_post",
+            "tool_call_id": "call_I6v8cBPzVyMrv4VJh3gaPjOJ",
             "turn_count": 1,
             "actor": "agent",
             "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:33:07+00:00",
-            "ended_at": "2026-05-29T17:33:07+00:00",
-            "duration_ms": 8,
-            "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-            "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+            "status": "success",
+            "started_at": "2026-05-29T17:34:40+00:00",
+            "ended_at": "2026-05-29T17:34:41+00:00",
+            "duration_ms": 308,
+            "arguments_sha256": "693bc76e297eccd2205e94fce6447b0378302596e7aa3dc984713866ba3b2859",
+            "result_sha256": "766c13a1c4e47f668a8377e2f376e8fa53fb2eff5986268be99f1c8ae1d67c1a",
             "arguments_redacted": {
-                "name": "current-project"
+                "post_type": "page",
+                "title": "Services",
+                "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
+                "content_format": "markdown",
+                "slug": "services",
+                "parent_id": 0,
+                "parent_path": "",
+                "post_author": "[redacted]",
+                "content_hash": "harbor-hearth-services-index-v1",
+                "source_url": "",
+                "original_date_gmt": "",
+                "add_source_attribution": false
             }
         },
         {
             "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "call_xIINHBYdbO07OawVZKXcW9c8",
+            "tool_name": "upsert_post",
+            "tool_call_id": "call_xZG5uKEphI3HtdQDfEdqN92j",
+            "turn_count": 2,
+            "actor": "agent",
+            "source": "data_machine",
+            "status": "success",
+            "started_at": "2026-05-29T17:34:54+00:00",
+            "ended_at": "2026-05-29T17:34:54+00:00",
+            "duration_ms": 69,
+            "arguments_sha256": "9733cf3cbc705746c675f6a2092f7f86279dce81c9d18121a2f3e287bcca2f0c",
+            "result_sha256": "cedcc3c18d7be3167a187cdc7350ac8e1740fdeaeba5b39dbf47820fdf442186",
+            "arguments_redacted": {
+                "post_type": "page",
+                "title": "Services",
+                "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
+                "content_format": "markdown",
+                "slug": "services",
+                "parent_id": 0,
+                "parent_path": "",
+                "post_author": "[redacted]",
+                "content_hash": "harbor-hearth-services-index-v2",
+                "source_url": "",
+                "original_date_gmt": "",
+                "add_source_attribution": false
+            }
+        },
+        {
+            "schema_version": 1,
+            "tool_name": "upsert_post",
+            "tool_call_id": "call_XozoOnsxjbcIbWfuSYtBJtrt",
             "turn_count": 3,
             "actor": "agent",
             "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:33:13+00:00",
-            "ended_at": "2026-05-29T17:33:13+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
-            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-            "arguments_redacted": {
-                "repo": "current-project",
-                "path": ""
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "run_wp_cli",
-            "tool_call_id": "call_eEU9FUran4VdrxyO3ykmej0D",
-            "turn_count": 4,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:33:18+00:00",
-            "ended_at": "2026-05-29T17:33:18+00:00",
-            "duration_ms": 163,
-            "arguments_sha256": "a4361f1bf5e71f351e79b3cf385988765c159e8f5eb172a8e5ec7be4809feaf1",
-            "result_sha256": "589f710d59814437c2721746f3afff7d22d28f79470d5f8097bbb772b0f0a521",
-            "output_summary": "bash: line 1: wp: command not found",
-            "arguments_redacted": {
-                "command": "wp cli version && wp core version && wp eval 'echo ABSPATH, \"\\n\"; echo getcwd(), \"\\n\";'",
-                "timeout_ms": 20000
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_Bb33MacthPz9w6gZeaBxitGB",
-            "turn_count": 5,
-            "actor": "agent",
-            "source": "data_machine",
             "status": "success",
-            "started_at": "2026-05-29T17:33:22+00:00",
-            "ended_at": "2026-05-29T17:33:22+00:00",
-            "duration_ms": 7,
-            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+            "started_at": "2026-05-29T17:35:06+00:00",
+            "ended_at": "2026-05-29T17:35:06+00:00",
+            "duration_ms": 51,
+            "arguments_sha256": "6a38f5f5b2d442925bceb6ccf9b03881a0d40005e8d7e3671b60439029d05f12",
+            "result_sha256": "a90b3e186da894cf2207eebe90e814b94efdca5e3ffb1a43af9f2d08d39be0fd",
             "arguments_redacted": {
-                "path": "wp-content/plugins",
-                "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "wordpress_runtime_ls",
-            "tool_call_id": "call_oJBr8cLsGmqSSQnqOXokYG04",
-            "turn_count": 6,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T17:33:25+00:00",
-            "ended_at": "2026-05-29T17:33:25+00:00",
-            "duration_ms": 3,
-            "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-            "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-            "arguments_redacted": {
-                "path": "wp-content/plugins",
-                "max_entries": 200
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "run_wp_cli",
-            "tool_call_id": "call_F1OMmKhN2qP3Rg7crnb54Ofz",
-            "turn_count": 7,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:33:30+00:00",
-            "ended_at": "2026-05-29T17:33:30+00:00",
-            "duration_ms": 134,
-            "arguments_sha256": "d429e10bd120cfde0cc002a30476cd5d3cf6bcc1fdd81115dd5cb1d6391cfeed",
-            "result_sha256": "589f710d59814437c2721746f3afff7d22d28f79470d5f8097bbb772b0f0a521",
-            "output_summary": "bash: line 1: wp: command not found",
-            "arguments_redacted": {
-                "command": "cli version && core version && eval 'echo ABSPATH, \"\\n\"; echo getcwd(), \"\\n\";'",
-                "timeout_ms": 20000
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "workspace_ls",
-            "tool_call_id": "call_yHdcEtySirboevJSh3SVTn6j",
-            "turn_count": 8,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "failed",
-            "started_at": "2026-05-29T17:33:35+00:00",
-            "ended_at": "2026-05-29T17:33:35+00:00",
-            "duration_ms": 2,
-            "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
-            "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-            "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-            "arguments_redacted": {
-                "repo": "current-project",
-                "path": ""
-            }
-        },
-        {
-            "schema_version": 1,
-            "tool_name": "run_wp_cli",
-            "tool_call_id": "call_xYdC3CIa8enzXtFTDb0JrUaB",
-            "turn_count": 9,
-            "actor": "agent",
-            "source": "data_machine",
-            "status": "success",
-            "started_at": "2026-05-29T17:33:44+00:00",
-            "ended_at": "2026-05-29T17:33:44+00:00",
-            "duration_ms": 145,
-            "arguments_sha256": "17cee9bc543ce6f0f97e09227470c7c895d72d95a17180d3dfb1913340c1349b",
-            "result_sha256": "0bfeb90edc08afb90f087e5293147adc3a79f1660f1071badf79b3173a0de258",
-            "arguments_redacted": {
-                "command": "pwd; ls -la; command -v wp || true; find .. -maxdepth 3 -type d -name import-package 2>/dev/null | head -20; find . -maxdepth 4 -type d -name import-package 2>/dev/null | head -20",
-                "timeout_ms": 20000
+                "post_type": "page",
+                "title": "Staff",
+                "content": "Directory of Harbor Hearth Repair staff members and the services and neighborhoods they support.\n\n## Staff entries\n\n- [Maya Ortiz](/staff/maya-ortiz/)\n- [Theo Grant](/staff/theo-grant/)\n\nEach staff page links back to the services and service areas assigned to that person.",
+                "content_format": "markdown",
+                "slug": "staff",
+                "parent_id": 0,
+                "parent_path": "",
+                "post_author": "[redacted]",
+                "content_hash": "harbor-hearth-staff-index-v1",
+                "source_url": "",
+                "original_date_gmt": "",
+                "add_source_attribution": false
             }
         }
     ],
@@ -179,7 +115,7 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "artifact_type": "tool_trace",
             "schema_version": 1,
-            "sha256": "aa5c3e8ad418212ea1b50562377b735ef4bdfb5e30a8205121cec094a18fb487",
+            "sha256": "54d349dcde0a15f781a4209bdf5e6f2669ea34de27073e650173c069c3d0a0dc",
             "bounded": true,
             "redacted": true
         }
@@ -190,11 +126,11 @@
             "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
             "relative_path": "datamachine-artifacts/jobs/1/tool-trace.json",
             "path": "/wordpress/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "url": "http://127.0.0.1:37109/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
-            "sha256": "a5335b177cffc70acca9c6f492e9301782c6b110487757a821b20fad00553b17",
-            "payload_sha256": "d33c4ab371b906b65ede085f716144e0bcceaefc66bd3e634232536e8e8c71bc",
-            "bytes": 8378,
-            "written_at": "2026-05-29T17:33:46+00:00"
+            "url": "http://127.0.0.1:34961/wp-content/uploads/datamachine-artifacts/jobs/1/tool-trace.json",
+            "sha256": "6424a613658cab8a39362f6c1d753750b68501a60015ac02359413e113a9e517",
+            "payload_sha256": "dc13e5e16434877199ef3520890c31499676f06f29335dc5e01660fcd4fa8781",
+            "bytes": 5449,
+            "written_at": "2026-05-29T17:35:10+00:00"
         }
     },
     "transcript_artifact": null,
@@ -204,187 +140,113 @@
         "artifact_ref": "datamachine://jobs/1/artifacts/tool-trace",
         "source": {
             "job_id": 1,
-            "job_status": "failed - tool_result_failed",
+            "job_status": "completed",
             "agent_id": 2,
             "agent_slug": "wordpress-task-runner",
             "user_id": 1,
             "pipeline_id": 1,
             "flow_id": 1,
-            "created_at": "2026-05-29 17:33:04",
-            "completed_at": "2026-05-29 17:33:46"
+            "created_at": "2026-05-29 17:34:20",
+            "completed_at": "2026-05-29 17:35:10"
         },
-        "trace_count": 8,
-        "entries_emitted": 8,
+        "trace_count": 3,
+        "entries_emitted": 3,
         "entries_omitted": 0,
         "entries": [
             {
                 "index": 0,
                 "schema_version": 1,
-                "tool_name": "workspace_show",
-                "tool_call_id": "call_Eaa90Qs80Xe1logqZKlugGkR",
+                "tool_name": "upsert_post",
+                "tool_call_id": "call_I6v8cBPzVyMrv4VJh3gaPjOJ",
                 "turn_count": 1,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:33:07+00:00",
-                "ended_at": "2026-05-29T17:33:07+00:00",
-                "duration_ms": 8,
-                "arguments_sha256": "f92019f23e13bebacfedfcf5499f92f761c43fcb35052369dc8d51acd5dfbef4",
-                "result_sha256": "ba0ff6d025863e80c85b931ac62670c7be0a7208dd9e3b5f9d91695a88db22dd",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "status": "success",
+                "started_at": "2026-05-29T17:34:40+00:00",
+                "ended_at": "2026-05-29T17:34:41+00:00",
+                "duration_ms": 308,
+                "arguments_sha256": "693bc76e297eccd2205e94fce6447b0378302596e7aa3dc984713866ba3b2859",
+                "result_sha256": "766c13a1c4e47f668a8377e2f376e8fa53fb2eff5986268be99f1c8ae1d67c1a",
                 "arguments_redacted": {
-                    "name": "current-project"
+                    "post_type": "page",
+                    "title": "Services",
+                    "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
+                    "content_format": "markdown",
+                    "slug": "services",
+                    "parent_id": 0,
+                    "parent_path": "",
+                    "post_author": "[redacted]",
+                    "content_hash": "harbor-hearth-services-index-v1",
+                    "source_url": "",
+                    "original_date_gmt": "",
+                    "add_source_attribution": false
                 },
-                "entry_sha256": "c28166c93e6f32998660d42de28ed02777751d1d0a93bc706c9e33cc35e6aca5"
+                "entry_sha256": "d30f8a4fc2fc4c7bdfcdd8142e7093c2003b958468d06227cb6557f161814e7b"
             },
             {
                 "index": 1,
                 "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "call_xIINHBYdbO07OawVZKXcW9c8",
-                "turn_count": 3,
+                "tool_name": "upsert_post",
+                "tool_call_id": "call_xZG5uKEphI3HtdQDfEdqN92j",
+                "turn_count": 2,
                 "actor": "agent",
                 "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:33:13+00:00",
-                "ended_at": "2026-05-29T17:33:13+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
-                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
+                "status": "success",
+                "started_at": "2026-05-29T17:34:54+00:00",
+                "ended_at": "2026-05-29T17:34:54+00:00",
+                "duration_ms": 69,
+                "arguments_sha256": "9733cf3cbc705746c675f6a2092f7f86279dce81c9d18121a2f3e287bcca2f0c",
+                "result_sha256": "cedcc3c18d7be3167a187cdc7350ac8e1740fdeaeba5b39dbf47820fdf442186",
                 "arguments_redacted": {
-                    "repo": "current-project",
-                    "path": ""
+                    "post_type": "page",
+                    "title": "Services",
+                    "content": "A maintainable list of Harbor Hearth Repair service offerings.\n\n## Current service entries\n\n- [Boiler Tune-Ups](/services/boiler-tune-ups/)\n- [Chimney Inspections](/services/chimney-inspections/)\n- [Heat Pump Triage](/services/heat-pump-triage/)\n\nUse each service page to update which staff member handles the service and which service areas are covered.",
+                    "content_format": "markdown",
+                    "slug": "services",
+                    "parent_id": 0,
+                    "parent_path": "",
+                    "post_author": "[redacted]",
+                    "content_hash": "harbor-hearth-services-index-v2",
+                    "source_url": "",
+                    "original_date_gmt": "",
+                    "add_source_attribution": false
                 },
-                "entry_sha256": "1d848e082dee923548d01888e398d4d7411d5f1569ea7a3b348ff15d0aa3bde7"
+                "entry_sha256": "ddfc77e590e01aa87f810e3dea8b2a7936fd3fd392c0b796d71cee1f79d88776"
             },
             {
                 "index": 2,
                 "schema_version": 1,
-                "tool_name": "run_wp_cli",
-                "tool_call_id": "call_eEU9FUran4VdrxyO3ykmej0D",
-                "turn_count": 4,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:33:18+00:00",
-                "ended_at": "2026-05-29T17:33:18+00:00",
-                "duration_ms": 163,
-                "arguments_sha256": "a4361f1bf5e71f351e79b3cf385988765c159e8f5eb172a8e5ec7be4809feaf1",
-                "result_sha256": "589f710d59814437c2721746f3afff7d22d28f79470d5f8097bbb772b0f0a521",
-                "output_summary": "bash: line 1: wp: command not found",
-                "arguments_redacted": {
-                    "command": "wp cli version && wp core version && wp eval 'echo ABSPATH, \"\\n\"; echo getcwd(), \"\\n\";'",
-                    "timeout_ms": 20000
-                },
-                "entry_sha256": "feab1740f68917cc72018cee10646cfbddcca6f73bf17eee56350a7faec06ed1"
-            },
-            {
-                "index": 3,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_Bb33MacthPz9w6gZeaBxitGB",
-                "turn_count": 5,
+                "tool_name": "upsert_post",
+                "tool_call_id": "call_XozoOnsxjbcIbWfuSYtBJtrt",
+                "turn_count": 3,
                 "actor": "agent",
                 "source": "data_machine",
                 "status": "success",
-                "started_at": "2026-05-29T17:33:22+00:00",
-                "ended_at": "2026-05-29T17:33:22+00:00",
-                "duration_ms": 7,
-                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
+                "started_at": "2026-05-29T17:35:06+00:00",
+                "ended_at": "2026-05-29T17:35:06+00:00",
+                "duration_ms": 51,
+                "arguments_sha256": "6a38f5f5b2d442925bceb6ccf9b03881a0d40005e8d7e3671b60439029d05f12",
+                "result_sha256": "a90b3e186da894cf2207eebe90e814b94efdca5e3ffb1a43af9f2d08d39be0fd",
                 "arguments_redacted": {
-                    "path": "wp-content/plugins",
-                    "max_entries": 200
+                    "post_type": "page",
+                    "title": "Staff",
+                    "content": "Directory of Harbor Hearth Repair staff members and the services and neighborhoods they support.\n\n## Staff entries\n\n- [Maya Ortiz](/staff/maya-ortiz/)\n- [Theo Grant](/staff/theo-grant/)\n\nEach staff page links back to the services and service areas assigned to that person.",
+                    "content_format": "markdown",
+                    "slug": "staff",
+                    "parent_id": 0,
+                    "parent_path": "",
+                    "post_author": "[redacted]",
+                    "content_hash": "harbor-hearth-staff-index-v1",
+                    "source_url": "",
+                    "original_date_gmt": "",
+                    "add_source_attribution": false
                 },
-                "entry_sha256": "a8f0c45e1f08860e37d07d39323b4e4f34ab28b4791020a46030df5881976ccb"
-            },
-            {
-                "index": 4,
-                "schema_version": 1,
-                "tool_name": "wordpress_runtime_ls",
-                "tool_call_id": "call_oJBr8cLsGmqSSQnqOXokYG04",
-                "turn_count": 6,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T17:33:25+00:00",
-                "ended_at": "2026-05-29T17:33:25+00:00",
-                "duration_ms": 3,
-                "arguments_sha256": "ddb009e39867fe6385b46dab6a8f8e10a659660b4f7cb841adb3a282cea597f6",
-                "result_sha256": "716b8ba884b43a9bb62c03383e7b58bc86cf60426c6c01d5bfadf99ed920b884",
-                "arguments_redacted": {
-                    "path": "wp-content/plugins",
-                    "max_entries": 200
-                },
-                "entry_sha256": "e385aacc853ddea8806179502f77208eab1802068b184cf68cc6c5204770356b"
-            },
-            {
-                "index": 5,
-                "schema_version": 1,
-                "tool_name": "run_wp_cli",
-                "tool_call_id": "call_F1OMmKhN2qP3Rg7crnb54Ofz",
-                "turn_count": 7,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:33:30+00:00",
-                "ended_at": "2026-05-29T17:33:30+00:00",
-                "duration_ms": 134,
-                "arguments_sha256": "d429e10bd120cfde0cc002a30476cd5d3cf6bcc1fdd81115dd5cb1d6391cfeed",
-                "result_sha256": "589f710d59814437c2721746f3afff7d22d28f79470d5f8097bbb772b0f0a521",
-                "output_summary": "bash: line 1: wp: command not found",
-                "arguments_redacted": {
-                    "command": "cli version && core version && eval 'echo ABSPATH, \"\\n\"; echo getcwd(), \"\\n\";'",
-                    "timeout_ms": 20000
-                },
-                "entry_sha256": "2d21fbbf888b9eba4b069b124ab19cbc3255b68faf84240d4350e0f9f325feba"
-            },
-            {
-                "index": 6,
-                "schema_version": 1,
-                "tool_name": "workspace_ls",
-                "tool_call_id": "call_yHdcEtySirboevJSh3SVTn6j",
-                "turn_count": 8,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "failed",
-                "started_at": "2026-05-29T17:33:35+00:00",
-                "ended_at": "2026-05-29T17:33:35+00:00",
-                "duration_ms": 2,
-                "arguments_sha256": "4941d1c05b26873fa7c1f78a99018c7433d24e10391fa0e6f5038edfb4e5f108",
-                "result_sha256": "cf8ea06e6d43caa2728f17c7bb73bc585a0b6da4dfd94636b6a8213694324daf",
-                "output_summary": "Remote workspace repository \"current-project\" is not registered. Call workspace_clone first.",
-                "arguments_redacted": {
-                    "repo": "current-project",
-                    "path": ""
-                },
-                "entry_sha256": "4e91b4e7225336881acece4d9667089bf011b1e447b3c4f91c5761e03218515e"
-            },
-            {
-                "index": 7,
-                "schema_version": 1,
-                "tool_name": "run_wp_cli",
-                "tool_call_id": "call_xYdC3CIa8enzXtFTDb0JrUaB",
-                "turn_count": 9,
-                "actor": "agent",
-                "source": "data_machine",
-                "status": "success",
-                "started_at": "2026-05-29T17:33:44+00:00",
-                "ended_at": "2026-05-29T17:33:44+00:00",
-                "duration_ms": 145,
-                "arguments_sha256": "17cee9bc543ce6f0f97e09227470c7c895d72d95a17180d3dfb1913340c1349b",
-                "result_sha256": "0bfeb90edc08afb90f087e5293147adc3a79f1660f1071badf79b3173a0de258",
-                "arguments_redacted": {
-                    "command": "pwd; ls -la; command -v wp || true; find .. -maxdepth 3 -type d -name import-package 2>/dev/null | head -20; find . -maxdepth 4 -type d -name import-package 2>/dev/null | head -20",
-                    "timeout_ms": 20000
-                },
-                "entry_sha256": "2775e95590fc8dec74743240f01302e7b36ed4461dc2f3edd7a8af30736bda74"
+                "entry_sha256": "78b0eec6232a7ea03ce5a45816e9fb75d6f7a5f8bbb425edc2e47db131c4b9da"
             }
         ],
         "bounded": true,
         "redacted": true,
-        "sha256": "aa5c3e8ad418212ea1b50562377b735ef4bdfb5e30a8205121cec094a18fb487"
+        "sha256": "54d349dcde0a15f781a4209bdf5e6f2669ea34de27073e650173c069c3d0a0dc"
     },
     "agent_memory_artifacts": [],
     "daily_memory_artifacts": []
