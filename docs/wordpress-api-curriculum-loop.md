@@ -22,7 +22,10 @@ Review these sources when refreshing the API curriculum:
 
 ## Capability Mapping
 
-Map every API curriculum candidate to one primary capability area from issue #15:
+Map every scenario to the global taxonomy in
+[`docs/capability-taxonomy.md`](capability-taxonomy.md). API curriculum
+candidates also mirror their primary area in `api_provenance.capability_area` so
+source freshness can be reported separately:
 
 | Capability area | Use for |
 | --- | --- |
@@ -35,9 +38,10 @@ Map every API curriculum candidate to one primary capability area from issue #15
 | `gutenberg_blocks` | Block metadata, render callbacks, valid editable block markup, editor packages. |
 | `plugin_quality_wordpress_standards` | Hooks, escaping, sanitization, capabilities, Plugin Check-style hygiene. |
 
-## Scenario Metadata
+## API Scenario Metadata
 
-API scenarios record source provenance and freshness in `api_provenance`:
+All scenarios declare `capabilities`; API scenarios additionally record source
+provenance and freshness in `api_provenance`:
 
 ```json
 {

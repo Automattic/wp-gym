@@ -82,6 +82,7 @@ function scenarioSummary(root, scenario) {
 		split: manifest.split?.membership || null,
 		task_contract_level: manifest.calibration?.task_contract_level || null,
 		benchmark_scope: manifest.calibration?.benchmark_scope || null,
+		capabilities: manifest.capabilities || null,
 		environment: {
 			action_mode: manifest.environment?.action_mode || null,
 			uses_workspace: Boolean(manifest.environment?.uses_workspace),
@@ -101,6 +102,7 @@ function scenarioCapabilities(manifest) {
 	return {
 		schema_version: 1,
 		scenario_id: manifest.id,
+		wordpress_capabilities: manifest.capabilities || null,
 		allowed_action_types: allowedActionTypes,
 		replayable_action_types: replayableActionTypes,
 		evidence_only_action_types: evidenceOnlyActionTypes,
@@ -120,6 +122,7 @@ function taskSetSummary(root, taskSet) {
 		file: repoRelative(root, file),
 		benchmark_status: manifest.benchmark_status || null,
 		task_contract_level: manifest.task_contract_level || null,
+		capability_coverage: manifest.capability_coverage || null,
 		scenario_ids: (manifest.tasks || []).map((task) => task.scenario_id),
 	};
 }

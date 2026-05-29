@@ -103,6 +103,13 @@ Required benchmark provenance groups:
 - `provenance.inputs`: scenario manifest, model prompt, hidden grader, task-set
   manifest, and bundle hashes.
 
+Runner surface audit metadata is separate from immutable provenance. Live rows
+may include `runner.surface`, a reference to the visible prompt/tool/workspace
+surface artifact defined in
+[`docs/runner-surface-audit.md`](runner-surface-audit.md). Benchmark-mode
+validation checks the local hash and schema when the artifact is present, and
+warns while the Homeboy Extensions #842 producer is still pending.
+
 Benchmark-mode validation fails when required provenance is missing, when SHA
 fields are malformed, when provider/model/prompt/bundle/tool-policy hashes do not
 match the canonical row, or when workflow/provider/runner refs use mutable names

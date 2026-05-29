@@ -17,6 +17,12 @@
   "prompt_file": "../../prompts/modern-wordpress-api/abilities-site-summary.md",
   "grader_file": "../../graders/modern-wordpress-api/abilities-site-summary.php",
   "tags": ["wordpress", "abilities-api", "modern-api"],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "agent_tooling_automation_surfaces",
+    "secondary": ["plugin_quality_wordpress_standards"],
+    "criteria": ["abilities_api_surface", "input_output_schema", "permission_callback"]
+  },
   "api_provenance": {
     "capability_area": "agent_tooling_automation_surfaces",
     "api_surface": "WordPress Abilities API",

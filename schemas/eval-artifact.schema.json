@@ -98,6 +98,17 @@
           },
           "additionalProperties": true
         },
+        "surface": {
+          "type": "object",
+          "description": "Optional visible prompt/tool/workspace surface artifact consumed by wp-gym for issue #22. Producer implementation is tracked in Homeboy Extensions #842.",
+          "required": ["status", "producer_issue"],
+          "properties": {
+            "status": { "enum": ["producer_pending", "captured"] },
+            "producer_issue": { "const": "https://github.com/Extra-Chill/homeboy-extensions/issues/842" },
+            "reference": { "$ref": "#/$defs/artifact_reference" }
+          },
+          "additionalProperties": true
+        },
         "source_fields": {
           "type": "array",
           "items": { "$ref": "#/$defs/source_field" }
@@ -209,6 +220,16 @@
           },
           "additionalProperties": true
         },
+        "capabilities": {
+          "type": ["object", "null"],
+          "properties": {
+            "schema_version": { "const": 1 },
+            "primary": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+            "secondary": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9_]+$" } },
+            "criteria": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9_]+$" } }
+          },
+          "additionalProperties": true
+        },
         "source_fields": {
           "type": "array",
           "items": { "$ref": "#/$defs/source_field" }
@@ -299,7 +320,9 @@
   "$defs": {
     "artifact_reference_array": {
       "type": "array",
-      "items": {
+      "items": { "$ref": "#/$defs/artifact_reference" }
+    },
+    "artifact_reference": {
         "type": "object",
         "required": ["kind", "path_or_url"],
         "properties": {
@@ -328,7 +351,6 @@
           }
         },
         "additionalProperties": true
-      }
     },
     "source_field": {
       "type": "object",

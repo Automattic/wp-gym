@@ -11,6 +11,7 @@
     "prompt_file",
     "grader_file",
     "rules",
+    "capabilities",
     "environment",
     "reward_spec",
     "calibration",
@@ -74,6 +75,49 @@
           "type": "array",
           "minItems": 1,
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "capabilities": {
+      "type": "object",
+      "description": "Repo-level WordPress capability taxonomy metadata from issue #15. This maps natural scenarios to benchmark capability areas without exposing hidden grader rubric.",
+      "required": ["schema_version", "primary", "criteria"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "primary": {
+          "enum": [
+            "ai_features",
+            "agent_tooling_automation_surfaces",
+            "custom_admin_ui",
+            "data_interaction_apis",
+            "cli_operational_tooling",
+            "theme_site_building",
+            "gutenberg_blocks",
+            "plugin_quality_wordpress_standards"
+          ]
+        },
+        "secondary": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "ai_features",
+              "agent_tooling_automation_surfaces",
+              "custom_admin_ui",
+              "data_interaction_apis",
+              "cli_operational_tooling",
+              "theme_site_building",
+              "gutenberg_blocks",
+              "plugin_quality_wordpress_standards"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "uniqueItems": true
         }
       },
       "additionalProperties": true

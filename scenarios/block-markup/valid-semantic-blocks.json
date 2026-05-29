@@ -22,6 +22,12 @@
   },
   "prompt_file": "../../prompts/block-markup/valid-semantic-blocks.md",
   "grader_file": "../../graders/block-markup/valid-semantic-blocks.php",
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "gutenberg_blocks",
+    "secondary": ["theme_site_building"],
+    "criteria": ["parseable_block_markup", "editable_core_blocks", "semantic_block_choice"]
+  },
   "rules": {
     "general": ["wordpress_editable_blocks", "no_raw_html_or_shortcodes"],
     "task_specific": ["required_semantic_blocks", "expected_heading_text"]

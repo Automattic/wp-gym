@@ -15,6 +15,11 @@
     "requires_held_out_private": false,
     "contamination_controls": ["demo_tasks_are_not_benchmark_claims"]
   },
+  "capability_coverage": {
+    "schema_version": 1,
+    "primary": ["custom_admin_ui"],
+    "secondary": ["theme_site_building"]
+  },
   "benchmark_blockers": [
     "demo_task_set",
     "uncalibrated_difficulty",

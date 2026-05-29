@@ -183,6 +183,7 @@ function aggregate(entries, options) {
 		by_provider_model: groupBy(rows, (row) => `${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
 		by_task: groupBy(rows, (row) => row.scenario?.id || 'unknown'),
 		by_task_family: groupBy(rows, (row) => row.scenario?.task_family || 'unknown'),
+		by_capability: groupBy(rows, (row) => row.scenario?.capabilities?.primary || 'unknown'),
 		rejected,
 		rows: rows.map((row) => ({
 			run_id: row.run?.id,
@@ -194,6 +195,7 @@ function aggregate(entries, options) {
 			outcome: row.run?.outcome,
 			reward: row.grade_identity?.reward,
 			failure_class: row.grade_identity?.failure_class,
+			capability: row.scenario?.capabilities?.primary || null,
 			benchmark_eligible: row.benchmark?.eligible,
 			headline_score_eligible: row.benchmark?.headline_score_eligible,
 			exclusion_reasons: row.benchmark?.exclusion_reasons || [],

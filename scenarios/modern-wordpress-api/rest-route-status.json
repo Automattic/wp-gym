@@ -17,6 +17,12 @@
   "prompt_file": "../../prompts/modern-wordpress-api/rest-route-status.md",
   "grader_file": "../../graders/modern-wordpress-api/rest-route-status.php",
   "tags": ["wordpress", "rest-api", "plugin-api", "modern-api"],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "data_interaction_apis",
+    "secondary": ["plugin_quality_wordpress_standards"],
+    "criteria": ["rest_route_registration", "permission_callback", "structured_output"]
+  },
   "api_provenance": {
     "capability_area": "data_interaction_apis",
     "api_surface": "WordPress REST API route registration",
