@@ -110,6 +110,22 @@ Pilot emission may surface live artifact compatibility gaps while still writing
 non-headline registry entries. Benchmark evidence must clear both live artifact
 validation and registry validation.
 
+The live Data Machine workflow emits this registry automatically after the matrix
+finishes. The `emit-run-registry` job downloads the `wp-gym-transcript-*-results`
+artifacts produced by Homeboy Extensions, scans each `run-results.json` for
+`scenarios[].metadata.eval_artifact` or `scenarios[].metadata.sealed_eval_artifact`,
+writes one registry entry per recovered completed row, validates the entries, and
+uploads `wp-gym-run-registry-<workflow-run-id>` with:
+
+- `entries/`: validated run registry entries.
+- `eval-artifacts/`: canonical `wp-gym` eval artifact projections.
+- `report.json` and `report.md`: pilot-scope aggregate report output.
+- `live-run-results/`: downloaded Homeboy result artifacts used as input.
+- `live-replay-bundles/`: downloaded replay bundles when the runner emitted them.
+
+The emitter's `--require-entry` flag is used in the workflow so a live run cannot
+silently pass registry emission when no eval row was recovered.
+
 ## Aggregating Reports
 
 Use the report command to turn validated registry entries into JSON and Markdown:
@@ -160,3 +176,13 @@ The validator compiles `run-registry-entry.v1.schema.json` and checks:
 Fixtures cover a valid canonical eval artifact row plus invalid cases for missing
 grade identity, missing replay bundle, missing artifact hash, and incompatible
 scenario/task-set hashes.
+
+The live workflow shape is covered locally by:
+
+```bash
+npm run run-registry:emit:test
+```
+
+That test builds a fixture `run-results.json` with
+`scenarios[].metadata.sealed_eval_artifact`, runs the same emitter path used by the
+workflow, then validates the emitted registry entry.

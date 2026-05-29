@@ -39,6 +39,7 @@ on:
           - wp-codebox
 
 permissions:
+  actions: read
   contents: write
   pull-requests: write
   issues: write
@@ -129,3 +130,56 @@ jobs:
       HOMEBOY_APP_PRIVATE_KEY: ${{ secrets.HOMEBOY_APP_PRIVATE_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       PROVIDER_SECRET_1: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  emit-run-registry:
+    needs: live-run
+    if: ${{ always() && ! inputs.dry_run }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install registry dependencies
+        run: npm ci
+
+      - name: Download live result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wp-gym-transcript-*-results
+          path: artifacts/live-run-results
+
+      - name: Download live replay artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: wp-gym-replay-*
+          path: artifacts/live-replay-bundles
+
+      - name: Emit and validate run registry
+        run: |
+          set -euo pipefail
+          npm run run-registry:emit -- \
+            --input artifacts/live-run-results \
+            --output artifacts/wp-gym-run-registry \
+            --require-entry
+          node scripts/validate-run-registry.mjs \
+            --input artifacts/wp-gym-run-registry/entries
+          npm run run-registry:report -- \
+            --registry artifacts/wp-gym-run-registry/entries \
+            --json artifacts/wp-gym-run-registry/report.json \
+            --markdown artifacts/wp-gym-run-registry/report.md \
+            --scope pilot
+
+      - name: Upload run registry artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wp-gym-run-registry-${{ github.run_id }}
+          path: |
+            artifacts/wp-gym-run-registry
+            artifacts/live-run-results
+            artifacts/live-replay-bundles
+          if-no-files-found: error

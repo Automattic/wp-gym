@@ -60,6 +60,28 @@ function collectJsonFiles(input) {
 	return files.sort();
 }
 
+function evalArtifactRecords(value, sourceFile) {
+	const records = [];
+	const direct = unwrapEvalArtifact(value);
+	if (direct) {
+		records.push({ raw: value, evalArtifact: direct, sourceFile });
+	}
+
+	for (const [index, scenario] of (Array.isArray(value?.scenarios) ? value.scenarios : []).entries()) {
+		const evalArtifact = unwrapEvalArtifact(scenario);
+		if (evalArtifact) {
+			records.push({
+				raw: scenario,
+				evalArtifact,
+				sourceFile,
+				sourceLabel: `${sourceFile}#scenarios[${index}]`,
+			});
+		}
+	}
+
+	return records;
+}
+
 function listScenarioFiles(dir = path.join(root, 'scenarios')) {
 	if (!fs.existsSync(dir)) {
 		return [];
@@ -287,7 +309,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 }
 
 function parseArgs(argv) {
-	const args = { input: '', output: path.join(root, 'artifacts', 'wp-gym-run-registry'), replay: '', benchmarkMode: false };
+	const args = { input: '', output: path.join(root, 'artifacts', 'wp-gym-run-registry'), replay: '', benchmarkMode: false, requireEntry: false };
 	for (let index = 0; index < argv.length; index += 1) {
 		const arg = argv[index];
 		if (arg === '--input') {
@@ -298,6 +320,8 @@ function parseArgs(argv) {
 			args.replay = argv[++index];
 		} else if (arg === '--benchmark-mode') {
 			args.benchmarkMode = true;
+		} else if (arg === '--require-entry') {
+			args.requireEntry = true;
 		} else if (arg === '--help' || arg === '-h') {
 			args.help = true;
 		} else if (!args.input) {
@@ -312,7 +336,7 @@ function parseArgs(argv) {
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
 	if (args.help || !args.input) {
-		console.error('Usage: node scripts/emit-run-registry.mjs --input <eval-json-or-dir> --output <registry-dir> [--replay <local-replay-file>] [--benchmark-mode]');
+		console.error('Usage: node scripts/emit-run-registry.mjs --input <eval-json-or-dir> --output <registry-dir> [--replay <local-replay-file>] [--benchmark-mode] [--require-entry]');
 		process.exit(args.help ? 0 : 2);
 	}
 
@@ -331,32 +355,37 @@ async function main() {
 
 	for (const file of files) {
 		const raw = readJson(file);
-		const evalArtifact = unwrapEvalArtifact(raw);
-		if (!evalArtifact) {
+		const records = evalArtifactRecords(raw, file);
+		if (!records.length) {
 			results.push({ file: repoRelative(file), emitted: false, reason: 'missing_eval_artifact' });
 			continue;
 		}
-		const liveValidation = validateLiveArtifact(raw, { benchmarkMode: args.benchmarkMode, baseDir: path.dirname(file) });
-		const id = slug([evalArtifact.runner?.workflow?.run_id, evalArtifact.scenario?.id, evalArtifact.runner?.provider, evalArtifact.runner?.model].filter(Boolean).join('-'));
-		const evalArtifactFile = path.join(evalDir, `${id}.json`);
-		writeJson(evalArtifactFile, evalArtifact);
-		const entry = buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile: file, replayReference, scenarioIndex });
-		const registryValidation = validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, baseDir: root });
-		const entryFile = path.join(entriesDir, `${id}.json`);
-		writeJson(entryFile, entry);
-		results.push({
-			file: repoRelative(file),
-			entry: repoRelative(entryFile),
-			eval_artifact: repoRelative(evalArtifactFile),
-			emitted: true,
-			live_artifact_ok: liveValidation.ok,
-			registry_ok: registryValidation.ok,
-			compatibility_gaps: [...liveValidation.compatibility_gaps, ...registryValidation.compatibility_gaps],
-		});
+		for (const record of records) {
+			const { evalArtifact } = record;
+			const liveValidation = validateLiveArtifact(record.raw, { benchmarkMode: args.benchmarkMode, baseDir: path.dirname(file) });
+			const id = slug([evalArtifact.runner?.workflow?.run_id, evalArtifact.scenario?.id, evalArtifact.runner?.provider, evalArtifact.runner?.model].filter(Boolean).join('-'));
+			const evalArtifactFile = path.join(evalDir, `${id}.json`);
+			writeJson(evalArtifactFile, evalArtifact);
+			const entry = buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile: file, replayReference, scenarioIndex });
+			const registryValidation = validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, baseDir: root });
+			const entryFile = path.join(entriesDir, `${id}.json`);
+			writeJson(entryFile, entry);
+			results.push({
+				file: repoRelative(file),
+				source: record.sourceLabel ? repoRelative(record.sourceLabel) : repoRelative(file),
+				entry: repoRelative(entryFile),
+				eval_artifact: repoRelative(evalArtifactFile),
+				emitted: true,
+				live_artifact_ok: liveValidation.ok,
+				registry_ok: registryValidation.ok,
+				compatibility_gaps: [...liveValidation.compatibility_gaps, ...registryValidation.compatibility_gaps],
+			});
+		}
 	}
 
-	const ok = results.every((result) => result.emitted && result.registry_ok && (!args.benchmarkMode || result.live_artifact_ok));
-	console.log(JSON.stringify({ ok, output: repoRelative(output), entries: results.length, results }, null, 2));
+	const emitted = results.filter((result) => result.emitted).length;
+	const ok = (!args.requireEntry || emitted > 0) && results.every((result) => !result.emitted || (result.registry_ok && (!args.benchmarkMode || result.live_artifact_ok)));
+	console.log(JSON.stringify({ ok, output: repoRelative(output), entries: emitted, results }, null, 2));
 	if (!ok) {
 		process.exit(1);
 	}
