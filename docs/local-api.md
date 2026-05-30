@@ -2,7 +2,8 @@
 
 Issues: [#79](https://github.com/Automattic/wp-gym/issues/79),
 [#162](https://github.com/Automattic/wp-gym/issues/162),
-[#201](https://github.com/Automattic/wp-gym/issues/201)
+[#201](https://github.com/Automattic/wp-gym/issues/201),
+[#241](https://github.com/Automattic/wp-gym/issues/241)
 
 `wp-gym` exposes a small Gym-like JavaScript API for local experiments against the
 same scenario manifests, action schemas, observation schemas, and hidden graders
@@ -19,6 +20,7 @@ const scenarios = await WPGym.listScenarios();
 const taskSets = await WPGym.listTaskSets();
 const scenario = await WPGym.describeScenario('block-markup-no-fallback-pricing-section');
 const capabilities = await WPGym.capabilities('block-markup-no-fallback-pricing-section');
+const api = WPGym.api();
 ```
 
 The same discovery surface is available from the CLI:
@@ -52,6 +54,9 @@ await env.close();
 
 - `WPGym.listScenarios(options)` returns public scenario summaries from
   `scenarios/`.
+- `WPGym.api()` returns the public API version, methods, action families,
+  contracts, schema paths, and versioning policy for external labs.
+- `WPGym.apiVersion()` returns the current public API version string.
 - `WPGym.listTaskSets(options)` returns task-set summaries from `task-sets/`.
 - `WPGym.describeScenario(scenarioId, options)` returns a single scenario's
   public runner metadata, including prompt/grader file references and
@@ -130,3 +135,13 @@ The same no-model flow is available as a small example:
 ```sh
 node examples/no-model-episode.mjs block-markup-no-fallback-pricing-section
 ```
+
+Additional runnable loop examples are available for external labs:
+
+```sh
+node examples/scripted-loop.mjs block-markup-no-fallback-pricing-section
+node examples/model-agent-loop.mjs block-markup-no-fallback-pricing-section
+```
+
+See `docs/external-rl-api.md` for the lab-facing API contract, action-family
+summary, package schema exports, and versioning policy.

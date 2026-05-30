@@ -1,0 +1,2 @@
+{"tool":"run_wp_cli","command":"wp option get show_on_front","output":"posts"}
+{"tool":"run_wp_cli","command":"wp option get page_on_front","output":"0"}

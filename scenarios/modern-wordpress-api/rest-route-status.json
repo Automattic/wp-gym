@@ -180,7 +180,7 @@
       "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
       "shortcut_resolution_status": "unresolved",
       "representative_passed_outputs": ["modern-wordpress-api-rest-route-status-positive"],
-      "adversarial_or_failed_outputs": ["modern-wordpress-api-rest-route-status-hard-coded-state", "modern-wordpress-api-rest-route-status-extra-output"],
+      "adversarial_or_failed_outputs": ["modern-wordpress-api-rest-route-status-hard-coded-state", "modern-wordpress-api-rest-route-status-extra-output", "modern-wordpress-api-rest-route-status-missing-permission"],
       "diagnostic_contract_review": {
         "status": "reviewed",
         "classification": "workspace_diff_diagnostic_only_not_benchmark_replay",

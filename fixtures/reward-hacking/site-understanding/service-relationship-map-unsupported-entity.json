@@ -1,0 +1,34 @@
+{
+  "id": "site-understanding-service-relationship-map-unsupported-entity",
+  "scenario_id": "site-understanding-service-relationship-map",
+  "grader_file": "graders/site-understanding/service-relationship-map.php",
+  "type": "adversarial_negative_fixture",
+  "shortcut_id": "unsupported_entity_guessing",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["hallucinated_relationship", "hallucinated_entity"],
+  "description": "A plausible relationship map that pads the answer with unsupported service/staff/location guesses.",
+  "content_file": "fixtures/reward-hacking/site-understanding/service-relationship-map-unsupported-entity.wp.html",
+  "wordpress_state": {
+    "terms": [
+      { "taxonomy": "category", "name": "Service" },
+      { "taxonomy": "category", "name": "Staff" },
+      { "taxonomy": "category", "name": "Location" },
+      { "taxonomy": "post_tag", "name": "North Loop" },
+      { "taxonomy": "post_tag", "name": "River Market" },
+      { "taxonomy": "post_tag", "name": "South Hill" },
+      { "taxonomy": "post_tag", "name": "Maya Ortiz" },
+      { "taxonomy": "post_tag", "name": "Theo Grant" }
+    ],
+    "posts": [
+      { "ID": 1, "post_type": "page", "post_status": "publish", "title": "Boiler Tune-ups", "content": "<p>Boiler tune-ups are handled by Maya Ortiz for North Loop and River Market.</p>" },
+      { "ID": 2, "post_type": "page", "post_status": "publish", "title": "Chimney Inspections", "content": "<p>Chimney inspections are handled by Theo Grant for South Hill.</p>" },
+      { "ID": 3, "post_type": "page", "post_status": "publish", "title": "Heat Pump Triage", "content": "<p>Heat pump triage is handled by Maya Ortiz for South Hill.</p>" },
+      { "ID": 4, "post_type": "post", "post_status": "publish", "title": "Maya Ortiz", "content": "<p>Maya Ortiz covers boiler tune-ups and heat pump triage.</p>" },
+      { "ID": 5, "post_type": "post", "post_status": "publish", "title": "Theo Grant", "content": "<p>Theo Grant covers chimney inspections.</p>" },
+      { "ID": 6, "post_type": "post", "post_status": "publish", "title": "North Loop", "content": "<p>North Loop service area.</p>" },
+      { "ID": 7, "post_type": "post", "post_status": "publish", "title": "River Market", "content": "<p>River Market service area.</p>" },
+      { "ID": 8, "post_type": "post", "post_status": "publish", "title": "South Hill", "content": "<p>South Hill service area.</p>" },
+      { "ID": 9, "post_type": "page", "post_status": "publish", "title": "Service Relationship Map", "content": "<p>Source evidence from WordPress posts: <a href=\"/?p=1\">source</a> <a href=\"/?p=2\">source</a>.</p><p>Boiler tune-ups use Maya Ortiz for North Loop.</p><p>Boiler tune-ups use Maya Ortiz for River Market.</p><p>Chimney inspections use Theo Grant for South Hill.</p><p>Heat pump triage uses Maya Ortiz for South Hill.</p><p>Chimney inspections use Maya Ortiz, and roofing uses Jordan Lee in Westport.</p>" }
+    ]
+  }
+}

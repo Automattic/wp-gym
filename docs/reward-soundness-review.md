@@ -14,7 +14,9 @@ Store review artifacts in `reviews/reward-soundness/*.json`. Each artifact recor
 - A human reviewer or reference oracle.
 - Representative passed outputs.
 - Adversarial or failed outputs.
+- Review-case labels covering positive, negative, adversarial, and borderline examples by task family.
 - Reviewer classification for whether the grader outcome matches expected WordPress quality.
+- Task-family agreement metrics and the unresolved-disagreement policy.
 - Remaining promotion blockers, especially unresolved reward shortcuts and diagnostic-only contracts.
 
 Each scenario links the artifact from `calibration.reward_soundness_review` so the
@@ -29,7 +31,9 @@ npm run reward-soundness:validate
 ```
 
 The validator requires every `benchmark-readiness-pilot` task to have review
-artifact, and rejects unresolved reviewer/grader mismatches.
+artifact, requires each reviewed task family to cover positive, negative,
+adversarial, and borderline examples, and rejects unresolved reviewer/grader
+mismatches above the artifact policy threshold.
 
 ## Promotion Gate
 

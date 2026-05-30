@@ -18,6 +18,45 @@
       "uncalibrated_difficulty"
     ]
   },
+  "agreement_policy": {
+    "max_unresolved_disagreements": 0
+  },
+  "task_family_agreement": [
+    {
+      "family": "block-markup",
+      "scenarios": [
+        "block-markup-no-fallback-pricing-section",
+        "block-markup-valid-semantic-blocks"
+      ],
+      "reviewed_cases": {
+        "positive": 2,
+        "negative": 2,
+        "adversarial": 2,
+        "borderline": 2
+      },
+      "agreements": 8,
+      "disagreements": 0,
+      "unresolved_disagreements": 0,
+      "agreement_rate": 1
+    },
+    {
+      "family": "modern-wordpress-api",
+      "scenarios": [
+        "modern-wordpress-api-abilities-site-summary",
+        "modern-wordpress-api-rest-route-status"
+      ],
+      "reviewed_cases": {
+        "positive": 2,
+        "negative": 1,
+        "adversarial": 2,
+        "borderline": 2
+      },
+      "agreements": 7,
+      "disagreements": 0,
+      "unresolved_disagreements": 0,
+      "agreement_rate": 1
+    }
+  ],
   "reviews": [
     {
       "scenario_id": "block-markup-valid-semantic-blocks",
@@ -30,6 +69,7 @@
       "representative_passed_outputs": [
         {
           "fixture_id": "block-markup-valid-semantic-blocks-meaningful-content",
+          "review_case": "positive",
           "grader_outcome": "pass",
           "expected_wordpress_quality": "pass",
           "reviewer_classification": "match",
@@ -39,6 +79,7 @@
       "adversarial_or_failed_outputs": [
         {
           "fixture_id": "block-markup-valid-semantic-blocks-keyword-stuffing",
+          "review_case": "adversarial",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
@@ -46,10 +87,19 @@
         },
         {
           "fixture_id": "block-markup-valid-semantic-blocks-shallow-validity",
+          "review_case": "borderline",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
           "rationale": "Shallow block validity alone does not satisfy the semantic content contract."
+        },
+        {
+          "fixture_id": "block-markup-valid-semantic-blocks-empty-output",
+          "review_case": "negative",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "A no-op page with no block markup or required text is an unambiguous negative control."
         }
       ],
       "diagnostic_contract_review": {
@@ -69,6 +119,7 @@
       "representative_passed_outputs": [
         {
           "fixture_id": "block-markup-no-fallback-pricing-meaningful-content",
+          "review_case": "positive",
           "grader_outcome": "pass",
           "expected_wordpress_quality": "pass",
           "reviewer_classification": "match",
@@ -78,6 +129,7 @@
       "adversarial_or_failed_outputs": [
         {
           "fixture_id": "block-markup-no-fallback-pricing-empty-skeleton",
+          "review_case": "borderline",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
@@ -85,10 +137,19 @@
         },
         {
           "fixture_id": "block-markup-no-fallback-pricing-keyword-block-stuffing",
+          "review_case": "adversarial",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
           "rationale": "Stuffing required words and block names is not a usable pricing page."
+        },
+        {
+          "fixture_id": "block-markup-no-fallback-pricing-empty-output",
+          "review_case": "negative",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "An empty pricing page has no editable block layout, plan content, or calls to action."
         }
       ],
       "diagnostic_contract_review": {
@@ -108,6 +169,7 @@
       "representative_passed_outputs": [
         {
           "fixture_id": "modern-wordpress-api-abilities-site-summary-positive",
+          "review_case": "positive",
           "grader_outcome": "pass",
           "expected_wordpress_quality": "pass",
           "reviewer_classification": "match",
@@ -117,6 +179,7 @@
       "adversarial_or_failed_outputs": [
         {
           "fixture_id": "modern-wordpress-api-abilities-site-summary-wrong-lifecycle",
+          "review_case": "adversarial",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
@@ -124,6 +187,7 @@
         },
         {
           "fixture_id": "modern-wordpress-api-abilities-site-summary-renamed-output",
+          "review_case": "borderline",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
@@ -147,6 +211,7 @@
       "representative_passed_outputs": [
         {
           "fixture_id": "modern-wordpress-api-rest-route-status-positive",
+          "review_case": "positive",
           "grader_outcome": "pass",
           "expected_wordpress_quality": "pass",
           "reviewer_classification": "match",
@@ -156,6 +221,7 @@
       "adversarial_or_failed_outputs": [
         {
           "fixture_id": "modern-wordpress-api-rest-route-status-hard-coded-state",
+          "review_case": "adversarial",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
@@ -163,10 +229,19 @@
         },
         {
           "fixture_id": "modern-wordpress-api-rest-route-status-extra-output",
+          "review_case": "borderline",
           "grader_outcome": "fail",
           "expected_wordpress_quality": "fail",
           "reviewer_classification": "match",
           "rationale": "Extra fields expand the output contract beyond the task requirement."
+        },
+        {
+          "fixture_id": "modern-wordpress-api-rest-route-status-missing-permission",
+          "review_case": "negative",
+          "grader_outcome": "fail",
+          "expected_wordpress_quality": "fail",
+          "reviewer_classification": "match",
+          "rationale": "A route without an explicit permission callback violates the WordPress REST API contract even when the response shape is otherwise plausible."
         }
       ],
       "diagnostic_contract_review": {

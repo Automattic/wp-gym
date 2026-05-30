@@ -180,9 +180,8 @@ function assertShortcutCoverage(fixtures, scenarios) {
 		}
 	}
 
-	for (const [scenarioId, scenarioCoverage] of coverage.entries()) {
-		const scenario = scenarios.get(scenarioId);
-		assert(scenario, `Reward fixture coverage references unknown scenario_id: ${scenarioId}`);
+	for (const scenario of scenarios.values()) {
+		const scenarioCoverage = coverage.get(scenario.manifest.id) || { negative: new Map(), positive: new Map() };
 		for (const shortcutId of scenario.manifest.calibration?.known_shortcuts || []) {
 			assert(
 				scenarioCoverage.negative.has(shortcutId),

@@ -324,6 +324,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			agent_slug: evalArtifact.runner?.agent_slug || null,
 			workflow_run_url: evalArtifact.runner?.workflow?.run_url || evalArtifact.reports?.workflow_run_url || null,
 			job_id: evalArtifact.runner?.workflow?.job_id || null,
+			tool_policy_sha256: evalArtifact.runner?.tool_policy_sha256 || null,
 		},
 		runtime: {
 			id: evalArtifact.runtime?.artifact_bundle?.runtime_id || 'unknown-runtime',
@@ -349,6 +350,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			compatibility_group: taskSet.compatibility_group,
 			exclusion_reasons: exclusionReasons,
 		},
+		provenance: evalArtifact.provenance || null,
 		...(scenario.heldOut ? { held_out: scenario.heldOut } : {}),
 		eval_artifact: evalReference,
 		artifact_index: {

@@ -182,6 +182,27 @@ local hashable evidence.
 
 See [`replay-regrade.md`](replay-regrade.md) for the replay status contract.
 
+## Sealed Provenance Contract
+
+External labs should treat benchmark-mode registry rows as sealed execution
+receipts. A row is acceptable only when `npm run run-registry:validate --
+--benchmark-mode` succeeds and the registry row exposes immutable provenance for:
+
+- Workflow code: repository, workflow path, immutable `ref`, and commit `sha`.
+- Runner code: runner/orchestrator name plus immutable source `ref` and `sha` when
+  source-backed.
+- Runtime: WordPress, PHP, Node.js, runtime/package versions, and
+  `package_lock_sha256`.
+- Provider: provider ID, model ID, and model snapshot/version when available.
+- Tool policy: effective policy hash, enabled-tool-surface hash, and agent
+  instruction hash.
+- Inputs: scenario, prompt, grader, task-set, and bundle SHA-256 fingerprints.
+
+Mutable refs such as `main`, `trunk`, `HEAD`, `refs/heads/*`, and `latest` are not
+accepted for benchmark rows. Reports generated with `npm run run-registry:report --
+--benchmark-mode` include the workflow SHA, tool-policy SHA, and bundle SHA per row
+so a lab can compare runs before requesting private replay material.
+
 ## Inspect Registry Reports
 
 Generate registry entries and reports from downloaded workflow artifacts:

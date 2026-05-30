@@ -126,7 +126,7 @@
       "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
       "shortcut_resolution_status": "unresolved",
       "representative_passed_outputs": ["block-markup-no-fallback-pricing-meaningful-content"],
-      "adversarial_or_failed_outputs": ["block-markup-no-fallback-pricing-empty-skeleton", "block-markup-no-fallback-pricing-keyword-block-stuffing"],
+      "adversarial_or_failed_outputs": ["block-markup-no-fallback-pricing-empty-skeleton", "block-markup-no-fallback-pricing-keyword-block-stuffing", "block-markup-no-fallback-pricing-empty-output"],
       "diagnostic_contract_review": {
         "status": "reviewed",
         "classification": "wordpress_state_diagnostic_only_not_benchmark_replay",

@@ -25,7 +25,7 @@
   "scenario": {
     "id": "block-markup-valid-semantic-blocks",
     "version": "fixture-2026-05-28",
-    "sha256": "c20ebd1c737ca68e769c524e57e45429ccebba6f5236d55c241f085791b16ee8",
+    "sha256": "eff7c64d3e7606c7bb6dbf7d7e93999a537b70223279095dcda22124c23c7a57",
     "source_path": "scenarios/block-markup/valid-semantic-blocks.json",
     "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
     "task_family": "block-markup"
@@ -35,7 +35,8 @@
     "model": "gpt-5.5",
     "agent_slug": "wordpress-task-runner",
     "workflow_run_url": "https://github.com/Automattic/wp-gym/actions/runs/123",
-    "job_id": "benchmark"
+    "job_id": "benchmark",
+    "tool_policy_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
   },
   "runtime": {
     "id": "wp-codebox",
@@ -60,6 +61,45 @@
     "headline_score_eligible": false,
     "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28",
     "exclusion_reasons": ["pilot_task_set"]
+  },
+  "provenance": {
+    "workflow": {
+      "repository": "Automattic/wp-gym",
+      "path": ".github/workflows/datamachine-live-run.yml",
+      "ref": "Automattic/wp-gym/.github/workflows/datamachine-live-run.yml@abcdef1234567890abcdef1234567890abcdef12",
+      "sha": "abcdef1234567890abcdef1234567890abcdef12"
+    },
+    "runner": {
+      "name": "homeboy",
+      "version": "1.0.0-fixture",
+      "ref": "abcdef1234567890abcdef1234567890abcdef12",
+      "sha": "abcdef1234567890abcdef1234567890abcdef12"
+    },
+    "runtime": {
+      "wordpress_version": "6.9.0-fixture",
+      "php_version": "8.3.0",
+      "node_version": "20.19.0",
+      "wp_codebox_version": "1.0.0-fixture",
+      "package_lock_sha256": "3da60c4e5ee6cae7822c77742d13a77ac7dcadfea7f022ba0a1a637580a7bbe8"
+    },
+    "provider": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "model_snapshot": "gpt-5.5-2026-05-27-fixture"
+    },
+    "provider_plugins": [],
+    "tool_policy": {
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "enabled_tools_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "agent_instructions_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "inputs": {
+      "scenario_sha256": "eff7c64d3e7606c7bb6dbf7d7e93999a537b70223279095dcda22124c23c7a57",
+      "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e",
+      "task_set_sha256": "dc771f6b1f643b9a001e53123070238dd21ccd1c439eecec1a12a5f0225c5fff",
+      "bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
   },
   "eval_artifact": {
     "kind": "json",
