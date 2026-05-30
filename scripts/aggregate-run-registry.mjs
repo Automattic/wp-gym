@@ -189,12 +189,12 @@ function rowFailedChecks(row) {
 		.map((check) => check.id || 'unknown_check');
 }
 
-function aggregate(entries, options) {
+async function aggregate(entries, options) {
 	const rows = [];
 	const rejected = [];
 	for (const file of entries) {
 		const row = readJson(file);
-		const validation = validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: root });
+		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: root });
 		const rowSummary = { file: repoRelative(file), ok: validation.ok, compatibility_gaps: validation.compatibility_gaps };
 		if (!validation.ok) {
 			rejected.push(rowSummary);
@@ -376,7 +376,7 @@ function renderMarkdown(report) {
 
 	if (report.rejected.length > 0) {
 		lines.push('', '## Data Quality Gaps', '');
-		lines.push(renderTable(['File', 'Gap codes'], report.rejected.map((row) => [row.file, row.compatibility_gaps.map((gap) => gap.code).join(', ')])));
+		lines.push(renderTable(['File', 'Gap codes'], report.rejected.map((row) => [row.file, (row.compatibility_gaps || []).map((gap) => gap.code).join(', ')])));
 	}
 
 	return `${lines.join('\n')}\n`;
@@ -418,7 +418,7 @@ async function main() {
 		console.error('Usage: node scripts/aggregate-run-registry.mjs --registry <registry-json-or-dir> [--scope pilot|benchmark|headline|all] [--json <file>] [--markdown <file>] [--benchmark-mode]');
 		process.exit(args.help ? 0 : 2);
 	}
-	const report = aggregate(collectJsonFiles(args.registry), args);
+	const report = await aggregate(collectJsonFiles(args.registry), args);
 	const json = `${JSON.stringify(report, null, 2)}\n`;
 	const markdown = renderMarkdown(report);
 	if (args.json) {

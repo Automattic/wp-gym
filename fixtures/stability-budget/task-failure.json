@@ -1,0 +1,25 @@
+{
+  "run": {
+    "id": "fixture-task-failure",
+    "completed_at": "2026-05-28T00:05:00Z",
+    "outcome": "failed"
+  },
+  "stability": {
+    "workflow": "datamachine-live-run",
+    "failure_class": "task",
+    "message": "Scenario setup produced an invalid WordPress state before grading."
+  },
+  "scenario": {
+    "id": "block-markup-valid-semantic-blocks",
+    "task_family": "block-markup"
+  },
+  "runner": {
+    "provider": "openai",
+    "model": "gpt-5.5"
+  },
+  "grade_identity": {
+    "success": false,
+    "reward": 0,
+    "failure_class": "task_failure"
+  }
+}

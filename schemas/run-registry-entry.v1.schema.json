@@ -216,6 +216,18 @@
         }
       },
       "additionalProperties": true
+    },
+    "stability": {
+      "type": "object",
+      "description": "Optional benchmark operations classification used by stability-budget reports.",
+      "properties": {
+        "workflow": { "type": "string", "minLength": 1 },
+        "failure_class": { "enum": ["none", "infra", "provider", "artifact", "runner", "task", "grader"] },
+        "flaky": { "type": "boolean" },
+        "message": { "type": "string" },
+        "error": { "type": "string" }
+      },
+      "additionalProperties": true
     }
   },
   "$defs": {
