@@ -5,6 +5,9 @@ observations, step results, and replay traces. Issue
 [#134](https://github.com/Automattic/wp-gym/issues/134) tightens those contracts
 so malformed or unknown action and observation fields fail validation instead of
 quietly entering traces.
+Issue [#255](https://github.com/Automattic/wp-gym/issues/255) defines the
+browser/editor replay envelope and the boundary between deterministic replay and
+audit-only evidence.
 
 Schemas live in `schemas/`:
 
@@ -18,8 +21,8 @@ representative examples used by the test suite.
 
 ## Action
 
-An action is the request sent to the runner. Version 1 supports four action
-families: `wp_cli`, `filesystem`, `rest`, and `browser`.
+An action is the request sent to the runner. Version 1 supports five action
+families: `wp_cli`, `filesystem`, `rest`, `browser`, and `editor`.
 
 `wp_cli` is the first-class starting action because WordPress Playground and the
 local runner stack can inspect and mutate many tasks through WP-CLI-style
@@ -68,9 +71,12 @@ requests against the WordPress runtime:
 }
 ```
 
-`browser` actions declare replayability explicitly. Use `evidence_only` when the
-runner can capture browser/editor evidence but the local replay harness cannot
-yet deterministically replay the interaction:
+`browser` actions declare replayability explicitly. `navigate` and `capture`
+describe page-level operations. `click`, `fill`, and `press` preserve richer UI
+interaction evidence, but they are audit-only until WP Codebox exposes generic
+browser replay primitives for them. Use `evidence_only` when the runner can
+capture browser evidence but the local replay harness cannot yet deterministically
+replay the interaction:
 
 ```json
 {
@@ -79,7 +85,28 @@ yet deterministically replay the interaction:
   "operation": "capture",
   "replayability": "evidence_only",
   "url": "/",
+  "viewport": { "width": 1280, "height": 720 },
+  "timing": { "wait_until": "load", "settle_ms": 250, "timeout_ms": 30000 },
+  "state": { "selector": "main", "text_contains": "Hello" },
   "capture": ["html", "screenshot"]
+}
+```
+
+`editor` actions preserve block-editor intent and state without inventing a
+wp-gym-specific runtime primitive. They are audit-only today because WP Codebox
+does not expose a generic editor replay command yet:
+
+```json
+{
+  "schema_version": 1,
+  "type": "editor",
+  "operation": "insert_block",
+  "replayability": "evidence_only",
+  "post_id": 4,
+  "block_name": "core/paragraph",
+  "attributes": { "content": "Editor-authored paragraph." },
+  "state": { "editor_store": "core/block-editor", "editor_selector": "selectedBlock" },
+  "timeout_ms": 30000
 }
 ```
 
@@ -87,7 +114,7 @@ yet deterministically replay the interaction:
 
 An observation is the replay evidence produced by the runtime. Version 1 supports
 `command_result`, `logs`, `wp_state`, `files`, `rest_response`, `html`,
-`screenshot`, and `browser_result`.
+`screenshot`, `browser_result`, and `editor_result`.
 Observations can include sensitive runtime output, so traces and exported
 artifacts must follow the
 [`artifact redaction and sharing policy`](artifact-redaction-sharing-policy.md)
@@ -160,11 +187,44 @@ or warn clearly:
   "operation": "capture",
   "replayability": "evidence_only",
   "url": "/",
+  "viewport": { "width": 1280, "height": 720 },
+  "state": { "url": "/", "title": "Home", "selector_text": "Hello" },
   "artifacts": [
     {
       "path": "files/browser/screenshot.png",
       "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
       "mime_type": "image/png"
+    }
+  ],
+  "error": null
+}
+```
+
+Editor result observations preserve the editor state that made an action
+auditable: post identity, selected block identity, dirty/published state, editor
+mode, and references to richer state artifacts when available.
+
+```json
+{
+  "schema_version": 1,
+  "type": "editor_result",
+  "action_type": "editor",
+  "operation": "insert_block",
+  "replayability": "evidence_only",
+  "state": {
+    "post_id": 4,
+    "post_type": "page",
+    "post_status": "draft",
+    "selected_block_client_id": "block-1",
+    "block_count": 1,
+    "dirty": true,
+    "mode": "visual"
+  },
+  "artifacts": [
+    {
+      "path": "files/editor/state.json",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "mime_type": "application/json"
     }
   ],
   "error": null
@@ -210,11 +270,20 @@ A trace is the replayable episode envelope:
   "episode_id": "episode-001",
   "scenario_id": "smoke-homepage",
   "metadata": {
-    "max_steps": 12,
-    "allowed_action_types": ["wp_cli"],
-    "setup": ["wordpress-playground-clean-site"],
-    "success_checks": ["page_created", "expected_block_content"]
-  },
+      "max_steps": 12,
+      "reset_seed": "1234",
+      "allowed_action_types": ["wp_cli"],
+      "setup": ["wordpress-playground-clean-site"],
+      "success_checks": ["page_created", "expected_block_content"],
+      "replay": {
+        "mode": "deterministic",
+        "reset": { "strategy": "wordpress_state", "seed": "1234", "state_ref": "wordpress-state.json" },
+        "viewport": { "width": 1280, "height": 720 },
+        "timing": { "default_timeout_ms": 30000, "settle_ms": 250, "wait_until": "load" },
+        "screenshots": { "required": false, "format": "png", "full_page": true },
+        "state": { "dom_required": false, "editor_store_required": false }
+      }
+    },
   "steps": [
     {
       "step_index": 0,
@@ -259,3 +328,34 @@ calls into actions, runtime outputs into observations, hidden grader output into
 `reward`, and runner diagnostics into `telemetry`. Any artifact that lacks action
 inputs or observation evidence should be treated as a compatibility gap rather
 than a complete trace.
+
+## Browser And Editor Replay Semantics
+
+Replay metadata defines the episode conditions that must be restored before the
+trace is meaningful:
+
+- `reset.strategy` identifies whether replay starts from a clean site, retained
+  WordPress state artifact, or workspace snapshot.
+- `reset.seed` records deterministic seeding when the runner provides one.
+- `viewport` fixes browser dimensions, scale factor, and mobile mode.
+- `timing` records timeout, readiness, and post-action settling rules.
+- `screenshots` declares whether screenshots are required evidence and how they
+  were captured.
+- `state` declares which DOM, editor-store, network, and console evidence is
+  required for audit.
+
+Deterministic replay is allowed only when the local replay harness has a generic
+runtime primitive for the action and all required reset/state evidence is local
+and hash-verified. Current benchmark replay supports deterministic `wp_cli` and
+`filesystem` traces. Browser `navigate`/`capture` can be observed locally through
+WP Codebox browser probes during normal episodes, but replay/regrade still treats
+browser traces as audit-only until the full trace replay path can reproduce their
+artifacts deterministically. Editor actions are audit-only until WP Codebox exposes
+a generic editor replay primitive.
+
+Audit-only browser/editor traces remain useful: `wp-gym replay --regrade`
+validates the action and observation envelopes, reports
+`browser_editor_action_audit_only` warnings, verifies retained WordPress state,
+reruns the terminal grader, and compares the sealed grade. A mismatch between a
+browser/editor action and its paired observation is an error because the evidence
+can no longer be trusted.

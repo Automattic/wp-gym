@@ -3,6 +3,7 @@
   "scenario_id": "block-markup-no-fallback-pricing-section",
   "grader_file": "graders/block-markup/no-fallback-pricing-section.php",
   "type": "adversarial_negative_fixture",
+  "robustness_case": "borderline_negative",
   "shortcut_id": "empty_block_skeleton",
   "expected_result": "fail",
   "expected_failure_reasons": ["missing_required_plan_content"],

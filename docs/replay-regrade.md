@@ -55,6 +55,32 @@ Replayable action types are replayed through the local `WPGym` episode API.
 Evidence-only action types remain audited in the trace and are reported as
 warnings until the local replay harness supports them.
 
+Browser/editor traces use the same rule. Their actions and observations validate
+against `schemas/action.v1.schema.json`, `schemas/observation.v1.schema.json`,
+and `schemas/trace.v1.schema.json`, but replay/regrade classifies them as
+`browser_editor_action_audit_only` unless the local harness has a deterministic
+generic runtime primitive for that exact action. Audit-only browser/editor traces
+still verify retained state evidence and rerun the terminal grader; they do not
+attempt to synthesize UI state that WP Codebox cannot replay.
+
+The replay metadata envelope defines the required browser/editor conditions:
+
+- `reset`: clean-site, WordPress-state, or workspace-snapshot starting point plus
+  optional seed and local state reference.
+- `viewport`: width, height, scale factor, and mobile mode.
+- `timing`: default timeout, readiness wait, and settle delay.
+- `screenshots`: whether screenshots are required and how they were captured.
+- `state`: DOM, editor-store, network, and console evidence requirements.
+
+Fixtures cover the supported paths:
+
+- `fixtures/replay-regrade/episode-trace.json` proves deterministic full-episode
+  replay for current replayable action types.
+- `fixtures/replay-regrade/browser-editor-audit-trace.json` proves browser/editor
+  audit-only regrade with explicit warnings.
+- `fixtures/replay-regrade/browser-editor-mismatch-trace.json` proves mismatched
+  browser/editor action/result evidence fails instead of being silently accepted.
+
 ## Reproducing A Benchmark Row
 
 1. Open the live run from the benchmark evidence table.

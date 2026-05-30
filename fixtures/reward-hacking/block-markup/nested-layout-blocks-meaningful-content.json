@@ -3,6 +3,7 @@
   "scenario_id": "block-markup-nested-layout-blocks",
   "grader_file": "graders/block-markup/nested-layout-blocks.php",
   "type": "positive_control_fixture",
+  "robustness_case": "nearby_positive",
   "covers_shortcut_ids": ["block_count_stuffing", "shallow_required_text"],
   "expected_result": "pass",
   "post_title": "Community Services Overview",

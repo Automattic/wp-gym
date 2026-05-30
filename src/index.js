@@ -96,6 +96,7 @@ function publicApiMetadata() {
 			wp_cli: 'Run WP-CLI commands without the leading wp inside disposable WordPress episodes.',
 			rest: 'Send sandbox-relative WordPress REST requests and observe status, headers, and body.',
 			browser: 'Capture replayable browser evidence locally; richer click/fill/press traces remain evidence-only until runtime replay support lands.',
+			editor: 'Preserve block editor action and state evidence for audit-only traces until WP Codebox exposes generic editor replay primitives.',
 			mixed: 'A single episode may combine supported action families when the scenario allows them.',
 		},
 		contracts: {
@@ -155,7 +156,7 @@ function scenarioCapabilities(manifest) {
 		replayable_action_types: replayableActionTypes,
 		evidence_only_action_types: evidenceOnlyActionTypes,
 		implemented_local_action_types: implementedLocalActionTypes,
-		observation_types: ['command_result', 'files', 'html', 'logs', 'rest_response', 'screenshot', 'wp_state', 'browser_result'],
+		observation_types: ['command_result', 'files', 'html', 'logs', 'rest_response', 'screenshot', 'wp_state', 'browser_result', 'editor_result'],
 		schemas: schemaReferences(),
 	};
 }

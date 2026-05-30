@@ -2,6 +2,9 @@
 
 Issue: [#136](https://github.com/Automattic/wp-gym/issues/136)
 
+Large-run cost, throughput, and retry planning guidance lives in
+[`docs/large-run-planning.md`](large-run-planning.md).
+
 `wp-gym` owns a durable run registry entry for every completed eval run that is
 eligible for lab comparison, calibration, or benchmark review. The registry is
 not a replacement for the canonical eval artifact row from issue #117. It is the
@@ -32,6 +35,8 @@ Each registry entry indexes a canonical eval artifact row by:
 - Immutable benchmark provenance: workflow and runner SHAs, runtime package-lock hash,
   provider/model snapshot, tool-policy hashes, scenario/prompt/grader/task-set hashes,
   and bundle hash.
+- Optional operations metadata for cost, token usage, timing, concurrency, retry
+  policy, and provider/runtime/runner failure classification.
 
 ## Artifact Index
 
@@ -133,6 +138,12 @@ name heuristics for repeated-attempt rows. Large-N calibration reviews should us
 the model-tier and task-family/model-tier sections to compare no-op, scripted,
 cheap-model, frontier-model, repeated-attempt, and human/reference distributions
 without mixing those rows into headline benchmark reports.
+
+Reports also aggregate `operations` totals when rows expose them: estimated and
+billed cost, token usage, wall/queue/runner/provider timings, effective
+concurrency, retry counts, retry dispositions, and runs per wall-clock hour. Use
+the task-family/model-tier and failure-class report sections for large-run budget
+and retry audits.
 
 The emitter's `--require-entry` flag is used in the workflow so a live run cannot
 silently pass registry emission when no eval row was recovered.

@@ -1,0 +1,44 @@
+{
+  "id": "admin-settings",
+  "label": "Admin settings UI pilot task set",
+  "issue": "https://github.com/Automattic/wp-gym/issues/242",
+  "description": "A focused pilot set for WordPress admin UI tasks that require Settings API registration, capability-gated admin pages, sanitized option storage, and safe frontend rendering.",
+  "benchmark_status": "pilot",
+  "benchmark": false,
+  "headline_score_eligible": false,
+  "aggregate_score": false,
+  "score_scope": "pilot",
+  "task_contract_level": "benchmark_replay",
+  "split_policy": {
+    "lane": "public",
+    "allowed_splits": ["public", "calibration"],
+    "requires_held_out_private": false,
+    "contamination_controls": ["public_tasks_are_training_visible", "headline_scores_blocked_until_held_out_private_ready"]
+  },
+  "benchmark_metadata": {
+    "benchmark_version": "0.0.0-pilot.1",
+    "compatibility_group": "admin-settings-pilot",
+    "compatible_with": []
+  },
+  "capability_coverage": {
+    "schema_version": 1,
+    "primary": ["custom_admin_ui"],
+    "secondary": ["data_interaction_apis", "plugin_quality_wordpress_standards"]
+  },
+  "benchmark_blockers": [
+    "pilot_task_set",
+    "missing_baseline_results",
+    "uncalibrated_difficulty",
+    "held_out_private_variant_planned"
+  ],
+  "scenario_manifests": [
+    "../scenarios/admin-settings/notice-settings-page.json"
+  ],
+  "tasks": [
+    {
+      "scenario_id": "admin-settings-notice-settings-page",
+      "role": "admin-settings-plugin",
+      "summary": "Build a Settings API-backed admin page that stores, sanitizes, and safely renders a neighborhood notice."
+    }
+  ]
+}

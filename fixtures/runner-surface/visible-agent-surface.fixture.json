@@ -72,7 +72,19 @@
       "task_sandbox_interference": 0,
       "unknown": 0
     },
-    "interference_findings": []
+    "interference_findings": [],
+    "hidden_evidence_boundaries": {
+      "covered_evidence_kinds": ["hidden_grader", "held_out_variant", "private_fixture", "expected_answer", "task_policy_internal"],
+      "surfaces": [
+        { "name": "prompt", "status": "pass", "findings": [] },
+        { "name": "tools", "status": "pass", "findings": [] },
+        { "name": "workspace", "status": "pass", "findings": [] },
+        { "name": "artifacts", "status": "pass", "findings": [] },
+        { "name": "report_body", "status": "pass", "findings": [] }
+      ],
+      "benchmark_mode_eligible": true,
+      "accepted_exposures": []
+    }
   },
   "recommendation": {
     "minimal_live_run_config": ["disable_datamachine_directives", "scenario_allowed_tools_only", "hide_grader_and_task_metadata", "workspace_plugins_write_only"],

@@ -46,6 +46,9 @@ try {
 
 	const validated = JSON.parse(run('node', ['scripts/validate-run-registry.mjs', '--input', path.join(output, 'entries')]));
 	assert(validated.ok, 'Expected emitted live registry entry to validate.');
+	const emittedEntryPath = path.join(output, emitted.results[0].entry.replace(/^.*entries\//, 'entries/'));
+	const emittedEntry = readJson(emittedEntryPath);
+	assert(emittedEntry.operations?.retry?.policy === 'wp-gym-large-run-v1', 'Expected emitted rows to carry retry policy metadata.');
 
 	for (const attemptIndex of [1, 2]) {
 		const attemptId = `benchmark-readiness-pilot-block-markup-valid-semantic-blocks-openai-gpt-5-5-fixture-attempt-${attemptIndex}`;
@@ -71,8 +74,37 @@ try {
 	assert(repeatedEntries.every((file) => file.includes('-attempt-')), 'Expected repeated-attempt entry filenames to include the stable attempt ID.');
 	const repeatedValidated = JSON.parse(run('node', ['scripts/validate-run-registry.mjs', '--input', path.join(repeatedOutput, 'entries')]));
 	assert(repeatedValidated.ok, 'Expected emitted repeated-attempt registry entries to validate.');
+	const repeatedReport = JSON.parse(run('node', ['scripts/aggregate-run-registry.mjs', '--registry', path.join(repeatedOutput, 'entries'), '--scope', 'all']));
+	assert(repeatedReport.overall.operations.estimated_cost_usd === 0.085, `Expected repeated report cost total 0.085, got ${repeatedReport.overall.operations.estimated_cost_usd}.`);
+	assert(repeatedReport.overall.operations.total_tokens === 27600, `Expected repeated report token total 27600, got ${repeatedReport.overall.operations.total_tokens}.`);
+	assert(repeatedReport.by_task_family_model_tier['block-markup:frontier_model'].operations.runs_per_wall_hour === 60, 'Expected task-family/model-tier throughput to be reported.');
 
-	console.log(JSON.stringify({ ok: true, emitted: emitted.results.length, repeated_emitted: repeated.results.length, output }, null, 2));
+	const providerFailureArtifact = structuredClone(directEvalArtifact);
+	providerFailureArtifact.status = {
+		outcome: 'errored',
+		failure_class: 'provider_failure',
+		failure_reason: 'rate_limited',
+		message: 'Provider returned a retryable rate limit.',
+	};
+	providerFailureArtifact.grader.success = false;
+	providerFailureArtifact.grader.reward = 0;
+	providerFailureArtifact.operations.retry = {
+		policy: 'wp-gym-large-run-v1',
+		retry_count: 1,
+		max_attempts: 3,
+		disposition: 'retryable',
+	};
+	const providerFailureInput = path.join(temp, 'provider-failure.json');
+	const providerFailureOutput = path.join(temp, 'wp-gym-provider-failure-registry');
+	fs.writeFileSync(providerFailureInput, `${JSON.stringify(providerFailureArtifact, null, 2)}\n`);
+	const providerFailure = JSON.parse(run('node', ['scripts/emit-run-registry.mjs', '--input', providerFailureInput, '--output', providerFailureOutput, '--require-entry']));
+	assert(providerFailure.ok, 'Expected provider failure registry emission to pass.');
+	const providerFailureEntries = fs.readdirSync(path.join(providerFailureOutput, 'entries')).filter((file) => file.endsWith('.json'));
+	const providerFailureEntry = readJson(path.join(providerFailureOutput, 'entries', providerFailureEntries[0]));
+	assert(providerFailureEntry.grade_identity.failure_class === 'provider_failure', 'Expected provider failures to stay distinct from task failures.');
+	assert(providerFailureEntry.operations.retry.disposition === 'retryable', 'Expected provider failures to expose retry disposition.');
+
+	console.log(JSON.stringify({ ok: true, emitted: emitted.results.length, repeated_emitted: repeated.results.length, provider_failure_emitted: providerFailure.results.length, output }, null, 2));
 } finally {
 	fs.rmSync(temp, { recursive: true, force: true });
 }

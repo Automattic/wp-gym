@@ -36,7 +36,7 @@
   "eval_artifact": {
     "kind": "json",
     "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json",
-    "sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec"
+    "sha256": "3cf53fdf68319620288b4482400207436d2fe10171911a6b90afda5a03910c8b"
   },
   "artifact_index": {
     "schema_version": 1,

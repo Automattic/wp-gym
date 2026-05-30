@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { hiddenEvidenceTextFindings, validateHiddenEvidenceBoundary } from './hidden-evidence-boundaries.mjs';
 import { replayRegradeInput } from './replay-regrade.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -308,6 +309,23 @@ function artifactEntries(entry) {
 	return Array.isArray(entry?.artifact_index?.entries) ? entry.artifact_index.entries : [];
 }
 
+function validateOperationalPolicy(entry) {
+	const gaps = [];
+	const failureClass = entry.grade_identity?.failure_class || 'unknown';
+	const retry = entry.operations?.retry || {};
+	if (['provider_failure', 'runtime_failure', 'runner_failure'].includes(failureClass)) {
+		if (!entry.operations?.retry) {
+			gaps.push(gap('missing_retry_policy', 'error', 'operations.retry', `${failureClass} rows must carry retry policy metadata so infra/provider failures can be audited separately from task failures.`));
+		} else if (!['retryable', 'exhausted', 'manual_review'].includes(retry.disposition)) {
+			gaps.push(gap('infra_failure_not_retry_classified', 'error', 'operations.retry.disposition', `${failureClass} rows must be classified as retryable, exhausted, or manual_review.`));
+		}
+	}
+	if (failureClass === 'task_failure' && retry.disposition && retry.disposition !== 'task_terminal') {
+		gaps.push(gap('task_failure_retryable', 'error', 'operations.retry.disposition', 'Task failures are terminal benchmark outcomes and must not be classified as provider/runtime/runner retries.'));
+	}
+	return gaps;
+}
+
 function replayReference(entry) {
 	return artifactEntries(entry).find((artifact) => artifact.category === 'replay' || artifact.name === 'replay_bundle') || null;
 }
@@ -368,11 +386,17 @@ async function validateRunRegistryEntry(entry, options = {}) {
 	if (benchmarkMode) {
 		gaps.push(...validateBenchmarkProvenance(entry));
 		gaps.push(...validateBenchmarkReleaseIdentity(entry, benchmarkMode));
+		gaps.push(...validateHiddenEvidenceBoundary(entry.isolation?.hidden_evidence_boundaries, {
+			benchmarkMode: true,
+			field: 'isolation.hidden_evidence_boundaries',
+		}));
 	}
 
 	if (!entry.grade_identity) {
 		gaps.push(gap('missing_grade_identity', 'error', 'grade_identity', 'Registry entries must identify the grader and result hashes used for scoring.'));
 	}
+
+	gaps.push(...validateOperationalPolicy(entry));
 
 	if (entry.calibration?.row_type === 'repeated_attempts') {
 		if (!entry.run?.result_set_id || !entry.calibration?.result_set_id) {
@@ -401,6 +425,12 @@ async function validateRunRegistryEntry(entry, options = {}) {
 
 	for (const [index, artifact] of artifactEntries(entry).entries()) {
 		gaps.push(...validateReference(artifact, baseDir, `artifact_index.entries[${index}]`, benchmarkMode));
+		if (benchmarkMode) {
+			gaps.push(...hiddenEvidenceTextFindings({
+				name: artifact.name,
+				path_or_url: artifact.path_or_url,
+			}, `artifact_index.entries[${index}]`));
+		}
 	}
 
 	for (const [field, manifest] of [
