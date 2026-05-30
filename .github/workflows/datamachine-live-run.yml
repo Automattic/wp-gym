@@ -171,3 +171,4 @@ jobs:
             artifacts/wp-gym-run-registry
             artifacts/live-replay-bundles
           if-no-files-found: error
+          retention-days: 90

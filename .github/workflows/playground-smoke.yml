@@ -35,3 +35,4 @@ jobs:
             homeboy-ci-results/results.jsonl
             homeboy-ci-results/leaderboard.md
           if-no-files-found: warn
+          retention-days: 30
