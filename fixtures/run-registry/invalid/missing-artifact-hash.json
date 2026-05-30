@@ -7,10 +7,10 @@
   "scenario": { "id": "block-markup-valid-semantic-blocks", "version": "fixture-2026-05-28", "sha256": "525ec6c496bce1b934e3e5170d01169a625bc14d5a7eb7849ea6144be8684c7e", "source_path": "scenarios/block-markup/valid-semantic-blocks.json", "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "task_family": "block-markup" },
   "runner": { "provider": "openai", "model": "gpt-5.5" },
   "runtime": { "id": "wp-codebox", "artifact_bundle_id": "wp-gym-direct-fixture" },
-  "grade_identity": { "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e", "result_sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec", "success": true, "reward": 1, "failure_class": "none" },
+  "grade_identity": { "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e", "result_sha256": "3cf53fdf68319620288b4482400207436d2fe10171911a6b90afda5a03910c8b", "success": true, "reward": 1, "failure_class": "none" },
   "calibration": { "row_type": "frontier_model", "included": true, "status": "pilot" },
   "benchmark": { "eligible": false, "headline_score_eligible": false, "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28" },
-  "eval_artifact": { "kind": "json", "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json", "sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec" },
+  "eval_artifact": { "kind": "json", "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json", "sha256": "3cf53fdf68319620288b4482400207436d2fe10171911a6b90afda5a03910c8b" },
   "artifact_index": {
     "schema_version": 1,
     "index_id": "fixture-missing-artifact-hash/index",
