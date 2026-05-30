@@ -32,6 +32,10 @@ if ( isset( $fixture['fixture_runtime'] ) && 'modern_wordpress_api' === $fixture
 	$GLOBALS['wp_gym_fixture_rest_routes']        = array();
 	$GLOBALS['wp_gym_fixture_abilities']          = array();
 	$GLOBALS['wp_gym_fixture_ability_categories'] = array();
+	$GLOBALS['wp_registered_settings']            = array();
+	$GLOBALS['submenu']                           = array();
+	$GLOBALS['shortcode_tags']                    = array();
+	$GLOBALS['wp_gym_fixture_options']            = array();
 
 	function add_action( string $hook_name, callable $callback ): void {
 		$GLOBALS['wp_gym_fixture_actions'][ $hook_name ][] = $callback;
@@ -66,6 +70,60 @@ if ( isset( $fixture['fixture_runtime'] ) && 'modern_wordpress_api' === $fixture
 
 	function wp_count_posts( string $post_type = 'post' ): object {
 		return (object) array( 'publish' => 'post' === $post_type ? 2 : 0 );
+	}
+
+	function sanitize_text_field( mixed $value ): string {
+		$value = wp_strip_all_tags( (string) $value );
+		$value = preg_replace( '/[\r\n\t ]+/', ' ', $value );
+
+		return trim( (string) $value );
+	}
+
+	function esc_html( mixed $text ): string {
+		return htmlspecialchars( (string) $text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+	}
+
+	function register_setting( string $option_group, string $option_name, array $args = array() ): bool {
+		$args['group'] = $option_group;
+		$GLOBALS['wp_registered_settings'][ $option_name ] = $args;
+
+		return true;
+	}
+
+	function add_options_page( string $page_title, string $menu_title, string $capability, string $menu_slug, ?callable $callback = null ): string {
+		$GLOBALS['submenu']['options-general.php'][] = array( $menu_title, $capability, $menu_slug, $page_title, $callback );
+
+		return 'settings_page_' . $menu_slug;
+	}
+
+	function add_settings_section(): void {}
+
+	function add_settings_field(): void {}
+
+	function add_shortcode( string $tag, callable $callback ): void {
+		$GLOBALS['shortcode_tags'][ $tag ] = $callback;
+	}
+
+	function shortcode_exists( string $tag ): bool {
+		return isset( $GLOBALS['shortcode_tags'][ $tag ] );
+	}
+
+	function do_shortcode( string $content ): string {
+		return preg_replace_callback(
+			'/\[([a-zA-Z0-9_-]+)\]/',
+			static function ( array $matches ): string {
+				$callback = $GLOBALS['shortcode_tags'][ $matches[1] ] ?? null;
+
+				return is_callable( $callback ) ? (string) call_user_func( $callback, array(), '', $matches[1] ) : $matches[0];
+			},
+			$content
+		);
+	}
+
+	function update_option( string $option_name, mixed $value ): bool {
+		$GLOBALS['wp_gym_fixture_options'][ $option_name ] = $value;
+
+		return true;
 	}
 
 	class WP_Gym_Fixture_Rest_Server {
@@ -204,6 +262,8 @@ if ( isset( $fixture['fixture_runtime'] ) && 'modern_wordpress_api' === $fixture
 	copy( $source_file, $agent_file );
 	putenv( 'WP_GYM_AGENT_ROOT=' . $agent_root );
 	require $agent_file;
+	do_action( 'admin_init' );
+	do_action( 'admin_menu' );
 	do_action( 'rest_api_init' );
 
 	$grader_file = $repo_root . DIRECTORY_SEPARATOR . $fixture['grader_file'];
@@ -287,7 +347,11 @@ function get_posts( array $args ): array {
 	return $posts;
 }
 
-function get_option( string $name ) {
+function get_option( string $name, mixed $default = false ) {
+	if ( array_key_exists( $name, $GLOBALS['wp_gym_fixture_options'] ?? array() ) ) {
+		return $GLOBALS['wp_gym_fixture_options'][ $name ];
+	}
+
 	if ( 'show_on_front' === $name ) {
 		return $GLOBALS['wp_gym_fixture_state']['show_on_front'] ?? 'posts';
 	}
@@ -296,7 +360,7 @@ function get_option( string $name ) {
 		return $GLOBALS['wp_gym_fixture_state']['page_on_front'] ?? 0;
 	}
 
-	return null;
+	return $default;
 }
 
 function get_post_meta( int $post_id, string $key = '', bool $single = false ) {
