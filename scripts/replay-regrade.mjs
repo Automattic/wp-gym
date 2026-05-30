@@ -12,6 +12,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const replayCriticalStateKeys = ['wordpress_state', 'wp_state', 'state', 'state_json'];
 const replayCriticalTraceKeys = ['replay_trace', 'trace', 'episode_trace', 'actions', 'action_trace'];
 const replayableActionTypes = ['wp_cli', 'filesystem'];
+const browserEditorActionTypes = ['browser', 'editor'];
 
 function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -318,6 +319,25 @@ function normalizeObservation(observation) {
 	return observation;
 }
 
+function actionReplayability(action) {
+	if (replayableActionTypes.includes(action.type)) {
+		return 'replayable';
+	}
+
+	if (action.type === 'browser') {
+		if (action.replayability === 'replayable' && ['navigate', 'capture'].includes(action.operation)) {
+			return 'runtime_unsupported';
+		}
+		return 'audit_only';
+	}
+
+	if (action.type === 'editor') {
+		return 'audit_only';
+	}
+
+	return 'runtime_unsupported';
+}
+
 function compareStepObservations(expectedTrace, actualTrace) {
 	const mismatches = [];
 	const actualSteps = actualTrace?.steps || [];
@@ -450,13 +470,20 @@ function auditReplayTrace(artifact, traceReference) {
 			));
 		}
 
-		if (!replayableActionTypes.includes(step.action.type)) {
-			unsupportedActions.push({ step_index: index, action_type: step.action.type });
+		const replayability = actionReplayability(step.action);
+		if (replayability !== 'replayable') {
+			unsupportedActions.push({
+				step_index: index,
+				action_type: step.action.type,
+				operation: step.action.operation || null,
+				replayability,
+				declared_replayability: step.action.replayability || null,
+			});
 			gaps.push(gap(
-				'non_replayable_action_type',
+				browserEditorActionTypes.includes(step.action.type) ? 'browser_editor_action_audit_only' : 'non_replayable_action_type',
 				'warning',
 				`${traceReference.section}.${traceReference.key}.steps[${index}].action.type`,
-				`Action type ${step.action.type} is preserved in the trace but is not replayed by this local regrade harness yet.`
+				`Action ${step.action.type}${step.action.operation ? `.${step.action.operation}` : ''} is preserved in the trace and classified as ${replayability}; local regrade will audit the evidence and rerun the terminal grader instead of replaying this action.`
 			));
 		}
 
@@ -468,6 +495,30 @@ function auditReplayTrace(artifact, traceReference) {
 					'error',
 					`${traceReference.section}.${traceReference.key}.steps[${index}]`,
 					'wp_cli actions must be paired with a command_result observation for the same command.'
+				));
+			}
+		}
+
+		if (step.action.type === 'browser') {
+			const observation = step.result?.observation || {};
+			if (observation.type !== 'browser_result' || observation.action_type !== 'browser' || observation.operation !== step.action.operation) {
+				gaps.push(gap(
+					'trace_action_result_mismatch',
+					'error',
+					`${traceReference.section}.${traceReference.key}.steps[${index}]`,
+					'browser actions must be paired with a browser_result observation for the same operation.'
+				));
+			}
+		}
+
+		if (step.action.type === 'editor') {
+			const observation = step.result?.observation || {};
+			if (observation.type !== 'editor_result' || observation.action_type !== 'editor' || observation.operation !== step.action.operation) {
+				gaps.push(gap(
+					'trace_action_result_mismatch',
+					'error',
+					`${traceReference.section}.${traceReference.key}.steps[${index}]`,
+					'editor actions must be paired with an editor_result observation for the same operation.'
 				));
 			}
 		}
