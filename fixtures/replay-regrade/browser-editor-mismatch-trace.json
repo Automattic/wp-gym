@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "episode_id": "browser-editor-mismatch-fixture",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "metadata": {
+    "max_steps": 1,
+    "allowed_action_types": ["browser"],
+    "setup": ["wordpress-state-fixture"],
+    "success_checks": ["target_post_exists"],
+    "replay": {
+      "mode": "audit_only",
+      "reset": {
+        "strategy": "wordpress_state",
+        "state_ref": "wordpress-state.json"
+      },
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "timing": {
+        "default_timeout_ms": 30000
+      },
+      "screenshots": {
+        "required": false
+      },
+      "state": {
+        "dom_required": true,
+        "editor_store_required": false
+      }
+    }
+  },
+  "steps": [
+    {
+      "step_index": 0,
+      "timestamp": "2026-05-27T00:00:01Z",
+      "action": {
+        "schema_version": 1,
+        "type": "browser",
+        "operation": "click",
+        "replayability": "evidence_only",
+        "selector": ".wp-block-button__link",
+        "url": "/sample-page/",
+        "timeout_ms": 30000
+      },
+      "result": {
+        "schema_version": 1,
+        "observation": {
+          "schema_version": 1,
+          "type": "browser_result",
+          "action_type": "browser",
+          "operation": "capture",
+          "replayability": "evidence_only",
+          "url": "/sample-page/",
+          "artifacts": [],
+          "duration_ms": 100,
+          "error": null
+        },
+        "reward": {
+          "value": 0,
+          "success": false,
+          "failure_reasons": []
+        },
+        "done": false,
+        "telemetry": {
+          "runner": "fixture"
+        }
+      }
+    }
+  ]
+}
