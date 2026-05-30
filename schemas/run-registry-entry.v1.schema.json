@@ -93,7 +93,8 @@
         "model": { "type": "string", "minLength": 1 },
         "agent_slug": { "type": ["string", "null"] },
         "workflow_run_url": { "type": ["string", "null"] },
-        "job_id": { "type": ["string", "integer", "null"] }
+        "job_id": { "type": ["string", "integer", "null"] },
+        "tool_policy_sha256": { "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
       },
       "additionalProperties": true
     },
@@ -144,6 +145,11 @@
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
         }
       },
+      "additionalProperties": true
+    },
+    "provenance": {
+      "type": ["object", "null"],
+      "description": "Immutable benchmark execution provenance. Required by benchmark-mode validation.",
       "additionalProperties": true
     },
     "eval_artifact": { "$ref": "#/$defs/artifact_reference" },
