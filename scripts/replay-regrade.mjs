@@ -635,6 +635,57 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 	};
 }
 
+export async function replayRegradeInput(input, options = {}) {
+	const inputPath = path.resolve(input);
+	let searchRoot = inputPath;
+	let extractedFrom = null;
+	try {
+		if (isZipFile(inputPath)) {
+			searchRoot = extractZipArchive(inputPath);
+			extractedFrom = inputPath;
+		}
+
+		const files = collectJsonFiles(searchRoot);
+		const inputIsDirectory = fs.statSync(searchRoot).isDirectory();
+		const artifactFiles = inputIsDirectory
+			? files.filter((file) => unwrapEvalArtifact(readJson(file)))
+			: files;
+
+		if (!artifactFiles.length) {
+			return {
+				ok: false,
+				benchmark_mode: Boolean(options.benchmarkMode),
+				regrade: Boolean(options.regrade),
+				input,
+				extracted_from: extractedFrom,
+				summary: summarizeResults([]),
+				results: [],
+				compatibility_gaps: [gap(
+					'missing_eval_artifact',
+					'error',
+					'input',
+					'No eval artifact projection found in the provided input.'
+				)],
+			};
+		}
+
+		const results = await Promise.all(artifactFiles.map((file) => replayRegradeArtifactFile(file, { benchmarkMode: options.benchmarkMode })));
+		return {
+			ok: results.every((result) => result.ok),
+			benchmark_mode: Boolean(options.benchmarkMode),
+			regrade: Boolean(options.regrade),
+			input,
+			extracted_from: extractedFrom,
+			summary: summarizeResults(results),
+			results,
+		};
+	} finally {
+		if (extractedFrom) {
+			fs.rmSync(searchRoot, { recursive: true, force: true });
+		}
+	}
+}
+
 function parseArgs(argv) {
 	const args = { input: '', benchmarkMode: /^(1|true|yes)$/i.test(process.env.BENCHMARK_MODE || ''), regrade: false };
 	for (let i = 0; i < argv.length; i += 1) {
@@ -665,51 +716,11 @@ async function main() {
 	}
 
 	const inputPath = path.resolve(args.input);
-	let searchRoot = inputPath;
-	let extractedFrom = null;
 	let exitCode = 0;
-	try {
-		if (isZipFile(inputPath)) {
-			searchRoot = extractZipArchive(inputPath);
-			extractedFrom = inputPath;
-		}
-
-		const files = collectJsonFiles(searchRoot);
-		const inputIsDirectory = fs.statSync(searchRoot).isDirectory();
-		const artifactFiles = inputIsDirectory
-			? files.filter((file) => unwrapEvalArtifact(readJson(file)))
-			: files;
-
-		if (!artifactFiles.length) {
-			console.log(JSON.stringify({
-				ok: false,
-				benchmark_mode: args.benchmarkMode,
-				regrade: args.regrade,
-				input: args.input,
-				extracted_from: extractedFrom,
-				summary: summarizeResults([]),
-				results: [],
-				compatibility_gaps: [gap(
-					'missing_eval_artifact',
-					'error',
-					'input',
-					'No eval artifact projection found in the provided input.'
-				)],
-			}, null, 2));
-			exitCode = 1;
-		} else {
-			const results = await Promise.all(artifactFiles.map((file) => replayRegradeArtifactFile(file, { benchmarkMode: args.benchmarkMode })));
-			const ok = results.every((result) => result.ok);
-
-			console.log(JSON.stringify({ ok, benchmark_mode: args.benchmarkMode, regrade: args.regrade, input: args.input, extracted_from: extractedFrom, summary: summarizeResults(results), results }, null, 2));
-			if (!ok) {
-				exitCode = 1;
-			}
-		}
-	} finally {
-		if (extractedFrom) {
-			fs.rmSync(searchRoot, { recursive: true, force: true });
-		}
+	const result = await replayRegradeInput(inputPath, { benchmarkMode: args.benchmarkMode, regrade: args.regrade });
+	console.log(JSON.stringify(result, null, 2));
+	if (!result.ok) {
+		exitCode = 1;
 	}
 	process.exit(exitCode);
 }

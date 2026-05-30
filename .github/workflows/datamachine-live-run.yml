@@ -155,7 +155,8 @@ jobs:
             --output artifacts/wp-gym-run-registry \
             --require-entry
           node scripts/validate-run-registry.mjs \
-            --input artifacts/wp-gym-run-registry/entries
+            --input artifacts/wp-gym-run-registry/entries \
+            --regrade
           npm run run-registry:report -- \
             --registry artifacts/wp-gym-run-registry/entries \
             --json artifacts/wp-gym-run-registry/report.json \

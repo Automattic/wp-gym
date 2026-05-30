@@ -25,7 +25,7 @@ function usage() {
 		'  wp-gym replay <eval-artifact-json-dir-or-zip> --regrade',
 		'  wp-gym replay-regrade --input <eval-artifact-json-or-dir> [--benchmark-mode]',
 		'  wp-gym benchmark-promotion report --scenario <id>|--task-set <id> [--format json|markdown] [--check]',
-		'  wp-gym run-registry emit|report|validate [args...]',
+		'  wp-gym run-registry emit|report|validate [--regrade] [args...]',
 		'  wp-gym remote-archive triage --input <cycle-dir-or-tar> [args...]',
 	].join('\n'));
 }
