@@ -125,7 +125,7 @@
       "classification": "grader_outcomes_match_reviewed_wordpress_quality_with_promotion_blockers",
       "shortcut_resolution_status": "unresolved",
       "representative_passed_outputs": ["block-markup-valid-semantic-blocks-meaningful-content"],
-      "adversarial_or_failed_outputs": ["block-markup-valid-semantic-blocks-keyword-stuffing", "block-markup-valid-semantic-blocks-shallow-validity"],
+      "adversarial_or_failed_outputs": ["block-markup-valid-semantic-blocks-keyword-stuffing", "block-markup-valid-semantic-blocks-shallow-validity", "block-markup-valid-semantic-blocks-empty-output"],
       "diagnostic_contract_review": {
         "status": "reviewed",
         "classification": "wordpress_state_diagnostic_only_not_benchmark_replay",

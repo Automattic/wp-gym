@@ -11,6 +11,8 @@ const reviewStatuses = new Set(['reviewed', 'needs_review']);
 const reviewerTypes = new Set(['human', 'reference_oracle']);
 const shortcutStatuses = new Set(['resolved', 'unresolved', 'not_applicable']);
 const diagnosticReviewStatuses = new Set(['reviewed', 'not_applicable']);
+const reviewCaseTypes = new Set(['positive', 'negative', 'adversarial', 'borderline']);
+const requiredReviewCaseTypes = [...reviewCaseTypes];
 
 function assert(condition, message) {
 	if (!condition) {
@@ -69,9 +71,14 @@ async function loadRewardFixtures() {
 	return fixtures;
 }
 
+function scenarioTaskFamily(scenario) {
+	return scenario.file.split('/')[1] || scenario.manifest.capabilities?.primary || 'uncategorized';
+}
+
 function validateOutputReview(file, scenarioId, output, fixtures, label) {
 	assert(typeof output === 'object' && output !== null && !Array.isArray(output), `${file} ${label} must be an object`);
 	assert(typeof output.fixture_id === 'string' && output.fixture_id.length > 0, `${file} ${label}.fixture_id is required`);
+	assert(reviewCaseTypes.has(output.review_case), `${file} ${label}.review_case must be one of: ${requiredReviewCaseTypes.join(', ')}`);
 	const fixture = fixtures.get(output.fixture_id);
 	assert(fixture, `${file} ${label}.fixture_id references unknown fixture: ${output.fixture_id}`);
 	assert(fixture.fixture.scenario_id === scenarioId, `${file} ${label}.fixture_id belongs to ${fixture.fixture.scenario_id}, expected ${scenarioId}`);
@@ -81,9 +88,16 @@ function validateOutputReview(file, scenarioId, output, fixtures, label) {
 	assert(['match', 'mismatch'].includes(output.reviewer_classification), `${file} ${label}.reviewer_classification must be match or mismatch`);
 	assert(output.reviewer_classification === 'match', `${file} ${label} must not record unresolved grader/reviewer mismatch`);
 	assert(output.grader_outcome === output.expected_wordpress_quality, `${file} ${label} grader outcome must match expected WordPress quality`);
+	if (output.review_case === 'positive') {
+		assert(output.grader_outcome === 'pass', `${file} ${label}.review_case positive must have pass grader_outcome`);
+		assert(fixture.fixture.type === 'positive_control_fixture', `${file} ${label}.review_case positive must reference a positive_control_fixture`);
+	} else {
+		assert(output.grader_outcome === 'fail', `${file} ${label}.review_case ${output.review_case} must have fail grader_outcome`);
+		assert(fixture.fixture.type === 'adversarial_negative_fixture', `${file} ${label}.review_case ${output.review_case} must reference an adversarial_negative_fixture`);
+	}
 }
 
-function validateReview(file, review, scenarios, fixtures) {
+function validateReview(file, review, scenarios, fixtures, familyAccumulator) {
 	assert(typeof review.scenario_id === 'string' && review.scenario_id.length > 0, `${file} review.scenario_id is required`);
 	const scenario = scenarios.get(review.scenario_id);
 	assert(scenario, `${file} references unknown scenario_id: ${review.scenario_id}`);
@@ -102,6 +116,26 @@ function validateReview(file, review, scenarios, fixtures) {
 		validateOutputReview(file, review.scenario_id, output, fixtures, `adversarial_or_failed_outputs[${index}]`);
 	}
 
+	const family = scenarioTaskFamily(scenario);
+	if (!familyAccumulator.has(family)) {
+		familyAccumulator.set(family, {
+			scenarios: new Set(),
+			reviewed_cases: Object.fromEntries(requiredReviewCaseTypes.map((type) => [type, 0])),
+			agreements: 0,
+			disagreements: 0,
+		});
+	}
+	const familySummary = familyAccumulator.get(family);
+	familySummary.scenarios.add(review.scenario_id);
+	for (const output of [...review.representative_passed_outputs, ...review.adversarial_or_failed_outputs]) {
+		familySummary.reviewed_cases[output.review_case] += 1;
+		if (output.reviewer_classification === 'match') {
+			familySummary.agreements += 1;
+		} else {
+			familySummary.disagreements += 1;
+		}
+	}
+
 	const metadata = scenario.manifest.calibration?.reward_soundness_review;
 	assert(metadata, `${scenario.file} calibration.reward_soundness_review must link to ${file}`);
 	assert(metadata.artifact === file, `${scenario.file} calibration.reward_soundness_review.artifact must be ${file}`);
@@ -110,6 +144,33 @@ function validateReview(file, review, scenarios, fixtures) {
 	assert(metadata.diagnostic_contract_review?.status === review.diagnostic_contract_review.status, `${scenario.file} calibration.reward_soundness_review.diagnostic_contract_review.status must match review artifact`);
 	if (scenario.manifest.calibration?.known_shortcuts?.length > 0) {
 		assert(review.shortcut_resolution_status !== 'resolved', `${file} ${review.scenario_id} cannot mark shortcuts resolved while calibration.known_shortcuts is non-empty`);
+	}
+}
+
+function validateTaskFamilyAgreement(file, artifact, familyAccumulator) {
+	assert(typeof artifact.agreement_policy === 'object' && artifact.agreement_policy !== null && !Array.isArray(artifact.agreement_policy), `${file} agreement_policy is required`);
+	assert(Number.isInteger(artifact.agreement_policy.max_unresolved_disagreements), `${file} agreement_policy.max_unresolved_disagreements must be an integer`);
+	assert(Array.isArray(artifact.task_family_agreement) && artifact.task_family_agreement.length > 0, `${file} task_family_agreement must be a non-empty array`);
+
+	const reported = new Map(artifact.task_family_agreement.map((entry) => [entry.family, entry]));
+	for (const [family, summary] of familyAccumulator.entries()) {
+		const entry = reported.get(family);
+		assert(entry, `${file} task_family_agreement missing family: ${family}`);
+		assert(Array.isArray(entry.scenarios), `${file} task_family_agreement ${family}.scenarios must be an array`);
+		assert(entry.scenarios.join('\n') === [...summary.scenarios].sort().join('\n'), `${file} task_family_agreement ${family}.scenarios must match reviewed scenarios`);
+		for (const type of requiredReviewCaseTypes) {
+			assert(entry.reviewed_cases?.[type] === summary.reviewed_cases[type], `${file} task_family_agreement ${family}.reviewed_cases.${type} must be ${summary.reviewed_cases[type]}`);
+			assert(summary.reviewed_cases[type] > 0, `${file} task family ${family} needs at least one ${type} review case`);
+		}
+		assert(entry.agreements === summary.agreements, `${file} task_family_agreement ${family}.agreements must be ${summary.agreements}`);
+		assert(entry.disagreements === summary.disagreements, `${file} task_family_agreement ${family}.disagreements must be ${summary.disagreements}`);
+		assert(entry.unresolved_disagreements === summary.disagreements, `${file} task_family_agreement ${family}.unresolved_disagreements must be ${summary.disagreements}`);
+		assert(entry.unresolved_disagreements <= artifact.agreement_policy.max_unresolved_disagreements, `${file} task family ${family} exceeds unresolved disagreement policy`);
+		const total = summary.agreements + summary.disagreements;
+		assert(entry.agreement_rate === summary.agreements / total, `${file} task_family_agreement ${family}.agreement_rate must be ${summary.agreements / total}`);
+	}
+	for (const family of reported.keys()) {
+		assert(familyAccumulator.has(family), `${file} task_family_agreement reports unreviewed family: ${family}`);
 	}
 }
 
@@ -124,10 +185,12 @@ for (const file of files) {
 	assert(artifact.schema_version === 1, `${file} schema_version must be 1`);
 	assert(typeof artifact.id === 'string' && artifact.id.length > 0, `${file} id is required`);
 	assert(Array.isArray(artifact.reviews) && artifact.reviews.length > 0, `${file} reviews must be a non-empty array`);
+	const familyAccumulator = new Map();
 	for (const review of artifact.reviews) {
-		validateReview(file, review, scenarios, fixtures);
+		validateReview(file, review, scenarios, fixtures, familyAccumulator);
 		reviewedScenarioIds.add(review.scenario_id);
 	}
+	validateTaskFamilyAgreement(file, artifact, familyAccumulator);
 }
 
 const pilot = await loadJson(`task-sets/${requiredPilotTaskSet}.json`);
