@@ -424,7 +424,7 @@ async function main() {
 				media_type: 'application/json',
 			};
 			const entry = buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile: file, replayReference: recordReplayReference, scenarioIndex });
-			const registryValidation = validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, baseDir: root });
+			const registryValidation = await validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, baseDir: root });
 			const entryFile = path.join(entriesDir, `${id}.json`);
 			writeJson(entryFile, entry);
 			results.push({

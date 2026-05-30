@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { replayRegradeInput } from './replay-regrade.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const schemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/run-registry-entry.v1.schema.json';
@@ -267,7 +268,58 @@ function artifactEntries(entry) {
 	return Array.isArray(entry?.artifact_index?.entries) ? entry.artifact_index.entries : [];
 }
 
-function validateRunRegistryEntry(entry, options = {}) {
+function replayReference(entry) {
+	return artifactEntries(entry).find((artifact) => artifact.category === 'replay' || artifact.name === 'replay_bundle') || null;
+}
+
+async function validateReplayRegrade(entry, baseDir) {
+	const reference = replayReference(entry);
+	if (!reference) {
+		return [];
+	}
+
+	const replayFile = localReferencePath(reference, baseDir);
+	if (!replayFile || !fs.existsSync(replayFile) || !fs.statSync(replayFile).isFile()) {
+		return [];
+	}
+
+	let result;
+	try {
+		result = await replayRegradeInput(replayFile, { benchmarkMode: true, regrade: true });
+	} catch (error) {
+		return [gap(
+			'replay_regrade_failed',
+			'error',
+			'artifact_index.entries.replay',
+			`Replay/regrade failed for ${reference.path_or_url}: ${error instanceof Error ? error.message : String(error)}.`
+		)];
+	}
+
+	const gaps = [];
+	for (const compatibilityGap of result.compatibility_gaps || []) {
+		gaps.push(gap(
+			'replay_regrade_failed',
+			compatibilityGap.severity || 'error',
+			'artifact_index.entries.replay',
+			`Replay/regrade failed for ${reference.path_or_url}: ${compatibilityGap.message || compatibilityGap.code}.`
+		));
+	}
+	for (const replayResult of result.results || []) {
+		if (replayResult.ok) {
+			continue;
+		}
+		const status = replayResult.regrade_status || {};
+		gaps.push(gap(
+			status.grade_drift ? 'replay_regrade_drift' : 'replay_regrade_failed',
+			'error',
+			'artifact_index.entries.replay',
+			`Replay/regrade failed for ${reference.path_or_url}: ${status.failure_reason || status.compatibility_error_codes?.join(', ') || 'sealed artifact was not reproducible'}.`
+		));
+	}
+	return gaps;
+}
+
+async function validateRunRegistryEntry(entry, options = {}) {
 	const benchmarkMode = Boolean(options.benchmarkMode);
 	const baseDir = options.baseDir || root;
 	const validate = options.validate || createValidator();
@@ -347,6 +399,10 @@ function validateRunRegistryEntry(entry, options = {}) {
 		}
 	}
 
+	if (options.regrade && !gaps.some((item) => item.severity === 'error')) {
+		gaps.push(...await validateReplayRegrade(entry, baseDir));
+	}
+
 	return {
 		ok: !gaps.some((item) => item.severity === 'error'),
 		immutable_fingerprints: provenanceFingerprints(entry.provenance),
@@ -355,12 +411,15 @@ function validateRunRegistryEntry(entry, options = {}) {
 }
 
 function parseArgs(argv) {
-	const args = { input: registryFixtureRoot, benchmarkMode: /^(1|true|yes)$/i.test(process.env.BENCHMARK_MODE || '') };
+	const args = { input: registryFixtureRoot, benchmarkMode: /^(1|true|yes)$/i.test(process.env.BENCHMARK_MODE || ''), regrade: false };
 	for (let i = 0; i < argv.length; i += 1) {
 		const arg = argv[i];
 		if (arg === '--input') {
 			args.input = path.resolve(argv[++i]);
 		} else if (arg === '--benchmark-mode') {
+			args.benchmarkMode = true;
+		} else if (arg === '--regrade') {
+			args.regrade = true;
 			args.benchmarkMode = true;
 		} else if (arg === '--help' || arg === '-h') {
 			args.help = true;
@@ -374,30 +433,31 @@ function parseArgs(argv) {
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
 	if (args.help) {
-		console.error('Usage: node scripts/validate-run-registry.mjs [--input <registry-json-or-dir>] [--benchmark-mode]');
+		console.error('Usage: node scripts/validate-run-registry.mjs [--input <registry-json-or-dir>] [--benchmark-mode] [--regrade]');
 		process.exit(0);
 	}
 
 	const validate = createValidator();
 	const inputStat = fs.statSync(args.input);
 	const files = inputStat.isFile() ? [args.input] : collectJsonFiles(args.input);
-	const results = files.map((file) => {
+	const results = [];
+	for (const file of files) {
 		const entry = readJson(file);
 		const expectedErrors = entry._expected_error_codes || [];
-		const result = validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, baseDir: root, validate });
+		const result = await validateRunRegistryEntry(entry, { benchmarkMode: args.benchmarkMode, regrade: args.regrade, baseDir: root, validate });
 		const actualCodes = new Set(result.compatibility_gaps.map((item) => item.code));
 		const expectedSatisfied = expectedErrors.every((code) => actualCodes.has(code));
 		const expectedInvalid = expectedErrors.length > 0;
 		const ok = expectedInvalid ? !result.ok && expectedSatisfied : result.ok;
-		return {
+		results.push({
 			file: repoRelative(file),
 			ok,
 			valid: result.ok,
 			immutable_fingerprints: result.immutable_fingerprints,
 			expected_error_codes: expectedErrors,
 			compatibility_gaps: result.compatibility_gaps,
-		};
-	});
+		});
+	}
 
 	const ok = results.every((result) => result.ok);
 	console.log(JSON.stringify({ ok, benchmark_mode: args.benchmarkMode, results }, null, 2));
