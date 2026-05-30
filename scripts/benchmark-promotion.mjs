@@ -18,6 +18,7 @@ const hashPattern = /^[a-f0-9]{64}$/;
 const benchmarkReplayRequiredArtifacts = ['grader_result', 'replay_bundle', 'replay_trace'];
 const benchmarkReplayStateArtifacts = ['wordpress_state', 'workspace_diff', 'plugin_files', 'media_library'];
 const benchmarkReplayActionTypes = ['wp_cli', 'filesystem'];
+const benchmarkHiddenPaths = ['graders', 'scenarios', 'checks', 'task-sets'];
 
 function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -86,6 +87,10 @@ function hasReviewedRewardSoundness(review) {
 		review.representative_passed_outputs.length > 0 &&
 		Array.isArray(review.adversarial_or_failed_outputs) &&
 		review.adversarial_or_failed_outputs.length > 0;
+}
+
+function normalizedPathSegments(paths) {
+	return new Set((Array.isArray(paths) ? paths : []).map((entry) => String(entry).replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/g, '')));
 }
 
 function loadScenarios(root) {
@@ -301,6 +306,21 @@ function evaluateScenario(scenario, context = {}) {
 	gates.push(unsupportedActions.length === 0
 		? pass('replay_actions_supported', 'Scenario episode actions are supported by local replay.', manifest.episode_contract?.allowed_action_types || [])
 		: fail('replay_actions_supported', 'Benchmark replay scenarios may only use locally replayable action types.', unsupportedActions.map((actionType) => `non_replayable_action_type:${actionType}`), manifest.episode_contract?.allowed_action_types || []));
+
+	const hiddenPaths = normalizedPathSegments(manifest.environment?.hidden_paths);
+	const missingHiddenPaths = benchmarkHiddenPaths.filter((hiddenPath) => !hiddenPaths.has(hiddenPath));
+	const privateArtifacts = new Set(split.artifact_policy?.private_artifacts || []);
+	const publicPrivateOverlap = (split.artifact_policy?.public_artifacts || []).filter((artifact) => privateArtifacts.has(artifact));
+	const expectedAnswersVisible = manifest.expected !== undefined && split.membership === 'held_out_private';
+	const hiddenEvidenceBlockers = [
+		...missingHiddenPaths.map((hiddenPath) => `missing_hidden_path:${hiddenPath}`),
+		...publicPrivateOverlap.map((artifact) => `private_artifact_public:${artifact}`),
+		...(split.membership === 'held_out_private' && split.artifact_policy?.grader_exposure !== 'private' ? ['held_out_grader_not_private'] : []),
+		...(expectedAnswersVisible ? ['expected_answers_visible'] : []),
+	];
+	gates.push(hiddenEvidenceBlockers.length === 0
+		? pass('hidden_evidence_boundaries_clean', 'Scenario hides grader, private fixture, held-out, expected answer, and task-policy evidence from visible benchmark surfaces.', manifest.environment?.hidden_paths || [])
+		: fail('hidden_evidence_boundaries_clean', 'Benchmark scenarios must not expose hidden grader, private fixture, held-out, expected answer, or task-policy internals.', hiddenEvidenceBlockers, manifest.environment?.hidden_paths || []));
 
 	gates.push(hasVersionIdentity(calibration.benchmark_metadata)
 		? pass('version_identity_present', 'Scenario benchmark metadata includes version identity hashes.')
