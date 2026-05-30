@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildRewardRobustnessReport } from './report-reward-robustness.mjs';
 
 const moduleRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const commandName = 'wp-gym benchmark-promotion report';
@@ -17,6 +18,8 @@ const hashPattern = /^[a-f0-9]{64}$/;
 const benchmarkReplayRequiredArtifacts = ['grader_result', 'replay_bundle', 'replay_trace'];
 const benchmarkReplayStateArtifacts = ['wordpress_state', 'workspace_diff', 'plugin_files', 'media_library'];
 const benchmarkReplayActionTypes = ['wp_cli', 'filesystem'];
+const disagreementSeverities = ['critical', 'high', 'medium', 'low'];
+const benchmarkHiddenPaths = ['graders', 'scenarios', 'checks', 'task-sets'];
 
 function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -87,6 +90,10 @@ function hasReviewedRewardSoundness(review) {
 		review.adversarial_or_failed_outputs.length > 0;
 }
 
+function normalizedPathSegments(paths) {
+	return new Set((Array.isArray(paths) ? paths : []).map((entry) => String(entry).replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/g, '')));
+}
+
 function loadScenarios(root) {
 	const scenarios = new Map();
 	for (const file of listJsonFiles(path.join(root, 'scenarios'))) {
@@ -154,6 +161,54 @@ function loadCalibrationResults(root) {
 	return results;
 }
 
+function loadRewardSoundnessReviews(root) {
+	const reviews = new Map();
+	const reviewRoot = path.join(root, 'reviews', 'reward-soundness');
+	if (!fs.existsSync(reviewRoot)) {
+		return reviews;
+	}
+
+	for (const file of listJsonFiles(reviewRoot)) {
+		const artifact = readJson(file);
+		reviews.set(repoRelative(root, file), { file, artifact });
+	}
+	return reviews;
+}
+
+function rewardAgreementGate(review, context) {
+	const artifactPath = review?.artifact;
+	const artifact = artifactPath ? context.rewardSoundnessReviewsByPath?.get(artifactPath)?.artifact : null;
+	if (!artifact) {
+		return fail('reward_agreement_thresholds', 'Reward-soundness review artifact must be available for agreement threshold checks.', ['missing_reward_agreement_artifact'], artifactPath ? [artifactPath] : []);
+	}
+
+	const scenarioSummary = (artifact.scenario_agreement || []).find((entry) => entry.scenario_id === context.scenarioId);
+	if (!scenarioSummary) {
+		return fail('reward_agreement_thresholds', 'Review artifact must include scenario-level agreement metrics.', ['missing_scenario_agreement_metrics'], [artifactPath]);
+	}
+
+	const policy = artifact.agreement_policy || {};
+	const blockers = [];
+	const maxUnresolved = Number.isInteger(policy.max_unresolved_disagreements) ? policy.max_unresolved_disagreements : 0;
+	if ((scenarioSummary.unresolved_disagreements || 0) > maxUnresolved) {
+		blockers.push('unresolved_reward_disagreement');
+	}
+	const minAgreementRate = typeof policy.min_agreement_rate === 'number' ? policy.min_agreement_rate : 1;
+	if ((scenarioSummary.agreement_rate || 0) < minAgreementRate) {
+		blockers.push('reward_agreement_rate_below_threshold');
+	}
+	for (const severity of disagreementSeverities) {
+		const limit = policy.max_unresolved_by_severity?.[severity] ?? maxUnresolved;
+		if ((scenarioSummary.disagreement_severity?.[severity] || 0) > limit) {
+			blockers.push(`unresolved_${severity}_reward_disagreement`);
+		}
+	}
+
+	return blockers.length === 0
+		? pass('reward_agreement_thresholds', 'Scenario human/reference agreement satisfies reward-corpus promotion thresholds.', [artifactPath])
+		: fail('reward_agreement_thresholds', 'Promotion is blocked by unresolved human/reference grader disagreement metrics.', blockers, [artifactPath, ...(scenarioSummary.follow_ups || [])]);
+}
+
 function calibrationRowsForScenario(calibration, context, rowType) {
 	const rows = [];
 	for (const resultSetId of calibration.calibration_result_sets || calibration.baseline_result_sets || []) {
@@ -205,6 +260,7 @@ function evaluateScenario(scenario, context = {}) {
 	const calibration = manifest.calibration || {};
 	const split = manifest.split || {};
 	const coverage = context.shortcutCoverage?.get(manifest.id) || { negative: new Map(), positive: new Map() };
+	const robustness = context.rewardRobustnessByScenario?.get(manifest.id);
 	const gates = [];
 
 	gates.push(calibration.status === 'benchmark_ready' && calibration.benchmark_scope === 'benchmark' && calibration.headline_score_eligible === true
@@ -266,6 +322,11 @@ function evaluateScenario(scenario, context = {}) {
 		? pass('reward_soundness_reviewed', 'Human/reference review classified representative pass and adversarial outputs.', [calibration.reward_soundness_review.artifact])
 		: fail('reward_soundness_reviewed', 'Benchmark-ready scenarios must link reviewed reward-soundness evidence.', ['missing_reward_soundness_review']));
 
+	gates.push(rewardAgreementGate(calibration.reward_soundness_review, { ...context, scenarioId: manifest.id }));
+	gates.push(robustness?.status === 'pass'
+		? pass('reward_robustness_fixture_coverage', 'Scenario has nearby positive, adversarial negative, borderline negative, and known shortcut fixture coverage.', robustness.fixtures > 0 ? [scenario.file] : [])
+		: fail('reward_robustness_fixture_coverage', 'Scenario reward robustness coverage must pass before promotion.', (robustness?.gaps || ['missing_reward_robustness_report']).map((gap) => `reward_robustness:${gap}`)));
+
 	gates.push(calibration.reward_soundness_review?.shortcut_resolution_status === 'resolved' || (calibration.known_shortcuts || []).length === 0
 		? pass('reward_shortcuts_review_resolved', 'Reward-soundness review does not leave known shortcuts unresolved.')
 		: fail('reward_shortcuts_review_resolved', 'Promotion is blocked while review evidence marks reward shortcuts unresolved.', ['known_reward_shortcut']));
@@ -295,6 +356,21 @@ function evaluateScenario(scenario, context = {}) {
 	gates.push(unsupportedActions.length === 0
 		? pass('replay_actions_supported', 'Scenario episode actions are supported by local replay.', manifest.episode_contract?.allowed_action_types || [])
 		: fail('replay_actions_supported', 'Benchmark replay scenarios may only use locally replayable action types.', unsupportedActions.map((actionType) => `non_replayable_action_type:${actionType}`), manifest.episode_contract?.allowed_action_types || []));
+
+	const hiddenPaths = normalizedPathSegments(manifest.environment?.hidden_paths);
+	const missingHiddenPaths = benchmarkHiddenPaths.filter((hiddenPath) => !hiddenPaths.has(hiddenPath));
+	const privateArtifacts = new Set(split.artifact_policy?.private_artifacts || []);
+	const publicPrivateOverlap = (split.artifact_policy?.public_artifacts || []).filter((artifact) => privateArtifacts.has(artifact));
+	const expectedAnswersVisible = manifest.expected !== undefined && split.membership === 'held_out_private';
+	const hiddenEvidenceBlockers = [
+		...missingHiddenPaths.map((hiddenPath) => `missing_hidden_path:${hiddenPath}`),
+		...publicPrivateOverlap.map((artifact) => `private_artifact_public:${artifact}`),
+		...(split.membership === 'held_out_private' && split.artifact_policy?.grader_exposure !== 'private' ? ['held_out_grader_not_private'] : []),
+		...(expectedAnswersVisible ? ['expected_answers_visible'] : []),
+	];
+	gates.push(hiddenEvidenceBlockers.length === 0
+		? pass('hidden_evidence_boundaries_clean', 'Scenario hides grader, private fixture, held-out, expected answer, and task-policy evidence from visible benchmark surfaces.', manifest.environment?.hidden_paths || [])
+		: fail('hidden_evidence_boundaries_clean', 'Benchmark scenarios must not expose hidden grader, private fixture, held-out, expected answer, or task-policy internals.', hiddenEvidenceBlockers, manifest.environment?.hidden_paths || []));
 
 	gates.push(hasVersionIdentity(calibration.benchmark_metadata)
 		? pass('version_identity_present', 'Scenario benchmark metadata includes version identity hashes.')
@@ -338,6 +414,21 @@ function evaluateTaskSet(taskSet, context = {}) {
 	gates.push(Array.isArray(manifest.benchmark_blockers) && manifest.benchmark_blockers.length === 0
 		? pass('task_set_blockers_empty', 'Task-set benchmark_blockers is empty.')
 		: fail('task_set_blockers_empty', 'Task-set benchmark_blockers must be empty.', manifest.benchmark_blockers || ['benchmark_blockers_present']));
+
+	const includedFamilyReports = new Map();
+	for (const task of manifest.tasks || []) {
+		const scenario = context.rewardRobustnessByScenario?.get(task.scenario_id);
+		if (!scenario) {
+			continue;
+		}
+		const family = context.rewardRobustnessByFamily?.get(scenario.task_family);
+		if (family) {
+			includedFamilyReports.set(family.family, family);
+		}
+	}
+	gates.push(context.rewardRobustness?.status === 'pass' && includedFamilyReports.size > 0
+		? pass('task_family_reward_robustness_reported', 'Reward robustness report covers included task families without candidate coverage gaps.', [...includedFamilyReports.keys()].sort())
+		: fail('task_family_reward_robustness_reported', 'Task-set promotion requires corpus-wide task-family reward robustness status.', context.rewardRobustness?.blockers?.length > 0 ? context.rewardRobustness.blockers.map((gap) => `reward_robustness:${gap}`) : ['missing_task_family_reward_robustness_report']));
 
 	for (const task of manifest.tasks || []) {
 		const scenario = scenariosById.get(task.scenario_id);
@@ -426,12 +517,17 @@ function validateEmbeddedPromotionReport(target, scenariosById = new Map()) {
 }
 
 function buildContext(root) {
+	const rewardRobustness = buildRewardRobustnessReport({ root });
 	return {
 		root,
 		scenariosById: loadScenarios(root),
 		taskSetsById: loadTaskSets(root),
 		shortcutCoverage: loadShortcutCoverage(root),
 		calibrationResultsById: loadCalibrationResults(root),
+		rewardSoundnessReviewsByPath: loadRewardSoundnessReviews(root),
+		rewardRobustness,
+		rewardRobustnessByScenario: new Map(rewardRobustness.scenarios.map((scenario) => [scenario.scenario_id, scenario])),
+		rewardRobustnessByFamily: new Map(rewardRobustness.task_families.map((family) => [family.family, family])),
 	};
 }
 

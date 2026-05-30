@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "pack": {
+    "id": "wordpress-capability-breadth-admin-settings-v1",
+    "version": "1.0.0",
+    "label": "WordPress capability breadth admin settings held-out private pack",
+    "compatibility_group": "wordpress-capability-breadth-admin-settings-v1",
+    "created_at": "2026-05-30T00:00:00Z",
+    "public_reference": "held-out-pack:wordpress-capability-breadth-admin-settings-v1@1.0.0"
+  },
+  "boundary": {
+    "storage": "private_repo",
+    "public_safe_fields": ["pack_id", "pack_version", "compatibility_group", "scenario_id", "variant_family", "variant_seed", "sha256", "aggregate_outcomes"],
+    "withheld_fields": ["prompt", "grader", "fixtures", "expected_artifacts", "screenshots", "replay_bundles", "private_paths"],
+    "artifact_access": "sealed_hash_only",
+    "public_report_policy": "aggregate_plus_hashes"
+  },
+  "promotion_policy": {
+    "requires_benchmark_replay": true,
+    "requires_aggregate_only_public_reports": true,
+    "requires_version_identity": true,
+    "requires_hash_locked_artifacts": true
+  },
+  "entries": [
+    {
+      "id": "admin-settings-notice-page-held-out-v1",
+      "scenario_id": "admin-settings-notice-settings-page-held-out",
+      "parent_scenario_id": "admin-settings-notice-settings-page",
+      "variant_family": "admin-settings-notice-page",
+      "variant_seed": "held-out-v1",
+      "split_membership": "held_out_private",
+      "task_contract_level": "benchmark_replay",
+      "calibration_status": "calibrating",
+      "version_identity": {
+        "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000041",
+        "prompt_sha256": "0000000000000000000000000000000000000000000000000000000000000042",
+        "grader_sha256": "0000000000000000000000000000000000000000000000000000000000000043",
+        "setup_sha256": "0000000000000000000000000000000000000000000000000000000000000044",
+        "expected_artifacts_sha256": "0000000000000000000000000000000000000000000000000000000000000045",
+        "replay_contract_sha256": "0000000000000000000000000000000000000000000000000000000000000046"
+      },
+      "artifacts": [
+        { "name": "scenario_manifest", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000041", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "prompt", "kind": "markdown", "sha256": "0000000000000000000000000000000000000000000000000000000000000042", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "grader", "kind": "php", "sha256": "0000000000000000000000000000000000000000000000000000000000000043", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "setup", "kind": "directory_digest", "sha256": "0000000000000000000000000000000000000000000000000000000000000044", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "expected_artifacts", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000045", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" },
+        { "name": "replay_contract", "kind": "json", "sha256": "0000000000000000000000000000000000000000000000000000000000000046", "sharing_level": "sealed_hash_only", "redaction_status": "sealed_hash_only" }
+      ]
+    }
+  ]
+}

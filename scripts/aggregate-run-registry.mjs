@@ -90,6 +90,28 @@ function emptySummary(key = '') {
 	};
 }
 
+function largeNSummary(summary, minimumAttempts) {
+	return {
+		key: summary.key,
+		row_count: summary.runs,
+		threshold_met: summary.runs >= minimumAttempts,
+		pass_at_1: summary.pass_at_1,
+		pass_at_n: summary.pass_at_n,
+		pass_rate: summary.pass_rate,
+		confidence_interval_95: summary.confidence_interval_95,
+		reward_mean: summary.reward_mean,
+		reward_variance: summary.reward_variance,
+		reward_stddev: summary.reward_stddev,
+		reward_confidence_interval_95: summary.reward_confidence_interval_95,
+		failure_classes: summary.failure_classes,
+		data_quality_gaps: summary.data_quality_gaps,
+	};
+}
+
+function largeNSummaryMap(map, minimumAttempts) {
+	return Object.fromEntries(Object.entries(map).map(([key, summary]) => [key, largeNSummary(summary, minimumAttempts)]));
+}
+
 function addCount(object, key, amount = 1) {
 	const normalized = key || 'unknown';
 	object[normalized] = (object[normalized] || 0) + amount;
@@ -194,7 +216,7 @@ async function aggregate(entries, options) {
 	const rejected = [];
 	for (const file of entries) {
 		const row = readJson(file);
-		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: root });
+		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: options.baseDir || root });
 		const rowSummary = { file: repoRelative(file), ok: validation.ok, compatibility_gaps: validation.compatibility_gaps };
 		if (!validation.ok) {
 			rejected.push(rowSummary);
@@ -218,6 +240,9 @@ async function aggregate(entries, options) {
 		}
 		return summary;
 	}, emptySummary('overall')));
+	const byModelTier = groupBy(rows, modelTier);
+	const byTaskModelTier = groupBy(rows, (row) => `${row.scenario?.id || 'unknown'}:${modelTier(row)}`);
+	const byTaskFamilyModelTier = groupBy(rows, (row) => `${row.scenario?.task_family || 'unknown'}:${modelTier(row)}`);
 
 	return {
 		schema_version: 1,
@@ -234,14 +259,22 @@ async function aggregate(entries, options) {
 		},
 		overall,
 		by_provider_model: groupBy(rows, (row) => `${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
-		by_model_tier: groupBy(rows, modelTier),
+		by_model_tier: byModelTier,
 		by_calibration_row_type: groupBy(rows, (row) => row.calibration?.row_type || 'unknown'),
 		by_scenario_model: groupBy(rows, (row) => `${row.scenario?.id || 'unknown'}:${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
-		by_task_family_model_tier: groupBy(rows, (row) => `${row.scenario?.task_family || 'unknown'}:${modelTier(row)}`),
+		by_task_model_tier: byTaskModelTier,
+		by_task_family_model_tier: byTaskFamilyModelTier,
 		by_result_set: groupBy(rows, resultSetKey),
 		by_task: groupBy(rows, (row) => row.scenario?.id || 'unknown'),
 		by_task_family: groupBy(rows, (row) => row.scenario?.task_family || 'unknown'),
 		by_capability: groupBy(rows, (row) => row.scenario?.capabilities?.primary || 'unknown'),
+		large_n_calibration: {
+			min_attempts_per_model_tier: options.largeNMinAttempts,
+			benchmark_ready_threshold_met: Object.keys(byModelTier).length > 0 && Object.values(byModelTier).every((summary) => summary.runs >= options.largeNMinAttempts),
+			by_model_tier: largeNSummaryMap(byModelTier, options.largeNMinAttempts),
+			by_task_model_tier: largeNSummaryMap(byTaskModelTier, options.largeNMinAttempts),
+			by_task_family_model_tier: largeNSummaryMap(byTaskFamilyModelTier, options.largeNMinAttempts),
+		},
 		rejected,
 		rows: rows.map((row) => ({
 			run_id: row.run?.id,
@@ -295,6 +328,25 @@ function renderSummaryMap(map) {
 		summary.reward_confidence_interval_95 ? summary.reward_confidence_interval_95.map((value) => String(value)).join(' - ') : 'n/a',
 		String(summary.failed),
 		String(summary.errored),
+	]);
+}
+
+function formatCounts(counts = {}) {
+	const entries = Object.entries(counts).filter(([, count]) => count > 0).sort(([left], [right]) => left.localeCompare(right));
+	return entries.length > 0 ? entries.map(([key, count]) => `${key}: ${count}`).join(', ') : 'none';
+}
+
+function renderLargeNMap(map) {
+	return Object.values(map).map((summary) => [
+		summary.key,
+		String(summary.row_count),
+		summary.threshold_met ? 'yes' : 'no',
+		percent(summary.pass_at_1),
+		percent(summary.pass_at_n),
+		String(summary.reward_mean),
+		String(summary.reward_variance),
+		summary.confidence_interval_95 ? summary.confidence_interval_95.map((value) => String(value)).join(' - ') : 'n/a',
+		formatCounts(summary.failure_classes),
 	]);
 }
 
@@ -353,6 +405,23 @@ function renderMarkdown(report) {
 		'',
 		renderTable(['Family/tier', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_task_family_model_tier)),
 		'',
+		'## Large-N Calibration',
+		'',
+		`- **Minimum attempts per model tier:** ${report.large_n_calibration.min_attempts_per_model_tier}`,
+		`- **Benchmark-ready threshold met:** ${report.large_n_calibration.benchmark_ready_threshold_met ? 'yes' : 'no'}`,
+		'',
+		'### Large-N By Model Tier',
+		'',
+		renderTable(['Model tier', 'Rows', 'Meets min', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward variance', 'Pass 95% CI', 'Failure classes'], renderLargeNMap(report.large_n_calibration.by_model_tier)),
+		'',
+		'### Large-N By Task / Model Tier',
+		'',
+		renderTable(['Task/tier', 'Rows', 'Meets min', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward variance', 'Pass 95% CI', 'Failure classes'], renderLargeNMap(report.large_n_calibration.by_task_model_tier)),
+		'',
+		'### Large-N By Task Family / Model Tier',
+		'',
+		renderTable(['Family/tier', 'Rows', 'Meets min', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward variance', 'Pass 95% CI', 'Failure classes'], renderLargeNMap(report.large_n_calibration.by_task_family_model_tier)),
+		'',
 		'## Rows',
 		'',
 		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Model tier', 'Row type', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Workflow SHA', 'Tool policy SHA', 'Bundle SHA', 'Exclusions'], report.rows.map((row) => [
@@ -376,14 +445,14 @@ function renderMarkdown(report) {
 
 	if (report.rejected.length > 0) {
 		lines.push('', '## Data Quality Gaps', '');
-		lines.push(renderTable(['File', 'Gap codes'], report.rejected.map((row) => [row.file, (row.compatibility_gaps || []).map((gap) => gap.code).join(', ')])));
+		lines.push(renderTable(['File', 'Gap codes'], report.rejected.map((row) => [row.file, (row.compatibility_gaps || []).map((gap) => gap.code).join(', ') || 'invalid_registry_entry'])));
 	}
 
 	return `${lines.join('\n')}\n`;
 }
 
 function parseArgs(argv) {
-	const args = { registry: '', json: '', markdown: '', scope: 'pilot', benchmarkMode: false, includeInvalid: false };
+	const args = { registry: '', json: '', markdown: '', scope: 'pilot', benchmarkMode: false, includeInvalid: false, largeNMinAttempts: 30 };
 	for (let index = 0; index < argv.length; index += 1) {
 		const arg = argv[index];
 		if (arg === '--registry' || arg === '--input') {
@@ -398,6 +467,8 @@ function parseArgs(argv) {
 			args.benchmarkMode = true;
 		} else if (arg === '--include-invalid') {
 			args.includeInvalid = true;
+		} else if (arg === '--large-n-min-attempts') {
+			args.largeNMinAttempts = Number(argv[++index]);
 		} else if (arg === '--help' || arg === '-h') {
 			args.help = true;
 		} else if (!args.registry) {
@@ -409,13 +480,16 @@ function parseArgs(argv) {
 	if (!['pilot', 'benchmark', 'headline', 'all'].includes(args.scope)) {
 		throw new Error('--scope must be one of: pilot, benchmark, headline, all');
 	}
+	if (!Number.isInteger(args.largeNMinAttempts) || args.largeNMinAttempts < 1) {
+		throw new Error('--large-n-min-attempts must be a positive integer');
+	}
 	return args;
 }
 
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
 	if (args.help || !args.registry) {
-		console.error('Usage: node scripts/aggregate-run-registry.mjs --registry <registry-json-or-dir> [--scope pilot|benchmark|headline|all] [--json <file>] [--markdown <file>] [--benchmark-mode]');
+		console.error('Usage: node scripts/aggregate-run-registry.mjs --registry <registry-json-or-dir> [--scope pilot|benchmark|headline|all] [--json <file>] [--markdown <file>] [--benchmark-mode] [--large-n-min-attempts <count>]');
 		process.exit(args.help ? 0 : 2);
 	}
 	const report = await aggregate(collectJsonFiles(args.registry), args);
@@ -435,3 +509,5 @@ async function main() {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	await main();
 }
+
+export { aggregate, renderMarkdown };
