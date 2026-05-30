@@ -1,6 +1,6 @@
 # Benchmark Versioning And Promotion Policy
 
-Issue: [#137](https://github.com/Automattic/wp-gym/issues/137)
+Issues: [#137](https://github.com/Automattic/wp-gym/issues/137), [#259](https://github.com/Automattic/wp-gym/issues/259)
 
 `wp-gym` results are comparable only inside an explicit benchmark version and
 compatibility group. Pilot and calibration runs can produce useful evidence, but
@@ -34,6 +34,66 @@ declare `calibration.benchmark_metadata`.
 `0.0.0-pilot.1` are allowed for pilot evidence. `compatibility_group` names the
 scoreboard lane where results can be compared. `compatible_with` lists previous
 versions in the same group that remain comparable.
+
+## Benchmark Release Artifact
+
+Canonical benchmark releases live in `benchmark-releases/`. Generate a release
+candidate from repo metadata with:
+
+```sh
+npm run benchmark-release:generate -- \
+  --task-set benchmark-readiness-pilot \
+  --output benchmark-releases/benchmark-readiness-pilot-0.0.0-pilot.1.json
+```
+
+Validate checked-in release candidates with:
+
+```sh
+npm run benchmark-release:validate
+wp-gym benchmark-release validate
+```
+
+The release artifact is the boundary that frontier-lab consumers can cite. It is
+derived from the task-set manifest and included scenario manifests, prompts,
+graders, setup metadata, expected artifacts, and replay contracts. The checked-in
+artifact shape includes:
+
+- `schema_version`: release manifest contract version.
+- `report_schema_version`: the report contract that benchmark-mode consumers must
+  surface, currently `wp-gym/benchmark-release-report/v1`.
+- `release`: release id, type, status, benchmark version, compatibility group,
+  task-set manifest path/hash, score scope, headline eligibility, aggregate
+  eligibility, and task contract level.
+- `policies`: task-set, scoring, runtime/provenance, private-pack, and
+  compatibility policy statements that govern the release.
+- `scenarios`: one entry per included task with manifest/prompt/grader paths,
+  scenario version, compatibility group, split/private-pack reference, task
+  contract level, expected artifacts, and the full version identity hash envelope.
+- `validation`: maintainer commands and release checklist items that must pass
+  before the artifact is cited.
+
+`benchmark-releases/benchmark-readiness-pilot-0.0.0-pilot.1.json` is intentionally
+classified as `type=pilot` and `status=pilot`: it proves the release machinery and
+calibration artifact shape without making headline benchmark claims.
+
+## Release Status Discipline
+
+Use these release types in reports and release artifacts:
+
+- `pilot`: early evidence, demo runs, or mixed diagnostic task contracts. Pilot
+  releases may be useful for harness debugging but are not headline scores.
+- `calibration`: repeated attempts, cheap baselines, held-out readiness, and
+  grader soundness are being measured. Calibration releases can compare internal
+  gates, not public headline ranks.
+- `headline`: benchmark-ready task set with held-out/private split, benchmark
+  replay, promotion report, immutable provenance, and empty blockers.
+
+Benchmark-mode run-registry rows must identify the exact release via
+`benchmark.release_id`, `benchmark.release_version`, `benchmark.release_type`,
+`benchmark.release_status`, `benchmark.release_manifest`, and
+`benchmark.release_manifest_sha256`. `npm run run-registry:validate` checks those
+fields in benchmark mode and verifies local release-manifest hashes when the
+manifest is repo-relative.
 
 ## Scenario Version Identity
 
@@ -117,12 +177,37 @@ New benchmark version required:
 - Scenario manifest rules, runtime setup, fixtures, writable/hidden paths, allowed
   tools, expected artifacts, or replay contract change.
 - Task-set membership, weighting, aggregate policy, or headline eligibility changes.
+- Release artifact policy changes that alter task, scoring, runtime/provenance,
+  private-pack, compatibility, validation, or report-schema requirements.
+- Private or held-out pack content, grader, fixture, replay contract, sealed hash,
+  or public-report policy changes.
 
 Patch-level metadata update allowed:
 
 - Typo fixes in labels, descriptions, docs, issue links, or notes.
 - Adding evidence links or retention notes without changing task behavior.
 - Marking an old version `deprecated` or `retired` while retaining its results.
+- Regenerating a release artifact only because source hashes changed for one of the
+  patch-level metadata updates above.
+
+## Release Checklist
+
+Before promoting or citing a benchmark release candidate:
+
+- Run `npm run benchmark-release:validate` and confirm the generated fixture is
+  fresh against current repo metadata.
+- Run `npm run validate` so scenario and task-set benchmark metadata still pass
+  repo contract checks.
+- Run `npm run run-registry:validate` for benchmark-mode registry fixtures and
+  release identity fields.
+- Run `npm run benchmark-promotion:test` and, for headline releases, generate a
+  fresh promotion report with `npm run benchmark-promotion:report -- --task-set <id>`.
+- Confirm the release type/status matches the evidence lane: pilot, calibration,
+  or headline.
+- Confirm private-pack references are versioned and sealed without exposing private
+  prompt, fixture, expected-output, or grader contents.
+- Confirm reviewer-facing docs, reports, or PRs link to GitHub artifacts, issues,
+  PRs, releases, or committed release manifests rather than local paths.
 
 ## Deprecation And Retention
 

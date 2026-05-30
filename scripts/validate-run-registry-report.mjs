@@ -39,6 +39,11 @@ function writeEntry(dir, base, options) {
 	entry.grade_identity.success = options.passed;
 	entry.grade_identity.reward = options.passed ? 1 : 0;
 	entry.grade_identity.failure_class = options.passed ? 'none' : options.failureClass;
+	if (options.failureClass === 'runtime_failure') {
+		entry.operations.retry.disposition = 'exhausted';
+	} else if (options.failureClass === 'task_failure') {
+		entry.operations.retry.disposition = 'task_terminal';
+	}
 	entry.calibration.row_type = options.rowType;
 	entry.calibration.model_tier = options.tier;
 	entry.calibration.result_set_id = `large-n-report-${options.tier}`;
@@ -83,6 +88,7 @@ try {
 	run('node', [
 		'scripts/aggregate-run-registry.mjs',
 		'--registry', entriesDir,
+		'--scope', 'all',
 		'--json', reportJson,
 		'--markdown', reportMarkdown,
 		'--large-n-min-attempts', '3',

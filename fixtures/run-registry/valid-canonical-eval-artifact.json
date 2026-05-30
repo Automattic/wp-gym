@@ -60,6 +60,12 @@
     "eligible": false,
     "headline_score_eligible": false,
     "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28",
+    "release_id": "benchmark-readiness-pilot@0.0.0-pilot.1",
+    "release_version": "0.0.0-pilot.1",
+    "release_type": "pilot",
+    "release_status": "pilot",
+    "release_manifest": "benchmark-releases/benchmark-readiness-pilot-0.0.0-pilot.1.json",
+    "release_manifest_sha256": "50f23f4d1fe656df90466861b8c751f61427634eb258f4cb5f39f80f31b6156d",
     "exclusion_reasons": ["pilot_task_set"]
   },
   "isolation": {
