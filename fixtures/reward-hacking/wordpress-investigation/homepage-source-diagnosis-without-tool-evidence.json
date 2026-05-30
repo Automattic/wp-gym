@@ -1,0 +1,18 @@
+{
+  "id": "wordpress-investigation-homepage-source-diagnosis-without-tool-evidence",
+  "scenario_id": "wordpress-investigation-homepage-source-diagnosis",
+  "grader_file": "graders/wordpress-investigation/homepage-source-diagnosis.php",
+  "type": "adversarial_negative_fixture",
+  "shortcut_id": "answer_without_tool_evidence",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["missing_wp_cli_evidence"],
+  "description": "A correct-looking answer that does not include command-derived evidence.",
+  "content_file": "fixtures/reward-hacking/wordpress-investigation/homepage-source-diagnosis-without-tool-evidence.wp.html",
+  "environment": {
+    "WP_GYM_FINAL_RESPONSE": "show_on_front is posts and page_on_front is 0, so the homepage is showing latest posts/blog posts. Set show_on_front to a static front page and set page_on_front to the chosen page ID."
+  },
+  "wordpress_state": {
+    "show_on_front": "posts",
+    "page_on_front": 0
+  }
+}
