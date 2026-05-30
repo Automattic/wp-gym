@@ -17,6 +17,14 @@ if ( ! is_array( $fixture ) ) {
 $content = file_get_contents( $repo_root . DIRECTORY_SEPARATOR . $fixture['content_file'] );
 $title   = $fixture['post_title'] ?? 'Simple Pricing Page';
 
+foreach ( $fixture['environment'] ?? array() as $name => $value ) {
+	putenv( $name . '=' . (string) $value );
+}
+
+foreach ( $fixture['environment_files'] ?? array() as $name => $relative_path ) {
+	putenv( $name . '=' . $repo_root . DIRECTORY_SEPARATOR . ltrim( (string) $relative_path, '/\\' ) );
+}
+
 if ( isset( $fixture['fixture_runtime'] ) && 'modern_wordpress_api' === $fixture['fixture_runtime'] ) {
 	$GLOBALS['wp_gym_fixture_actions']            = array();
 	$GLOBALS['wp_gym_fixture_current_actions']    = array();
@@ -212,6 +220,7 @@ class WP_Post {
 	public string $post_content;
 	public string $post_type;
 	public string $post_status;
+	public array $meta;
 
 	public function __construct( string $title, string $content, array $args = array() ) {
 		$this->ID           = (int) ( $args['ID'] ?? 1 );
@@ -219,6 +228,17 @@ class WP_Post {
 		$this->post_content = $content;
 		$this->post_type    = (string) ( $args['post_type'] ?? 'page' );
 		$this->post_status  = (string) ( $args['post_status'] ?? 'publish' );
+		$this->meta         = is_array( $args['meta'] ?? null ) ? $args['meta'] : array();
+	}
+}
+
+class WP_Term {
+	public string $name;
+	public string $taxonomy;
+
+	public function __construct( string $name, string $taxonomy ) {
+		$this->name     = $name;
+		$this->taxonomy = $taxonomy;
 	}
 }
 
@@ -233,6 +253,7 @@ foreach ( $GLOBALS['wp_gym_fixture_state']['posts'] ?? array() as $index => $pos
 			'ID'          => $post['ID'] ?? ( $index + 1 ),
 			'post_type'   => $post['post_type'] ?? 'page',
 			'post_status' => $post['post_status'] ?? 'publish',
+			'meta'        => $post['meta'] ?? array(),
 		)
 	);
 }
@@ -267,11 +288,82 @@ function get_posts( array $args ): array {
 }
 
 function get_option( string $name ) {
+	if ( 'show_on_front' === $name ) {
+		return $GLOBALS['wp_gym_fixture_state']['show_on_front'] ?? 'posts';
+	}
+
 	if ( 'page_on_front' === $name ) {
 		return $GLOBALS['wp_gym_fixture_state']['page_on_front'] ?? 0;
 	}
 
 	return null;
+}
+
+function get_post_meta( int $post_id, string $key = '', bool $single = false ) {
+	foreach ( $GLOBALS['wp_gym_fixture_posts'] as $post ) {
+		if ( $post->ID !== $post_id ) {
+			continue;
+		}
+
+		if ( '' === $key ) {
+			return $post->meta;
+		}
+
+		$value = $post->meta[ $key ] ?? '';
+		return $single ? $value : array( $value );
+	}
+
+	return $single ? '' : array();
+}
+
+function get_post_thumbnail_id( int $post_id ): int {
+	return (int) get_post_meta( $post_id, '_thumbnail_id', true );
+}
+
+function wp_gym_fixture_attachment_value( int $post_id, string $key ): string {
+	$value = (string) get_post_meta( $post_id, $key, true );
+	if ( '' === $value ) {
+		return '';
+	}
+
+	if ( '_wp_attached_file' === $key && ! preg_match( '/^(?:[A-Za-z]:)?[\\\\\/]/', $value ) ) {
+		return $GLOBALS['wp_gym_fixture_repo_root'] . DIRECTORY_SEPARATOR . ltrim( $value, '/\\' );
+	}
+
+	return $value;
+}
+
+function get_attached_file( int $post_id ): string {
+	return wp_gym_fixture_attachment_value( $post_id, '_wp_attached_file' );
+}
+
+function wp_get_attachment_url( int $post_id ): string {
+	$url = wp_gym_fixture_attachment_value( $post_id, '_wp_attachment_url' );
+	if ( '' !== $url ) {
+		return $url;
+	}
+
+	$file = get_attached_file( $post_id );
+	return '' === $file ? '' : '/wp-content/uploads/' . basename( $file );
+}
+
+function wp_parse_url( string $url, int $component = -1 ) {
+	return parse_url( $url, $component );
+}
+
+function get_terms( array $args ) {
+	$taxonomies = isset( $args['taxonomy'] ) ? (array) $args['taxonomy'] : array();
+	$terms      = array();
+
+	foreach ( $GLOBALS['wp_gym_fixture_state']['terms'] ?? array() as $term ) {
+		$taxonomy = (string) ( $term['taxonomy'] ?? 'category' );
+		if ( $taxonomies && ! in_array( $taxonomy, $taxonomies, true ) ) {
+			continue;
+		}
+		$terms[] = new WP_Term( (string) ( $term['name'] ?? '' ), $taxonomy );
+	}
+
+	return $terms;
 }
 
 function get_post( int $id ) {
@@ -399,6 +491,7 @@ class WP_Block_Type_Registry {
 }
 
 $grader_file = $repo_root . DIRECTORY_SEPARATOR . $fixture['grader_file'];
+$GLOBALS['wp_gym_fixture_repo_root'] = $repo_root;
 $grader      = require $grader_file;
 $result      = $grader();
 

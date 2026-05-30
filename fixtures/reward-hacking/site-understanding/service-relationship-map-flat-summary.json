@@ -1,0 +1,16 @@
+{
+  "id": "site-understanding-service-relationship-map-flat-summary",
+  "scenario_id": "site-understanding-service-relationship-map",
+  "grader_file": "graders/site-understanding/service-relationship-map.php",
+  "type": "adversarial_negative_fixture",
+  "shortcut_id": "flat_summary_only",
+  "expected_result": "fail",
+  "expected_failure_reasons": ["incomplete_site_inspection", "wrong_entity_relationship", "missing_evidence"],
+  "description": "A single flat summary page that mentions entities but does not create maintainable WordPress entries, taxonomy, or source links.",
+  "content_file": "fixtures/reward-hacking/site-understanding/service-relationship-map-flat-summary.wp.html",
+  "wordpress_state": {
+    "posts": [
+      { "ID": 1, "post_type": "page", "post_status": "publish", "title": "Service Relationship Map", "content": "<p>Boiler tune-ups, chimney inspections, heat pump triage, Maya Ortiz, Theo Grant, North Loop, River Market, and South Hill are all related.</p>" }
+    ]
+  }
+}
