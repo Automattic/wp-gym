@@ -69,7 +69,10 @@ return function (): array {
 	);
 
 	$clean_site_fallback = is_array( $data )
-		&& isset( $data['ai_available'], $data['configured'], $data['detection_mode'], $data['provider'] )
+		&& array_key_exists( 'ai_available', $data )
+		&& array_key_exists( 'configured', $data )
+		&& array_key_exists( 'detection_mode', $data )
+		&& array_key_exists( 'provider', $data )
 		&& false === $data['ai_available']
 		&& false === $data['configured']
 		&& null === $data['provider']

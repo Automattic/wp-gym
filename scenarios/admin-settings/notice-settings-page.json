@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "id": "admin-settings-notice-settings-page",
+  "label": "Settings-backed neighborhood notice admin page",
+  "issue": "https://github.com/Automattic/wp-gym/issues/242",
+  "split": {
+    "membership": "public",
+    "variant_family": "admin-settings-notice-page",
+    "variant_seed": "notice-settings-page-public-v1",
+    "parent_scenario_id": null,
+    "held_out_private_variant": {
+      "status": "planned",
+      "reference": "held-out-pack:wordpress-capability-breadth-admin-settings-v1/admin-settings-notice-page-held-out-v1",
+      "notes": "Private variant should preserve the Settings API, admin capability, sanitization, and frontend rendering contract while changing option names, UI labels, shortcode name, and fixture text."
+    },
+    "artifact_policy": {
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader",
+        "starter_workspace"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_workspace_fixture"
+      ],
+      "grader_exposure": "full_public"
+    }
+  },
+  "prompt_file": "../../prompts/admin-settings/notice-settings-page.md",
+  "grader_file": "../../graders/admin-settings/notice-settings-page.php",
+  "tags": [
+    "wordpress",
+    "admin-ui",
+    "settings-api",
+    "shortcode",
+    "plugin-api"
+  ],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "custom_admin_ui",
+    "secondary": [
+      "data_interaction_apis",
+      "plugin_quality_wordpress_standards"
+    ],
+    "criteria": [
+      "settings_api_registration",
+      "admin_capability_gating",
+      "sanitized_option_storage",
+      "escaped_frontend_rendering"
+    ]
+  },
+  "api_provenance": {
+    "capability_area": "custom_admin_ui",
+    "api_surface": "WordPress Settings API and admin menu registration",
+    "source_inputs": [
+      {
+        "id": "developer-reference-register-setting",
+        "type": "developer_docs",
+        "url": "https://developer.wordpress.org/reference/functions/register_setting/",
+        "ref": "current",
+        "checked_at": "2026-05-30",
+        "evidence": "register_setting() defines the Settings API registration contract, including sanitize_callback and option metadata checked by the grader."
+      },
+      {
+        "id": "developer-reference-add-options-page",
+        "type": "developer_docs",
+        "url": "https://developer.wordpress.org/reference/functions/add_options_page/",
+        "ref": "current",
+        "checked_at": "2026-05-30",
+        "evidence": "add_options_page() defines the Settings menu and capability contract used for the admin page portion of the task."
+      }
+    ],
+    "freshness": {
+      "status": "fresh",
+      "last_reviewed": "2026-05-30",
+      "next_review_due": "2026-06-29",
+      "cadence_days": 30
+    },
+    "curriculum": {
+      "lifecycle_status": "pilot",
+      "candidate_from_source_change": "Settings API and admin menu registration are stable WordPress admin UI primitives that broaden the corpus beyond content, REST, and site-building tasks.",
+      "promotion_next_step": "Collect baseline rows, add negative fixtures for unsafe sanitization/capability shortcuts, and prepare the sealed held-out variant before benchmark promotion."
+    }
+  },
+  "rules": {
+    "general": [
+      "wordpress_docs_standards",
+      "no_speculative_plugin_packaging",
+      "supported_plugin_author_metadata"
+    ],
+    "task_specific": [
+      "settings_api_registered",
+      "admin_page_capability_gated",
+      "notice_sanitized",
+      "shortcode_outputs_escaped_notice"
+    ]
+  },
+  "limits": {
+    "max_turns": 25,
+    "step_budget": 14,
+    "time_budget_ms": 600000
+  },
+  "environment": {
+    "action_mode": "workspace",
+    "uses_workspace": true,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": [
+      "prompt",
+      "workspace_tree",
+      "wordpress_runtime"
+    ],
+    "allowed_tools": [
+      "workspace_show",
+      "workspace_ls",
+      "workspace_read",
+      "workspace_grep",
+      "workspace_write",
+      "workspace_edit",
+      "workspace_apply_patch",
+      "workspace_git_status",
+      "wordpress_runtime_ls",
+      "run_wp_cli"
+    ],
+    "writable_roots": [
+      "plugins/"
+    ],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "prompts/",
+      "checks/",
+      "task-sets/",
+      ".github/",
+      "docs/",
+      "scripts/"
+    ],
+    "workspace_template": "starter-workspaces/admin-settings-page",
+    "completion_policy": {
+      "type": "explicit_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 25,
+      "step_budget": 14,
+      "time_budget_ms": 600000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [
+      0,
+      1
+    ]
+  },
+  "calibration": {
+    "status": "pilot",
+    "benchmark_scope": "pilot",
+    "difficulty_band": "uncalibrated",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": [
+      "hard_coded_shortcode_output",
+      "admin_form_without_settings_api",
+      "unsanitized_option_storage",
+      "missing_capability_gate"
+    ],
+    "task_contract_level": "benchmark_replay",
+    "benchmark_blockers": [
+      "missing_baseline_results",
+      "uncalibrated_difficulty",
+      "known_reward_shortcut",
+      "held_out_private_variant_planned"
+    ]
+  },
+  "expected_artifacts": [
+    "workspace_diff",
+    "plugin_files",
+    "replay_trace",
+    "replay_bundle",
+    "grader_result"
+  ],
+  "expected": {
+    "option_name": "wp_gym_neighborhood_notice",
+    "settings_group": "wp_gym_neighborhood_notice",
+    "admin_parent": "options-general.php",
+    "admin_capability": "manage_options",
+    "shortcode": "neighborhood_notice"
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "filesystem",
+      "wp_cli"
+    ],
+    "max_steps": 14,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_docs_standards",
+      "no_speculative_plugin_packaging",
+      "supported_plugin_author_metadata",
+      "settings_api_registered",
+      "admin_page_capability_gated",
+      "notice_sanitized",
+      "shortcode_outputs_escaped_notice"
+    ]
+  }
+}

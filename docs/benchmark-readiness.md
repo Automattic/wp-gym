@@ -298,15 +298,18 @@ npm run run-registry:report -- \
   --registry artifacts/<run-id>/wp-gym-run-registry/entries \
   --json artifacts/<run-id>/wp-gym-report.json \
   --markdown artifacts/<run-id>/wp-gym-report.md \
-  --scope pilot
+  --scope pilot \
+  --large-n-min-attempts 30
 ```
 
-Use the generated **Model Tier** and **Task Family / Model Tier** sections for
-large-N review. A pilot task can graduate from calibration evidence to
-benchmark-ready scoring only when the retained registry source rows are durable,
-each required tier meets the declared minimum attempt count, confidence intervals
-are stable enough for the target band, held-out/private variants are ready, and
-the promotion report has no blockers.
+Use the generated **Large-N Calibration** section for large-N review. It reports
+row counts, pass@1/pass@n, reward variance, pass-rate confidence intervals, and
+failure-class counts by model tier, task/model tier, and task-family/model tier.
+A pilot task can graduate from calibration evidence to benchmark-ready scoring
+only when the retained registry source rows are durable, each required tier meets
+the declared minimum attempt count, confidence intervals are stable enough for
+the target band, held-out/private variants are ready, and the promotion report
+has no blockers.
 
 ## Benchmark-Ready Gates
 
