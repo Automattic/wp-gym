@@ -1,6 +1,6 @@
 # Benchmark Artifact Operations
 
-Issues: [#244](https://github.com/Automattic/wp-gym/issues/244), [#258](https://github.com/Automattic/wp-gym/issues/258)
+Issues: [#244](https://github.com/Automattic/wp-gym/issues/244), [#258](https://github.com/Automattic/wp-gym/issues/258), [#262](https://github.com/Automattic/wp-gym/issues/262)
 
 Benchmark consumers need retained artifacts, reproducible registry reports, and a
 small operational check that catches missing evidence before a run is cited.
@@ -65,12 +65,63 @@ paths.
 - Registry uploads retain both `artifacts/wp-gym-run-registry` and `artifacts/live-replay-bundles`.
 - Registry uploads fail closed when required payloads are missing.
 - The scheduled Benchmark Artifact Ops workflow runs registry, emitter, and remote archive checks.
+- Stability Budget fixtures classify infra/provider/artifact/runner/task/grader failures.
 - Historical retained-run fixtures validate missing, stale, and unhashable artifacts and regenerate reports.
-- These operations docs remain tied to issues #244 and #258.
+- These operations docs remain tied to issues #244, #258, and #262.
 
 The `Benchmark Artifact Ops` workflow runs on pull requests, manual dispatch, and
 a weekly schedule. It validates configuration and fixture-backed report paths; it
 does not make live model calls.
+
+## Stability Budget
+
+Benchmark reports should publish a moving-window stability report beside the run
+registry report before citing live results. The stability report classifies
+failures into these operational buckets:
+
+| Class | Owner lane | Examples |
+| --- | --- | --- |
+| `infra` | CI/runtime infrastructure | hosted runner loss, checkout/network failures, disk pressure |
+| `provider` | model provider | rate limits, provider timeouts, quota or temporary model unavailability |
+| `artifact` | evidence transport | upload/download failures, missing retained artifacts |
+| `runner` | orchestration | Homeboy/wp-codebox/opencode runner crash, process exit, command contract failure |
+| `task` | scenario/runtime task | invalid scenario setup, WordPress app fatal, fixture contract mismatch |
+| `grader` | grading | hidden grader exception, assertion bug, grader schema mismatch |
+
+Default accepted failure-rate budgets are enforced per moving window:
+
+| Workflow or family | Total | infra | provider | artifact | runner | task | grader |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `datamachine-live-run` | 5% | 2% | 3% | 1% | 2% | 2% | 1% |
+| `benchmark-artifact-ops` | 2% | 1% | 0% | 1% | 1% | 0% | 0% |
+| `playground-smoke` | 8% | 3% | 3% | 2% | 3% | 3% | 1% |
+| `block-markup` task family | 5% | 2% | 3% | 1% | 2% | 2% | 1% |
+| `wordpress-api` task family | 7% | 2% | 3% | 1% | 3% | 3% | 1% |
+
+Generate the report from retained registry rows or fixture-backed operational
+rows:
+
+```bash
+npm run stability-budget:report -- \
+  --registry artifacts/wp-gym-run-registry/entries \
+  --window-runs 50 \
+  --window-days 30 \
+  --json artifacts/wp-gym-run-registry/stability-report.json \
+  --markdown artifacts/wp-gym-run-registry/stability-report.md \
+  --fail-on-budget
+```
+
+Use `--window-runs` for repeated-run slices and `--window-days` for sustained
+moving-window evidence. A passing report means every workflow and task-family
+bucket stayed within its accepted flake threshold. A failing report should block
+benchmark promotion or update the linked issue with the over-budget class,
+workflow/task family, run IDs, and remediation owner lane.
+
+Repeated runs are treated as flakes when the same workflow, task family,
+scenario, provider, and model has at least one pass and at least one operational
+failure inside the window. The JSON report includes `flaky_operations` so issue
+updates can point directly at the unstable operation instead of hiding it in an
+aggregate pass rate.
 
 ## Durable Shared Evidence
 

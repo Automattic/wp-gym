@@ -1,0 +1,25 @@
+{
+  "run": {
+    "id": "fixture-artifact-failure",
+    "completed_at": "2026-05-28T00:02:30Z",
+    "outcome": "errored"
+  },
+  "stability": {
+    "workflow": "benchmark-artifact-ops",
+    "failure_class": "artifact",
+    "message": "actions/upload-artifact failed because the retained registry bundle was missing."
+  },
+  "scenario": {
+    "id": "block-markup-valid-semantic-blocks",
+    "task_family": "block-markup"
+  },
+  "runner": {
+    "provider": "openai",
+    "model": "gpt-5.5"
+  },
+  "grade_identity": {
+    "success": false,
+    "reward": 0,
+    "failure_class": "runtime_failure"
+  }
+}

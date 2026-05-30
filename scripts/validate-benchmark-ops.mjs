@@ -64,6 +64,9 @@ function validateOpsWorkflow() {
 			gaps.push(gap('missing_ops_workflow_check', 'error', file, `Ops workflow must include ${required}.`));
 		}
 	}
+	if (!yaml.includes('npm run stability-budget:test')) {
+		gaps.push(gap('missing_stability_budget_check', 'error', file, 'Ops workflow must include stability budget fixture validation.'));
+	}
 	return gaps;
 }
 
@@ -80,6 +83,10 @@ function validateOpsDocs() {
 		'Registry reports can be regenerated',
 		'Durable Shared Evidence',
 		'local-only paths',
+		'https://github.com/Automattic/wp-gym/issues/262',
+		'Stability Budget',
+		'infra/provider/artifact/runner/task/grader',
+		'npm run stability-budget:report',
 	]) {
 		if (!doc.includes(required)) {
 			gaps.push(gap('missing_ops_doc_section', 'error', file, `Benchmark operations docs must mention ${required}.`));

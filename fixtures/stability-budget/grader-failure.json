@@ -1,0 +1,25 @@
+{
+  "run": {
+    "id": "fixture-grader-failure",
+    "completed_at": "2026-05-28T00:06:00Z",
+    "outcome": "errored"
+  },
+  "stability": {
+    "workflow": "datamachine-live-run",
+    "failure_class": "grader",
+    "message": "Hidden grader threw an assertion while reading expected artifacts."
+  },
+  "scenario": {
+    "id": "block-markup-valid-semantic-blocks",
+    "task_family": "block-markup"
+  },
+  "runner": {
+    "provider": "openai",
+    "model": "gpt-5.5"
+  },
+  "grade_identity": {
+    "success": false,
+    "reward": 0,
+    "failure_class": "grader_failure"
+  }
+}
