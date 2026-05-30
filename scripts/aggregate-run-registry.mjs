@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateRunRegistryEntry } from './validate-run-registry.mjs';
+import { provenanceFingerprints, validateRunRegistryEntry } from './validate-run-registry.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
@@ -248,6 +248,7 @@ function aggregate(entries, options) {
 			capability: row.scenario?.capabilities?.primary || null,
 			benchmark_eligible: row.benchmark?.eligible,
 			headline_score_eligible: row.benchmark?.headline_score_eligible,
+			immutable_fingerprints: provenanceFingerprints(row.provenance),
 			exclusion_reasons: row.benchmark?.exclusion_reasons || [],
 			failed_checks: row._failed_checks || [],
 		})),
@@ -325,7 +326,7 @@ function renderMarkdown(report) {
 		'',
 		'## Rows',
 		'',
-		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Row type', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
+		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Row type', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Workflow SHA', 'Tool policy SHA', 'Bundle SHA', 'Exclusions'], report.rows.map((row) => [
 			row.scenario || '',
 			row.held_out_pack?.pack_id || '',
 			`${row.provider || 'unknown'}/${row.model || 'unknown'}`,
@@ -336,6 +337,9 @@ function renderMarkdown(report) {
 			String(row.reward ?? ''),
 			row.failure_class || '',
 			row.headline_score_eligible ? 'yes' : 'no',
+			row.immutable_fingerprints?.workflow_sha || '',
+			row.immutable_fingerprints?.tool_policy_sha256 || '',
+			row.immutable_fingerprints?.bundle_sha256 || '',
 			(row.exclusion_reasons || []).join(', ') || 'none',
 		])),
 	];

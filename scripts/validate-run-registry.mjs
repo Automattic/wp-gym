@@ -47,6 +47,172 @@ function gap(code, severity, field, message) {
 	return { code, severity, field, message };
 }
 
+function hasDottedPath(value, dottedPath) {
+	let current = value;
+	for (const part of dottedPath.split('.')) {
+		if (!current || typeof current !== 'object' || !(part in current)) {
+			return false;
+		}
+		current = current[part];
+	}
+	return current !== undefined && current !== null && current !== '';
+}
+
+function getDottedPath(value, dottedPath) {
+	let current = value;
+	for (const part of dottedPath.split('.')) {
+		if (!current || typeof current !== 'object' || !(part in current)) {
+			return undefined;
+		}
+		current = current[part];
+	}
+	return current;
+}
+
+function isGitSha(value) {
+	return /^[a-f0-9]{40}([a-f0-9]{24})?$/i.test(String(value || ''));
+}
+
+function isSha256(value) {
+	return /^[a-f0-9]{64}$/i.test(String(value || ''));
+}
+
+function isImmutableRef(value) {
+	const ref = String(value || '').trim();
+	if (!ref) {
+		return false;
+	}
+	const refPart = ref.includes('@') ? ref.split('@').pop() : ref;
+	return isGitSha(refPart) || /^sha256:[a-f0-9]{64}$/i.test(refPart);
+}
+
+function validateImmutableReference(value, field, gaps) {
+	if (!value || typeof value !== 'object') {
+		return;
+	}
+	if (value.ref && !isImmutableRef(value.ref)) {
+		gaps.push(gap('mutable_provenance_ref', 'error', `${field}.ref`, `${field}.ref must be an immutable commit sha or digest, not ${value.ref}.`));
+	}
+	if (value.sha !== undefined && value.sha !== null && value.sha !== '' && !isGitSha(value.sha)) {
+		gaps.push(gap('invalid_provenance_git_sha', 'error', `${field}.sha`, `${field}.sha must be a 40- or 64-character git sha.`));
+	}
+	if (value.digest !== undefined && value.digest !== null && value.digest !== '' && !/^sha256:[a-f0-9]{64}$/i.test(String(value.digest))) {
+		gaps.push(gap('invalid_provenance_digest', 'error', `${field}.digest`, `${field}.digest must be a sha256 digest.`));
+	}
+}
+
+function provenanceFingerprints(provenance = {}) {
+	provenance = provenance && typeof provenance === 'object' ? provenance : {};
+	return {
+		workflow_sha: provenance.workflow?.sha || null,
+		runner_sha: provenance.runner?.sha || null,
+		runtime_package_lock_sha256: provenance.runtime?.package_lock_sha256 || null,
+		provider: provenance.provider?.provider || null,
+		model: provenance.provider?.model || null,
+		model_snapshot: provenance.provider?.model_snapshot || provenance.provider?.snapshot || null,
+		tool_policy_sha256: provenance.tool_policy?.sha256 || null,
+		enabled_tools_sha256: provenance.tool_policy?.enabled_tools_sha256 || null,
+		agent_instructions_sha256: provenance.tool_policy?.agent_instructions_sha256 || null,
+		scenario_sha256: provenance.inputs?.scenario_sha256 || null,
+		prompt_sha256: provenance.inputs?.prompt_sha256 || null,
+		grader_sha256: provenance.inputs?.grader_sha256 || null,
+		task_set_sha256: provenance.inputs?.task_set_sha256 || null,
+		bundle_sha256: provenance.inputs?.bundle_sha256 || null,
+	};
+}
+
+function validateBenchmarkProvenance(entry) {
+	const gaps = [];
+	const provenance = entry.provenance;
+	if (!provenance || typeof provenance !== 'object') {
+		return [gap('missing_benchmark_provenance', 'error', 'provenance', 'Benchmark-mode registry entries must include immutable workflow, runner, runtime, provider, tool-policy, and input provenance.')];
+	}
+
+	const requiredFields = [
+		['provenance.workflow.repository', 'Benchmark provenance must name the workflow repository.'],
+		['provenance.workflow.ref', 'Benchmark provenance must record the immutable workflow ref that was executed.'],
+		['provenance.workflow.sha', 'Benchmark provenance must pin workflow code to an immutable commit sha.'],
+		['provenance.runner.name', 'Benchmark provenance must name the runner/orchestrator.'],
+		['provenance.runtime.wordpress_version', 'Benchmark provenance must record the WordPress version.'],
+		['provenance.runtime.php_version', 'Benchmark provenance must record the PHP version.'],
+		['provenance.runtime.node_version', 'Benchmark provenance must record the Node.js version.'],
+		['provenance.runtime.wp_codebox_version', 'Benchmark provenance must record the WP Codebox/runtime package version.'],
+		['provenance.runtime.package_lock_sha256', 'Benchmark provenance must hash the package lock used by the runner.'],
+		['provenance.provider.provider', 'Benchmark provenance must record the provider.'],
+		['provenance.provider.model', 'Benchmark provenance must record the model.'],
+		['provenance.tool_policy.sha256', 'Benchmark provenance must hash the effective tool policy.'],
+		['provenance.tool_policy.enabled_tools_sha256', 'Benchmark provenance must hash the enabled tool surface.'],
+		['provenance.tool_policy.agent_instructions_sha256', 'Benchmark provenance must hash agent instructions.'],
+		['provenance.inputs.scenario_sha256', 'Benchmark provenance must hash the scenario manifest.'],
+		['provenance.inputs.prompt_sha256', 'Benchmark provenance must hash the model-facing prompt.'],
+		['provenance.inputs.grader_sha256', 'Benchmark provenance must hash the hidden grader.'],
+		['provenance.inputs.task_set_sha256', 'Benchmark provenance must hash the task-set manifest.'],
+		['provenance.inputs.bundle_sha256', 'Benchmark provenance must hash the agent bundle.'],
+	];
+
+	for (const [field, message] of requiredFields) {
+		if (!hasDottedPath({ provenance }, field)) {
+			gaps.push(gap('missing_benchmark_provenance_field', 'error', field, message));
+		}
+	}
+
+	for (const field of ['provenance.workflow.sha', 'provenance.runner.sha']) {
+		const value = getDottedPath({ provenance }, field);
+		if (value !== undefined && value !== null && value !== '' && !isGitSha(value)) {
+			gaps.push(gap('invalid_provenance_git_sha', 'error', field, `${field} must be a 40- or 64-character git sha.`));
+		}
+	}
+
+	for (const field of [
+		'provenance.runtime.package_lock_sha256',
+		'provenance.tool_policy.sha256',
+		'provenance.tool_policy.enabled_tools_sha256',
+		'provenance.tool_policy.agent_instructions_sha256',
+		'provenance.inputs.scenario_sha256',
+		'provenance.inputs.prompt_sha256',
+		'provenance.inputs.grader_sha256',
+		'provenance.inputs.task_set_sha256',
+		'provenance.inputs.bundle_sha256',
+	]) {
+		const value = getDottedPath({ provenance }, field);
+		if (value !== undefined && value !== null && value !== '' && !isSha256(value)) {
+			gaps.push(gap('invalid_provenance_sha256', 'error', field, `${field} must be a sha256 hex digest.`));
+		}
+	}
+
+	for (const pinned of [
+		{ field: 'provenance.workflow', value: provenance.workflow },
+		{ field: 'provenance.runner', value: provenance.runner },
+		...(Array.isArray(provenance.provider_plugins) ? provenance.provider_plugins.map((value, index) => ({ field: `provenance.provider_plugins[${index}]`, value })) : []),
+	]) {
+		validateImmutableReference(pinned.value, pinned.field, gaps);
+	}
+
+	if (provenance.provider?.provider && provenance.provider.provider !== entry.runner?.provider) {
+		gaps.push(gap('provenance_provider_mismatch', 'error', 'provenance.provider.provider', 'Provenance provider must match runner.provider.'));
+	}
+	if (provenance.provider?.model && provenance.provider.model !== entry.runner?.model) {
+		gaps.push(gap('provenance_model_mismatch', 'error', 'provenance.provider.model', 'Provenance model must match runner.model.'));
+	}
+	if (provenance.tool_policy?.sha256 && entry.runner?.tool_policy_sha256 && provenance.tool_policy.sha256 !== entry.runner.tool_policy_sha256) {
+		gaps.push(gap('provenance_tool_policy_mismatch', 'error', 'provenance.tool_policy.sha256', 'Tool-policy provenance must match runner.tool_policy_sha256.'));
+	}
+	if (provenance.inputs?.prompt_sha256 && entry.scenario?.prompt_sha256 && provenance.inputs.prompt_sha256 !== entry.scenario.prompt_sha256) {
+		gaps.push(gap('provenance_prompt_mismatch', 'error', 'provenance.inputs.prompt_sha256', 'Prompt provenance must match scenario.prompt_sha256.'));
+	}
+	if (provenance.inputs?.grader_sha256 && entry.grade_identity?.grader_sha256 && provenance.inputs.grader_sha256 !== entry.grade_identity.grader_sha256) {
+		gaps.push(gap('provenance_grader_mismatch', 'error', 'provenance.inputs.grader_sha256', 'Grader provenance must match grade_identity.grader_sha256.'));
+	}
+	if (provenance.inputs?.task_set_sha256 && entry.task_set?.sha256 && provenance.inputs.task_set_sha256 !== entry.task_set.sha256) {
+		gaps.push(gap('provenance_task_set_mismatch', 'error', 'provenance.inputs.task_set_sha256', 'Task-set provenance must match task_set.sha256.'));
+	}
+	if (provenance.inputs?.scenario_sha256 && entry.scenario?.sha256 && provenance.inputs.scenario_sha256 !== entry.scenario.sha256) {
+		gaps.push(gap('provenance_scenario_mismatch', 'error', 'provenance.inputs.scenario_sha256', 'Scenario provenance must match scenario.sha256.'));
+	}
+
+	return gaps;
+}
+
 function validateSchema(entry, validate) {
 	if (validate(entry)) {
 		return [];
@@ -106,6 +272,10 @@ function validateRunRegistryEntry(entry, options = {}) {
 	const baseDir = options.baseDir || root;
 	const validate = options.validate || createValidator();
 	const gaps = validateSchema(entry, validate);
+
+	if (benchmarkMode) {
+		gaps.push(...validateBenchmarkProvenance(entry));
+	}
 
 	if (!entry.grade_identity) {
 		gaps.push(gap('missing_grade_identity', 'error', 'grade_identity', 'Registry entries must identify the grader and result hashes used for scoring.'));
@@ -179,6 +349,7 @@ function validateRunRegistryEntry(entry, options = {}) {
 
 	return {
 		ok: !gaps.some((item) => item.severity === 'error'),
+		immutable_fingerprints: provenanceFingerprints(entry.provenance),
 		compatibility_gaps: gaps,
 	};
 }
@@ -222,6 +393,7 @@ async function main() {
 			file: repoRelative(file),
 			ok,
 			valid: result.ok,
+			immutable_fingerprints: result.immutable_fingerprints,
 			expected_error_codes: expectedErrors,
 			compatibility_gaps: result.compatibility_gaps,
 		};
@@ -238,4 +410,4 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	await main();
 }
 
-export { validateRunRegistryEntry };
+export { provenanceFingerprints, validateRunRegistryEntry };

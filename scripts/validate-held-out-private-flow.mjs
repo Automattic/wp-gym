@@ -239,10 +239,10 @@ function createSyntheticEvalArtifact(file, row, hashes) {
 	const replayReference = reference(replayReferenceFile, 'json');
 	const eventsReference = reference(eventsReferenceFile, 'jsonl');
 	const provenance = JSON.parse(row.provenance);
-	provenance.workflow.ref = 'refs/tags/synthetic-held-out-validation';
 	provenance.workflow.sha = 'b'.repeat(40);
-	provenance.runner.ref = 'synthetic-held-out-runner';
+	provenance.workflow.ref = provenance.workflow.sha;
 	provenance.runner.sha = 'c'.repeat(40);
+	provenance.runner.ref = provenance.runner.sha;
 	provenance.runtime.wordpress_version = '6.9-alpha';
 	provenance.runtime.php_version = '8.4.0';
 	provenance.runtime.wp_codebox_version = 'synthetic-held-out-validation';

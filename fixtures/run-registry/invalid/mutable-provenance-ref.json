@@ -1,4 +1,5 @@
 {
+  "_expected_error_codes": ["mutable_provenance_ref"],
   "schema_version": 1,
   "registry": {
     "name": "wp-gym-run-registry",
@@ -6,7 +7,7 @@
     "created_at": "2026-05-28T00:00:00Z"
   },
   "run": {
-    "id": "fixture-run-2026-05-28-openai-gpt-5-5-valid-semantic-blocks",
+    "id": "fixture-run-2026-05-28-openai-gpt-5-5-mutable-provenance",
     "actor": "wordpress-task-runner",
     "attempt": 1,
     "started_at": "2026-05-28T00:00:00Z",
@@ -66,7 +67,7 @@
     "workflow": {
       "repository": "Automattic/wp-gym",
       "path": ".github/workflows/datamachine-live-run.yml",
-      "ref": "Automattic/wp-gym/.github/workflows/datamachine-live-run.yml@abcdef1234567890abcdef1234567890abcdef12",
+      "ref": "main",
       "sha": "abcdef1234567890abcdef1234567890abcdef12"
     },
     "runner": {
@@ -109,7 +110,7 @@
   },
   "artifact_index": {
     "schema_version": 1,
-    "index_id": "fixture-run-2026-05-28-openai-gpt-5-5-valid-semantic-blocks/index",
+    "index_id": "fixture-run-2026-05-28-openai-gpt-5-5-mutable-provenance/index",
     "created_at": "2026-05-28T00:01:00Z",
     "entries": [
       {

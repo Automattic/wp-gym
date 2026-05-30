@@ -27,6 +27,9 @@ Each registry entry indexes a canonical eval artifact row by:
 - Grade identity: grader hash, result hash, success, reward, and failure class.
 - Calibration row type: no-op, scripted, cheap-model, frontier-model, repeated-attempt, human/reference, or excluded.
 - Benchmark eligibility: pilot, calibrating, benchmark-ready, headline-score eligibility, compatibility group, and exclusion reasons.
+- Immutable benchmark provenance: workflow and runner SHAs, runtime package-lock hash,
+  provider/model snapshot, tool-policy hashes, scenario/prompt/grader/task-set hashes,
+  and bundle hash.
 
 ## Artifact Index
 
@@ -42,6 +45,13 @@ Benchmark-mode validation requires local, hashable artifact references. Remote
 artifact URLs are useful as supplemental pointers, but they are not sufficient for
 benchmark evidence because the validator cannot prove their contents. Local
 artifact references must declare a SHA-256 hash, and stale hashes fail validation.
+
+Benchmark-mode registry rows must also include top-level `provenance`. Mutable refs
+such as `main`, `trunk`, `HEAD`, `refs/heads/*`, or `latest` are rejected even when
+a separate SHA is present; the recorded `ref` itself must be an immutable commit SHA
+or digest. Reports expose immutable workflow, tool-policy, and bundle fingerprints
+with each accepted row so external labs can audit reruns before opening the full
+eval artifact.
 
 ## Completed Run Flow
 
@@ -162,10 +172,13 @@ The validator compiles `run-registry-entry.v1.schema.json` and checks:
 - Local artifact existence and SHA-256 agreement.
 - Scenario and task-set source hashes against the referenced manifests.
 - Canonical eval artifact scenario/task-set agreement with the registry entry.
+- Benchmark-mode provenance presence, immutable refs, SHA/digest shape, and
+  agreement between provenance fingerprints and registry provider/model,
+  scenario/task-set, grader, prompt, bundle, and tool-policy fields.
 
 Fixtures cover a valid canonical eval artifact row plus invalid cases for missing
-grade identity, missing replay bundle, missing artifact hash, and incompatible
-scenario/task-set hashes.
+grade identity, missing replay bundle, missing artifact hash, incompatible
+scenario/task-set hashes, and mutable provenance refs.
 
 The live workflow shape is covered locally by:
 
