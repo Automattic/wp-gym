@@ -89,6 +89,20 @@ Run a no-model local episode:
 node examples/no-model-episode.mjs block-markup-no-fallback-pricing-section
 ```
 
+Run the external consumer proof from a clean throwaway package install:
+
+```sh
+npm run external-consumer:test
+```
+
+That command installs the current checkout into a temporary consumer project and
+proves a lab can use only documented public surfaces: `import { WPGym } from
+'wp-gym'`, exported schema subpaths, JSON CLI discovery, `reset()` / `step()` /
+`grade()` / `trace()`, and `wp-gym run-registry validate --benchmark-mode`. The
+expected terminal JSON includes `status: "passed"`, discovered scenario/task-set
+counts, `step_observation: "command_result"`, `trace_steps: 1`, and
+`registry_validation: "passed"`.
+
 Run the CLI demo, which prints reset observation, step result, hidden grade, and
 trace JSON:
 
