@@ -216,7 +216,7 @@ async function aggregate(entries, options) {
 	const rejected = [];
 	for (const file of entries) {
 		const row = readJson(file);
-		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: root });
+		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: options.baseDir || root });
 		const rowSummary = { file: repoRelative(file), ok: validation.ok, compatibility_gaps: validation.compatibility_gaps };
 		if (!validation.ok) {
 			rejected.push(rowSummary);
@@ -509,3 +509,5 @@ async function main() {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	await main();
 }
+
+export { aggregate, renderMarkdown };

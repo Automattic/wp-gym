@@ -74,6 +74,10 @@ Scenario metadata enforces this contract with:
   `wordpress_state`, `workspace_diff`, `plugin_files`, or `media_library`.
 - `episode_contract.allowed_action_types` contains only action types the local
   replay harness can replay today: `wp_cli` and `filesystem`.
+- Browser/editor action traces may be retained as audit evidence, but they are
+  promotion blockers for `benchmark_replay` rows until replay/regrade can
+  deterministically reproduce the browser/editor observations from generic WP
+  Codebox primitives.
 - `benchmark_blockers` no longer contains diagnostic-only blockers such as
   `diagnostic_contract_only`, `workspace_diff_diagnostic_only`, or
   `task_contract_workspace_diff_diagnostic`.

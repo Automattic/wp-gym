@@ -14,10 +14,11 @@
       "required": ["max_steps", "allowed_action_types", "setup", "success_checks"],
       "properties": {
         "max_steps": { "type": "integer", "minimum": 1 },
+        "reset_seed": { "type": ["string", "null"] },
         "allowed_action_types": {
           "type": "array",
           "minItems": 1,
-          "items": { "enum": ["wp_cli", "filesystem", "rest", "browser"] },
+          "items": { "enum": ["wp_cli", "filesystem", "rest", "browser", "editor"] },
           "uniqueItems": true
         },
         "setup": {
@@ -28,6 +29,62 @@
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
           "uniqueItems": true
+        },
+        "replay": {
+          "type": "object",
+          "description": "Replay controls for browser/editor traces. These fields define what must be restored or audited before an action can be deterministically replayed.",
+          "properties": {
+            "mode": { "enum": ["deterministic", "audit_only", "mixed"] },
+            "reset": {
+              "type": "object",
+              "properties": {
+                "strategy": { "enum": ["clean_site", "wordpress_state", "workspace_snapshot"] },
+                "seed": { "type": ["string", "null"] },
+                "state_ref": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            },
+            "viewport": {
+              "type": "object",
+              "required": ["width", "height"],
+              "properties": {
+                "width": { "type": "integer", "minimum": 1 },
+                "height": { "type": "integer", "minimum": 1 },
+                "device_scale_factor": { "type": "number", "exclusiveMinimum": 0 },
+                "is_mobile": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            },
+            "timing": {
+              "type": "object",
+              "properties": {
+                "default_timeout_ms": { "type": "integer", "minimum": 1 },
+                "settle_ms": { "type": "integer", "minimum": 0 },
+                "wait_until": { "enum": ["commit", "domcontentloaded", "load", "networkidle"] }
+              },
+              "additionalProperties": false
+            },
+            "screenshots": {
+              "type": "object",
+              "properties": {
+                "required": { "type": "boolean" },
+                "format": { "enum": ["png", "jpeg"] },
+                "full_page": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            },
+            "state": {
+              "type": "object",
+              "properties": {
+                "dom_required": { "type": "boolean" },
+                "editor_store_required": { "type": "boolean" },
+                "network_required": { "type": "boolean" },
+                "console_required": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": true
