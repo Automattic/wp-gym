@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildRewardRobustnessReport } from './report-reward-robustness.mjs';
 
 const moduleRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const commandName = 'wp-gym benchmark-promotion report';
@@ -205,6 +206,7 @@ function evaluateScenario(scenario, context = {}) {
 	const calibration = manifest.calibration || {};
 	const split = manifest.split || {};
 	const coverage = context.shortcutCoverage?.get(manifest.id) || { negative: new Map(), positive: new Map() };
+	const robustness = context.rewardRobustnessByScenario?.get(manifest.id);
 	const gates = [];
 
 	gates.push(calibration.status === 'benchmark_ready' && calibration.benchmark_scope === 'benchmark' && calibration.headline_score_eligible === true
@@ -265,6 +267,10 @@ function evaluateScenario(scenario, context = {}) {
 	gates.push(hasReviewedRewardSoundness(calibration.reward_soundness_review)
 		? pass('reward_soundness_reviewed', 'Human/reference review classified representative pass and adversarial outputs.', [calibration.reward_soundness_review.artifact])
 		: fail('reward_soundness_reviewed', 'Benchmark-ready scenarios must link reviewed reward-soundness evidence.', ['missing_reward_soundness_review']));
+
+	gates.push(robustness?.status === 'pass'
+		? pass('reward_robustness_fixture_coverage', 'Scenario has nearby positive, adversarial negative, borderline negative, and known shortcut fixture coverage.', robustness.fixtures > 0 ? [scenario.file] : [])
+		: fail('reward_robustness_fixture_coverage', 'Scenario reward robustness coverage must pass before promotion.', (robustness?.gaps || ['missing_reward_robustness_report']).map((gap) => `reward_robustness:${gap}`)));
 
 	gates.push(calibration.reward_soundness_review?.shortcut_resolution_status === 'resolved' || (calibration.known_shortcuts || []).length === 0
 		? pass('reward_shortcuts_review_resolved', 'Reward-soundness review does not leave known shortcuts unresolved.')
@@ -338,6 +344,21 @@ function evaluateTaskSet(taskSet, context = {}) {
 	gates.push(Array.isArray(manifest.benchmark_blockers) && manifest.benchmark_blockers.length === 0
 		? pass('task_set_blockers_empty', 'Task-set benchmark_blockers is empty.')
 		: fail('task_set_blockers_empty', 'Task-set benchmark_blockers must be empty.', manifest.benchmark_blockers || ['benchmark_blockers_present']));
+
+	const includedFamilyReports = new Map();
+	for (const task of manifest.tasks || []) {
+		const scenario = context.rewardRobustnessByScenario?.get(task.scenario_id);
+		if (!scenario) {
+			continue;
+		}
+		const family = context.rewardRobustnessByFamily?.get(scenario.task_family);
+		if (family) {
+			includedFamilyReports.set(family.family, family);
+		}
+	}
+	gates.push(context.rewardRobustness?.status === 'pass' && includedFamilyReports.size > 0
+		? pass('task_family_reward_robustness_reported', 'Reward robustness report covers included task families without candidate coverage gaps.', [...includedFamilyReports.keys()].sort())
+		: fail('task_family_reward_robustness_reported', 'Task-set promotion requires corpus-wide task-family reward robustness status.', context.rewardRobustness?.blockers?.length > 0 ? context.rewardRobustness.blockers.map((gap) => `reward_robustness:${gap}`) : ['missing_task_family_reward_robustness_report']));
 
 	for (const task of manifest.tasks || []) {
 		const scenario = scenariosById.get(task.scenario_id);
@@ -426,12 +447,16 @@ function validateEmbeddedPromotionReport(target, scenariosById = new Map()) {
 }
 
 function buildContext(root) {
+	const rewardRobustness = buildRewardRobustnessReport({ root });
 	return {
 		root,
 		scenariosById: loadScenarios(root),
 		taskSetsById: loadTaskSets(root),
 		shortcutCoverage: loadShortcutCoverage(root),
 		calibrationResultsById: loadCalibrationResults(root),
+		rewardRobustness,
+		rewardRobustnessByScenario: new Map(rewardRobustness.scenarios.map((scenario) => [scenario.scenario_id, scenario])),
+		rewardRobustnessByFamily: new Map(rewardRobustness.task_families.map((family) => [family.family, family])),
 	};
 }
 

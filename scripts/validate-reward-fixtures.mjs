@@ -8,6 +8,7 @@ const fixtureRoot = path.join(root, 'fixtures', 'reward-hacking');
 const scenarioRoot = path.join(root, 'scenarios');
 const benchmarkCandidateScopes = new Set(['calibration', 'benchmark']);
 const knownAdversarialCases = new Set(['empty_output']);
+const knownRobustnessCases = new Set(['nearby_positive', 'adversarial_negative', 'borderline_negative']);
 
 function assert(condition, message) {
 	if (!condition) {
@@ -104,8 +105,14 @@ function validateFixture(file, fixture, scenarios) {
 		`${file} type must be adversarial_negative_fixture or positive_control_fixture`
 	);
 	assert(['fail', 'pass'].includes(fixture.expected_result), `${file} expected_result must be pass or fail`);
+	if (fixture.robustness_case !== undefined) {
+		assert(knownRobustnessCases.has(fixture.robustness_case), `${file} robustness_case must be one of: ${[...knownRobustnessCases].join(', ')}`);
+	}
 	if (fixture.type === 'adversarial_negative_fixture') {
 		assert(fixture.expected_result === 'fail', `${file} adversarial_negative_fixture must expect fail`);
+		if (fixture.robustness_case !== undefined) {
+			assert(fixture.robustness_case !== 'nearby_positive', `${file} adversarial_negative_fixture cannot use robustness_case nearby_positive`);
+		}
 		assert(
 			typeof fixture.shortcut_id === 'string' && fixture.shortcut_id.length > 0 ||
 				typeof fixture.adversarial_case === 'string' && fixture.adversarial_case.length > 0,
@@ -114,6 +121,9 @@ function validateFixture(file, fixture, scenarios) {
 	}
 	if (fixture.type === 'positive_control_fixture') {
 		assert(fixture.expected_result === 'pass', `${file} positive_control_fixture must expect pass`);
+		if (fixture.robustness_case !== undefined) {
+			assert(fixture.robustness_case === 'nearby_positive', `${file} positive_control_fixture must use robustness_case nearby_positive`);
+		}
 		assert(Array.isArray(fixture.covers_shortcut_ids) && fixture.covers_shortcut_ids.length > 0, `${file} positive_control_fixture must declare covers_shortcut_ids`);
 	}
 	if (fixture.expected_result === 'fail') {
@@ -181,6 +191,10 @@ function assertShortcutCoverage(fixtures, scenarios) {
 	}
 
 	for (const scenario of scenarios.values()) {
+		if (!benchmarkCandidateScopes.has(scenario.manifest.calibration?.benchmark_scope)) {
+			continue;
+		}
+
 		const scenarioCoverage = coverage.get(scenario.manifest.id) || { negative: new Map(), positive: new Map() };
 		for (const shortcutId of scenario.manifest.calibration?.known_shortcuts || []) {
 			assert(
@@ -203,6 +217,9 @@ function assertBenchmarkCandidateCoverage(fixtures, scenarios) {
 			coverage.set(fixture.scenario_id, {
 				positive: [],
 				negative: [],
+				nearbyPositive: [],
+				adversarialNegative: [],
+				borderlineNegative: [],
 				emptyOutputNegative: [],
 			});
 		}
@@ -210,9 +227,18 @@ function assertBenchmarkCandidateCoverage(fixtures, scenarios) {
 		const scenarioCoverage = coverage.get(fixture.scenario_id);
 		if (fixture.type === 'positive_control_fixture') {
 			scenarioCoverage.positive.push(file);
+			if (fixture.robustness_case === 'nearby_positive') {
+				scenarioCoverage.nearbyPositive.push(file);
+			}
 		}
 		if (fixture.type === 'adversarial_negative_fixture') {
 			scenarioCoverage.negative.push(file);
+			if (fixture.robustness_case === 'adversarial_negative') {
+				scenarioCoverage.adversarialNegative.push(file);
+			}
+			if (fixture.robustness_case === 'borderline_negative') {
+				scenarioCoverage.borderlineNegative.push(file);
+			}
 			if (fixture.adversarial_case === 'empty_output') {
 				scenarioCoverage.emptyOutputNegative.push(file);
 			}
@@ -227,15 +253,22 @@ function assertBenchmarkCandidateCoverage(fixtures, scenarios) {
 		const scenarioCoverage = coverage.get(scenario.manifest.id) || {
 			positive: [],
 			negative: [],
+			nearbyPositive: [],
+			adversarialNegative: [],
+			borderlineNegative: [],
 			emptyOutputNegative: [],
 		};
 		assert(
-			scenarioCoverage.positive.length > 0,
-			`${scenario.file} benchmark-candidate scenarios need a positive_control_fixture`
+			scenarioCoverage.nearbyPositive.length > 0,
+			`${scenario.file} benchmark-candidate scenarios need nearby positive_control_fixture coverage`
 		);
 		assert(
-			scenarioCoverage.negative.length > 0,
-			`${scenario.file} benchmark-candidate scenarios need an adversarial_negative_fixture`
+			scenarioCoverage.adversarialNegative.length > 0,
+			`${scenario.file} benchmark-candidate scenarios need adversarial_negative_fixture coverage`
+		);
+		assert(
+			scenarioCoverage.borderlineNegative.length > 0,
+			`${scenario.file} benchmark-candidate scenarios need borderline_negative fixture coverage`
 		);
 		assert(
 			scenarioCoverage.emptyOutputNegative.length > 0,
