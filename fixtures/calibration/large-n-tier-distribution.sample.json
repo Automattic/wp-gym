@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "id": "large-n-tier-distribution-sample",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "task_set_id": "benchmark-readiness-pilot",
+  "created_at": "2026-05-30T00:00:00Z",
+  "source": {
+    "issue": "https://github.com/Automattic/wp-gym/issues/237",
+    "evidence_kind": "large_n_calibration_distribution_contract_sample",
+    "notes": "Contract sample only. Real large-N distributions must be regenerated from retained run-registry entries before being referenced by scenario calibration metadata."
+  },
+  "rows": [
+    {
+      "row_type": "no_op",
+      "model_tier": "no_op",
+      "label": "No-op control distribution",
+      "attempts": 30,
+      "passes": 0,
+      "pass_rate": 0,
+      "mean_reward": 0,
+      "reward_variance": 0,
+      "reward_stddev": 0,
+      "confidence_interval_95": [0, 0]
+    },
+    {
+      "row_type": "cheap_model",
+      "model_tier": "cheap_model",
+      "label": "Cheap-model distribution",
+      "provider": "openai",
+      "model": "gpt-5.4-mini",
+      "attempts": 30,
+      "passes": 10,
+      "pass_rate": 0.3333,
+      "mean_reward": 0.36,
+      "reward_variance": 0.053,
+      "reward_stddev": 0.2302,
+      "confidence_interval_95": [0.1647, 0.502]
+    },
+    {
+      "row_type": "repeated_attempts",
+      "model_tier": "frontier_model",
+      "label": "Frontier repeated-attempt distribution",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "result_set_id": "large-n-tier-distribution-sample-frontier",
+      "attempt_ids": [
+        "large-n-tier-distribution-sample-frontier-attempt-001",
+        "large-n-tier-distribution-sample-frontier-attempt-002"
+      ],
+      "attempts": 2,
+      "passes": 1,
+      "pass_rate": 0.5,
+      "pass_at_1": 0.5,
+      "pass_at_n": 1,
+      "mean_reward": 0.5,
+      "reward_variance": 0.5,
+      "reward_stddev": 0.7071,
+      "confidence_interval_95": [0, 1]
+    },
+    {
+      "row_type": "human_reference",
+      "model_tier": "human_reference",
+      "label": "Human/reference control distribution",
+      "attempts": 10,
+      "passes": 10,
+      "pass_rate": 1,
+      "mean_reward": 1,
+      "reward_variance": 0,
+      "reward_stddev": 0,
+      "confidence_interval_95": [1, 1]
+    }
+  ],
+  "summary": {
+    "pass_rate_band": "target",
+    "confidence_interval_95": [0.62, 0.84],
+    "held_out_private_variants_ready": false,
+    "promotion_recommendation": "calibrating",
+    "blockers": [
+      "sample_only",
+      "registry_entries_not_committed",
+      "held_out_private_variants_not_ready"
+    ],
+    "large_n_distribution": {
+      "min_attempts_per_model_tier": 30,
+      "stable_result_sets": false,
+      "benchmark_ready_threshold_met": false,
+      "model_tiers": {
+        "no_op": {
+          "attempts": 30,
+          "passes": 0,
+          "pass_rate": 0,
+          "reward_variance": 0,
+          "confidence_interval_95": [0, 0],
+          "failure_classes": { "task_failure": 30 }
+        },
+        "cheap_model": {
+          "attempts": 30,
+          "passes": 10,
+          "pass_rate": 0.3333,
+          "reward_variance": 0.053,
+          "confidence_interval_95": [0.1647, 0.502],
+          "failure_classes": { "none": 10, "agent_failure": 20 }
+        },
+        "frontier_model": {
+          "attempts": 2,
+          "passes": 1,
+          "pass_rate": 0.5,
+          "reward_variance": 0.5,
+          "confidence_interval_95": [0, 1],
+          "failure_classes": { "none": 1, "agent_failure": 1 }
+        },
+        "human_reference": {
+          "attempts": 10,
+          "passes": 10,
+          "pass_rate": 1,
+          "reward_variance": 0,
+          "confidence_interval_95": [1, 1],
+          "failure_classes": { "none": 10 }
+        }
+      }
+    }
+  }
+}

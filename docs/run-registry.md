@@ -113,6 +113,14 @@ uploads `wp-gym-run-registry-<workflow-run-id>` with:
 - `live-run-results/`: downloaded Homeboy result artifacts used as input.
 - `live-replay-bundles/`: downloaded replay bundles when the runner emitted them.
 
+Registry reports group calibration rows by both provider/model and model tier.
+`calibration.model_tier` is the preferred explicit tier when present. When older
+entries omit it, the report falls back to the row type for control rows and model
+name heuristics for repeated-attempt rows. Large-N calibration reviews should use
+the model-tier and task-family/model-tier sections to compare no-op, scripted,
+cheap-model, frontier-model, repeated-attempt, and human/reference distributions
+without mixing those rows into headline benchmark reports.
+
 The emitter's `--require-entry` flag is used in the workflow so a live run cannot
 silently pass registry emission when no eval row was recovered.
 

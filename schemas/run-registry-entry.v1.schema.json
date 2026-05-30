@@ -126,6 +126,9 @@
         "row_type": {
           "enum": ["no_op", "heuristic_scripted", "cheap_model", "frontier_model", "repeated_attempts", "human_reference", "excluded"]
         },
+        "model_tier": {
+          "enum": ["no_op", "heuristic_scripted", "cheap_model", "frontier_model", "human_reference", "excluded"]
+        },
         "included": { "type": "boolean" },
         "status": { "enum": ["pilot", "calibrating", "benchmark_ready", "excluded"] },
         "result_set_id": { "type": ["string", "null"] }

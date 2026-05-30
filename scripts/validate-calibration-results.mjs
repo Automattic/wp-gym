@@ -15,6 +15,7 @@ const requiredRowTypes = new Set([
 	'repeated_attempts',
 	'human_reference',
 ]);
+const modelTierRowTypes = new Set(['no_op', 'heuristic_scripted', 'cheap_model', 'frontier_model', 'human_reference']);
 
 async function listJsonFiles(dir, relativeDir) {
 	if (!existsSync(dir)) {
@@ -68,6 +69,22 @@ async function loadScenarios(dir = scenarioRoot, relativeDir = 'scenarios') {
 
 function calibrationPathForId(id) {
 	return `fixtures/calibration/${id}.json`;
+}
+
+function modelTierForRow(row) {
+	if (row.model_tier) {
+		return row.model_tier;
+	}
+	if (modelTierRowTypes.has(row.row_type)) {
+		return row.row_type;
+	}
+	if (row.model && /mini|small|haiku|flash|nano/i.test(row.model)) {
+		return 'cheap_model';
+	}
+	if (row.model) {
+		return 'frontier_model';
+	}
+	return row.row_type;
 }
 
 const schema = JSON.parse(await readFile(path.join(root, 'schemas/calibration-result.schema.json'), 'utf8'));
@@ -125,6 +142,26 @@ for (const file of files) {
 			}
 			if (Array.isArray(row.confidence_interval_95)) {
 				assert(row.confidence_interval_95[0] <= row.confidence_interval_95[1], `${file} repeated_attempts confidence_interval_95 must be ordered low-to-high`);
+			}
+		}
+	}
+
+	if (value.summary.large_n_distribution) {
+		const distribution = value.summary.large_n_distribution;
+		for (const [tier, tierSummary] of Object.entries(distribution.model_tiers || {})) {
+			assert(tierSummary.passes <= tierSummary.attempts, `${file} large_n_distribution ${tier} passes cannot exceed attempts`);
+			assert(
+				Math.abs(tierSummary.pass_rate - tierSummary.passes / tierSummary.attempts) < 0.001,
+				`${file} large_n_distribution ${tier} pass_rate must match passes / attempts`
+			);
+			assert(tierSummary.confidence_interval_95[0] <= tierSummary.confidence_interval_95[1], `${file} large_n_distribution ${tier} confidence_interval_95 must be ordered low-to-high`);
+
+			const rowAttempts = value.rows
+				.filter((row) => modelTierForRow(row) === tier)
+				.reduce((sum, row) => sum + row.attempts, 0);
+			assert(rowAttempts === tierSummary.attempts, `${file} large_n_distribution ${tier} attempts must match row attempts`);
+			if (distribution.benchmark_ready_threshold_met) {
+				assert(tierSummary.attempts >= distribution.min_attempts_per_model_tier, `${file} benchmark-ready large-N distribution requires ${distribution.min_attempts_per_model_tier} ${tier} attempts`);
 			}
 		}
 	}

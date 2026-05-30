@@ -156,6 +156,24 @@ function resultSetKey(row) {
 	return row.run?.result_set_id || row.calibration?.result_set_id || `${row.scenario?.id || 'unknown'}:${row.runner?.provider || 'unknown'}:${row.runner?.model || 'unknown'}`;
 }
 
+function modelTier(row) {
+	if (row.calibration?.model_tier) {
+		return row.calibration.model_tier;
+	}
+	const rowType = row.calibration?.row_type || 'unknown';
+	if (['no_op', 'heuristic_scripted', 'cheap_model', 'frontier_model', 'human_reference'].includes(rowType)) {
+		return rowType;
+	}
+	const model = row.runner?.model || '';
+	if (/mini|small|haiku|flash|nano/i.test(model)) {
+		return 'cheap_model';
+	}
+	if (model) {
+		return 'frontier_model';
+	}
+	return rowType;
+}
+
 function rowFailedChecks(row) {
 	const evalArtifactPath = row.eval_artifact?.path_or_url;
 	if (!evalArtifactPath || /^https?:\/\//i.test(evalArtifactPath)) {
@@ -216,8 +234,10 @@ function aggregate(entries, options) {
 		},
 		overall,
 		by_provider_model: groupBy(rows, (row) => `${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
+		by_model_tier: groupBy(rows, modelTier),
 		by_calibration_row_type: groupBy(rows, (row) => row.calibration?.row_type || 'unknown'),
 		by_scenario_model: groupBy(rows, (row) => `${row.scenario?.id || 'unknown'}:${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
+		by_task_family_model_tier: groupBy(rows, (row) => `${row.scenario?.task_family || 'unknown'}:${modelTier(row)}`),
 		by_result_set: groupBy(rows, resultSetKey),
 		by_task: groupBy(rows, (row) => row.scenario?.id || 'unknown'),
 		by_task_family: groupBy(rows, (row) => row.scenario?.task_family || 'unknown'),
@@ -237,6 +257,7 @@ function aggregate(entries, options) {
 			task_family: row.scenario?.task_family,
 			provider: row.runner?.provider,
 			model: row.runner?.model,
+			model_tier: modelTier(row),
 			calibration_row_type: row.calibration?.row_type || 'unknown',
 			outcome: row.run?.outcome,
 			reward: row.grade_identity?.reward,
@@ -303,6 +324,10 @@ function renderMarkdown(report) {
 		'',
 		renderTable(['Provider/model', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_provider_model)),
 		'',
+		'## Model Tier',
+		'',
+		renderTable(['Model tier', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_model_tier)),
+		'',
 		'## Calibration Row Type',
 		'',
 		renderTable(['Row type', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_calibration_row_type)),
@@ -323,12 +348,17 @@ function renderMarkdown(report) {
 		'',
 		renderTable(['Family', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_task_family)),
 		'',
+		'## Task Family / Model Tier',
+		'',
+		renderTable(['Family/tier', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_task_family_model_tier)),
+		'',
 		'## Rows',
 		'',
-		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Row type', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
+		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Model tier', 'Row type', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Exclusions'], report.rows.map((row) => [
 			row.scenario || '',
 			row.held_out_pack?.pack_id || '',
 			`${row.provider || 'unknown'}/${row.model || 'unknown'}`,
+			row.model_tier || 'unknown',
 			row.calibration_row_type || 'unknown',
 			row.attempt_index ? `${row.attempt_index}/${row.attempt_count || '?'}` : '',
 			row.result_set_id || '',

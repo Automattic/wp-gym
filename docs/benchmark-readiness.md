@@ -275,6 +275,39 @@ registry rows, and upload replay/report artifacts. The runtime failures are kept
 as pilot evidence rather than hidden, because failed rows are part of the eval
 signal. They do not make the task set benchmark-ready.
 
+## Large-N Calibration Distributions
+
+Issue [#237](https://github.com/Automattic/wp-gym/issues/237) adds a large-N
+distribution contract so model-tier calibration has a stable shape before any
+headline score exists:
+
+| Artifact | Result set | Model tiers | Promotion state |
+| --- | --- | --- | --- |
+| `fixtures/calibration/large-n-tier-distribution.sample.json` | `large-n-tier-distribution-sample` | no-op, cheap-model, repeated frontier attempts, human/reference | contract sample only; benchmark use blocked until real retained registry rows are committed, held-out variants are ready, and reward shortcuts are resolved |
+
+The sample records the required shape for row counts, pass-rate bands, 95%
+confidence intervals, reward variance, `pass@1`, `pass@n`, and failure-class
+counts by model tier. It also keeps
+`summary.large_n_distribution.benchmark_ready_threshold_met=false`, so validation
+accepts the contract without allowing accidental benchmark promotion.
+
+Regenerate a tiered report from retained registry entries with:
+
+```sh
+npm run run-registry:report -- \
+  --registry artifacts/<run-id>/wp-gym-run-registry/entries \
+  --json artifacts/<run-id>/wp-gym-report.json \
+  --markdown artifacts/<run-id>/wp-gym-report.md \
+  --scope pilot
+```
+
+Use the generated **Model Tier** and **Task Family / Model Tier** sections for
+large-N review. A pilot task can graduate from calibration evidence to
+benchmark-ready scoring only when the retained registry source rows are durable,
+each required tier meets the declared minimum attempt count, confidence intervals
+are stable enough for the target band, held-out/private variants are ready, and
+the promotion report has no blockers.
+
 ## Benchmark-Ready Gates
 
 The pilot becomes benchmark-ready only after these gates are complete:
