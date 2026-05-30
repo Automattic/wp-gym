@@ -108,6 +108,39 @@ try {
 	assert.equal(tamperedAction.ok, false);
 	assert(tamperedAction.compatibility_gaps.some((gap) => gap.code === 'trace_action_result_mismatch' || gap.code === 'episode_replay_step_mismatch'));
 
+	const browserEditorTraceText = await readFile(path.join(fixtureRoot, 'browser-editor-audit-trace.json'), 'utf8');
+	const browserEditorTracePath = path.join(temp, 'browser-editor-audit-trace.json');
+	await writeFile(browserEditorTracePath, browserEditorTraceText);
+	const browserEditorArtifactPath = path.join(temp, 'browser-editor-artifact.json');
+	const browserEditorArtifact = localizeFixtureReferences(JSON.parse(await readFile(path.join(fixtureRoot, 'valid-artifact.json'), 'utf8')));
+	browserEditorArtifact.runtime.references.replay_trace[0].path_or_url = browserEditorTracePath;
+	browserEditorArtifact.runtime.references.replay_trace[0].sha256 = sha256(browserEditorTraceText);
+	browserEditorArtifact.reports.replay[0].path_or_url = browserEditorTracePath;
+	browserEditorArtifact.reports.replay[0].sha256 = sha256(browserEditorTraceText);
+	await writeFile(browserEditorArtifactPath, JSON.stringify(browserEditorArtifact, null, 2));
+
+	const browserEditorAudit = await replayRegradeArtifactFile(browserEditorArtifactPath, { benchmarkMode: true });
+	assert.equal(browserEditorAudit.ok, true, JSON.stringify(browserEditorAudit, null, 2));
+	assert.equal(browserEditorAudit.replay.phase, 'trace_audit_plus_state_regrade');
+	assert.equal(browserEditorAudit.replay.episode_replay, null);
+	assert.equal(browserEditorAudit.replay.trace_reference.unsupported_actions.length, 2);
+	assert(browserEditorAudit.compatibility_gaps.some((gap) => gap.code === 'browser_editor_action_audit_only'));
+
+	const browserEditorMismatchTraceText = await readFile(path.join(fixtureRoot, 'browser-editor-mismatch-trace.json'), 'utf8');
+	const browserEditorMismatchTracePath = path.join(temp, 'browser-editor-mismatch-trace.json');
+	await writeFile(browserEditorMismatchTracePath, browserEditorMismatchTraceText);
+	const browserEditorMismatchArtifactPath = path.join(temp, 'browser-editor-mismatch-artifact.json');
+	const browserEditorMismatchArtifact = localizeFixtureReferences(JSON.parse(await readFile(path.join(fixtureRoot, 'valid-artifact.json'), 'utf8')));
+	browserEditorMismatchArtifact.runtime.references.replay_trace[0].path_or_url = browserEditorMismatchTracePath;
+	browserEditorMismatchArtifact.runtime.references.replay_trace[0].sha256 = sha256(browserEditorMismatchTraceText);
+	browserEditorMismatchArtifact.reports.replay[0].path_or_url = browserEditorMismatchTracePath;
+	browserEditorMismatchArtifact.reports.replay[0].sha256 = sha256(browserEditorMismatchTraceText);
+	await writeFile(browserEditorMismatchArtifactPath, JSON.stringify(browserEditorMismatchArtifact, null, 2));
+
+	const browserEditorMismatch = await replayRegradeArtifactFile(browserEditorMismatchArtifactPath, { benchmarkMode: true });
+	assert.equal(browserEditorMismatch.ok, false);
+	assert(browserEditorMismatch.compatibility_gaps.some((gap) => gap.code === 'trace_action_result_mismatch'));
+
 	const archivePath = path.join(temp, 'downloaded-artifact.zip');
 	const zip = spawnSync('zip', ['-X', '-q', archivePath, 'valid-artifact.json', 'episode-trace.json', 'wordpress-state.json', 'events.jsonl', 'result.json', 'replay.zip'], {
 		cwd: fixtureRoot,

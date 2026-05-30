@@ -32,6 +32,35 @@
       "run_url": "https://github.com/Automattic/wp-gym/actions/runs/123"
     }
   },
+  "operations": {
+    "cost": {
+      "estimated_usd": 0.0425,
+      "currency": "USD",
+      "pricing_source": "fixture-price-sheet-2026-05"
+    },
+    "usage": {
+      "input_tokens": 12000,
+      "output_tokens": 1800,
+      "total_tokens": 13800
+    },
+    "timing": {
+      "queue_ms": 5000,
+      "wall_ms": 60000,
+      "runner_ms": 54000,
+      "provider_ms": 31000
+    },
+    "concurrency": {
+      "requested": 8,
+      "effective": 6,
+      "matrix_max": 12
+    },
+    "retry": {
+      "policy": "wp-gym-large-run-v1",
+      "retry_count": 0,
+      "max_attempts": 3,
+      "disposition": "not_retried"
+    }
+  },
   "scenario": {
     "id": "block-markup-valid-semantic-blocks",
     "label": "Valid semantic blocks",

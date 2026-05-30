@@ -45,7 +45,7 @@
   },
   "grade_identity": {
     "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e",
-    "result_sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec",
+    "result_sha256": "3cf53fdf68319620288b4482400207436d2fe10171911a6b90afda5a03910c8b",
     "success": true,
     "reward": 1,
     "failure_class": "none"
@@ -61,6 +61,20 @@
     "headline_score_eligible": false,
     "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28",
     "exclusion_reasons": ["pilot_task_set"]
+  },
+  "isolation": {
+    "hidden_evidence_boundaries": {
+      "covered_evidence_kinds": ["hidden_grader", "held_out_variant", "private_fixture", "expected_answer", "task_policy_internal"],
+      "surfaces": [
+        { "name": "prompt", "status": "pass", "findings": [] },
+        { "name": "tools", "status": "pass", "findings": [] },
+        { "name": "workspace", "status": "pass", "findings": [] },
+        { "name": "artifacts", "status": "pass", "findings": [] },
+        { "name": "report_body", "status": "pass", "findings": [] }
+      ],
+      "benchmark_mode_eligible": true,
+      "accepted_exposures": []
+    }
   },
   "provenance": {
     "workflow": {
@@ -101,10 +115,39 @@
       "bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }
   },
+  "operations": {
+    "cost": {
+      "estimated_usd": 0.0425,
+      "currency": "USD",
+      "pricing_source": "fixture-price-sheet-2026-05"
+    },
+    "usage": {
+      "input_tokens": 12000,
+      "output_tokens": 1800,
+      "total_tokens": 13800
+    },
+    "timing": {
+      "queue_ms": 5000,
+      "wall_ms": 60000,
+      "runner_ms": 54000,
+      "provider_ms": 31000
+    },
+    "concurrency": {
+      "requested": 8,
+      "effective": 6,
+      "matrix_max": 12
+    },
+    "retry": {
+      "policy": "wp-gym-large-run-v1",
+      "retry_count": 0,
+      "max_attempts": 3,
+      "disposition": "not_retried"
+    }
+  },
   "eval_artifact": {
     "kind": "json",
     "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json",
-    "sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec",
+    "sha256": "3cf53fdf68319620288b4482400207436d2fe10171911a6b90afda5a03910c8b",
     "media_type": "application/json"
   },
   "artifact_index": {
@@ -117,7 +160,7 @@
         "category": "eval_artifact",
         "kind": "json",
         "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json",
-        "sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec",
+        "sha256": "3cf53fdf68319620288b4482400207436d2fe10171911a6b90afda5a03910c8b",
         "media_type": "application/json",
         "required": true
       },
@@ -126,7 +169,7 @@
         "category": "grade",
         "kind": "json",
         "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json",
-        "sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec",
+        "sha256": "3cf53fdf68319620288b4482400207436d2fe10171911a6b90afda5a03910c8b",
         "media_type": "application/json",
         "required": true
       },

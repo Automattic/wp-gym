@@ -11,7 +11,8 @@
     { "$ref": "#/$defs/restResponseObservation" },
     { "$ref": "#/$defs/htmlObservation" },
     { "$ref": "#/$defs/screenshotObservation" },
-    { "$ref": "#/$defs/browserResultObservation" }
+    { "$ref": "#/$defs/browserResultObservation" },
+    { "$ref": "#/$defs/editorResultObservation" }
   ],
   "$defs": {
     "metadata": {
@@ -36,6 +37,33 @@
         "path": { "type": "string", "minLength": 1 },
         "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "mime_type": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "viewport": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "device_scale_factor": { "type": "number", "exclusiveMinimum": 0 },
+        "is_mobile": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "stateSnapshot": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "selector_text": { "type": "string" },
+        "post_id": { "type": "integer", "minimum": 1 },
+        "post_type": { "type": "string", "minLength": 1 },
+        "post_status": { "type": "string", "minLength": 1 },
+        "selected_block_client_id": { "type": "string", "minLength": 1 },
+        "block_count": { "type": "integer", "minimum": 0 },
+        "dirty": { "type": "boolean" },
+        "mode": { "enum": ["visual", "code"] }
       },
       "additionalProperties": false
     },
@@ -190,6 +218,29 @@
         "replayability": { "enum": ["replayable", "evidence_only"] },
         "url": { "type": "string", "minLength": 1 },
         "selector": { "type": "string", "minLength": 1 },
+        "viewport": { "$ref": "#/$defs/viewport" },
+        "state": { "$ref": "#/$defs/stateSnapshot" },
+        "artifacts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/artifactRef" }
+        },
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "error": { "$ref": "#/$defs/error" }
+      },
+      "additionalProperties": false
+    },
+    "editorResultObservation": {
+      "type": "object",
+      "required": ["schema_version", "type", "action_type", "operation", "replayability", "state", "artifacts", "error"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "type": { "const": "editor_result" },
+        "id": { "type": "string", "minLength": 1 },
+        "metadata": { "$ref": "#/$defs/metadata" },
+        "action_type": { "const": "editor" },
+        "operation": { "enum": ["open_post", "insert_block", "update_block", "select_block", "save_post", "publish_post", "switch_mode", "inspect_state"] },
+        "replayability": { "enum": ["replayable", "evidence_only"] },
+        "state": { "$ref": "#/$defs/stateSnapshot" },
         "artifacts": {
           "type": "array",
           "items": { "$ref": "#/$defs/artifactRef" }

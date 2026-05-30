@@ -3,6 +3,7 @@
   "scenario_id": "block-markup-nested-layout-blocks",
   "grader_file": "graders/block-markup/nested-layout-blocks.php",
   "type": "adversarial_negative_fixture",
+  "robustness_case": "borderline_negative",
   "shortcut_id": "shallow_required_text",
   "expected_result": "fail",
   "expected_failure_reasons": ["layout_structure_mismatch"],

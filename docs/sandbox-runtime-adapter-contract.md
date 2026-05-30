@@ -67,6 +67,7 @@ trace.
 | `filesystem` | Read, write, patch, or list mounted files through runtime file primitives | File result, file metadata, and changed artifact paths. |
 | `rest` | Execute an HTTP request against the sandbox WordPress site | Status, headers, body, timing, and server logs. |
 | `browser` | Run a browser interaction or capture against the sandbox site when available | DOM/html, screenshot, console logs, network metadata, and timing. |
+| `editor` | Run a generic block-editor interaction when the runtime exposes one | Editor store snapshot, post/block identity, DOM evidence, screenshots, and timing. |
 
 The runtime execution request should use runtime names such as command, request,
 file operation, browser action, timeout, cwd, environment, and artifact capture
@@ -133,6 +134,8 @@ described in runtime terms, for example:
 - A missing observation channel, such as exported WordPress state.
 - A missing artifact type, such as screenshot capture or normalized log bundles.
 - A missing lifecycle hook, such as snapshot before cleanup.
+- A missing generic editor primitive, such as opening a post, inserting a block,
+  saving, or exporting editor store state.
 
 The requested runtime change should stay generic. For example, ask WP Codebox for
 a screenshot artifact, not a visual-grading artifact; ask for a WordPress state

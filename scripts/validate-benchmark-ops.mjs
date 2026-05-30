@@ -59,10 +59,13 @@ function validateOpsWorkflow() {
 	const file = '.github/workflows/benchmark-artifact-ops.yml';
 	const yaml = read(file);
 	const gaps = [];
-	for (const required of ['pull_request:', 'workflow_dispatch:', 'schedule:', 'npm run benchmark-ops:validate', 'npm run run-registry:emit:test', 'npm run run-registry:validate', 'npm run remote-archive:test']) {
+	for (const required of ['pull_request:', 'workflow_dispatch:', 'schedule:', 'npm run benchmark-ops:validate', 'npm run run-registry:emit:test', 'npm run run-registry:validate', 'npm run artifact-retention:test', 'npm run remote-archive:test']) {
 		if (!yaml.includes(required)) {
 			gaps.push(gap('missing_ops_workflow_check', 'error', file, `Ops workflow must include ${required}.`));
 		}
+	}
+	if (!yaml.includes('npm run stability-budget:test')) {
+		gaps.push(gap('missing_stability_budget_check', 'error', file, 'Ops workflow must include stability budget fixture validation.'));
 	}
 	return gaps;
 }
@@ -73,11 +76,17 @@ function validateOpsDocs() {
 	const gaps = [];
 	for (const required of [
 		'https://github.com/Automattic/wp-gym/issues/244',
+		'https://github.com/Automattic/wp-gym/issues/258',
 		'wp-gym-run-registry',
 		'retention-days',
+		'Historical Retention Proof',
 		'Registry reports can be regenerated',
 		'Durable Shared Evidence',
 		'local-only paths',
+		'https://github.com/Automattic/wp-gym/issues/262',
+		'Stability Budget',
+		'infra/provider/artifact/runner/task/grader',
+		'npm run stability-budget:report',
 	]) {
 		if (!doc.includes(required)) {
 			gaps.push(gap('missing_ops_doc_section', 'error', file, `Benchmark operations docs must mention ${required}.`));

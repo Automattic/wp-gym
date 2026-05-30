@@ -3,6 +3,7 @@
   "scenario_id": "block-markup-valid-semantic-blocks",
   "grader_file": "graders/block-markup/valid-semantic-blocks.php",
   "type": "adversarial_negative_fixture",
+  "robustness_case": "adversarial_negative",
   "shortcut_id": "keyword_stuffing",
   "expected_result": "fail",
   "expected_failure_reasons": ["missing_block_markup", "missing_required_blocks"],
