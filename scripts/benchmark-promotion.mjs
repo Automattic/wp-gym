@@ -17,6 +17,7 @@ const hashPattern = /^[a-f0-9]{64}$/;
 const benchmarkReplayRequiredArtifacts = ['grader_result', 'replay_bundle', 'replay_trace'];
 const benchmarkReplayStateArtifacts = ['wordpress_state', 'workspace_diff', 'plugin_files', 'media_library'];
 const benchmarkReplayActionTypes = ['wp_cli', 'filesystem'];
+const disagreementSeverities = ['critical', 'high', 'medium', 'low'];
 
 function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -154,6 +155,54 @@ function loadCalibrationResults(root) {
 	return results;
 }
 
+function loadRewardSoundnessReviews(root) {
+	const reviews = new Map();
+	const reviewRoot = path.join(root, 'reviews', 'reward-soundness');
+	if (!fs.existsSync(reviewRoot)) {
+		return reviews;
+	}
+
+	for (const file of listJsonFiles(reviewRoot)) {
+		const artifact = readJson(file);
+		reviews.set(repoRelative(root, file), { file, artifact });
+	}
+	return reviews;
+}
+
+function rewardAgreementGate(review, context) {
+	const artifactPath = review?.artifact;
+	const artifact = artifactPath ? context.rewardSoundnessReviewsByPath?.get(artifactPath)?.artifact : null;
+	if (!artifact) {
+		return fail('reward_agreement_thresholds', 'Reward-soundness review artifact must be available for agreement threshold checks.', ['missing_reward_agreement_artifact'], artifactPath ? [artifactPath] : []);
+	}
+
+	const scenarioSummary = (artifact.scenario_agreement || []).find((entry) => entry.scenario_id === context.scenarioId);
+	if (!scenarioSummary) {
+		return fail('reward_agreement_thresholds', 'Review artifact must include scenario-level agreement metrics.', ['missing_scenario_agreement_metrics'], [artifactPath]);
+	}
+
+	const policy = artifact.agreement_policy || {};
+	const blockers = [];
+	const maxUnresolved = Number.isInteger(policy.max_unresolved_disagreements) ? policy.max_unresolved_disagreements : 0;
+	if ((scenarioSummary.unresolved_disagreements || 0) > maxUnresolved) {
+		blockers.push('unresolved_reward_disagreement');
+	}
+	const minAgreementRate = typeof policy.min_agreement_rate === 'number' ? policy.min_agreement_rate : 1;
+	if ((scenarioSummary.agreement_rate || 0) < minAgreementRate) {
+		blockers.push('reward_agreement_rate_below_threshold');
+	}
+	for (const severity of disagreementSeverities) {
+		const limit = policy.max_unresolved_by_severity?.[severity] ?? maxUnresolved;
+		if ((scenarioSummary.disagreement_severity?.[severity] || 0) > limit) {
+			blockers.push(`unresolved_${severity}_reward_disagreement`);
+		}
+	}
+
+	return blockers.length === 0
+		? pass('reward_agreement_thresholds', 'Scenario human/reference agreement satisfies reward-corpus promotion thresholds.', [artifactPath])
+		: fail('reward_agreement_thresholds', 'Promotion is blocked by unresolved human/reference grader disagreement metrics.', blockers, [artifactPath, ...(scenarioSummary.follow_ups || [])]);
+}
+
 function calibrationRowsForScenario(calibration, context, rowType) {
 	const rows = [];
 	for (const resultSetId of calibration.calibration_result_sets || calibration.baseline_result_sets || []) {
@@ -265,6 +314,8 @@ function evaluateScenario(scenario, context = {}) {
 	gates.push(hasReviewedRewardSoundness(calibration.reward_soundness_review)
 		? pass('reward_soundness_reviewed', 'Human/reference review classified representative pass and adversarial outputs.', [calibration.reward_soundness_review.artifact])
 		: fail('reward_soundness_reviewed', 'Benchmark-ready scenarios must link reviewed reward-soundness evidence.', ['missing_reward_soundness_review']));
+
+	gates.push(rewardAgreementGate(calibration.reward_soundness_review, { ...context, scenarioId: manifest.id }));
 
 	gates.push(calibration.reward_soundness_review?.shortcut_resolution_status === 'resolved' || (calibration.known_shortcuts || []).length === 0
 		? pass('reward_shortcuts_review_resolved', 'Reward-soundness review does not leave known shortcuts unresolved.')
@@ -432,6 +483,7 @@ function buildContext(root) {
 		taskSetsById: loadTaskSets(root),
 		shortcutCoverage: loadShortcutCoverage(root),
 		calibrationResultsById: loadCalibrationResults(root),
+		rewardSoundnessReviewsByPath: loadRewardSoundnessReviews(root),
 	};
 }
 

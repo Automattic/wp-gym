@@ -19,8 +19,138 @@
     ]
   },
   "agreement_policy": {
-    "max_unresolved_disagreements": 0
+    "max_unresolved_disagreements": 0,
+    "min_agreement_rate": 1,
+    "max_unresolved_by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "promotion_threshold": "Benchmark promotion requires 100% human/reference agreement and zero unresolved grader disagreements at scenario and task-family level. Any unresolved mismatch must include class, severity, required grader change, and a linked follow-up issue or PR."
   },
+  "disagreement_classes": [
+    "grader_false_positive",
+    "grader_false_negative",
+    "fixture_invalid",
+    "reference_ambiguous",
+    "task_ambiguous",
+    "diagnostic_contract_gap"
+  ],
+  "scenario_agreement": [
+    {
+      "scenario_id": "block-markup-valid-semantic-blocks",
+      "reviewed_cases": {
+        "positive": 1,
+        "negative": 1,
+        "adversarial": 1,
+        "borderline": 1
+      },
+      "agreements": 4,
+      "disagreements": 0,
+      "unresolved_disagreements": 0,
+      "agreement_rate": 1,
+      "disagreement_classes": {
+        "grader_false_positive": 0,
+        "grader_false_negative": 0,
+        "fixture_invalid": 0,
+        "reference_ambiguous": 0,
+        "task_ambiguous": 0,
+        "diagnostic_contract_gap": 0
+      },
+      "disagreement_severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "follow_ups": []
+    },
+    {
+      "scenario_id": "block-markup-no-fallback-pricing-section",
+      "reviewed_cases": {
+        "positive": 1,
+        "negative": 1,
+        "adversarial": 1,
+        "borderline": 1
+      },
+      "agreements": 4,
+      "disagreements": 0,
+      "unresolved_disagreements": 0,
+      "agreement_rate": 1,
+      "disagreement_classes": {
+        "grader_false_positive": 0,
+        "grader_false_negative": 0,
+        "fixture_invalid": 0,
+        "reference_ambiguous": 0,
+        "task_ambiguous": 0,
+        "diagnostic_contract_gap": 0
+      },
+      "disagreement_severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "follow_ups": []
+    },
+    {
+      "scenario_id": "modern-wordpress-api-abilities-site-summary",
+      "reviewed_cases": {
+        "positive": 1,
+        "negative": 0,
+        "adversarial": 1,
+        "borderline": 1
+      },
+      "agreements": 3,
+      "disagreements": 0,
+      "unresolved_disagreements": 0,
+      "agreement_rate": 1,
+      "disagreement_classes": {
+        "grader_false_positive": 0,
+        "grader_false_negative": 0,
+        "fixture_invalid": 0,
+        "reference_ambiguous": 0,
+        "task_ambiguous": 0,
+        "diagnostic_contract_gap": 0
+      },
+      "disagreement_severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "follow_ups": []
+    },
+    {
+      "scenario_id": "modern-wordpress-api-rest-route-status",
+      "reviewed_cases": {
+        "positive": 1,
+        "negative": 1,
+        "adversarial": 1,
+        "borderline": 1
+      },
+      "agreements": 4,
+      "disagreements": 0,
+      "unresolved_disagreements": 0,
+      "agreement_rate": 1,
+      "disagreement_classes": {
+        "grader_false_positive": 0,
+        "grader_false_negative": 0,
+        "fixture_invalid": 0,
+        "reference_ambiguous": 0,
+        "task_ambiguous": 0,
+        "diagnostic_contract_gap": 0
+      },
+      "disagreement_severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "follow_ups": []
+    }
+  ],
   "task_family_agreement": [
     {
       "family": "block-markup",
@@ -37,7 +167,22 @@
       "agreements": 8,
       "disagreements": 0,
       "unresolved_disagreements": 0,
-      "agreement_rate": 1
+      "agreement_rate": 1,
+      "disagreement_classes": {
+        "grader_false_positive": 0,
+        "grader_false_negative": 0,
+        "fixture_invalid": 0,
+        "reference_ambiguous": 0,
+        "task_ambiguous": 0,
+        "diagnostic_contract_gap": 0
+      },
+      "disagreement_severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "follow_ups": []
     },
     {
       "family": "modern-wordpress-api",
@@ -54,7 +199,22 @@
       "agreements": 7,
       "disagreements": 0,
       "unresolved_disagreements": 0,
-      "agreement_rate": 1
+      "agreement_rate": 1,
+      "disagreement_classes": {
+        "grader_false_positive": 0,
+        "grader_false_negative": 0,
+        "fixture_invalid": 0,
+        "reference_ambiguous": 0,
+        "task_ambiguous": 0,
+        "diagnostic_contract_gap": 0
+      },
+      "disagreement_severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "follow_ups": []
     }
   ],
   "reviews": [

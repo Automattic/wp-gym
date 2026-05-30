@@ -13,6 +13,16 @@ const shortcutStatuses = new Set(['resolved', 'unresolved', 'not_applicable']);
 const diagnosticReviewStatuses = new Set(['reviewed', 'not_applicable']);
 const reviewCaseTypes = new Set(['positive', 'negative', 'adversarial', 'borderline']);
 const requiredReviewCaseTypes = [...reviewCaseTypes];
+const disagreementClasses = new Set([
+	'grader_false_positive',
+	'grader_false_negative',
+	'fixture_invalid',
+	'reference_ambiguous',
+	'task_ambiguous',
+	'diagnostic_contract_gap',
+]);
+const disagreementSeverities = new Set(['critical', 'high', 'medium', 'low']);
+const disagreementStatuses = new Set(['resolved', 'unresolved']);
 
 function assert(condition, message) {
 	if (!condition) {
@@ -75,6 +85,34 @@ function scenarioTaskFamily(scenario) {
 	return scenario.file.split('/')[1] || scenario.manifest.capabilities?.primary || 'uncategorized';
 }
 
+function emptyCaseCounts() {
+	return Object.fromEntries(requiredReviewCaseTypes.map((type) => [type, 0]));
+}
+
+function emptySeverityCounts() {
+	return Object.fromEntries([...disagreementSeverities].map((severity) => [severity, 0]));
+}
+
+function emptyClassCounts() {
+	return Object.fromEntries([...disagreementClasses].map((classification) => [classification, 0]));
+}
+
+function validateDisagreementDetails(file, output, label) {
+	if (output.reviewer_classification === 'match') {
+		assert(output.grader_outcome === output.expected_wordpress_quality, `${file} ${label} match must have grader outcome equal expected WordPress quality`);
+		return null;
+	}
+
+	assert(output.grader_outcome !== output.expected_wordpress_quality, `${file} ${label} mismatch must have grader outcome different from expected WordPress quality`);
+	assert(disagreementClasses.has(output.disagreement_class), `${file} ${label}.disagreement_class must be one of: ${[...disagreementClasses].join(', ')}`);
+	assert(disagreementSeverities.has(output.disagreement_severity), `${file} ${label}.disagreement_severity must be one of: ${[...disagreementSeverities].join(', ')}`);
+	assert(disagreementStatuses.has(output.disagreement_status), `${file} ${label}.disagreement_status must be resolved or unresolved`);
+	assert(typeof output.required_grader_change === 'string' && output.required_grader_change.length > 0, `${file} ${label}.required_grader_change is required for mismatches`);
+	assert(typeof output.follow_up === 'string' && output.follow_up.length > 0, `${file} ${label}.follow_up is required for mismatches`);
+	assert(/^https:\/\/github\.com\/Automattic\/wp-gym\/(issues|pull)\/\d+/.test(output.follow_up), `${file} ${label}.follow_up must link a public wp-gym issue or PR`);
+	return output;
+}
+
 function validateOutputReview(file, scenarioId, output, fixtures, label) {
 	assert(typeof output === 'object' && output !== null && !Array.isArray(output), `${file} ${label} must be an object`);
 	assert(typeof output.fixture_id === 'string' && output.fixture_id.length > 0, `${file} ${label}.fixture_id is required`);
@@ -86,15 +124,15 @@ function validateOutputReview(file, scenarioId, output, fixtures, label) {
 	assert(['pass', 'fail'].includes(output.grader_outcome), `${file} ${label}.grader_outcome must be pass or fail`);
 	assert(['pass', 'fail'].includes(output.expected_wordpress_quality), `${file} ${label}.expected_wordpress_quality must be pass or fail`);
 	assert(['match', 'mismatch'].includes(output.reviewer_classification), `${file} ${label}.reviewer_classification must be match or mismatch`);
-	assert(output.reviewer_classification === 'match', `${file} ${label} must not record unresolved grader/reviewer mismatch`);
-	assert(output.grader_outcome === output.expected_wordpress_quality, `${file} ${label} grader outcome must match expected WordPress quality`);
+	const disagreement = validateDisagreementDetails(file, output, label);
 	if (output.review_case === 'positive') {
-		assert(output.grader_outcome === 'pass', `${file} ${label}.review_case positive must have pass grader_outcome`);
+		assert(output.expected_wordpress_quality === 'pass', `${file} ${label}.review_case positive must have pass expected_wordpress_quality`);
 		assert(fixture.fixture.type === 'positive_control_fixture', `${file} ${label}.review_case positive must reference a positive_control_fixture`);
 	} else {
-		assert(output.grader_outcome === 'fail', `${file} ${label}.review_case ${output.review_case} must have fail grader_outcome`);
+		assert(output.expected_wordpress_quality === 'fail', `${file} ${label}.review_case ${output.review_case} must have fail expected_wordpress_quality`);
 		assert(fixture.fixture.type === 'adversarial_negative_fixture', `${file} ${label}.review_case ${output.review_case} must reference an adversarial_negative_fixture`);
 	}
+	return disagreement;
 }
 
 function validateReview(file, review, scenarios, fixtures, familyAccumulator) {
@@ -109,31 +147,51 @@ function validateReview(file, review, scenarios, fixtures, familyAccumulator) {
 	assert(diagnosticReviewStatuses.has(review.diagnostic_contract_review?.status), `${file} ${review.scenario_id} diagnostic_contract_review.status is invalid`);
 	assert(Array.isArray(review.representative_passed_outputs) && review.representative_passed_outputs.length > 0, `${file} ${review.scenario_id} needs representative_passed_outputs`);
 	assert(Array.isArray(review.adversarial_or_failed_outputs) && review.adversarial_or_failed_outputs.length > 0, `${file} ${review.scenario_id} needs adversarial_or_failed_outputs`);
+	const scenarioSummary = {
+		scenario_id: review.scenario_id,
+		reviewed_cases: emptyCaseCounts(),
+		agreements: 0,
+		disagreements: 0,
+		unresolved_disagreements: 0,
+		disagreement_classes: emptyClassCounts(),
+		disagreement_severity: emptySeverityCounts(),
+	};
 	for (const [index, output] of review.representative_passed_outputs.entries()) {
-		validateOutputReview(file, review.scenario_id, output, fixtures, `representative_passed_outputs[${index}]`);
+		const disagreement = validateOutputReview(file, review.scenario_id, output, fixtures, `representative_passed_outputs[${index}]`);
+		accumulateOutput(scenarioSummary, output, disagreement);
 	}
 	for (const [index, output] of review.adversarial_or_failed_outputs.entries()) {
-		validateOutputReview(file, review.scenario_id, output, fixtures, `adversarial_or_failed_outputs[${index}]`);
+		const disagreement = validateOutputReview(file, review.scenario_id, output, fixtures, `adversarial_or_failed_outputs[${index}]`);
+		accumulateOutput(scenarioSummary, output, disagreement);
 	}
 
 	const family = scenarioTaskFamily(scenario);
 	if (!familyAccumulator.has(family)) {
 		familyAccumulator.set(family, {
 			scenarios: new Set(),
-			reviewed_cases: Object.fromEntries(requiredReviewCaseTypes.map((type) => [type, 0])),
+			scenario_summaries: new Map(),
+			reviewed_cases: emptyCaseCounts(),
 			agreements: 0,
 			disagreements: 0,
+			unresolved_disagreements: 0,
+			disagreement_classes: emptyClassCounts(),
+			disagreement_severity: emptySeverityCounts(),
 		});
 	}
 	const familySummary = familyAccumulator.get(family);
 	familySummary.scenarios.add(review.scenario_id);
-	for (const output of [...review.representative_passed_outputs, ...review.adversarial_or_failed_outputs]) {
-		familySummary.reviewed_cases[output.review_case] += 1;
-		if (output.reviewer_classification === 'match') {
-			familySummary.agreements += 1;
-		} else {
-			familySummary.disagreements += 1;
-		}
+	familySummary.scenario_summaries.set(review.scenario_id, scenarioSummary);
+	for (const type of requiredReviewCaseTypes) {
+		familySummary.reviewed_cases[type] += scenarioSummary.reviewed_cases[type];
+	}
+	familySummary.agreements += scenarioSummary.agreements;
+	familySummary.disagreements += scenarioSummary.disagreements;
+	familySummary.unresolved_disagreements += scenarioSummary.unresolved_disagreements;
+	for (const classification of disagreementClasses) {
+		familySummary.disagreement_classes[classification] += scenarioSummary.disagreement_classes[classification];
+	}
+	for (const severity of disagreementSeverities) {
+		familySummary.disagreement_severity[severity] += scenarioSummary.disagreement_severity[severity];
 	}
 
 	const metadata = scenario.manifest.calibration?.reward_soundness_review;
@@ -147,10 +205,44 @@ function validateReview(file, review, scenarios, fixtures, familyAccumulator) {
 	}
 }
 
+function accumulateOutput(summary, output, disagreement) {
+	summary.reviewed_cases[output.review_case] += 1;
+	if (!disagreement) {
+		summary.agreements += 1;
+		return;
+	}
+	summary.disagreements += 1;
+	if (disagreement.disagreement_status === 'unresolved') {
+		summary.unresolved_disagreements += 1;
+	}
+	summary.disagreement_classes[disagreement.disagreement_class] += 1;
+	summary.disagreement_severity[disagreement.disagreement_severity] += 1;
+}
+
 function validateTaskFamilyAgreement(file, artifact, familyAccumulator) {
 	assert(typeof artifact.agreement_policy === 'object' && artifact.agreement_policy !== null && !Array.isArray(artifact.agreement_policy), `${file} agreement_policy is required`);
 	assert(Number.isInteger(artifact.agreement_policy.max_unresolved_disagreements), `${file} agreement_policy.max_unresolved_disagreements must be an integer`);
+	assert(typeof artifact.agreement_policy.min_agreement_rate === 'number', `${file} agreement_policy.min_agreement_rate must be a number`);
+	assert(typeof artifact.agreement_policy.max_unresolved_by_severity === 'object' && artifact.agreement_policy.max_unresolved_by_severity !== null && !Array.isArray(artifact.agreement_policy.max_unresolved_by_severity), `${file} agreement_policy.max_unresolved_by_severity is required`);
+	for (const severity of disagreementSeverities) {
+		assert(Number.isInteger(artifact.agreement_policy.max_unresolved_by_severity[severity]), `${file} agreement_policy.max_unresolved_by_severity.${severity} must be an integer`);
+	}
+	assert(Array.isArray(artifact.disagreement_classes) && artifact.disagreement_classes.length === disagreementClasses.size, `${file} disagreement_classes must list supported disagreement classes`);
+	for (const classification of disagreementClasses) {
+		assert(artifact.disagreement_classes.includes(classification), `${file} disagreement_classes missing ${classification}`);
+	}
+	assert(Array.isArray(artifact.scenario_agreement) && artifact.scenario_agreement.length > 0, `${file} scenario_agreement must be a non-empty array`);
 	assert(Array.isArray(artifact.task_family_agreement) && artifact.task_family_agreement.length > 0, `${file} task_family_agreement must be a non-empty array`);
+
+	const scenarioReported = new Map(artifact.scenario_agreement.map((entry) => [entry.scenario_id, entry]));
+	for (const summary of familyAccumulator.values()) {
+		for (const scenarioSummary of summary.scenario_summaries.values()) {
+			validateAgreementEntry(file, artifact, scenarioSummary, scenarioReported.get(scenarioSummary.scenario_id), `scenario_agreement ${scenarioSummary.scenario_id}`);
+		}
+	}
+	for (const scenarioId of scenarioReported.keys()) {
+		assert([...familyAccumulator.values()].some((summary) => summary.scenario_summaries.has(scenarioId)), `${file} scenario_agreement reports unreviewed scenario: ${scenarioId}`);
+	}
 
 	const reported = new Map(artifact.task_family_agreement.map((entry) => [entry.family, entry]));
 	for (const [family, summary] of familyAccumulator.entries()) {
@@ -162,16 +254,30 @@ function validateTaskFamilyAgreement(file, artifact, familyAccumulator) {
 			assert(entry.reviewed_cases?.[type] === summary.reviewed_cases[type], `${file} task_family_agreement ${family}.reviewed_cases.${type} must be ${summary.reviewed_cases[type]}`);
 			assert(summary.reviewed_cases[type] > 0, `${file} task family ${family} needs at least one ${type} review case`);
 		}
-		assert(entry.agreements === summary.agreements, `${file} task_family_agreement ${family}.agreements must be ${summary.agreements}`);
-		assert(entry.disagreements === summary.disagreements, `${file} task_family_agreement ${family}.disagreements must be ${summary.disagreements}`);
-		assert(entry.unresolved_disagreements === summary.disagreements, `${file} task_family_agreement ${family}.unresolved_disagreements must be ${summary.disagreements}`);
-		assert(entry.unresolved_disagreements <= artifact.agreement_policy.max_unresolved_disagreements, `${file} task family ${family} exceeds unresolved disagreement policy`);
-		const total = summary.agreements + summary.disagreements;
-		assert(entry.agreement_rate === summary.agreements / total, `${file} task_family_agreement ${family}.agreement_rate must be ${summary.agreements / total}`);
+		validateAgreementEntry(file, artifact, summary, entry, `task_family_agreement ${family}`);
 	}
 	for (const family of reported.keys()) {
 		assert(familyAccumulator.has(family), `${file} task_family_agreement reports unreviewed family: ${family}`);
 	}
+}
+
+function validateAgreementEntry(file, artifact, summary, entry, label) {
+	assert(entry, `${file} ${label} is missing`);
+	assert(entry.agreements === summary.agreements, `${file} ${label}.agreements must be ${summary.agreements}`);
+	assert(entry.disagreements === summary.disagreements, `${file} ${label}.disagreements must be ${summary.disagreements}`);
+	assert(entry.unresolved_disagreements === summary.unresolved_disagreements, `${file} ${label}.unresolved_disagreements must be ${summary.unresolved_disagreements}`);
+	assert(entry.unresolved_disagreements <= artifact.agreement_policy.max_unresolved_disagreements, `${file} ${label} exceeds unresolved disagreement policy`);
+	for (const classification of disagreementClasses) {
+		assert(entry.disagreement_classes?.[classification] === summary.disagreement_classes[classification], `${file} ${label}.disagreement_classes.${classification} must be ${summary.disagreement_classes[classification]}`);
+	}
+	for (const severity of disagreementSeverities) {
+		assert(entry.disagreement_severity?.[severity] === summary.disagreement_severity[severity], `${file} ${label}.disagreement_severity.${severity} must be ${summary.disagreement_severity[severity]}`);
+		assert(entry.disagreement_severity[severity] <= artifact.agreement_policy.max_unresolved_by_severity[severity], `${file} ${label} exceeds ${severity} disagreement policy`);
+	}
+	const total = summary.agreements + summary.disagreements;
+	const agreementRate = total === 0 ? 0 : summary.agreements / total;
+	assert(entry.agreement_rate === agreementRate, `${file} ${label}.agreement_rate must be ${agreementRate}`);
+	assert(entry.agreement_rate >= artifact.agreement_policy.min_agreement_rate, `${file} ${label}.agreement_rate is below policy threshold`);
 }
 
 const files = await listJsonFiles(reviewRoot, 'reviews/reward-soundness');
