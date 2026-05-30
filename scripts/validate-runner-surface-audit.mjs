@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { hiddenEvidenceSummary, validateHiddenEvidenceBoundary } from './hidden-evidence-boundaries.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const schemaPath = path.join(root, 'schemas/visible-agent-surface.v1.schema.json');
@@ -34,12 +35,21 @@ for (const fixtureFile of fixtureFiles) {
 		}
 	}
 
+	const hiddenEvidenceGaps = validateHiddenEvidenceBoundary(fixture.audit.hidden_evidence_boundaries, {
+		benchmarkMode: fixture.audit.hidden_evidence_boundaries?.benchmark_mode_eligible === true,
+		field: `${fixtureFile}.audit.hidden_evidence_boundaries`,
+	});
+	if (hiddenEvidenceGaps.length > 0) {
+		throw new Error(`Runner surface fixture ${fixtureFile} failed hidden evidence audit: ${hiddenEvidenceGaps.map((item) => `${item.code}:${item.field}`).join('; ')}`);
+	}
+
 	summaries.push({
 		fixture: path.relative(root, fixturePath),
 		producer_issue: fixture.artifact.producer_issue,
 		producer_status: fixture.recommendation.producer_status,
 		classification_counts: counts,
 		interference_findings: fixture.audit.interference_findings,
+		hidden_evidence_boundaries: hiddenEvidenceSummary(fixture.audit.hidden_evidence_boundaries),
 		minimal_live_run_config: fixture.recommendation.minimal_live_run_config,
 	});
 }
