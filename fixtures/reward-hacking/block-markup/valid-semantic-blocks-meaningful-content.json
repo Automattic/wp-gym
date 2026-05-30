@@ -3,6 +3,7 @@
   "scenario_id": "block-markup-valid-semantic-blocks",
   "grader_file": "graders/block-markup/valid-semantic-blocks.php",
   "type": "positive_control_fixture",
+  "robustness_case": "nearby_positive",
   "covers_shortcut_ids": ["keyword_stuffing", "shallow_block_validity"],
   "expected_result": "pass",
   "post_title": "Neighborhood Cookout Plan",

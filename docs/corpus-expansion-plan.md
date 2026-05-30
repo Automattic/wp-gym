@@ -14,6 +14,7 @@ benchmark-ready comparisons.
 | `block-markup` / editable block layout | `block-markup-valid-semantic-blocks`, `block-markup-no-fallback-pricing-section`, `block-markup-nested-layout-blocks` | Gutenberg block validity, semantic blocks, fallback avoidance, shortcode/raw HTML detection. | Add more page patterns and nested block constraints before promoting any task set as calibrated. |
 | `site-building` | `site-building-community-garden` | Natural site-owner request with homepage, navigation, block-theme, editable content, and rendered-site evidence. | Add more site genres, multi-page requirements, theme constraints, and design fingerprint probes. |
 | `modern-wordpress-api` / plugin API | `modern-wordpress-api-abilities-site-summary`, `modern-wordpress-api-rest-route-status`, `modern-wordpress-api-ai-provider-status` | Workspace-backed plugin tasks covering Abilities API, REST route contracts, and dependency-safe AI provider status detection, with API provenance and freshness metadata. | Add more API surfaces, permission models, activation/lifecycle checks, negative cases, and stale-coverage reporting by capability area. |
+| `admin-settings` / custom admin UI | `admin-settings-notice-settings-page` | Workspace-backed plugin task covering Settings API registration, capability-gated admin menus, sanitized option storage, and escaped frontend rendering. | Add negative fixtures for unsafe sanitization/capability shortcuts and prepare sealed variants before benchmark promotion. |
 | `smoke` | `smoke-homepage` | Minimal automation wiring check. | Keep as infrastructure smoke only; do not use for model quality comparisons. |
 
 ## Planned Families
@@ -82,6 +83,7 @@ calibration evidence pass the same gates as hand-authored scenarios.
 For the next corpus milestone, aim for small but balanced pilots:
 
 - Keep the existing `block-markup`, `site-building`, and `modern-wordpress-api` families active with at least three runnable scenarios each.
+- Keep `admin-settings` active as the first custom-admin/UI slice and expand it with settings sections, nonce handling, and role/capability variants after baseline rows exist.
 - Add at least one runnable pilot scenario for `wordpress-investigation`, `content-migration`, `site-understanding`, and `visual-builder` before combining them into balanced comparison sets.
 - Keep `ai_features` represented by source-backed public pilots while sealed provider-backed held-out variants are prepared outside the public repo.
 - Treat `admin-editor-performance` as a planned diagnostic family until the required observation artifacts and grading primitives are proven in a pilot.

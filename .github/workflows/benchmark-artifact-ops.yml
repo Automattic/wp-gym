@@ -28,4 +28,5 @@ jobs:
           npm run benchmark-ops:validate
           npm run run-registry:emit:test
           npm run run-registry:validate
+          npm run artifact-retention:test
           npm run remote-archive:test

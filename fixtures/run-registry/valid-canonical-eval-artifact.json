@@ -62,6 +62,20 @@
     "compatibility_group": "benchmark-readiness-pilot.fixture-2026-05-28",
     "exclusion_reasons": ["pilot_task_set"]
   },
+  "isolation": {
+    "hidden_evidence_boundaries": {
+      "covered_evidence_kinds": ["hidden_grader", "held_out_variant", "private_fixture", "expected_answer", "task_policy_internal"],
+      "surfaces": [
+        { "name": "prompt", "status": "pass", "findings": [] },
+        { "name": "tools", "status": "pass", "findings": [] },
+        { "name": "workspace", "status": "pass", "findings": [] },
+        { "name": "artifacts", "status": "pass", "findings": [] },
+        { "name": "report_body", "status": "pass", "findings": [] }
+      ],
+      "benchmark_mode_eligible": true,
+      "accepted_exposures": []
+    }
+  },
   "provenance": {
     "workflow": {
       "repository": "Automattic/wp-gym",

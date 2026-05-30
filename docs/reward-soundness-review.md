@@ -16,6 +16,7 @@ Store review artifacts in `reviews/reward-soundness/*.json`. Each artifact recor
 - Adversarial or failed outputs.
 - Review-case labels covering positive, negative, adversarial, and borderline examples by task family.
 - Reviewer classification for whether the grader outcome matches expected WordPress quality.
+- Scenario-level agreement metrics, including unresolved disagreement counts, disagreement classes, severity counts, and linked follow-ups.
 - Task-family agreement metrics and the unresolved-disagreement policy.
 - Remaining promotion blockers, especially unresolved reward shortcuts and diagnostic-only contracts.
 
@@ -35,11 +36,22 @@ artifact, requires each reviewed task family to cover positive, negative,
 adversarial, and borderline examples, and rejects unresolved reviewer/grader
 mismatches above the artifact policy threshold.
 
+Generate a public-safe agreement report with:
+
+```sh
+npm run review-corpus:report -- --format markdown
+```
+
+The report recalculates agreement by scenario and task family, surfaces
+disagreement classes and severity counts, and fails `--check` when unresolved
+disagreements or agreement rate fall outside the artifact policy.
+
 ## Promotion Gate
 
 `npm run benchmark-promotion:report -- --scenario <id> --check` blocks promotion
-unless reward-soundness metadata is reviewed and linked. It also blocks when review
-have not been reviewed.
+unless reward-soundness metadata is reviewed and linked. It also blocks when the
+linked review artifact is missing scenario-level agreement metrics or unresolved
+disagreements exceed the review-corpus policy.
 
 The current pilot review is intentionally blocked from benchmark promotion: the
 fixtures reviewed in `reviews/reward-soundness/benchmark-readiness-pilot.json` match

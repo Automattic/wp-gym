@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "episode_id": "browser-editor-audit-fixture",
+  "scenario_id": "block-markup-valid-semantic-blocks",
+  "metadata": {
+    "max_steps": 3,
+    "reset_seed": "browser-editor-audit",
+    "allowed_action_types": ["browser", "editor"],
+    "setup": ["wordpress-state-fixture"],
+    "success_checks": ["target_post_exists", "content_has_blocks"],
+    "replay": {
+      "mode": "audit_only",
+      "reset": {
+        "strategy": "wordpress_state",
+        "seed": "browser-editor-audit",
+        "state_ref": "wordpress-state.json"
+      },
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "device_scale_factor": 1,
+        "is_mobile": false
+      },
+      "timing": {
+        "default_timeout_ms": 30000,
+        "settle_ms": 250,
+        "wait_until": "load"
+      },
+      "screenshots": {
+        "required": true,
+        "format": "png",
+        "full_page": true
+      },
+      "state": {
+        "dom_required": true,
+        "editor_store_required": true,
+        "network_required": false,
+        "console_required": false
+      }
+    }
+  },
+  "steps": [
+    {
+      "step_index": 0,
+      "timestamp": "2026-05-27T00:00:01Z",
+      "action": {
+        "schema_version": 1,
+        "type": "browser",
+        "operation": "capture",
+        "replayability": "evidence_only",
+        "url": "/sample-page/",
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "device_scale_factor": 1,
+          "is_mobile": false
+        },
+        "timing": {
+          "wait_until": "load",
+          "settle_ms": 250,
+          "timeout_ms": 30000
+        },
+        "state": {
+          "selector": "main",
+          "text_contains": "Summer Cookout Plan"
+        },
+        "capture": ["html", "screenshot"],
+        "timeout_ms": 30000
+      },
+      "result": {
+        "schema_version": 1,
+        "observation": {
+          "schema_version": 1,
+          "type": "browser_result",
+          "action_type": "browser",
+          "operation": "capture",
+          "replayability": "evidence_only",
+          "url": "/sample-page/",
+          "viewport": {
+            "width": 1280,
+            "height": 720,
+            "device_scale_factor": 1,
+            "is_mobile": false
+          },
+          "state": {
+            "url": "/sample-page/",
+            "title": "Sample Page",
+            "selector_text": "Summer Cookout Plan"
+          },
+          "artifacts": [
+            {
+              "path": "files/browser/screenshot.png",
+              "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+              "mime_type": "image/png"
+            }
+          ],
+          "duration_ms": 100,
+          "error": null
+        },
+        "reward": {
+          "value": 0,
+          "success": false,
+          "failure_reasons": []
+        },
+        "done": false,
+        "telemetry": {
+          "runner": "fixture"
+        }
+      }
+    },
+    {
+      "step_index": 1,
+      "timestamp": "2026-05-27T00:00:02Z",
+      "action": {
+        "schema_version": 1,
+        "type": "editor",
+        "operation": "insert_block",
+        "replayability": "evidence_only",
+        "post_id": 4,
+        "block_name": "core/paragraph",
+        "attributes": {
+          "content": "Invite neighbors for a relaxed cookout."
+        },
+        "state": {
+          "editor_store": "core/block-editor",
+          "editor_selector": "selectedBlock"
+        },
+        "timeout_ms": 30000
+      },
+      "result": {
+        "schema_version": 1,
+        "observation": {
+          "schema_version": 1,
+          "type": "editor_result",
+          "action_type": "editor",
+          "operation": "insert_block",
+          "replayability": "evidence_only",
+          "state": {
+            "post_id": 4,
+            "post_type": "page",
+            "post_status": "draft",
+            "selected_block_client_id": "block-1",
+            "block_count": 1,
+            "dirty": true,
+            "mode": "visual"
+          },
+          "artifacts": [
+            {
+              "path": "files/editor/state.json",
+              "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+              "mime_type": "application/json"
+            }
+          ],
+          "duration_ms": 100,
+          "error": null
+        },
+        "reward": {
+          "value": 1,
+          "success": true,
+          "failure_reasons": []
+        },
+        "done": true,
+        "telemetry": {
+          "runner": "fixture"
+        }
+      }
+    }
+  ]
+}

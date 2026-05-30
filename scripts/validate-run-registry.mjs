@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { hiddenEvidenceTextFindings, validateHiddenEvidenceBoundary } from './hidden-evidence-boundaries.mjs';
 import { replayRegradeInput } from './replay-regrade.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -344,6 +345,10 @@ async function validateRunRegistryEntry(entry, options = {}) {
 
 	if (benchmarkMode) {
 		gaps.push(...validateBenchmarkProvenance(entry));
+		gaps.push(...validateHiddenEvidenceBoundary(entry.isolation?.hidden_evidence_boundaries, {
+			benchmarkMode: true,
+			field: 'isolation.hidden_evidence_boundaries',
+		}));
 	}
 
 	if (!entry.grade_identity) {
@@ -379,6 +384,12 @@ async function validateRunRegistryEntry(entry, options = {}) {
 
 	for (const [index, artifact] of artifactEntries(entry).entries()) {
 		gaps.push(...validateReference(artifact, baseDir, `artifact_index.entries[${index}]`, benchmarkMode));
+		if (benchmarkMode) {
+			gaps.push(...hiddenEvidenceTextFindings({
+				name: artifact.name,
+				path_or_url: artifact.path_or_url,
+			}, `artifact_index.entries[${index}]`));
+		}
 	}
 
 	for (const [field, manifest] of [
