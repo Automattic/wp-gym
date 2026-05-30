@@ -17,9 +17,11 @@
           "scenarios/block-markup/nested-layout-blocks.json",
           "scenarios/block-markup/no-fallback-pricing-section.json",
           "scenarios/site-building/community-garden.json",
+          "scenarios/admin-settings/notice-settings-page.json",
           "scenarios/visual-builder/elementor-hero-refresh.json",
           "scenarios/content-migration/media-attachment-import.json",
           "scenarios/site-understanding/service-relationship-map.json",
+          "scenarios/modern-wordpress-api/ai-provider-status.json",
           "scenarios/modern-wordpress-api/abilities-site-summary.json",
           "scenarios/modern-wordpress-api/rest-route-status.json",
           "scenarios/wordpress-investigation/homepage-source-diagnosis.json"
@@ -52,7 +54,7 @@
   "self_checks": {
     "lint": [
       "node --check scripts/validate-scenarios.mjs",
-      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json task-sets/first-live-run.json task-sets/benchmark-readiness-pilot.json task-sets/visual-builder.json task-sets/wordpress-investigation.json scenarios/wordpress-investigation/homepage-source-diagnosis.json scenarios/content-migration/media-attachment-import.json scenarios/site-understanding/service-relationship-map.json fixtures/benchmark-policy/pilot-task-set-envelope.json fixtures/benchmark-policy/benchmark-ready-envelope.json starter-workspaces/content-migration-media-import/import-package/content-export.json"
+      "jq empty homeboy.json tasks/smoke-homepage/manifest.json blueprints/smoke-homepage.json bundle-validator.json bundles/datamachine-task-runner/manifest.json bundles/datamachine-task-runner/flows/wordpress-task-runner-flow.json bundles/datamachine-task-runner/pipelines/wordpress-task-runner-pipeline.json task-sets/first-live-run.json task-sets/benchmark-readiness-pilot.json task-sets/visual-builder.json task-sets/wordpress-investigation.json task-sets/admin-settings.json scenarios/wordpress-investigation/homepage-source-diagnosis.json scenarios/admin-settings/notice-settings-page.json scenarios/content-migration/media-attachment-import.json scenarios/site-understanding/service-relationship-map.json fixtures/benchmark-policy/pilot-task-set-envelope.json fixtures/benchmark-policy/benchmark-ready-envelope.json fixtures/held-out-packs/wordpress-capability-breadth-admin-settings-v1.json starter-workspaces/content-migration-media-import/import-package/content-export.json"
     ],
     "test": [
       "npm_config_optional=false npm ci && npm test"
