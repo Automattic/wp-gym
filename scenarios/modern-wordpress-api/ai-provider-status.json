@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "id": "modern-wordpress-api-ai-provider-status",
+  "label": "AI provider status endpoint",
+  "issue": "https://github.com/Automattic/wp-gym/issues/242",
+  "split": {
+    "membership": "public",
+    "variant_family": "modern-wordpress-api-ai-provider-status",
+    "variant_seed": "ai-provider-status-public-v1",
+    "parent_scenario_id": null,
+    "held_out_private_variant": {
+      "status": "planned",
+      "reference": "private:modern-wordpress-api-ai-provider-status/held-out-v1",
+      "notes": "Held-out variant should swap the clean-site fallback for a sealed provider-fixture site and keep provider names, prompts, grader thresholds, and fixture paths private."
+    },
+    "artifact_policy": {
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader",
+        "starter_workspace"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_workspace_fixture"
+      ],
+      "grader_exposure": "full_public"
+    }
+  },
+  "prompt_file": "../../prompts/modern-wordpress-api/ai-provider-status.md",
+  "grader_file": "../../graders/modern-wordpress-api/ai-provider-status.php",
+  "tags": [
+    "wordpress",
+    "ai-client",
+    "ai-provider",
+    "rest-api",
+    "modern-api"
+  ],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "ai_features",
+    "secondary": [
+      "data_interaction_apis",
+      "plugin_quality_wordpress_standards"
+    ],
+    "criteria": [
+      "ai_provider_detection",
+      "graceful_provider_absence",
+      "no_direct_model_api_calls",
+      "structured_status_output"
+    ]
+  },
+  "api_provenance": {
+    "capability_area": "ai_features",
+    "api_surface": "WordPress AI Client and provider plugin integration",
+    "source_inputs": [
+      {
+        "id": "wordpress-php-ai-client",
+        "type": "modern_api_repository",
+        "url": "https://github.com/WordPress/php-ai-client",
+        "ref": "trunk",
+        "checked_at": "2026-05-30",
+        "evidence": "The AI Client repository defines the provider abstraction that site plugins should detect or integrate with instead of calling model providers directly."
+      },
+      {
+        "id": "wordpress-openai-provider-plugin",
+        "type": "modern_api_repository",
+        "url": "https://github.com/WordPress/ai-provider-for-openai",
+        "ref": "trunk",
+        "checked_at": "2026-05-30",
+        "evidence": "The OpenAI provider plugin is a representative WordPress AI provider integration surface; this scenario checks provider-aware, dependency-safe status reporting."
+      },
+      {
+        "id": "developer-reference-register-rest-route",
+        "type": "developer_docs",
+        "url": "https://developer.wordpress.org/reference/functions/register_rest_route/",
+        "ref": "current",
+        "checked_at": "2026-05-30",
+        "evidence": "The status endpoint is still a WordPress REST route and must use the documented permission_callback contract."
+      }
+    ],
+    "freshness": {
+      "status": "fresh",
+      "last_reviewed": "2026-05-30",
+      "next_review_due": "2026-06-29",
+      "cadence_days": 30
+    },
+    "curriculum": {
+      "lifecycle_status": "pilot",
+      "candidate_from_source_change": "WordPress AI provider abstractions are emerging capability surfaces; the corpus needs coverage for provider-aware plugins that fail closed when AI dependencies are absent.",
+      "promotion_next_step": "Add a sealed held-out provider-fixture variant and collect baseline rows before moving from pilot to calibrating."
+    }
+  },
+  "rules": {
+    "general": [
+      "wordpress_docs_standards",
+      "no_speculative_plugin_packaging",
+      "supported_plugin_author_metadata"
+    ],
+    "task_specific": [
+      "route_registered",
+      "permission_callback_present",
+      "graceful_ai_provider_absence",
+      "no_direct_external_ai_calls",
+      "exact_rest_output_shape"
+    ]
+  },
+  "limits": {
+    "max_turns": 25,
+    "step_budget": 12,
+    "time_budget_ms": 600000
+  },
+  "environment": {
+    "action_mode": "workspace",
+    "uses_workspace": true,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": [
+      "prompt",
+      "workspace_tree",
+      "wordpress_runtime"
+    ],
+    "allowed_tools": [
+      "workspace_show",
+      "workspace_ls",
+      "workspace_read",
+      "workspace_grep",
+      "workspace_write",
+      "workspace_edit",
+      "workspace_apply_patch",
+      "workspace_git_status",
+      "wordpress_runtime_ls",
+      "run_wp_cli"
+    ],
+    "writable_roots": [
+      "plugins/"
+    ],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "prompts/",
+      "checks/",
+      "task-sets/",
+      ".github/",
+      "docs/",
+      "scripts/"
+    ],
+    "workspace_template": "starter-workspaces/modern-wordpress-api",
+    "completion_policy": {
+      "type": "explicit_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 25,
+      "step_budget": 12,
+      "time_budget_ms": 600000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [
+      0,
+      1
+    ]
+  },
+  "calibration": {
+    "status": "pilot",
+    "benchmark_scope": "pilot",
+    "difficulty_band": "uncalibrated",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": [
+      "hard_coded_unavailable_response",
+      "direct_provider_http_call",
+      "ai_client_source_string_spoof"
+    ],
+    "task_contract_level": "benchmark_replay",
+    "benchmark_blockers": [
+      "missing_baseline_results",
+      "uncalibrated_difficulty",
+      "held_out_private_variants_not_ready",
+      "known_reward_shortcut"
+    ]
+  },
+  "expected_artifacts": [
+    "workspace_diff",
+    "plugin_files",
+    "replay_trace",
+    "replay_bundle",
+    "grader_result"
+  ],
+  "expected": {
+    "route": "/site-ai/v1/provider-status",
+    "method": "GET",
+    "required_output_keys": [
+      "ai_available",
+      "configured",
+      "detection_mode",
+      "provider"
+    ],
+    "clean_site_fallback": {
+      "ai_available": false,
+      "configured": false,
+      "detection_mode": "unavailable",
+      "provider": null
+    }
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "filesystem",
+      "wp_cli"
+    ],
+    "max_steps": 12,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "wordpress_docs_standards",
+      "no_speculative_plugin_packaging",
+      "supported_plugin_author_metadata",
+      "route_registered",
+      "permission_callback_present",
+      "graceful_ai_provider_absence",
+      "no_direct_external_ai_calls",
+      "exact_rest_output_shape"
+    ]
+  }
+}

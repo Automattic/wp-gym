@@ -38,6 +38,12 @@ source freshness can be reported separately:
 | `gutenberg_blocks` | Block metadata, render callbacks, valid editable block markup, editor packages. |
 | `plugin_quality_wordpress_standards` | Hooks, escaping, sanitization, capabilities, Plugin Check-style hygiene. |
 
+The current public corpus includes at least one source-backed scenario for every
+global capability area. `modern-wordpress-api-ai-provider-status` covers the
+`ai_features` lane as a public pilot and only publishes a planned held-out/private
+variant reference; provider fixtures, prompts, grader thresholds, and replay
+artifacts stay in the private held-out pack.
+
 ## API Scenario Metadata
 
 All scenarios declare `capabilities`; API scenarios additionally record source

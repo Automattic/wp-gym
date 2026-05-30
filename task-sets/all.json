@@ -24,6 +24,7 @@
     "schema_version": 1,
     "primary": [
       "agent_tooling_automation_surfaces",
+      "ai_features",
       "cli_operational_tooling",
       "custom_admin_ui",
       "data_interaction_apis",
@@ -52,6 +53,7 @@
     "../scenarios/visual-builder/elementor-hero-refresh.json",
     "../scenarios/content-migration/media-attachment-import.json",
     "../scenarios/site-understanding/service-relationship-map.json",
+    "../scenarios/modern-wordpress-api/ai-provider-status.json",
     "../scenarios/modern-wordpress-api/abilities-site-summary.json",
     "../scenarios/modern-wordpress-api/rest-route-status.json",
     "../scenarios/wordpress-investigation/homepage-source-diagnosis.json"
@@ -64,6 +66,7 @@
     { "scenario_id": "visual-builder-elementor-hero-refresh", "role": "visual-builder", "summary": "Refresh an Elementor-style hero section while preserving visual intent." },
     { "scenario_id": "content-migration-media-attachment-import", "role": "content-migration", "summary": "Import content with local media attachments into WordPress." },
     { "scenario_id": "site-understanding-service-relationship-map", "role": "site-understanding", "summary": "Extract service company entity relationships from site content." },
+    { "scenario_id": "modern-wordpress-api-ai-provider-status", "role": "developer-ai-plugin", "summary": "Expose a dependency-safe AI provider status endpoint for operations dashboards." },
     { "scenario_id": "modern-wordpress-api-abilities-site-summary", "role": "developer-api-tooling", "summary": "Expose a small site summary automation surface through the Abilities API." },
     { "scenario_id": "modern-wordpress-api-rest-route-status", "role": "developer-rest-plugin", "summary": "Expose a public read-only WordPress REST status endpoint from a plugin." },
     { "scenario_id": "wordpress-investigation-homepage-source-diagnosis", "role": "wordpress-investigation", "summary": "Diagnose why the homepage content is coming from its current source." }
