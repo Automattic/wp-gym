@@ -1,4 +1,5 @@
 {
+  "_expected_error_codes": ["hidden_evidence_exposed", "hidden_evidence_reference_visible"],
   "schema_version": 1,
   "registry": {
     "name": "wp-gym-run-registry",
@@ -6,7 +7,7 @@
     "created_at": "2026-05-28T00:00:00Z"
   },
   "run": {
-    "id": "fixture-run-2026-05-28-openai-gpt-5-5-valid-semantic-blocks",
+    "id": "fixture-run-hidden-evidence-exposed",
     "actor": "wordpress-task-runner",
     "attempt": 1,
     "started_at": "2026-05-28T00:00:00Z",
@@ -67,12 +68,12 @@
       "covered_evidence_kinds": ["hidden_grader", "held_out_variant", "private_fixture", "expected_answer", "task_policy_internal"],
       "surfaces": [
         { "name": "prompt", "status": "pass", "findings": [] },
-        { "name": "tools", "status": "pass", "findings": [] },
+        { "name": "tools", "status": "fail", "findings": [{ "kind": "hidden_grader", "exposed": true, "severity": "error", "message": "A task-facing tool returned the hidden grader path." }] },
         { "name": "workspace", "status": "pass", "findings": [] },
-        { "name": "artifacts", "status": "pass", "findings": [] },
+        { "name": "artifacts", "status": "fail", "findings": [{ "kind": "expected_answer", "exposed": true, "severity": "error", "message": "The artifact body included expected answer text." }] },
         { "name": "report_body", "status": "pass", "findings": [] }
       ],
-      "benchmark_mode_eligible": true,
+      "benchmark_mode_eligible": false,
       "accepted_exposures": []
     }
   },
@@ -123,7 +124,7 @@
   },
   "artifact_index": {
     "schema_version": 1,
-    "index_id": "fixture-run-2026-05-28-openai-gpt-5-5-valid-semantic-blocks/index",
+    "index_id": "fixture-run-hidden-evidence-exposed/index",
     "created_at": "2026-05-28T00:01:00Z",
     "entries": [
       {
@@ -136,13 +137,13 @@
         "required": true
       },
       {
-        "name": "grade_artifact",
-        "category": "grade",
+        "name": "hidden_grader_leak",
+        "category": "log",
         "kind": "json",
         "path_or_url": "fixtures/eval-artifacts/direct-wp-gym-row.json",
         "sha256": "7250bc590604f8a6d2760f2907f4c72309ffc6b4e619014805ea8048b0b021ec",
         "media_type": "application/json",
-        "required": true
+        "required": false
       },
       {
         "name": "replay_bundle",

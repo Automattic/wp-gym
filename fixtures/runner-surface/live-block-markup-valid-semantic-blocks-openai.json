@@ -89,7 +89,25 @@
       "task_sandbox_interference": 1,
       "unknown": 0
     },
-    "interference_findings": ["github_pr_tool_visible"]
+    "interference_findings": ["github_pr_tool_visible"],
+    "hidden_evidence_boundaries": {
+      "covered_evidence_kinds": ["hidden_grader", "held_out_variant", "private_fixture", "expected_answer", "task_policy_internal"],
+      "surfaces": [
+        { "name": "prompt", "status": "pass", "findings": [] },
+        { "name": "tools", "status": "pass", "findings": [] },
+        { "name": "workspace", "status": "not_observed", "findings": [] },
+        { "name": "artifacts", "status": "pass", "findings": [] },
+        { "name": "report_body", "status": "pass", "findings": [] }
+      ],
+      "benchmark_mode_eligible": false,
+      "accepted_exposures": [
+        {
+          "kind": "github_pr_tool_visible",
+          "scope": "pilot_only",
+          "reason": "The live row remains audit evidence until PR publication moves outside the task-facing tool surface."
+        }
+      ]
+    }
   },
   "recommendation": {
     "minimal_live_run_config": ["disable_datamachine_directives", "scenario_allowed_tools_only", "hide_grader_and_task_metadata", "publish_pr_outside_task_surface"],
