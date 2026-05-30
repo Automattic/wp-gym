@@ -1,27 +1,10 @@
 <?php
 /**
- * Plugin Name: AI Provider Status Source Spoof Fixture
+ * Plugin Name: AI Provider Status Source String Spoof Fixture
  */
 
-// WP_AI ai_services ai_provider strings alone are not defensive provider detection.
-add_action(
-	'rest_api_init',
-	static function (): void {
-		register_rest_route(
-			'site-ai/v1',
-			'/provider-status',
-			array(
-				'methods'             => 'GET',
-				'permission_callback' => '__return_true',
-				'callback'            => static function (): array {
-					return array(
-						'ai_available'  => false,
-						'configured'    => false,
-						'detection_mode' => 'unavailable',
-						'provider'       => null,
-					);
-				},
-			)
-		);
-	}
-);
+function wp_gym_fixture_spoofed_ai_source_strings(): bool {
+	return class_exists( 'WP_AI' ) || function_exists( 'ai_services' ) || interface_exists( 'AI\\Provider' );
+}
+
+// Intentionally no site-ai/v1/provider-status route.

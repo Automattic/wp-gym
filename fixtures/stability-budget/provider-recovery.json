@@ -1,0 +1,23 @@
+{
+  "run": {
+    "id": "fixture-provider-recovery",
+    "completed_at": "2026-05-28T00:03:00Z",
+    "outcome": "passed"
+  },
+  "stability": {
+    "workflow": "datamachine-live-run"
+  },
+  "scenario": {
+    "id": "block-markup-valid-semantic-blocks",
+    "task_family": "block-markup"
+  },
+  "runner": {
+    "provider": "openai",
+    "model": "gpt-5.5"
+  },
+  "grade_identity": {
+    "success": true,
+    "reward": 1,
+    "failure_class": "none"
+  }
+}
