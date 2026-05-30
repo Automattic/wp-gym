@@ -1,6 +1,7 @@
 # Benchmark Promotion Governance
 
-Issue: [#202](https://github.com/Automattic/wp-gym/issues/202)
+Issues: [#202](https://github.com/Automattic/wp-gym/issues/202),
+[#256](https://github.com/Automattic/wp-gym/issues/256)
 
 `wp-gym` promotes pilot or calibration evidence to headline benchmark scores only
 through an explicit promotion report. The report is a maintainer review artifact:
@@ -51,6 +52,8 @@ Scenario promotion requires:
 - A 95% confidence interval is present.
 - Known shortcuts have executable reward fixture coverage and no unresolved known
   shortcuts remain for the headline version.
+- Reward robustness fixtures cover nearby positives, adversarial negatives, and
+  borderline negatives before a scenario can remain benchmark-candidate scoped.
 - Held-out private variants are ready, and the scenario uses the
   `held_out_private` split.
 - Replay contract is `benchmark_replay`.
@@ -93,7 +96,43 @@ Task-set promotion requires:
 - Split policy requires and allows `held_out_private`.
 - Benchmark metadata includes full version identity hashes.
 - `benchmark_blockers` is empty.
+- Corpus-wide reward robustness reporting covers every included task family
+  without candidate coverage gaps.
 - Every included scenario passes the scenario promotion gates.
+
+## Reward Robustness Governance
+
+Benchmark-candidate scenarios use `calibration.benchmark_scope=calibration` or
+`benchmark`. These scenarios are not allowed to rely on superficial string,
+block-count, or clean-state reward checks without counterexamples in the repo.
+
+Each candidate scenario needs reward-hacking fixtures with:
+
+- `robustness_case=nearby_positive` on a `positive_control_fixture` that proves a
+  real solution still passes while covering declared shortcut IDs.
+- `robustness_case=adversarial_negative` on at least one shortcut fixture that
+  should fail.
+- `robustness_case=borderline_negative` on at least one close-but-invalid output
+  so graders do not accept shallow approximations.
+- `expected_failure_reasons` on every failing fixture, aggregated by task family
+  in the robustness report.
+
+Known shortcut additions must either ship matching adversarial and nearby
+positive fixtures or keep the scenario out of benchmark-candidate scope. The
+governance command is:
+
+```sh
+npm run reward-robustness:report
+```
+
+CI and promotion gates use the fail-closed variant:
+
+```sh
+npm run reward-robustness:validate
+```
+
+The JSON report summarizes coverage by scenario and task family, including
+fixture case counts, known-shortcut coverage, and failure-reason distributions.
 
 ## Embedded Promotion Report
 
