@@ -419,6 +419,14 @@ function normalizeGradeReward(grade) {
 	};
 }
 
+function normalizeTerminalGrade(grade) {
+	return {
+		...grade,
+		checks: Array.isArray(grade?.checks) ? grade.checks : (Array.isArray(grade?.grade?.checks) ? grade.grade.checks : []),
+		failure_reasons: Array.isArray(grade?.failure_reasons) ? grade.failure_reasons : [],
+	};
+}
+
 function uniqueSorted(values) {
 	return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
@@ -726,7 +734,7 @@ export class WPGymEnvironment {
 		if (workspaceTemplate) {
 			await cp(path.join(this.root, workspaceTemplate), this.workspaceRoot, { recursive: true });
 		}
-		if (this.scenario.environment.action_mode === 'wordpress') {
+		if (this.usesWordPressRuntime()) {
 			this.runtimeEpisode = await this.createWpCodeboxEpisode();
 		}
 
@@ -776,7 +784,7 @@ export class WPGymEnvironment {
 			reward: this.lastGrade ? normalizeGradeReward(this.lastGrade) : { value: 0, success: false, failure_reasons: [] },
 			done: false,
 			telemetry: {
-				runner: this.scenario.environment.action_mode === 'wordpress' ? 'wp-codebox' : 'local-wpgym',
+				runner: this.runnerId(),
 				duration_ms: Date.now() - started,
 				action_type: normalizedAction.type,
 			},
@@ -796,14 +804,14 @@ export class WPGymEnvironment {
 	async grade() {
 		this.assertOpen();
 		const started = Date.now();
-		const grade = await this.runPhpGrader();
+		const grade = normalizeTerminalGrade(await this.runPhpGrader());
 		this.lastGrade = grade;
 		const behavioralFingerprints = await this.collectBehavioralFingerprints();
 
 		return {
 			...grade,
 			telemetry: {
-				runner: this.scenario.environment.action_mode === 'wordpress' ? 'wp-codebox' : 'local-wpgym',
+				runner: this.runnerId(),
 				duration_ms: Date.now() - started,
 				...(behavioralFingerprints.length > 0 ? { behavioral_fingerprints: behavioralFingerprints } : {}),
 			},
@@ -841,7 +849,7 @@ export class WPGymEnvironment {
 	}
 
 	async stepWpCli(action) {
-		if (this.scenario.environment.action_mode === 'wordpress') {
+		if (this.usesWordPressRuntime()) {
 			return await this.stepWpCliWithCodebox(action);
 		}
 
@@ -1252,7 +1260,7 @@ echo wp_json_encode( array(
 	}
 
 	async runPhpGrader() {
-		if (this.scenario.environment.action_mode === 'wordpress') {
+		if (this.usesWordPressRuntime()) {
 			return await this.runPhpGraderWithCodebox();
 		}
 
@@ -1302,7 +1310,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				continue;
 			}
 
-			const documents = this.scenario.environment.action_mode === 'wordpress'
+			const documents = this.usesWordPressRuntime()
 				? await this.collectWordPressDesignDocuments()
 				: this.collectLocalDesignDocuments();
 			fingerprints.push({
@@ -1361,6 +1369,14 @@ echo wp_json_encode(array('documents' => $documents));
 		}
 
 		return this.runtimeEpisode;
+	}
+
+	usesWordPressRuntime() {
+		return this.scenario.environment.action_mode === 'wordpress' && this.options.runtime !== 'local';
+	}
+
+	runnerId() {
+		return this.usesWordPressRuntime() ? 'wp-codebox' : 'local-wpgym';
 	}
 
 	async createWpCodeboxEpisode() {

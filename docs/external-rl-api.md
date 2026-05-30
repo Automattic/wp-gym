@@ -97,10 +97,25 @@ Canonical contracts live in `schemas/` and are exported as package subpaths:
 node examples/no-model-episode.mjs block-markup-no-fallback-pricing-section
 node examples/scripted-loop.mjs block-markup-no-fallback-pricing-section
 node examples/model-agent-loop.mjs block-markup-no-fallback-pricing-section
+npm run external-consumer:test
 ```
 
 The examples print reset observations, step results, terminal grades, and traces
 as JSON so a lab can capture the same artifacts from a training loop.
+
+`npm run external-consumer:test` is the external-lab proof path. It creates a
+throwaway consumer project, installs `wp-gym` from the current checkout through a
+package-manager dependency, imports only the public `wp-gym` entrypoint and schema
+exports, runs CLI scenario and task-set discovery, executes `reset()` / `step()` /
+`grade()` / `trace()`, and validates run-registry fixtures through the public
+`wp-gym run-registry validate` command. Set
+`WPGYM_KEEP_EXTERNAL_CONSUMER_TMP=1` to keep the temporary consumer directory for
+inspection.
+
+The proof uses `WPGym.make(scenarioId, { runtime: 'local' })` so the smoke stays
+fast and deterministic while still validating the public action, observation,
+grade, and trace contracts. Omit that option to run WordPress-backed scenarios
+through the WP Codebox runtime.
 
 ## Versioning Policy
 
