@@ -157,6 +157,22 @@ npm run run-registry:report -- \
   --scope pilot
 ```
 
+Add `--regrade` when the artifact bundle is retained locally and the report must
+prove deterministic replay/regrade at corpus scale:
+
+```bash
+npm run run-registry:report -- \
+  --registry artifacts/<workflow-run-id>/wp-gym-run-registry/entries \
+  --json artifacts/<workflow-run-id>/wp-gym-regrade-report.json \
+  --markdown artifacts/<workflow-run-id>/wp-gym-regrade-report.md \
+  --scope all \
+  --regrade
+```
+
+The replay/regrade section reports attempted rows, deterministic rows, success
+rate, drift rate, missing artifact count, failure classes, and raw gap codes so
+maintainers can separate nondeterministic rows from incomplete retained evidence.
+
 Supported scopes:
 
 - `pilot`: diagnostic rows and non-headline evidence.
