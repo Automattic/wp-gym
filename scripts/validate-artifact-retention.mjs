@@ -35,6 +35,9 @@ function fixtureRun(id, overrides = {}) {
 	entry.grade_identity.success = overrides.outcome === 'passed';
 	entry.grade_identity.reward = overrides.reward;
 	entry.grade_identity.failure_class = overrides.outcome === 'passed' ? 'none' : 'task_failure';
+	if (entry.grade_identity.failure_class === 'task_failure' && entry.operations?.retry) {
+		entry.operations.retry.disposition = 'task_terminal';
+	}
 	entry.artifact_index.index_id = `${id}/index`;
 	entry.runner.workflow_run_url = `https://github.com/Automattic/wp-gym/actions/runs/${overrides.workflowRunId}`;
 	return entry;

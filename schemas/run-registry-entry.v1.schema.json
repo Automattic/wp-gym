@@ -116,7 +116,7 @@
         "result_sha256": { "$ref": "#/$defs/sha256" },
         "success": { "type": "boolean" },
         "reward": { "type": "number" },
-        "failure_class": { "enum": ["none", "runtime_failure", "agent_failure", "grader_failure", "task_failure"] }
+        "failure_class": { "enum": ["none", "provider_failure", "runtime_failure", "runner_failure", "agent_failure", "grader_failure", "task_failure"] }
       },
       "additionalProperties": true
     },
@@ -155,6 +155,7 @@
       "description": "Immutable benchmark execution provenance. Required by benchmark-mode validation.",
       "additionalProperties": true
     },
+    "operations": { "$ref": "#/$defs/operations" },
     "eval_artifact": { "$ref": "#/$defs/artifact_reference" },
     "artifact_index": {
       "type": "object",
@@ -239,6 +240,62 @@
         "path_or_url": { "type": "string", "minLength": 1 },
         "sha256": { "$ref": "#/$defs/sha256" },
         "media_type": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "operations": {
+      "type": "object",
+      "description": "Optional large-run planning metadata for cost, token use, timing, concurrency, and retry policy.",
+      "properties": {
+        "cost": {
+          "type": "object",
+          "properties": {
+            "estimated_usd": { "type": ["number", "null"], "minimum": 0 },
+            "billed_usd": { "type": ["number", "null"], "minimum": 0 },
+            "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+            "pricing_source": { "type": ["string", "null"] }
+          },
+          "additionalProperties": true
+        },
+        "usage": {
+          "type": "object",
+          "properties": {
+            "input_tokens": { "type": ["integer", "null"], "minimum": 0 },
+            "output_tokens": { "type": ["integer", "null"], "minimum": 0 },
+            "total_tokens": { "type": ["integer", "null"], "minimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "timing": {
+          "type": "object",
+          "properties": {
+            "queue_ms": { "type": ["integer", "null"], "minimum": 0 },
+            "wall_ms": { "type": ["integer", "null"], "minimum": 0 },
+            "runner_ms": { "type": ["integer", "null"], "minimum": 0 },
+            "provider_ms": { "type": ["integer", "null"], "minimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "concurrency": {
+          "type": "object",
+          "properties": {
+            "requested": { "type": ["integer", "null"], "minimum": 1 },
+            "effective": { "type": ["integer", "null"], "minimum": 1 },
+            "matrix_max": { "type": ["integer", "null"], "minimum": 1 }
+          },
+          "additionalProperties": true
+        },
+        "retry": {
+          "type": "object",
+          "properties": {
+            "policy": { "type": ["string", "null"] },
+            "retry_count": { "type": ["integer", "null"], "minimum": 0 },
+            "max_attempts": { "type": ["integer", "null"], "minimum": 1 },
+            "disposition": { "enum": ["not_retried", "retryable", "exhausted", "task_terminal", "manual_review", "unknown"] },
+            "previous_failure_class": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" }
+          },
+          "additionalProperties": true
+        }
       },
       "additionalProperties": true
     },

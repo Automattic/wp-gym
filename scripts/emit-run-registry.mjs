@@ -133,6 +133,90 @@ function positiveInteger(value, fallback = 1) {
 	return Number.isInteger(number) && number > 0 ? number : fallback;
 }
 
+function optionalNumber(value) {
+	const number = Number(value);
+	return Number.isFinite(number) && number >= 0 ? number : null;
+}
+
+function optionalInteger(value) {
+	const number = Number(value);
+	return Number.isInteger(number) && number >= 0 ? number : null;
+}
+
+function firstDefined(...values) {
+	return values.find((value) => value !== undefined && value !== null && value !== '');
+}
+
+function elapsedMs(startedAt, completedAt) {
+	if (!startedAt || !completedAt) {
+		return null;
+	}
+	const start = Date.parse(startedAt);
+	const end = Date.parse(completedAt);
+	return Number.isFinite(start) && Number.isFinite(end) && end >= start ? end - start : null;
+}
+
+function classifyRetryDisposition(failureClass, retry) {
+	if (failureClass === 'none') {
+		return 'not_retried';
+	}
+	if (failureClass === 'task_failure') {
+		return 'task_terminal';
+	}
+	if (['provider_failure', 'runtime_failure', 'runner_failure'].includes(failureClass)) {
+		return retry.max_attempts && retry.retry_count >= retry.max_attempts - 1 ? 'exhausted' : 'retryable';
+	}
+	return retry.disposition || 'manual_review';
+}
+
+function operationalMetadata(evalArtifact, { startedAt, completedAt, failureClass }) {
+	const source = evalArtifact.operations || evalArtifact.telemetry?.operations || evalArtifact.reports?.operations || {};
+	const templateValues = evalArtifact.reports?.template_values || evalArtifact.reports?.pr_template_values || {};
+	const usageSource = source.usage || evalArtifact.usage || evalArtifact.token_usage || evalArtifact.runner?.usage || {};
+	const costSource = source.cost || evalArtifact.cost || evalArtifact.runner?.cost || {};
+	const timingSource = source.timing || evalArtifact.timing || evalArtifact.runtime?.timing || {};
+	const concurrencySource = source.concurrency || evalArtifact.concurrency || evalArtifact.runner?.concurrency || {};
+	const retrySource = source.retry || evalArtifact.retry || evalArtifact.runner?.retry || {};
+	const retry = {
+		policy: firstDefined(retrySource.policy, templateValues.retry_policy, 'wp-gym-large-run-v1'),
+		retry_count: optionalInteger(firstDefined(retrySource.retry_count, retrySource.retries, templateValues.retry_count, 0)),
+		max_attempts: optionalInteger(firstDefined(retrySource.max_attempts, templateValues.max_attempts, templateValues.attempt_count, 1)),
+		previous_failure_class: firstDefined(retrySource.previous_failure_class, null),
+	};
+	retry.disposition = firstDefined(retrySource.disposition, classifyRetryDisposition(failureClass, retry));
+
+	const inputTokens = optionalInteger(firstDefined(usageSource.input_tokens, usageSource.prompt_tokens));
+	const outputTokens = optionalInteger(firstDefined(usageSource.output_tokens, usageSource.completion_tokens));
+	const totalTokens = optionalInteger(firstDefined(usageSource.total_tokens, inputTokens !== null || outputTokens !== null ? (inputTokens || 0) + (outputTokens || 0) : null));
+	const operations = {
+		cost: {
+			estimated_usd: optionalNumber(firstDefined(costSource.estimated_usd, costSource.estimated_cost_usd, costSource.usd)),
+			billed_usd: optionalNumber(firstDefined(costSource.billed_usd, costSource.actual_usd)),
+			currency: firstDefined(costSource.currency, 'USD'),
+			pricing_source: firstDefined(costSource.pricing_source, costSource.source, null),
+		},
+		usage: {
+			input_tokens: inputTokens,
+			output_tokens: outputTokens,
+			total_tokens: totalTokens,
+		},
+		timing: {
+			queue_ms: optionalInteger(firstDefined(timingSource.queue_ms, timingSource.queued_ms, templateValues.queue_ms)),
+			wall_ms: optionalInteger(firstDefined(timingSource.wall_ms, timingSource.duration_ms, elapsedMs(startedAt, completedAt))),
+			runner_ms: optionalInteger(firstDefined(timingSource.runner_ms, timingSource.execution_ms)),
+			provider_ms: optionalInteger(firstDefined(timingSource.provider_ms, timingSource.model_ms)),
+		},
+		concurrency: {
+			requested: optionalInteger(firstDefined(concurrencySource.requested, templateValues.requested_concurrency)),
+			effective: optionalInteger(firstDefined(concurrencySource.effective, templateValues.effective_concurrency)),
+			matrix_max: optionalInteger(firstDefined(concurrencySource.matrix_max, templateValues.matrix_max_concurrency)),
+		},
+		retry,
+	};
+
+	return JSON.parse(JSON.stringify(operations));
+}
+
 function attemptMetadata(evalArtifact) {
 	const provenanceAttempt = evalArtifact.provenance?.attempt || {};
 	const templateValues = evalArtifact.reports?.template_values || evalArtifact.reports?.pr_template_values || {};
@@ -274,9 +358,11 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 	const taskSet = taskSetMetadata(evalArtifact, sourceFile);
 	const scenario = scenarioMetadata(evalArtifact, scenarioIndex);
 	const completedAt = evalArtifact.projection?.created_at || new Date().toISOString();
+	const startedAt = evalArtifact.runtime?.artifact_bundle?.created_at || null;
 	const provider = evalArtifact.runner?.provider || 'unknown-provider';
 	const model = evalArtifact.runner?.model || 'unknown-model';
 	const attempt = attemptMetadata(evalArtifact);
+	const failureClass = evalArtifact.status?.failure_class || (evalArtifact.grader?.success ? 'none' : 'task_failure');
 	const runId = attempt.id || [evalArtifact.runner?.workflow?.run_id, scenario.id, provider, model].filter(Boolean).join('-') || `${scenario.id}-${provider}-${model}`;
 	const evalReference = {
 		kind: 'json',
@@ -312,7 +398,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			result_set_id: attempt.resultSetId,
 			seed: attempt.seed,
 			temperature: attempt.temperature,
-			started_at: evalArtifact.runtime?.artifact_bundle?.created_at || null,
+			started_at: startedAt,
 			completed_at: completedAt,
 			outcome: evalArtifact.status?.outcome || (evalArtifact.grader?.success ? 'passed' : 'failed'),
 		},
@@ -336,7 +422,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			result_sha256: evalReference.sha256,
 			success: Boolean(evalArtifact.grader?.success),
 			reward: Number(evalArtifact.grader?.reward || 0),
-			failure_class: evalArtifact.status?.failure_class || (evalArtifact.grader?.success ? 'none' : 'task_failure'),
+			failure_class: failureClass,
 		},
 		calibration: {
 			row_type: evalArtifact.reports?.template_values?.calibration_row_type || evalArtifact.provenance?.provider?.calibration_row_type || (provider.includes('human') ? 'human_reference' : attempt.count > 1 ? 'repeated_attempts' : 'frontier_model'),
@@ -351,6 +437,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			exclusion_reasons: exclusionReasons,
 		},
 		provenance: evalArtifact.provenance || null,
+		operations: operationalMetadata(evalArtifact, { startedAt, completedAt, failureClass }),
 		...(scenario.heldOut ? { held_out: scenario.heldOut } : {}),
 		eval_artifact: evalReference,
 		artifact_index: {
