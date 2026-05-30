@@ -157,6 +157,24 @@ try {
 	assert.equal(replayOutput.benchmark_mode, true);
 	assert.equal(replayOutput.regrade, true);
 	assert.equal(replayOutput.summary.failure_classes.none, 1);
+
+	const aggregate = spawnSync(process.execPath, [
+		'scripts/aggregate-run-registry.mjs',
+		'--registry',
+		'fixtures/run-registry/valid-canonical-eval-artifact.json',
+		'--regrade',
+	], {
+		cwd: root,
+		encoding: 'utf8',
+	});
+	assert.equal(aggregate.status, 0, aggregate.stderr || aggregate.stdout);
+	const aggregateOutput = JSON.parse(aggregate.stdout);
+	assert.equal(aggregateOutput.replay_regrade.enabled, true);
+	assert.equal(aggregateOutput.replay_regrade.attempted, 1);
+	assert.equal(aggregateOutput.replay_regrade.deterministic, 1);
+	assert.equal(aggregateOutput.replay_regrade.success_rate, 1);
+	assert.equal(aggregateOutput.replay_regrade.drift_rate, 0);
+	assert.equal(aggregateOutput.replay_regrade.failure_classes.none, 1);
 } finally {
 	await rm(temp, { recursive: true, force: true });
 }
