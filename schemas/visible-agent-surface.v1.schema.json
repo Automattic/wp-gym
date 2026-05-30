@@ -67,7 +67,7 @@
     },
     "audit": {
       "type": "object",
-      "required": ["classification_counts", "interference_findings"],
+      "required": ["classification_counts", "interference_findings", "hidden_evidence_boundaries"],
       "properties": {
         "classification_counts": {
           "type": "object",
@@ -82,6 +82,59 @@
         "interference_findings": {
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "hidden_evidence_boundaries": {
+          "type": "object",
+          "required": ["covered_evidence_kinds", "surfaces", "benchmark_mode_eligible", "accepted_exposures"],
+          "properties": {
+            "covered_evidence_kinds": {
+              "type": "array",
+              "items": {
+                "enum": ["hidden_grader", "held_out_variant", "private_fixture", "expected_answer", "task_policy_internal"]
+              }
+            },
+            "surfaces": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "status", "findings"],
+                "properties": {
+                  "name": { "enum": ["prompt", "tools", "workspace", "artifacts", "report_body"] },
+                  "status": { "enum": ["pass", "fail", "not_observed"] },
+                  "findings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["kind", "exposed", "message"],
+                      "properties": {
+                        "kind": { "type": "string", "minLength": 1 },
+                        "exposed": { "type": "boolean" },
+                        "message": { "type": "string", "minLength": 1 },
+                        "severity": { "enum": ["info", "warning", "error"] }
+                      },
+                      "additionalProperties": true
+                    }
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "benchmark_mode_eligible": { "type": "boolean" },
+            "accepted_exposures": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["kind", "scope", "reason"],
+                "properties": {
+                  "kind": { "type": "string", "minLength": 1 },
+                  "scope": { "enum": ["pilot_only", "non_benchmark"] },
+                  "reason": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true

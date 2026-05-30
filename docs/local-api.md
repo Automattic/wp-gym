@@ -104,11 +104,16 @@ The local adapter is intentionally thin. It currently supports:
   response observation.
 - `browser` `navigate` and `capture` actions through WP Codebox browser probe
   artifacts, including HTML and screenshot references when requested.
+- `editor` action envelopes as audit evidence only. Local execution rejects them
+  until WP Codebox exposes a generic editor replay primitive.
 
 The schemas also define browser interaction operations such as `click`, `fill`,
 and `press` so traces can preserve evidence from richer runners. The local Node
 adapter currently returns a structured `browser_result` error for those
 operations until WP Codebox exposes a generic replay primitive for them.
+Replay/regrade treats all browser/editor trace steps as audit-only unless the
+local deterministic replay path can reproduce the action and its observation
+artifacts exactly.
 
 A Python or Gymnasium wrapper is intentionally deferred. The supported external
 surface for this slice is the Node API plus JSON CLI output; a Python wrapper can

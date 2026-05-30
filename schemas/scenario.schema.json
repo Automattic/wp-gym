@@ -408,7 +408,7 @@
         "allowed_action_types": {
           "type": "array",
           "minItems": 1,
-          "items": { "enum": ["wp_cli", "filesystem", "rest", "browser"] },
+          "items": { "enum": ["wp_cli", "filesystem", "rest", "browser", "editor"] },
           "uniqueItems": true
         },
         "max_steps": { "type": "integer", "minimum": 1 },

@@ -7,7 +7,8 @@
     { "$ref": "#/$defs/wpCliAction" },
     { "$ref": "#/$defs/filesystemAction" },
     { "$ref": "#/$defs/restAction" },
-    { "$ref": "#/$defs/browserAction" }
+    { "$ref": "#/$defs/browserAction" },
+    { "$ref": "#/$defs/editorAction" }
   ],
   "$defs": {
     "metadata": {
@@ -20,6 +21,39 @@
       "type": "string",
       "minLength": 1,
       "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"
+    },
+    "viewport": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "device_scale_factor": { "type": "number", "exclusiveMinimum": 0 },
+        "is_mobile": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "timing": {
+      "type": "object",
+      "properties": {
+        "wait_until": { "enum": ["commit", "domcontentloaded", "load", "networkidle"] },
+        "wait_for_selector": { "type": "string", "minLength": 1 },
+        "settle_ms": { "type": "integer", "minimum": 0 },
+        "timeout_ms": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "stateAssertion": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "selector": { "type": "string", "minLength": 1 },
+        "text_contains": { "type": "string", "minLength": 1 },
+        "editor_store": { "type": "string", "minLength": 1 },
+        "editor_selector": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
     },
     "wpCliAction": {
       "type": "object",
@@ -104,11 +138,40 @@
         "url": { "type": "string", "minLength": 1 },
         "value": true,
         "wait_for": { "type": "string", "minLength": 1 },
+        "viewport": { "$ref": "#/$defs/viewport" },
+        "timing": { "$ref": "#/$defs/timing" },
+        "state": { "$ref": "#/$defs/stateAssertion" },
         "capture": {
           "type": "array",
           "items": { "enum": ["html", "screenshot", "console", "network"] },
           "uniqueItems": true
         },
+        "timeout_ms": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "editorAction": {
+      "type": "object",
+      "required": ["schema_version", "type", "operation", "replayability"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "type": { "const": "editor" },
+        "id": { "type": "string", "minLength": 1 },
+        "metadata": { "$ref": "#/$defs/metadata" },
+        "operation": { "enum": ["open_post", "insert_block", "update_block", "select_block", "save_post", "publish_post", "switch_mode", "inspect_state"] },
+        "replayability": { "enum": ["replayable", "evidence_only"] },
+        "post_id": { "type": "integer", "minimum": 1 },
+        "post_type": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "block_name": { "type": "string", "minLength": 1 },
+        "block_client_id": { "type": "string", "minLength": 1 },
+        "attributes": { "type": "object", "additionalProperties": true },
+        "content": true,
+        "selector": { "type": "string", "minLength": 1 },
+        "value": true,
+        "mode": { "enum": ["visual", "code"] },
+        "timing": { "$ref": "#/$defs/timing" },
+        "state": { "$ref": "#/$defs/stateAssertion" },
         "timeout_ms": { "type": "integer", "minimum": 1 }
       },
       "additionalProperties": false

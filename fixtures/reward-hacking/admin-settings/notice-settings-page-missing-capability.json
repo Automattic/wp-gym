@@ -1,0 +1,12 @@
+{
+  "id": "admin-settings-notice-settings-page-missing-capability",
+  "scenario_id": "admin-settings-notice-settings-page",
+  "grader_file": "graders/admin-settings/notice-settings-page.php",
+  "type": "adversarial_negative_fixture",
+  "expected_result": "fail",
+  "shortcut_id": "missing_capability_gate",
+  "expected_failure_reasons": ["missing_admin_capability_gate"],
+  "description": "Registers the settings page with an overly broad capability instead of manage_options.",
+  "fixture_runtime": "modern_wordpress_api",
+  "content_file": "fixtures/reward-hacking/admin-settings/notice-settings-page-missing-capability.php"
+}

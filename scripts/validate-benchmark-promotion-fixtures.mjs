@@ -25,6 +25,7 @@ assert.ok(scenarioReport.gates.some((gate) => gate.code === 'known_shortcuts_fix
 assert.ok(scenarioReport.gates.some((gate) => gate.code === 'reward_soundness_reviewed' && gate.status === 'pass'));
 assert.ok(scenarioReport.gates.some((gate) => gate.code === 'reward_agreement_thresholds' && gate.status === 'pass'));
 assert.ok(scenarioReport.gates.some((gate) => gate.code === 'reward_shortcuts_review_resolved' && gate.status === 'fail'));
+assert.ok(scenarioReport.gates.some((gate) => gate.code === 'hidden_evidence_boundaries_clean' && gate.status === 'pass'));
 assert.ok(scenarioReport.blockers.includes('known_shortcuts_unresolved'));
 assert.ok(scenarioReport.blockers.includes('known_reward_shortcut'));
 
