@@ -64,6 +64,12 @@ scenario may include a `held_out_private_variant` pointer that names only the
 private family/reference and readiness state, as shown in
 `scenarios/block-markup/valid-semantic-blocks.json`.
 
+The `admin-settings-notice-settings-page` pilot follows the same public-safe
+shape: the public manifest names a planned sealed private variant and the
+public held-out pack index records only family, seed, compatibility, and hash
+placeholders. Private prompts, option names, UI labels, fixtures, grader code,
+and replay bundles remain outside the public repo.
+
 ## Contamination-Sensitive Material
 
 Held-out/private lanes keep these materials outside the public repository and
