@@ -270,6 +270,53 @@ function benchmarkExclusionReasons(taskSet, scenario) {
 	return [...new Set(reasons)].sort();
 }
 
+function releaseType(taskSet) {
+	if (taskSet.benchmark_status === 'benchmark_ready' && taskSet.benchmark) {
+		return 'headline';
+	}
+	if (taskSet.benchmark_status === 'calibrating') {
+		return 'calibration';
+	}
+	return 'pilot';
+}
+
+function benchmarkReleaseIdentity(evalArtifact, taskSet) {
+	const explicit = evalArtifact.benchmark || evalArtifact.benchmark_release || {};
+	if (explicit.release_id && explicit.release_version && explicit.release_manifest_sha256) {
+		return {
+			release_id: explicit.release_id,
+			release_version: explicit.release_version,
+			release_type: explicit.release_type || releaseType(taskSet),
+			release_status: explicit.release_status || taskSet.benchmark_status,
+			release_manifest: explicit.release_manifest || taskSet.source_path,
+			release_manifest_sha256: normalizeSha256(explicit.release_manifest_sha256),
+		};
+	}
+
+	const localReleaseFile = path.join(root, 'benchmark-releases', `${taskSet.id}-${taskSet.version}.json`);
+	if (fs.existsSync(localReleaseFile)) {
+		const releaseManifest = readJson(localReleaseFile);
+		const release = releaseManifest.release || {};
+		return {
+			release_id: release.id || `${taskSet.id}@${taskSet.version}`,
+			release_version: release.benchmark_version || taskSet.version,
+			release_type: release.type || releaseType(taskSet),
+			release_status: release.status || taskSet.benchmark_status,
+			release_manifest: repoRelative(localReleaseFile),
+			release_manifest_sha256: sha256File(localReleaseFile),
+		};
+	}
+
+	return {
+		release_id: `${taskSet.id}@${taskSet.version}`,
+		release_version: taskSet.version,
+		release_type: releaseType(taskSet),
+		release_status: taskSet.benchmark_status,
+		release_manifest: taskSet.source_path,
+		release_manifest_sha256: taskSet.sha256,
+	};
+}
+
 function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replayReference, scenarioIndex }) {
 	const taskSet = taskSetMetadata(evalArtifact, sourceFile);
 	const scenario = scenarioMetadata(evalArtifact, scenarioIndex);
@@ -295,6 +342,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 		(artifact) => artifact.runtime?.references?.replay_bundle,
 	]), 'json');
 	const exclusionReasons = benchmarkExclusionReasons(taskSet, scenario);
+	const releaseIdentity = benchmarkReleaseIdentity(evalArtifact, taskSet);
 
 	return {
 		schema_version: 1,
@@ -348,6 +396,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			eligible: exclusionReasons.length === 0,
 			headline_score_eligible: Boolean(taskSet.headline_score_eligible && scenario.calibration?.headline_score_eligible),
 			compatibility_group: taskSet.compatibility_group,
+			...releaseIdentity,
 			exclusion_reasons: exclusionReasons,
 		},
 		provenance: evalArtifact.provenance || null,

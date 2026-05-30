@@ -189,12 +189,12 @@ function rowFailedChecks(row) {
 		.map((check) => check.id || 'unknown_check');
 }
 
-function aggregate(entries, options) {
+async function aggregate(entries, options) {
 	const rows = [];
 	const rejected = [];
 	for (const file of entries) {
 		const row = readJson(file);
-		const validation = validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: root });
+		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: root });
 		const rowSummary = { file: repoRelative(file), ok: validation.ok, compatibility_gaps: validation.compatibility_gaps };
 		if (!validation.ok) {
 			rejected.push(rowSummary);
@@ -242,6 +242,7 @@ function aggregate(entries, options) {
 		by_task: groupBy(rows, (row) => row.scenario?.id || 'unknown'),
 		by_task_family: groupBy(rows, (row) => row.scenario?.task_family || 'unknown'),
 		by_capability: groupBy(rows, (row) => row.scenario?.capabilities?.primary || 'unknown'),
+		by_benchmark_release: groupBy(rows, (row) => row.benchmark?.release_id || 'unknown'),
 		rejected,
 		rows: rows.map((row) => ({
 			run_id: row.run?.id,
@@ -269,6 +270,14 @@ function aggregate(entries, options) {
 			capability: row.scenario?.capabilities?.primary || null,
 			benchmark_eligible: row.benchmark?.eligible,
 			headline_score_eligible: row.benchmark?.headline_score_eligible,
+			benchmark_release: row.benchmark ? {
+				release_id: row.benchmark.release_id || null,
+				release_version: row.benchmark.release_version || null,
+				release_type: row.benchmark.release_type || null,
+				release_status: row.benchmark.release_status || null,
+				release_manifest: row.benchmark.release_manifest || null,
+				release_manifest_sha256: row.benchmark.release_manifest_sha256 || null,
+			} : null,
 			immutable_fingerprints: provenanceFingerprints(row.provenance),
 			exclusion_reasons: row.benchmark?.exclusion_reasons || [],
 			failed_checks: row._failed_checks || [],
@@ -353,10 +362,15 @@ function renderMarkdown(report) {
 		'',
 		renderTable(['Family/tier', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_task_family_model_tier)),
 		'',
+		'## Benchmark Releases',
+		'',
+		renderTable(['Release', 'Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Failed', 'Errored'], renderSummaryMap(report.by_benchmark_release)),
+		'',
 		'## Rows',
 		'',
-		renderTable(['Task', 'Held-out pack', 'Provider/model', 'Model tier', 'Row type', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Workflow SHA', 'Tool policy SHA', 'Bundle SHA', 'Exclusions'], report.rows.map((row) => [
+		renderTable(['Task', 'Release', 'Held-out pack', 'Provider/model', 'Model tier', 'Row type', 'Attempt', 'Result set', 'Outcome', 'Reward', 'Failure class', 'Headline', 'Workflow SHA', 'Tool policy SHA', 'Bundle SHA', 'Exclusions'], report.rows.map((row) => [
 			row.scenario || '',
+			row.benchmark_release?.release_id || '',
 			row.held_out_pack?.pack_id || '',
 			`${row.provider || 'unknown'}/${row.model || 'unknown'}`,
 			row.model_tier || 'unknown',
@@ -376,7 +390,7 @@ function renderMarkdown(report) {
 
 	if (report.rejected.length > 0) {
 		lines.push('', '## Data Quality Gaps', '');
-		lines.push(renderTable(['File', 'Gap codes'], report.rejected.map((row) => [row.file, row.compatibility_gaps.map((gap) => gap.code).join(', ')])));
+		lines.push(renderTable(['File', 'Gap codes'], report.rejected.map((row) => [row.file, (row.compatibility_gaps || []).map((gap) => gap.code).join(', ')])));
 	}
 
 	return `${lines.join('\n')}\n`;
@@ -418,7 +432,7 @@ async function main() {
 		console.error('Usage: node scripts/aggregate-run-registry.mjs --registry <registry-json-or-dir> [--scope pilot|benchmark|headline|all] [--json <file>] [--markdown <file>] [--benchmark-mode]');
 		process.exit(args.help ? 0 : 2);
 	}
-	const report = aggregate(collectJsonFiles(args.registry), args);
+	const report = await aggregate(collectJsonFiles(args.registry), args);
 	const json = `${JSON.stringify(report, null, 2)}\n`;
 	const markdown = renderMarkdown(report);
 	if (args.json) {

@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "report_schema_version": "wp-gym/benchmark-release-report/v1",
+  "release": {
+    "id": "benchmark-readiness-pilot@0.0.0-pilot.1",
+    "type": "pilot",
+    "status": "pilot",
+    "benchmark_version": "0.0.0-pilot.1",
+    "compatibility_group": "benchmark-readiness-pilot",
+    "compatible_with": [],
+    "task_set_id": "benchmark-readiness-pilot",
+    "task_set_manifest": "task-sets/benchmark-readiness-pilot.json",
+    "task_set_manifest_sha256": "dc771f6b1f643b9a001e53123070238dd21ccd1c439eecec1a12a5f0225c5fff",
+    "headline_score_eligible": false,
+    "aggregate_score": false,
+    "score_scope": "pilot",
+    "task_contract_level": "mixed_diagnostic"
+  },
+  "policies": {
+    "task_set_policy": "Task membership, weighting, aggregate eligibility, score scope, or task contract changes require a new benchmark release version.",
+    "scoring_policy": "Terminal grader behavior, success thresholds, reward ranges, aggregate policy, and headline eligibility are release-versioned inputs.",
+    "runtime_policy": "Runtime setup, allowed actions, writable roots, hidden paths, replay schema, and provenance requirements are part of version identity.",
+    "private_pack_policy": "Private or held-out packs are referenced by sealed version labels and hashes; rotating contents or graders requires a new private pack version and benchmark release.",
+    "compatibility_policy": "Only releases that share a compatibility group and explicitly list compatible versions may be compared in headline reports."
+  },
+  "scenarios": [
+    {
+      "scenario_id": "block-markup-valid-semantic-blocks",
+      "manifest": "scenarios/block-markup/valid-semantic-blocks.json",
+      "manifest_sha256": "eff7c64d3e7606c7bb6dbf7d7e93999a537b70223279095dcda22124c23c7a57",
+      "prompt": "prompts/block-markup/valid-semantic-blocks.md",
+      "grader": "graders/block-markup/valid-semantic-blocks.php",
+      "benchmark_status": "calibrating",
+      "benchmark_scope": "calibration",
+      "benchmark_version": "0.0.0-pilot.1",
+      "compatibility_group": "block-markup-valid-semantic-blocks",
+      "compatible_with": [],
+      "split": "public",
+      "private_pack_reference": "private:block-markup-cookout-page/held-out-v1",
+      "private_pack_status": "planned",
+      "task_contract_level": "benchmark_replay",
+      "expected_artifacts": [
+        "wordpress_state",
+        "replay_trace",
+        "replay_bundle",
+        "grader_result"
+      ],
+      "version_identity": {
+        "manifest_sha256": "eff7c64d3e7606c7bb6dbf7d7e93999a537b70223279095dcda22124c23c7a57",
+        "prompt_sha256": "fb3502856b24d68a623c0138c1f913eb190cf0ddcf6f427dd427a140b5cabb8b",
+        "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e",
+        "setup_sha256": "6e54030be6c937d4f20958245280e0590a20fb968b84b76ef557d94592dcf425",
+        "expected_artifacts_sha256": "5eaa2932aa000f3b2e5524a77c9d86792f5a34447bbe34492d42b30f618869cc",
+        "replay_contract_sha256": "b13d61a5d93bb7ea0888fef1e7685c96ab1a1a8482f466d6b8213824817bc4bf"
+      }
+    },
+    {
+      "scenario_id": "block-markup-no-fallback-pricing-section",
+      "manifest": "scenarios/block-markup/no-fallback-pricing-section.json",
+      "manifest_sha256": "52bcbd63a88beb2080070dc570e0ae422e96979222545ecb5e47c454027333ad",
+      "prompt": "prompts/block-markup/no-fallback-pricing-section.md",
+      "grader": "graders/block-markup/no-fallback-pricing-section.php",
+      "benchmark_status": "calibrating",
+      "benchmark_scope": "calibration",
+      "benchmark_version": "0.0.0-pilot.1",
+      "compatibility_group": "block-markup-no-fallback-pricing-section",
+      "compatible_with": [],
+      "split": "public",
+      "private_pack_reference": null,
+      "private_pack_status": null,
+      "task_contract_level": "wordpress_state_diagnostic",
+      "expected_artifacts": [
+        "wordpress_state",
+        "grader_result"
+      ],
+      "version_identity": {
+        "manifest_sha256": "52bcbd63a88beb2080070dc570e0ae422e96979222545ecb5e47c454027333ad",
+        "prompt_sha256": "75d16e1b991201a4814f4867e6001555a8539e2bccea08e82dc34dee4519ca10",
+        "grader_sha256": "854f5721287f81dd664b4c7f32edf18fddf87165f1a908b398e80f8dca8b5b25",
+        "setup_sha256": "329f7389f831d9be518eb8a90b98f88c2a73d7651b528f2c1e9e63f1170e1e6c",
+        "expected_artifacts_sha256": "391ee8363f0985b4b988dd7d47cd240025d17829dad4f46ddfa00f3ac565d816",
+        "replay_contract_sha256": "54a8e6ad477ec164e2ebea79585fc9d497bcf75194cb432f9471be5ef0c3001c"
+      }
+    },
+    {
+      "scenario_id": "modern-wordpress-api-abilities-site-summary",
+      "manifest": "scenarios/modern-wordpress-api/abilities-site-summary.json",
+      "manifest_sha256": "12fa13815832b4439dc5606c170416b59ae0e23bc1685ff952ebe0f61efbacd5",
+      "prompt": "prompts/modern-wordpress-api/abilities-site-summary.md",
+      "grader": "graders/modern-wordpress-api/abilities-site-summary.php",
+      "benchmark_status": "pilot",
+      "benchmark_scope": "pilot",
+      "benchmark_version": "0.0.0-pilot.1",
+      "compatibility_group": "modern-wordpress-api-abilities-site-summary",
+      "compatible_with": [],
+      "split": "public",
+      "private_pack_reference": null,
+      "private_pack_status": null,
+      "task_contract_level": "benchmark_replay",
+      "expected_artifacts": [
+        "workspace_diff",
+        "plugin_files",
+        "replay_trace",
+        "replay_bundle",
+        "grader_result"
+      ],
+      "version_identity": {
+        "manifest_sha256": "12fa13815832b4439dc5606c170416b59ae0e23bc1685ff952ebe0f61efbacd5",
+        "prompt_sha256": "0d89c1ddb712d11c5b10ed0cd3f6f58022cb297cf1ee30d1432d6473ef2bdbab",
+        "grader_sha256": "d6e6f3df62555662aa9b6d2dc372f47b355fdd83897e3dddb45eb2877acd216d",
+        "setup_sha256": "e2600f8d9be1aae1f80f5867ab06e0e936b6db4eaccba289fef46a86cc7f2dfe",
+        "expected_artifacts_sha256": "d387e68ff6b6367b2e3dfe82b95b237249ed11fa26139e0f14bb869c628bd545",
+        "replay_contract_sha256": "2625c0465d1bad13fe4f025b20b87b63d2ceba11f371d37ab8ac329a7ec02a57"
+      }
+    },
+    {
+      "scenario_id": "modern-wordpress-api-rest-route-status",
+      "manifest": "scenarios/modern-wordpress-api/rest-route-status.json",
+      "manifest_sha256": "062cf22d63cf1b1a08874e49966e41cb7590381529616d6ea507b21b66b6ad13",
+      "prompt": "prompts/modern-wordpress-api/rest-route-status.md",
+      "grader": "graders/modern-wordpress-api/rest-route-status.php",
+      "benchmark_status": "pilot",
+      "benchmark_scope": "pilot",
+      "benchmark_version": "0.0.0-pilot.1",
+      "compatibility_group": "modern-wordpress-api-rest-route-status",
+      "compatible_with": [],
+      "split": "public",
+      "private_pack_reference": null,
+      "private_pack_status": null,
+      "task_contract_level": "benchmark_replay",
+      "expected_artifacts": [
+        "workspace_diff",
+        "plugin_files",
+        "replay_trace",
+        "replay_bundle",
+        "grader_result"
+      ],
+      "version_identity": {
+        "manifest_sha256": "062cf22d63cf1b1a08874e49966e41cb7590381529616d6ea507b21b66b6ad13",
+        "prompt_sha256": "4b0af6e274ff0bff877256c6f1a27425b67144b7f48540bc0e1f753d6be6da49",
+        "grader_sha256": "4ab88948c481ae46ccb4ff6708b348f096bf392d842635004dbcf1028aa503f4",
+        "setup_sha256": "b08276dee4b57bc95e020545c3dde566a3050347e07a733406482ac862bd2b53",
+        "expected_artifacts_sha256": "201744c6dde016b758aca7aca95c0fa49229476a7d95faacb784632f09f62b07",
+        "replay_contract_sha256": "653c458dbadbf87b2ab426edc1ad1499cdfdb9c7c013fc126f032833e77ae096"
+      }
+    }
+  ],
+  "validation": {
+    "commands": [
+      "npm run benchmark-release:validate",
+      "npm run validate",
+      "npm run run-registry:validate",
+      "npm run benchmark-promotion:test"
+    ],
+    "checklist": [
+      "release manifest validates from current repo metadata",
+      "task-set status is classified as pilot, calibration, or headline",
+      "every scenario has task, scoring, runtime, replay, and private-pack version identity",
+      "benchmark-mode reports include release.id and release.benchmark_version before citation"
+    ]
+  }
+}

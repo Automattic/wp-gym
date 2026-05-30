@@ -118,6 +118,11 @@ benchmark claims require held-out/private split metadata and readiness gates.
 Benchmark versioning, promotion, compatibility, deprecation, and retention policy
 is documented in `docs/benchmark-versioning.md`.
 
+Benchmark release candidates live in `benchmark-releases/` and are generated from
+repo metadata with `npm run benchmark-release:generate`. Validate them with
+`npm run benchmark-release:validate` before citing pilot, calibration, or headline
+benchmark reports.
+
 The hidden grader handoff from WP Codebox artifacts into `wp-gym` PHP graders is
 documented in `docs/grader-handoff.md`.
 

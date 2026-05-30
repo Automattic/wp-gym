@@ -143,6 +143,12 @@
         "eligible": { "type": "boolean" },
         "headline_score_eligible": { "type": "boolean" },
         "compatibility_group": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$" },
+        "release_id": { "type": "string", "minLength": 1 },
+        "release_version": { "type": "string", "minLength": 1 },
+        "release_type": { "enum": ["pilot", "calibration", "headline"] },
+        "release_status": { "enum": ["pilot", "calibrating", "benchmark_ready", "deprecated", "retired"] },
+        "release_manifest": { "type": "string", "minLength": 1 },
+        "release_manifest_sha256": { "$ref": "#/$defs/sha256" },
         "exclusion_reasons": {
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }

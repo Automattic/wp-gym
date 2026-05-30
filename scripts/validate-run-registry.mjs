@@ -214,6 +214,46 @@ function validateBenchmarkProvenance(entry) {
 	return gaps;
 }
 
+function validateBenchmarkReleaseIdentity(entry, benchmarkMode) {
+	if (!benchmarkMode) {
+		return [];
+	}
+	const gaps = [];
+	const requiredFields = [
+		'benchmark.release_id',
+		'benchmark.release_version',
+		'benchmark.release_type',
+		'benchmark.release_status',
+		'benchmark.release_manifest',
+		'benchmark.release_manifest_sha256',
+	];
+
+	for (const field of requiredFields) {
+		if (!hasDottedPath(entry, field)) {
+			gaps.push(gap('missing_benchmark_release_field', 'error', field, 'Benchmark-mode registry entries must identify the exact benchmark release manifest.'));
+		}
+	}
+
+	const releaseManifest = getDottedPath(entry, 'benchmark.release_manifest');
+	const releaseManifestSha256 = getDottedPath(entry, 'benchmark.release_manifest_sha256');
+	if (releaseManifestSha256 !== undefined && !isSha256(releaseManifestSha256)) {
+		gaps.push(gap('invalid_benchmark_release_sha256', 'error', 'benchmark.release_manifest_sha256', 'Benchmark release manifest hash must be a sha256 hex digest.'));
+	}
+	if (releaseManifest && typeof releaseManifest === 'string' && !/^https?:\/\//i.test(releaseManifest) && !releaseManifest.startsWith('sealed://')) {
+		const releasePath = path.join(root, releaseManifest);
+		if (!fs.existsSync(releasePath)) {
+			gaps.push(gap('missing_benchmark_release_manifest', 'error', 'benchmark.release_manifest', `${releaseManifest} does not exist.`));
+		} else if (releaseManifestSha256 && isSha256(releaseManifestSha256)) {
+			const actualSha256 = sha256File(releasePath);
+			if (actualSha256 !== releaseManifestSha256) {
+				gaps.push(gap('stale_benchmark_release_manifest_hash', 'error', 'benchmark.release_manifest_sha256', `${releaseManifest} sha256 does not match file contents.`));
+			}
+		}
+	}
+
+	return gaps;
+}
+
 function validateSchema(entry, validate) {
 	if (validate(entry)) {
 		return [];
@@ -327,6 +367,7 @@ async function validateRunRegistryEntry(entry, options = {}) {
 
 	if (benchmarkMode) {
 		gaps.push(...validateBenchmarkProvenance(entry));
+		gaps.push(...validateBenchmarkReleaseIdentity(entry, benchmarkMode));
 	}
 
 	if (!entry.grade_identity) {

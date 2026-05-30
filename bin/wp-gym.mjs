@@ -25,6 +25,7 @@ function usage() {
 		'  wp-gym replay <eval-artifact-json-dir-or-zip> --regrade',
 		'  wp-gym replay-regrade --input <eval-artifact-json-or-dir> [--benchmark-mode]',
 		'  wp-gym benchmark-promotion report --scenario <id>|--task-set <id> [--format json|markdown] [--check]',
+		'  wp-gym benchmark-release generate|validate [--task-set <id>] [--input <path>] [--output <path>]',
 		'  wp-gym run-registry emit|report|validate [--regrade] [args...]',
 		'  wp-gym remote-archive triage --input <cycle-dir-or-tar> [args...]',
 	].join('\n'));
@@ -56,6 +57,18 @@ if (command === 'replay') {
 		process.exit(2);
 	}
 	const result = spawnSync(process.execPath, [path.join(root, 'scripts/benchmark-promotion.mjs'), ...process.argv.slice(4)], {
+		cwd: root,
+		stdio: 'inherit',
+	});
+	process.exit(result.status ?? 1);
+
+} else if (command === 'benchmark-release') {
+	const subcommand = process.argv[3];
+	if (!['generate', 'validate'].includes(subcommand)) {
+		console.error('Usage: wp-gym benchmark-release generate|validate [--task-set <id>] [--input <path>] [--output <path>]');
+		process.exit(2);
+	}
+	const result = spawnSync(process.execPath, [path.join(root, 'scripts/benchmark-release.mjs'), subcommand, ...process.argv.slice(4)], {
 		cwd: root,
 		stdio: 'inherit',
 	});
