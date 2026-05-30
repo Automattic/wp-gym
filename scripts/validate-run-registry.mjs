@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { replayRegradeInput } from './replay-regrade.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const schemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/run-registry-entry.v1.schema.json';
@@ -272,7 +272,7 @@ function replayReference(entry) {
 	return artifactEntries(entry).find((artifact) => artifact.category === 'replay' || artifact.name === 'replay_bundle') || null;
 }
 
-async function validateReplayRegrade(entry, baseDir) {
+function validateReplayRegrade(entry, baseDir, options = {}) {
 	const reference = replayReference(entry);
 	if (!reference) {
 		return [];
@@ -283,15 +283,30 @@ async function validateReplayRegrade(entry, baseDir) {
 		return [];
 	}
 
+	const replay = spawnSync(process.execPath, [path.join(root, 'scripts/replay-regrade.mjs'), '--input', replayFile, '--regrade'], {
+		cwd: root,
+		encoding: 'utf8',
+		timeout: options.timeoutMs || 120000,
+	});
+
+	if (replay.error || replay.status !== 0) {
+		return [gap(
+			'replay_regrade_failed',
+			'error',
+			'artifact_index.entries.replay',
+			`Replay/regrade failed for ${reference.path_or_url}: ${replay.error?.message || replay.stderr || replay.stdout || `exited with ${replay.status}`}.`
+		)];
+	}
+
 	let result;
 	try {
-		result = await replayRegradeInput(replayFile, { benchmarkMode: true, regrade: true });
+		result = JSON.parse(replay.stdout);
 	} catch (error) {
 		return [gap(
 			'replay_regrade_failed',
 			'error',
 			'artifact_index.entries.replay',
-			`Replay/regrade failed for ${reference.path_or_url}: ${error instanceof Error ? error.message : String(error)}.`
+			`Replay/regrade returned non-JSON output for ${reference.path_or_url}: ${error instanceof Error ? error.message : String(error)}.`
 		)];
 	}
 
@@ -400,7 +415,7 @@ async function validateRunRegistryEntry(entry, options = {}) {
 	}
 
 	if (options.regrade && !gaps.some((item) => item.severity === 'error')) {
-		gaps.push(...await validateReplayRegrade(entry, baseDir));
+		gaps.push(...validateReplayRegrade(entry, baseDir, options));
 	}
 
 	return {

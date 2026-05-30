@@ -43,7 +43,7 @@
     "index_id": "fixture-missing-grade-identity/index",
     "created_at": "2026-05-28T00:01:00Z",
     "entries": [
-      { "name": "replay_bundle", "category": "replay", "kind": "zip", "path_or_url": "fixtures/replay-regrade/replay.zip", "sha256": "da2a5bf59c092dc2dfed37eee734b5ee9c42dffefa45a16fa14a3926683955d0", "required": true }
+      { "name": "replay_bundle", "category": "replay", "kind": "json", "path_or_url": "fixtures/replay-regrade/valid-artifact.json", "sha256": "fb7523381a167a223e5854b377dc86c46b7fb79b319094f95b04d9fcea8b1e6e", "required": true }
     ]
   }
 }

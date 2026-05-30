@@ -16,7 +16,7 @@
     "index_id": "fixture-missing-artifact-hash/index",
     "created_at": "2026-05-28T00:01:00Z",
     "entries": [
-      { "name": "replay_bundle", "category": "replay", "kind": "zip", "path_or_url": "fixtures/replay-regrade/replay.zip", "required": true }
+      { "name": "replay_bundle", "category": "replay", "kind": "json", "path_or_url": "fixtures/replay-regrade/valid-artifact.json", "required": true }
     ]
   }
 }
