@@ -133,6 +133,70 @@ function addCount(object, key, amount = 1) {
 	object[normalized] = (object[normalized] || 0) + amount;
 }
 
+function replayRegradeSummary() {
+	return {
+		enabled: false,
+		attempted: 0,
+		deterministic: 0,
+		failed: 0,
+		success_rate: 0,
+		drift: 0,
+		drift_rate: 0,
+		missing_artifacts: 0,
+		failure_classes: {},
+		gap_codes: {},
+	};
+}
+
+function replayGapClass(code) {
+	if (/drift|mismatch/i.test(code)) {
+		return 'drift';
+	}
+	if (/missing.*artifact|missing.*evidence|missing_local_artifact|missing_wordpress_state|missing_replay_trace/i.test(code)) {
+		return 'missing_artifacts';
+	}
+	if (/hash|sha256/i.test(code)) {
+		return 'artifact_integrity';
+	}
+	if (/grader/i.test(code)) {
+		return 'grader_failure';
+	}
+	if (/episode|trace|action|replay/i.test(code)) {
+		return 'replay_incompatibility';
+	}
+	return 'data_quality';
+}
+
+function addReplayRegradeResult(summary, validation) {
+	summary.enabled = true;
+	summary.attempted += 1;
+	const gaps = validation.compatibility_gaps || [];
+	const errorCodes = gaps.filter((gap) => gap.severity === 'error').map((gap) => gap.code || 'unknown');
+	if (validation.ok) {
+		summary.deterministic += 1;
+		addCount(summary.failure_classes, 'none');
+		return;
+	}
+
+	summary.failed += 1;
+	if (errorCodes.some((code) => /drift|mismatch/i.test(code))) {
+		summary.drift += 1;
+	}
+	if (errorCodes.some((code) => /missing.*artifact|missing.*evidence|missing_local_artifact|missing_wordpress_state|missing_replay_trace/i.test(code))) {
+		summary.missing_artifacts += 1;
+	}
+	for (const code of errorCodes) {
+		addCount(summary.gap_codes, code);
+	}
+	addCount(summary.failure_classes, replayGapClass(errorCodes[0] || 'unknown'));
+}
+
+function finalizeReplayRegradeSummary(summary) {
+	summary.success_rate = summary.attempted > 0 ? Number((summary.deterministic / summary.attempted).toFixed(4)) : 0;
+	summary.drift_rate = summary.attempted > 0 ? Number((summary.drift / summary.attempted).toFixed(4)) : 0;
+	return summary;
+}
+
 function addEntry(summary, row) {
 	summary.runs += 1;
 	const outcome = row.run?.outcome || 'errored';
@@ -267,10 +331,14 @@ function rowFailedChecks(row) {
 async function aggregate(entries, options) {
 	const rows = [];
 	const rejected = [];
+	const replayRegrade = replayRegradeSummary();
 	for (const file of entries) {
 		const row = readJson(file);
-		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, baseDir: options.baseDir || root });
+		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, regrade: options.regrade, baseDir: options.baseDir || root });
 		const rowSummary = { file: repoRelative(file), ok: validation.ok, compatibility_gaps: validation.compatibility_gaps };
+		if (options.regrade) {
+			addReplayRegradeResult(replayRegrade, validation);
+		}
 		if (!validation.ok) {
 			rejected.push(rowSummary);
 			if (!options.includeInvalid) {
@@ -310,6 +378,7 @@ async function aggregate(entries, options) {
 			accepted: rows.length,
 			rejected: rejected.length,
 		},
+		replay_regrade: finalizeReplayRegradeSummary(replayRegrade),
 		overall,
 		by_provider_model: groupBy(rows, (row) => `${row.runner?.provider || 'unknown'}/${row.runner?.model || 'unknown'}`),
 		by_model_tier: byModelTier,
@@ -429,6 +498,18 @@ function renderMarkdown(report) {
 		`- **Rows:** ${report.inputs.accepted} accepted / ${report.inputs.inspected} inspected`,
 		`- **Rejected rows:** ${report.inputs.rejected}`,
 		'',
+		'## Replay / Regrade',
+		'',
+		renderTable(['Enabled', 'Attempted', 'Deterministic', 'Failed', 'Success rate', 'Drift rate', 'Missing artifacts'], [[
+			report.replay_regrade.enabled ? 'yes' : 'no',
+			String(report.replay_regrade.attempted),
+			String(report.replay_regrade.deterministic),
+			String(report.replay_regrade.failed),
+			percent(report.replay_regrade.success_rate),
+			percent(report.replay_regrade.drift_rate),
+			String(report.replay_regrade.missing_artifacts),
+		]]),
+		'',
 		'## Overall',
 		'',
 		renderTable(['Runs', 'Pass@1', 'Pass@n', 'Reward mean', 'Reward stddev', 'Reward 95% CI', 'Est. cost USD', 'Tokens', 'Runs/wall hour', 'Retries', 'Passed', 'Failed', 'Errored'], [[
@@ -542,7 +623,7 @@ function renderMarkdown(report) {
 }
 
 function parseArgs(argv) {
-	const args = { registry: '', json: '', markdown: '', scope: 'pilot', benchmarkMode: false, includeInvalid: false, largeNMinAttempts: 30 };
+	const args = { registry: '', json: '', markdown: '', scope: 'pilot', benchmarkMode: false, includeInvalid: false, regrade: false, largeNMinAttempts: 30 };
 	for (let index = 0; index < argv.length; index += 1) {
 		const arg = argv[index];
 		if (arg === '--registry' || arg === '--input') {
@@ -554,6 +635,9 @@ function parseArgs(argv) {
 		} else if (arg === '--scope') {
 			args.scope = argv[++index];
 		} else if (arg === '--benchmark-mode') {
+			args.benchmarkMode = true;
+		} else if (arg === '--regrade') {
+			args.regrade = true;
 			args.benchmarkMode = true;
 		} else if (arg === '--include-invalid') {
 			args.includeInvalid = true;
@@ -579,7 +663,7 @@ function parseArgs(argv) {
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
 	if (args.help || !args.registry) {
-		console.error('Usage: node scripts/aggregate-run-registry.mjs --registry <registry-json-or-dir> [--scope pilot|benchmark|headline|all] [--json <file>] [--markdown <file>] [--benchmark-mode] [--large-n-min-attempts <count>]');
+		console.error('Usage: node scripts/aggregate-run-registry.mjs --registry <registry-json-or-dir> [--scope pilot|benchmark|headline|all] [--json <file>] [--markdown <file>] [--benchmark-mode] [--regrade] [--large-n-min-attempts <count>]');
 		process.exit(args.help ? 0 : 2);
 	}
 	const report = await aggregate(collectJsonFiles(args.registry), args);

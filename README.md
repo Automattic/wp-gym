@@ -55,6 +55,7 @@ node bin/wp-gym.mjs show scenario block-markup-no-fallback-pricing-section
 node examples/no-model-episode.mjs block-markup-no-fallback-pricing-section
 node examples/scripted-loop.mjs block-markup-no-fallback-pricing-section
 node examples/model-agent-loop.mjs block-markup-no-fallback-pricing-section
+npm run external-consumer:test
 ```
 
 External Node runners can use the same discovery and environment API:
@@ -73,6 +74,16 @@ lab-facing contract, action families, package schema exports, runnable examples,
 and API versioning policy are documented in `docs/external-rl-api.md`. A Python
 or Gymnasium wrapper is deferred until the JSON action/observation contract
 settles.
+
+The external consumer proof in `npm run external-consumer:test` creates a
+throwaway package, installs `wp-gym` there, imports only public package exports,
+exercises discovery plus `reset()` / `step()` / `grade()` / `trace()`, and checks
+registry inspection through the public CLI so reviewers can validate lab-style
+integration without maintainer-local paths.
+
+The proof uses `WPGym.make(scenarioId, { runtime: 'local' })` for a fast contract
+smoke. Normal WordPress-backed runs omit the `runtime` option and execute through
+WP Codebox.
 
 The `wp-gym` adapter boundary for consuming WP Codebox is documented in
 `docs/sandbox-runtime-adapter-contract.md`. WP Codebox remains the generic

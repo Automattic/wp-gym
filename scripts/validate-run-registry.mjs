@@ -356,7 +356,7 @@ async function validateReplayRegrade(entry, baseDir) {
 	const gaps = [];
 	for (const compatibilityGap of result.compatibility_gaps || []) {
 		gaps.push(gap(
-			'replay_regrade_failed',
+			compatibilityGap.code || 'replay_regrade_failed',
 			compatibilityGap.severity || 'error',
 			'artifact_index.entries.replay',
 			`Replay/regrade failed for ${reference.path_or_url}: ${compatibilityGap.message || compatibilityGap.code}.`
