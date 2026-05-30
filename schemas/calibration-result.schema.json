@@ -44,6 +44,15 @@
               "human_reference"
             ]
           },
+          "model_tier": {
+            "enum": [
+              "no_op",
+              "heuristic_scripted",
+              "cheap_model",
+              "frontier_model",
+              "human_reference"
+            ]
+          },
           "label": { "type": "string", "minLength": 1 },
           "provider": { "type": "string" },
           "model": { "type": "string" },
@@ -98,6 +107,43 @@
         "blockers": {
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+        },
+        "large_n_distribution": {
+          "type": "object",
+          "required": ["min_attempts_per_model_tier", "stable_result_sets", "benchmark_ready_threshold_met", "model_tiers"],
+          "properties": {
+            "min_attempts_per_model_tier": { "type": "integer", "minimum": 2 },
+            "stable_result_sets": { "type": "boolean" },
+            "benchmark_ready_threshold_met": { "type": "boolean" },
+            "model_tiers": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "required": ["attempts", "passes", "pass_rate", "confidence_interval_95"],
+                "properties": {
+                  "attempts": { "type": "integer", "minimum": 1 },
+                  "passes": { "type": "integer", "minimum": 0 },
+                  "pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+                  "reward_variance": { "type": "number", "minimum": 0 },
+                  "confidence_interval_95": {
+                    "type": "array",
+                    "prefixItems": [
+                      { "type": "number", "minimum": 0, "maximum": 1 },
+                      { "type": "number", "minimum": 0, "maximum": 1 }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                  },
+                  "failure_classes": {
+                    "type": "object",
+                    "additionalProperties": { "type": "integer", "minimum": 0 }
+                  }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true

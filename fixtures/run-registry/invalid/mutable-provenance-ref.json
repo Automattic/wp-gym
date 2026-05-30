@@ -26,7 +26,7 @@
   "scenario": {
     "id": "block-markup-valid-semantic-blocks",
     "version": "fixture-2026-05-28",
-    "sha256": "c20ebd1c737ca68e769c524e57e45429ccebba6f5236d55c241f085791b16ee8",
+    "sha256": "eff7c64d3e7606c7bb6dbf7d7e93999a537b70223279095dcda22124c23c7a57",
     "source_path": "scenarios/block-markup/valid-semantic-blocks.json",
     "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
     "task_family": "block-markup"
@@ -95,7 +95,7 @@
       "agent_instructions_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
     },
     "inputs": {
-      "scenario_sha256": "c20ebd1c737ca68e769c524e57e45429ccebba6f5236d55c241f085791b16ee8",
+      "scenario_sha256": "eff7c64d3e7606c7bb6dbf7d7e93999a537b70223279095dcda22124c23c7a57",
       "prompt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
       "grader_sha256": "9cb263f816f9089522b69c31f6a41fa88957c1b4aff6c6526b1a1c96f2cd7b2e",
       "task_set_sha256": "dc771f6b1f643b9a001e53123070238dd21ccd1c439eecec1a12a5f0225c5fff",
