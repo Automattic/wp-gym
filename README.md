@@ -50,8 +50,11 @@ episode locally:
 npm ci
 node bin/wp-gym.mjs list scenarios
 node bin/wp-gym.mjs list task-sets
+node bin/wp-gym.mjs api
 node bin/wp-gym.mjs show scenario block-markup-no-fallback-pricing-section
 node examples/no-model-episode.mjs block-markup-no-fallback-pricing-section
+node examples/scripted-loop.mjs block-markup-no-fallback-pricing-section
+node examples/model-agent-loop.mjs block-markup-no-fallback-pricing-section
 ```
 
 External Node runners can use the same discovery and environment API:
@@ -60,12 +63,16 @@ External Node runners can use the same discovery and environment API:
 import { WPGym } from './src/index.js';
 
 const scenarios = await WPGym.listScenarios();
+const api = WPGym.api();
 const capabilities = await WPGym.capabilities(scenarios[0].id);
 const env = await WPGym.make(scenarios[0].id);
 ```
 
-The supported external surface is JavaScript plus JSON CLI output. A Python or
-Gymnasium wrapper is deferred until the JSON action/observation contract settles.
+The supported external surface is JavaScript plus JSON CLI output. The
+lab-facing contract, action families, package schema exports, runnable examples,
+and API versioning policy are documented in `docs/external-rl-api.md`. A Python
+or Gymnasium wrapper is deferred until the JSON action/observation contract
+settles.
 
 The `wp-gym` adapter boundary for consuming WP Codebox is documented in
 `docs/sandbox-runtime-adapter-contract.md`. WP Codebox remains the generic

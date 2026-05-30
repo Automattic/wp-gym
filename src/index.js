@@ -14,6 +14,7 @@ const actionSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main
 const observationSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/observation.v1.schema.json';
 const stepResultSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/step-result.v1.schema.json';
 const traceSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/trace.v1.schema.json';
+export const WPGYM_API_VERSION = 'wp-gym/js-env/v1';
 const implementedLocalActionTypes = ['wp_cli', 'filesystem', 'rest', 'browser'];
 
 async function readJson(file) {
@@ -54,6 +55,62 @@ function schemaReferences() {
 		observation: 'schemas/observation.v1.schema.json',
 		step_result: 'schemas/step-result.v1.schema.json',
 		trace: 'schemas/trace.v1.schema.json',
+		package_exports: {
+			action: 'wp-gym/schemas/action.v1.schema.json',
+			observation: 'wp-gym/schemas/observation.v1.schema.json',
+			step_result: 'wp-gym/schemas/step-result.v1.schema.json',
+			trace: 'wp-gym/schemas/trace.v1.schema.json',
+		},
+	};
+}
+
+function publicApiMetadata() {
+	return {
+		schema_version: 1,
+		api_version: WPGYM_API_VERSION,
+		status: 'experimental-stable-v1',
+		entrypoint: 'wp-gym',
+		cli: {
+			discovery: [
+				'wp-gym api',
+				'wp-gym list scenarios',
+				'wp-gym list task-sets',
+				'wp-gym show scenario <scenario-id>',
+				'wp-gym capabilities <scenario-id>',
+			],
+		},
+		methods: {
+			discovery: [
+				'WPGym.api()',
+				'WPGym.apiVersion()',
+				'WPGym.listScenarios()',
+				'WPGym.listTaskSets()',
+				'WPGym.describeScenario()',
+				'WPGym.describeTaskSet()',
+				'WPGym.capabilities()',
+			],
+			environment: ['WPGym.make()', 'env.reset()', 'env.step()', 'env.grade()', 'env.trace()', 'env.runtimePlan()', 'env.close()'],
+		},
+		action_families: {
+			filesystem: 'Read, write, list, and delete files inside declared writable roots for workspace scenarios.',
+			wp_cli: 'Run WP-CLI commands without the leading wp inside disposable WordPress episodes.',
+			rest: 'Send sandbox-relative WordPress REST requests and observe status, headers, and body.',
+			browser: 'Capture replayable browser evidence locally; richer click/fill/press traces remain evidence-only until runtime replay support lands.',
+			mixed: 'A single episode may combine supported action families when the scenario allows them.',
+		},
+		contracts: {
+			reset: 'Returns an observation.v1 record with scenario_id, episode_id, reset_seed, and workspace_root state.',
+			step: 'Accepts one action.v1 record and returns one step-result.v1 record.',
+			grade: 'Returns the terminal hidden grader result with success, reward, checks, failure_reasons, and telemetry.',
+			trace: 'Returns a trace.v1 replay record for the reset seed and accepted steps.',
+		},
+		schemas: schemaReferences(),
+		versioning_policy: {
+			current: WPGYM_API_VERSION,
+			compatibility: 'Public v1 records remain additive-compatible within v1; consumers should ignore unknown telemetry and metadata keys.',
+			breaking_changes: 'Breaking action, observation, step result, trace, or method-shape changes require a new API version string and schema filenames.',
+			governance_boundary: 'Training-loop APIs are versioned separately from benchmark promotion, run registry, and reporting internals.',
+		},
 	};
 }
 
@@ -551,6 +608,14 @@ async function runCommand(command, args, options = {}) {
 }
 
 export class WPGym {
+	static apiVersion() {
+		return WPGYM_API_VERSION;
+	}
+
+	static api() {
+		return publicApiMetadata();
+	}
+
 	static async make(scenarioId, options = {}) {
 		const root = normalizeRoot(options);
 		const scenario = await WPGym.findScenario(root, scenarioId);

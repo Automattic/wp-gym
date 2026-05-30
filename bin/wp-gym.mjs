@@ -17,6 +17,7 @@ function usage() {
 		'Usage:',
 		'  wp-gym list scenarios',
 		'  wp-gym list task-sets',
+		'  wp-gym api',
 		'  wp-gym show scenario <scenario-id>',
 		'  wp-gym show task-set <task-set-id>',
 		'  wp-gym capabilities <scenario-id>',
@@ -59,6 +60,10 @@ if (command === 'replay') {
 		stdio: 'inherit',
 	});
 	process.exit(result.status ?? 1);
+
+} else if (command === 'api') {
+	printJson(WPGym.api());
+	process.exit(0);
 
 } else if (command === 'list') {
 	const target = process.argv[3];

@@ -4,6 +4,11 @@ import { spawnSync } from 'node:child_process';
 import { WPGym } from '../src/index.js';
 
 const scenarioId = 'block-markup-no-fallback-pricing-section';
+const packageEntrypoint = await import('wp-gym');
+assert.equal(packageEntrypoint.WPGym.apiVersion(), WPGym.apiVersion());
+const actionSchema = await import('wp-gym/schemas/action.v1.schema.json', { with: { type: 'json' } });
+assert.equal(actionSchema.default.title, 'WP Gym Action v1');
+
 const scenarios = await WPGym.listScenarios();
 assert.ok(scenarios.some((scenario) => scenario.id === scenarioId));
 
@@ -18,7 +23,18 @@ assert.deepEqual(description.capabilities.schemas, {
 	observation: 'schemas/observation.v1.schema.json',
 	step_result: 'schemas/step-result.v1.schema.json',
 	trace: 'schemas/trace.v1.schema.json',
+	package_exports: {
+		action: 'wp-gym/schemas/action.v1.schema.json',
+		observation: 'wp-gym/schemas/observation.v1.schema.json',
+		step_result: 'wp-gym/schemas/step-result.v1.schema.json',
+		trace: 'wp-gym/schemas/trace.v1.schema.json',
+	},
 });
+
+const api = WPGym.api();
+assert.equal(WPGym.apiVersion(), 'wp-gym/js-env/v1');
+assert.equal(api.api_version, WPGym.apiVersion());
+assert.equal(api.versioning_policy.governance_boundary, 'Training-loop APIs are versioned separately from benchmark promotion, run registry, and reporting internals.');
 
 const capabilities = await WPGym.capabilities(scenarioId);
 assert.deepEqual(capabilities.allowed_action_types, ['wp_cli', 'rest', 'browser']);
@@ -33,6 +49,7 @@ assert.ok(taskSet.scenario_ids.includes(scenarioId));
 for (const args of [
 	['bin/wp-gym.mjs', 'list', 'scenarios'],
 	['bin/wp-gym.mjs', 'list', 'task-sets'],
+	['bin/wp-gym.mjs', 'api'],
 	['bin/wp-gym.mjs', 'show', 'scenario', scenarioId],
 	['bin/wp-gym.mjs', 'show', 'task-set', 'first-live-run'],
 	['bin/wp-gym.mjs', 'capabilities', scenarioId],
