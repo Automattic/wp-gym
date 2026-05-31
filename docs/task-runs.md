@@ -124,7 +124,7 @@ Each task should add:
 - A PHP completion check with the private WordPress quality criteria.
 - Reusable `rules.general` and scenario-specific `rules.task_specific` labels.
 - Optional zero-weight `probes` for behavioral fingerprints.
-- A `homeboy.json` `playground_workloads` entry that wires setup and completion checks.
+- A `homeboy.json` `wp_codebox_workloads` entry that wires setup and completion checks.
 
 The task-family roadmap and acceptance criteria for expanding the corpus are in
 [`docs/corpus-expansion-plan.md`](corpus-expansion-plan.md).
