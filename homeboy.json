@@ -4,15 +4,15 @@
   "extensions": {
     "wordpress": {
       "settings": {
-        "playground_wordpress_version": "6.9",
-        "playground_blueprint": {
+        "wp_codebox_wordpress_version": "6.9",
+        "wp_codebox_blueprint": {
           "$schema": "https://playground.wordpress.net/blueprint-schema.json",
           "preferredVersions": {
             "php": "8.3",
             "wp": "latest"
           }
         },
-        "playground_scenario_manifests": [
+        "wp_codebox_scenario_manifests": [
           "scenarios/block-markup/valid-semantic-blocks.json",
           "scenarios/block-markup/nested-layout-blocks.json",
           "scenarios/block-markup/no-fallback-pricing-section.json",
@@ -26,7 +26,7 @@
           "scenarios/modern-wordpress-api/rest-route-status.json",
           "scenarios/wordpress-investigation/homepage-source-diagnosis.json"
         ],
-        "playground_workloads": [
+        "wp_codebox_workloads": [
           {
             "id": "smoke-homepage",
             "label": "Smoke homepage task wiring",
