@@ -111,6 +111,9 @@ try {
 	});
 	assert.equal(step.observation.status, 0);
 	assert.equal(step.done, false);
+	const runtimeTrace = await env.runtimeEpisode.trace();
+	assert(runtimeTrace.steps.some((runtimeStep) => runtimeStep.action.command === 'wordpress.browser-actions'));
+	assert(runtimeTrace.steps.some((runtimeStep) => runtimeStep.action.command === 'wordpress.wp-cli'));
 
 	const grade = await env.grade();
 	assert.equal(grade.success, true);
@@ -125,6 +128,43 @@ try {
 	assert.deepEqual(trace.metadata.allowed_action_types, ['wp_cli', 'rest', 'browser']);
 } finally {
 	await env.close();
+}
+
+const filesystemEnv = await WPGym.make('admin-settings-notice-settings-page');
+
+try {
+	await filesystemEnv.reset({ seed: 'filesystem-runtime-action-adapter' });
+	const writeStep = await filesystemEnv.step({
+		type: 'filesystem',
+		operation: 'write',
+		path: 'plugins/notice-settings.php',
+		content: '<?php /* wp-gym filesystem runtime action adapter */',
+	});
+	assert.equal(writeStep.observation.type, 'files');
+	assert.equal(writeStep.observation.operation, 'write');
+	assert.equal(writeStep.observation.files[0].path, 'plugins/notice-settings.php');
+
+	const readStep = await filesystemEnv.step({
+		type: 'filesystem',
+		operation: 'read',
+		path: 'plugins/notice-settings.php',
+	});
+	assert.equal(readStep.observation.files[0].content, '<?php /* wp-gym filesystem runtime action adapter */');
+
+	const listStep = await filesystemEnv.step({
+		type: 'filesystem',
+		operation: 'list',
+		path: 'plugins',
+	});
+	assert(listStep.observation.files.some((file) => file.path === 'plugins/notice-settings.php'));
+
+	const filesystemRuntimeTrace = await filesystemEnv.runtimeEpisode.trace();
+	const filesystemActions = filesystemRuntimeTrace.steps.filter((runtimeStep) => runtimeStep.action.kind === 'filesystem');
+	assert.equal(filesystemActions.length, 3);
+	assert(filesystemActions.every((runtimeStep) => runtimeStep.action.command === 'inspect-mounted-inputs'));
+	assert(filesystemActions.every((runtimeStep) => runtimeStep.action.path.startsWith('/workspace/plugins')));
+} finally {
+	await filesystemEnv.close();
 }
 
 console.log('Validated local WPGym reset/step/grade API.');
