@@ -724,18 +724,22 @@ export class WPGymEnvironment {
 		this.episodeId = createEpisodeId(this.scenario.id, this.resetSeed);
 		this.episodeRoot = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-'));
 		this.workspaceRoot = path.join(this.episodeRoot, 'workspace');
+		this.workspaceBaselineRoot = path.join(this.episodeRoot, 'workspace-baseline');
 		this.posts = [];
 		this.nextPostId = 1;
 		this.steps = [];
 		this.lastGrade = null;
 		this.runtimeEpisode = null;
+		this.workspaceArtifacts = null;
 
 		await mkdir(this.workspaceRoot, { recursive: true });
+		await mkdir(this.workspaceBaselineRoot, { recursive: true });
 		const workspaceTemplate = this.scenario.environment?.workspace_template;
 		if (workspaceTemplate) {
 			await cp(path.join(this.root, workspaceTemplate), this.workspaceRoot, { recursive: true });
+			await cp(path.join(this.root, workspaceTemplate), this.workspaceBaselineRoot, { recursive: true });
 		}
-		if (this.usesWordPressRuntime()) {
+		if (this.usesCodeboxRuntime()) {
 			this.runtimeEpisode = await this.createWpCodeboxEpisode();
 		}
 
@@ -748,7 +752,7 @@ export class WPGymEnvironment {
 				episode_id: this.episodeId,
 				reset_seed: this.resetSeed,
 				post_count: 0,
-				workspace_root: this.workspaceRoot,
+				workspace_root: this.usesCodeboxRuntime() ? '/workspace' : this.workspaceRoot,
 			},
 		};
 		await this.assertObservation(observation, 'reset observation');
@@ -808,12 +812,19 @@ export class WPGymEnvironment {
 		const grade = normalizeTerminalGrade(await this.runPhpGrader());
 		this.lastGrade = grade;
 		const behavioralFingerprints = await this.collectBehavioralFingerprints();
+		const workspaceArtifacts = this.workspaceArtifacts ? {
+			id: this.workspaceArtifacts.id,
+			changed_files: this.workspaceArtifacts.changedFilesPath,
+			patch: this.workspaceArtifacts.patchPath,
+			captured_mounts: this.workspaceArtifacts.capturedMountsPath,
+		} : null;
 
 		return {
 			...grade,
 			telemetry: {
 				runner: this.runnerId(),
 				duration_ms: Date.now() - started,
+				...(workspaceArtifacts ? { workspace_artifacts: workspaceArtifacts } : {}),
 				...(behavioralFingerprints.length > 0 ? { behavioral_fingerprints: behavioralFingerprints } : {}),
 			},
 		};
@@ -843,6 +854,7 @@ export class WPGymEnvironment {
 	async close() {
 		await this.runtimeEpisode?.close();
 		this.runtimeEpisode = null;
+		this.workspaceArtifacts = null;
 		if (this.episodeRoot && existsSync(this.episodeRoot)) {
 			await rm(this.episodeRoot, { recursive: true, force: true });
 		}
@@ -971,6 +983,10 @@ export class WPGymEnvironment {
 	}
 
 	async stepFilesystem(action) {
+		if (this.usesCodeboxRuntime()) {
+			return await this.stepFilesystemWithCodebox(action);
+		}
+
 		const target = this.resolveWorkspacePath(action.path);
 
 		if (action.operation === 'list') {
@@ -1016,6 +1032,134 @@ export class WPGymEnvironment {
 		}
 
 		throw new Error(`Local WPGym does not implement filesystem ${action.operation} yet.`);
+	}
+
+	async stepFilesystemWithCodebox(action) {
+		this.resolveWorkspacePath(action.path);
+		const wrapperFile = path.join(this.episodeRoot, `filesystem-action-${Date.now()}.php`);
+		await writeFile(wrapperFile, `<?php
+$operation = ${JSON.stringify(action.operation)};
+$relative_path = ${JSON.stringify(String(action.path || '').replace(/\\/g, '/').replace(/^\/+/, ''))};
+$content = ${JSON.stringify(String(action.content || ''))};
+$workspace_root = '/workspace';
+$target = $workspace_root . '/' . $relative_path;
+
+function wp_gym_filesystem_observation(array $data): void {
+    echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+}
+
+function wp_gym_remove_path(string $path): void {
+    if (!file_exists($path) && !is_link($path)) {
+        return;
+    }
+    if (is_file($path) || is_link($path)) {
+        unlink($path);
+        return;
+    }
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+    foreach ($iterator as $entry) {
+        $entry->isDir() && !$entry->isLink() ? rmdir($entry->getPathname()) : unlink($entry->getPathname());
+    }
+    rmdir($path);
+}
+
+if ('list' === $operation) {
+    $entries = is_dir($target) ? array_values(array_diff(scandir($target), array('.', '..'))) : array();
+    sort($entries);
+    wp_gym_filesystem_observation(array(
+        'schema_version' => 1,
+        'type' => 'files',
+        'action_type' => 'filesystem',
+        'operation' => 'list',
+        'files' => array_map(static function ($entry) use ($target, $relative_path) {
+            $entry_path = rtrim($target, '/') . '/' . $entry;
+            return array(
+                'path' => trim($relative_path . '/' . $entry, '/'),
+                'kind' => is_dir($entry_path) ? 'directory' : 'file',
+            );
+        }, $entries),
+    ));
+    return;
+}
+
+if ('read' === $operation) {
+    $file_content = file_get_contents($target);
+    if (false === $file_content) {
+        throw new RuntimeException('Unable to read workspace file: ' . $relative_path);
+    }
+    wp_gym_filesystem_observation(array(
+        'schema_version' => 1,
+        'type' => 'files',
+        'action_type' => 'filesystem',
+        'operation' => 'read',
+        'files' => array(array(
+            'path' => $relative_path,
+            'kind' => 'file',
+            'content' => $file_content,
+            'sha256' => hash('sha256', $file_content),
+            'size_bytes' => strlen($file_content),
+        )),
+    ));
+    return;
+}
+
+if ('write' === $operation) {
+    if (!is_dir(dirname($target))) {
+        mkdir(dirname($target), 0777, true);
+    }
+    file_put_contents($target, $content);
+    wp_gym_filesystem_observation(array(
+        'schema_version' => 1,
+        'type' => 'files',
+        'action_type' => 'filesystem',
+        'operation' => 'write',
+        'files' => array(array(
+            'path' => $relative_path,
+            'kind' => 'file',
+            'sha256' => hash('sha256', $content),
+            'size_bytes' => strlen($content),
+        )),
+    ));
+    return;
+}
+
+if ('delete' === $operation) {
+    wp_gym_remove_path($target);
+    wp_gym_filesystem_observation(array(
+        'schema_version' => 1,
+        'type' => 'files',
+        'action_type' => 'filesystem',
+        'operation' => 'delete',
+        'files' => array(array('path' => $relative_path, 'kind' => 'unknown')),
+    ));
+    return;
+}
+
+throw new RuntimeException('Unsupported filesystem operation: ' . $operation);
+`);
+
+		try {
+			const { execution } = await (await this.wpCodeboxEpisode()).step({
+				command: 'wordpress.run-php',
+				args: [`code-file=${wrapperFile}`, 'bootstrap=none'],
+				timeoutMs: action.timeout_ms,
+			});
+			return jsonFromOutput(execution.stdout);
+		} catch (error) {
+			return {
+				schema_version: 1,
+				type: 'files',
+				action_type: 'filesystem',
+				operation: action.operation,
+				files: [],
+				metadata: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			};
+		}
 	}
 
 	async stepRest(action) {
@@ -1231,6 +1375,23 @@ echo wp_json_encode( array(
 
 	runtimePlan() {
 		this.assertOpen();
+		const mounts = [
+			{
+				source: this.root,
+				target: '/inputs/repo',
+				mode: 'readonly',
+				role: 'scenario_repository',
+			},
+		];
+		if (this.scenario.environment?.uses_workspace) {
+			mounts.push({
+				source: this.workspaceRoot,
+				target: '/workspace',
+				mode: (this.scenario.environment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
+				role: 'scenario_workspace',
+				writable_roots: this.scenario.environment?.writable_roots || [],
+			});
+		}
 
 		return {
 			schema: 'wp-gym/runtime-plan/v1',
@@ -1242,14 +1403,7 @@ echo wp_json_encode( array(
 			limits: {
 				max_steps: this.scenario.episode_contract.max_steps,
 			},
-			mounts: [
-				{
-					source: this.root,
-					target: '/inputs/repo',
-					mode: 'readonly',
-					role: 'scenario_repository',
-				},
-			],
+			mounts,
 			actions: this.steps.map((step) => step.action),
 			grader: {
 				type: 'php',
@@ -1261,7 +1415,7 @@ echo wp_json_encode( array(
 	}
 
 	async runPhpGrader() {
-		if (this.usesWordPressRuntime()) {
+		if (this.usesCodeboxRuntime()) {
 			return await this.runPhpGraderWithCodebox();
 		}
 
@@ -1283,9 +1437,11 @@ echo wp_json_encode( array(
 	}
 
 	async runPhpGraderWithCodebox() {
+		this.workspaceArtifacts = await (await this.wpCodeboxEpisode()).collectArtifacts({ includeLogs: true, includeObservations: true, includePatch: true });
 		const graderPath = `/inputs/repo/${repoRelative(this.root, resolveFrom(this.scenarioFile, this.scenario.grader_file))}`;
 		const wrapperFile = path.join(this.episodeRoot, 'grader-wrapper.php');
 		await writeFile(wrapperFile, `<?php
+putenv('WP_GYM_AGENT_ROOT=/workspace');
 $grader = require ${JSON.stringify(graderPath)};
 $result = is_callable($grader) ? $grader() : $grader;
 echo json_encode($result, JSON_PRETTY_PRINT);
@@ -1376,11 +1532,37 @@ echo wp_json_encode(array('documents' => $documents));
 		return this.scenario.environment.action_mode === 'wordpress' && this.options.runtime !== 'local';
 	}
 
+	usesCodeboxRuntime() {
+		return ['wordpress', 'workspace'].includes(this.scenario.environment.action_mode) && this.options.runtime !== 'local';
+	}
+
 	runnerId() {
-		return this.usesWordPressRuntime() ? 'wp-codebox' : 'local-wpgym';
+		return this.usesCodeboxRuntime() ? 'wp-codebox' : 'local-wpgym';
 	}
 
 	async createWpCodeboxEpisode() {
+		const mounts = [
+			{
+				type: 'directory',
+				source: this.root,
+				target: '/inputs/repo',
+				mode: 'readonly',
+			},
+		];
+		if (this.scenario.environment?.uses_workspace) {
+			mounts.push({
+				type: 'directory',
+				source: this.workspaceRoot,
+				target: '/workspace',
+				mode: (this.scenario.environment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
+				metadata: {
+					role: 'scenario_workspace',
+					writable_roots: this.scenario.environment?.writable_roots || [],
+					baselineSource: this.workspaceBaselineRoot,
+				},
+			});
+		}
+
 		return await createRuntimeEpisode({
 			runtime: {
 				backend: 'wordpress-playground',
@@ -1403,14 +1585,7 @@ echo wp_json_encode(array('documents' => $documents));
 					task: { kind: 'wp-gym-local', scenario_id: this.scenario.id },
 				},
 			},
-			mounts: [
-				{
-					type: 'directory',
-					source: this.root,
-					target: '/inputs/repo',
-					mode: 'readonly',
-				},
-			],
+			mounts,
 			resetObservations: [{ type: 'runtime-info' }],
 		}, createPlaygroundRuntimeBackend());
 	}

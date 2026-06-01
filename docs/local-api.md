@@ -99,7 +99,9 @@ The local adapter is intentionally thin. It currently supports:
 - `wp_cli` actions for WordPress scenarios by replaying them through WP Codebox
   recipes against a disposable WordPress runtime.
 - `filesystem` actions inside scenario `environment.writable_roots` for workspace
-  scenarios.
+  scenarios. Workspace-mode starter files are mounted into WP Codebox at
+  `/workspace`, filesystem actions execute inside the Codebox runtime, and final
+  changed-file and patch artifacts come from the Codebox artifact bundle.
 - `rest` actions against the disposable WordPress runtime through WP Codebox HTTP
   response observation.
 - `browser` `navigate` and `capture` actions through WP Codebox browser probe
@@ -120,9 +122,12 @@ surface for this slice is the Node API plus JSON CLI output; a Python wrapper ca
 be a thin consumer later once the JSON contract settles.
 
 `env.runtimePlan()` exports a generic `wp-gym/runtime-plan/v1` record for replay
-and debugging. Normal local execution uses WP Codebox's native runtime episode
-API directly; CI orchestration can call the same `wp-gym` API or CLI without
-becoming part of the library contract.
+and debugging. Workspace scenarios include a model-visible `/workspace` mount
+whose mode is derived from `environment.writable_roots`; hidden graders, prompts,
+scenario manifests, checks, task sets, scripts, and docs remain outside that
+starter workspace. Normal local execution uses WP Codebox's native runtime
+episode API directly; CI orchestration can call the same `wp-gym` API or CLI
+without becoming part of the library contract.
 
 ## Demo Command
 
