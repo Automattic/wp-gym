@@ -36,9 +36,9 @@
       ],
       "observations": [
         {
-          "kind": "wordpress_state",
-          "path_or_url": "wordpress-state.json",
-          "sha256": "0f8d62a8040b4b16ef6fb3e9420f3636e31e91d06678d4057582c133e5a60702"
+		  "kind": "wordpress-state-section",
+		  "path_or_url": "wordpress-state.json",
+		  "sha256": "02a7cf4d55842addfa25f87513eda4d78e42db89d7f0aafe9324499abaa82cac"
         }
       ],
       "replay_trace": [

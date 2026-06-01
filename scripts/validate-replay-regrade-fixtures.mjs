@@ -6,6 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { replayRegradeArtifactFile } from './replay-regrade.mjs';
+import { wordpressStateDocumentsFromSections } from '../src/index.js';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const fixtureRoot = path.join(root, 'fixtures/replay-regrade');
@@ -45,6 +46,13 @@ assert.equal(valid.replay.trace_reference.step_count, 2);
 assert.equal(valid.replay.episode_replay.ok, true);
 assert.equal(valid.replay.episode_replay.step_comparison.ok, true);
 
+const projectedDocuments = wordpressStateDocumentsFromSections({
+	posts: JSON.parse(await readFile(path.join(fixtureRoot, 'wordpress-state.json'), 'utf8')).data,
+});
+assert.equal(projectedDocuments.length, 1);
+assert.equal(projectedDocuments[0].source, 'post:page:neighborhood-cookout-plan');
+assert(projectedDocuments[0].content.includes('Summer Cookout Plan'));
+
 const tampered = await replayRegradeArtifactFile(path.join(fixtureRoot, 'tampered-grade-mismatch.json'), { benchmarkMode: true });
 assert.equal(tampered.ok, false);
 assert(tampered.compatibility_gaps.some((gap) => gap.code === 'grade_mismatch'));
@@ -63,6 +71,19 @@ try {
 	assert.equal(missingState.ok, false);
 	assert.equal(missingState.regrade_status.failure_class, 'replay_incompatibility');
 	assert(missingState.compatibility_gaps.some((gap) => gap.code === 'missing_wordpress_state_evidence'));
+
+	const codeboxRefFile = path.join(temp, 'codebox-ref-artifact.json');
+	const codeboxRefArtifact = localizeFixtureReferences(JSON.parse(await readFile(path.join(fixtureRoot, 'valid-artifact.json'), 'utf8')));
+	codeboxRefArtifact.runtime.references.observations = [{
+		kind: 'wordpress-state-section',
+		id: 'fixture:posts',
+		path: path.join(fixtureRoot, 'wordpress-state.json'),
+		digest: { algorithm: 'sha256', value: sha256(await readFile(path.join(fixtureRoot, 'wordpress-state.json'), 'utf8')) },
+	}];
+	await writeFile(codeboxRefFile, JSON.stringify(codeboxRefArtifact, null, 2));
+	const codeboxRef = await replayRegradeArtifactFile(codeboxRefFile, { benchmarkMode: true });
+	assert.equal(codeboxRef.ok, true, JSON.stringify(codeboxRef, null, 2));
+	assert.equal(codeboxRef.replay.state_reference.path_or_url, path.join(fixtureRoot, 'wordpress-state.json'));
 
 	const missingTraceFile = path.join(temp, 'missing-trace.json');
 	const missingTraceArtifact = localizeFixtureReferences(JSON.parse(await readFile(path.join(fixtureRoot, 'valid-artifact.json'), 'utf8')));
