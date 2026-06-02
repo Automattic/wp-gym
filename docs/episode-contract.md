@@ -71,12 +71,11 @@ requests against the WordPress runtime:
 }
 ```
 
-`browser` actions declare replayability explicitly. `navigate` and `capture`
-describe page-level operations. `click`, `fill`, and `press` preserve richer UI
-interaction evidence, but they are audit-only until WP Codebox exposes generic
-browser replay primitives for them. Use `evidence_only` when the runner can
-capture browser evidence but the local replay harness cannot yet deterministically
-replay the interaction:
+`browser` actions declare replayability explicitly. `navigate`, `click`, `fill`,
+`press`, and `capture` map to WP Codebox `wordpress.browser-actions` so local
+episodes and replay/regrade can drive the same generic browser interaction
+contract. Use `evidence_only` when the runner captures browser evidence that is
+useful for audit but should not be treated as deterministic replay input:
 
 ```json
 {
@@ -346,16 +345,14 @@ trace is meaningful:
 
 Deterministic replay is allowed only when the local replay harness has a generic
 runtime primitive for the action and all required reset/state evidence is local
-and hash-verified. Current benchmark replay supports deterministic `wp_cli` and
-`filesystem` traces. Browser `navigate`/`capture` can be observed locally through
-WP Codebox browser probes during normal episodes, but replay/regrade still treats
-browser traces as audit-only until the full trace replay path can reproduce their
-artifacts deterministically. Editor actions are audit-only until WP Codebox exposes
-a generic editor replay primitive.
+and hash-verified. Current benchmark replay supports deterministic `wp_cli`,
+`filesystem`, and replayable browser `navigate`/`click`/`fill`/`press`/`capture`
+traces through WP Codebox browser actions. Editor actions are audit-only until WP
+Codebox exposes a generic editor replay primitive.
 
 Audit-only browser/editor traces remain useful: `wp-gym replay --regrade`
-validates the action and observation envelopes, reports
-`browser_editor_action_audit_only` warnings, verifies retained WordPress state,
+validates the action and observation envelopes, reports audit-only warnings for
+evidence-only browser steps and editor steps, verifies retained WordPress state,
 reruns the terminal grader, and compares the sealed grade. A mismatch between a
 browser/editor action and its paired observation is an error because the evidence
 can no longer be trusted.

@@ -337,8 +337,8 @@ function actionReplayability(action) {
 	}
 
 	if (action.type === 'browser') {
-		if (action.replayability === 'replayable' && ['navigate', 'capture'].includes(action.operation)) {
-			return 'runtime_unsupported';
+		if (action.replayability === 'replayable' && ['navigate', 'click', 'fill', 'press', 'capture'].includes(action.operation)) {
+			return 'replayable';
 		}
 		return 'audit_only';
 	}

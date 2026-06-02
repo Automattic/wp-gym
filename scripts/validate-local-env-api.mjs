@@ -88,11 +88,37 @@ try {
 	assert.equal(restStep.observation.status, 200);
 	assert.equal(restStep.observation.error, null);
 
+	const browserFixture = await env.step({
+		type: 'wp_cli',
+		command: [
+			'post create',
+			'--post_type=page',
+			'--post_status=publish',
+			`--post_title=${WPGym.quoteCliValue('Browser Actions Fixture')}`,
+			`--post_content=${WPGym.quoteCliValue('<main><input id="wp-gym-browser-input" value=""><button id="wp-gym-browser-button">Cook</button></main>')}`,
+			'--porcelain',
+		].join(' '),
+	});
+	assert.equal(browserFixture.observation.status, 0);
+	const browserFixtureUrl = `/?page_id=${browserFixture.observation.stdout.trim()}`;
+
+	const navigateStep = await env.step({
+		type: 'browser',
+		operation: 'navigate',
+		replayability: 'replayable',
+		url: browserFixtureUrl,
+	});
+	assert.equal(navigateStep.observation.type, 'browser_result');
+	assert.equal(navigateStep.observation.action_type, 'browser');
+	assert.equal(navigateStep.observation.operation, 'navigate');
+	assert.equal(navigateStep.observation.error, null);
+
 	const browserStep = await env.step({
 		type: 'browser',
 		operation: 'capture',
 		replayability: 'replayable',
-		url: '/',
+		url: browserFixtureUrl,
+		selector: '#wp-gym-browser-input',
 		capture: ['html'],
 	});
 	assert.equal(browserStep.observation.type, 'browser_result');
@@ -100,6 +126,25 @@ try {
 	assert.equal(browserStep.observation.operation, 'capture');
 	assert.equal(browserStep.observation.error, null);
 	assert.ok(browserStep.observation.artifacts.some((artifact) => artifact.path === 'files/browser/snapshot.html'));
+
+	for (const action of [
+		{ operation: 'fill', selector: '#wp-gym-browser-input', value: 'Codebox' },
+		{ operation: 'press', selector: '#wp-gym-browser-input', value: 'Tab' },
+		{ operation: 'click', selector: '#wp-gym-browser-button' },
+	]) {
+		const interactionStep = await env.step({
+			type: 'browser',
+			replayability: 'replayable',
+			url: browserFixtureUrl,
+			capture: ['html'],
+			...action,
+		});
+		assert.equal(interactionStep.observation.type, 'browser_result');
+		assert.equal(interactionStep.observation.action_type, 'browser');
+		assert.equal(interactionStep.observation.operation, action.operation);
+		assert.equal(interactionStep.observation.error, null);
+		assert.ok(interactionStep.observation.artifacts.some((artifact) => artifact.path === 'files/browser/steps.jsonl'));
+	}
 
 	const step = await env.step({
 		type: 'wp_cli',
@@ -126,7 +171,7 @@ try {
 	assert.equal(trace.scenario_id, scenarioId);
 	assert.equal(trace.episode_id, seededEpisodeId);
 	assert.equal(trace.metadata.reset_seed, '1234');
-	assert.equal(trace.steps.length, 3);
+	assert.equal(trace.steps.length, 8);
 	assert.deepEqual(trace.metadata.allowed_action_types, ['wp_cli', 'rest', 'browser']);
 } finally {
 	await env.close();

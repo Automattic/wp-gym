@@ -95,7 +95,7 @@ function publicApiMetadata() {
 			filesystem: 'Read, write, list, and delete files inside declared writable roots for workspace scenarios.',
 			wp_cli: 'Run WP-CLI commands without the leading wp inside disposable WordPress episodes.',
 			rest: 'Send sandbox-relative WordPress REST requests and observe status, headers, and body.',
-			browser: 'Capture replayable browser evidence locally; richer click/fill/press traces remain evidence-only until runtime replay support lands.',
+			browser: 'Replay navigate, click, fill, press, and capture browser steps through WP Codebox browser actions while preserving browser_result observations.',
 			editor: 'Preserve block editor action and state evidence for audit-only traces until WP Codebox exposes generic editor replay primitives.',
 			mixed: 'A single episode may combine supported action families when the scenario allows them.',
 		},
@@ -348,6 +348,12 @@ function browserProbeCaptureList(action) {
 	return mapped.length > 0 ? mapped : ['console', 'errors', 'html', 'network', 'screenshot'];
 }
 
+function browserActionsCaptureList(action) {
+	const capture = new Set(browserProbeCaptureList(action));
+	capture.add('steps');
+	return [...capture];
+}
+
 function browserProbeWaitFor(action) {
 	if (action.wait_for) {
 		return action.wait_for;
@@ -360,6 +366,7 @@ function browserProbeWaitFor(action) {
 
 function browserArtifactRefs(files = {}) {
 	const mimeTypes = {
+		steps: 'application/x-ndjson',
 		console: 'application/x-ndjson',
 		errors: 'application/x-ndjson',
 		html: 'text/html; charset=utf-8',
@@ -445,6 +452,88 @@ function normalizeCodeboxArtifactRef(ref) {
 		sha256: ref.sha256 || (ref.digest?.algorithm === 'sha256' ? ref.digest.value : null),
 		id: ref.id || null,
 	};
+}
+
+function durationMsArg(milliseconds) {
+	return Number.isInteger(milliseconds) && milliseconds > 0 ? `${milliseconds}ms` : null;
+}
+
+function isBrowserLoadState(waitFor) {
+	return ['domcontentloaded', 'load', 'networkidle'].includes(waitFor);
+}
+
+function browserWaitStep(action) {
+	if (action.wait_for && !isBrowserLoadState(action.wait_for)) {
+		return action.wait_for.startsWith('selector:')
+			? { kind: 'waitFor', selector: action.wait_for.slice('selector:'.length) }
+			: { kind: 'waitFor', waitFor: action.wait_for };
+	}
+	if (action.operation === 'capture' && action.selector) {
+		return { kind: 'waitFor', selector: action.selector };
+	}
+	return null;
+}
+
+function browserInteractionStepFromAction(action) {
+	const step = { kind: action.operation };
+	const timeout = durationMsArg(action.timeout_ms || action.timing?.timeout_ms);
+	if (timeout) {
+		step.timeout = timeout;
+	}
+
+	if (action.operation === 'navigate') {
+		step.url = action.url || '/';
+		if (isBrowserLoadState(action.wait_for)) {
+			step.waitFor = action.wait_for;
+		}
+		return step;
+	}
+
+	if (action.operation === 'click') {
+		if (action.selector) {
+			step.selector = action.selector;
+		} else if (typeof action.value === 'string') {
+			step.text = action.value;
+		}
+		return step;
+	}
+
+	if (action.operation === 'fill') {
+		if (action.selector) {
+			step.selector = action.selector;
+		}
+		step.value = String(action.value ?? '');
+		return step;
+	}
+
+	if (action.operation === 'press') {
+		if (action.selector) {
+			step.selector = action.selector;
+		}
+		step.key = String(action.value ?? '');
+		return step;
+	}
+
+	return step;
+}
+
+function browserActionsSteps(action, targetUrl) {
+	const steps = [];
+	if (targetUrl && action.operation !== 'navigate') {
+		steps.push({ kind: 'navigate', url: targetUrl });
+	}
+	const waitStep = action.operation === 'navigate' ? null : browserWaitStep(action);
+	if (waitStep) {
+		steps.push(waitStep);
+	}
+	steps.push(browserInteractionStepFromAction(action));
+	if (action.operation === 'navigate') {
+		const postNavigateWaitStep = browserWaitStep(action);
+		if (postNavigateWaitStep) {
+			steps.push(postNavigateWaitStep);
+		}
+	}
+	return steps;
 }
 
 async function loadSchemas(root) {
@@ -1053,7 +1142,7 @@ export class WPGymEnvironment {
 				...(action.operation === 'press' && action.value !== undefined ? { key: String(action.value) } : {}),
 				...(action.operation !== 'press' && action.value !== undefined ? { value: String(action.value) } : {}),
 				...(action.wait_for ? { wait_for: action.wait_for } : {}),
-				...(Array.isArray(action.capture) && action.capture.length > 0 ? { capture: action.capture } : {}),
+				capture: browserActionsCaptureList(action),
 				...(action.timeout_ms ? { timeout_ms: action.timeout_ms } : {}),
 			};
 		}
@@ -1344,34 +1433,20 @@ echo wp_json_encode( array(
 
 		const started = Date.now();
 		const targetUrl = action.url || '/';
-		const capture = browserProbeCaptureList(action);
-
-		if (!['navigate', 'capture'].includes(action.operation)) {
-			return {
-				schema_version: 1,
-				type: 'browser_result',
-				action_type: 'browser',
-				operation: action.operation,
-				replayability: action.replayability,
-				url: targetUrl,
-				...(action.selector ? { selector: action.selector } : {}),
-				artifacts: [],
-				duration_ms: Date.now() - started,
-				error: { code: 'wp_codebox_browser_operation_unsupported', message: `WP Codebox browser-probe does not implement ${action.operation} yet.` },
-			};
-		}
+		const capture = browserActionsCaptureList(action);
+		const steps = browserActionsSteps(action, targetUrl);
 
 		try {
 			const { execution } = await (await this.wpCodeboxEpisode()).step({
 				kind: 'browser',
-				command: 'wordpress.browser-probe',
+				command: 'wordpress.browser-actions',
 				args: [
-					`url=${targetUrl}`,
-					`wait-for=${browserProbeWaitFor(action)}`,
+					`steps-json=${JSON.stringify(steps)}`,
 					`capture=${capture.join(',')}`,
 				],
 				operation: action.operation,
 				...(action.selector ? { selector: action.selector } : {}),
+				...(action.url ? { url: action.url } : {}),
 				timeoutMs: action.timeout_ms,
 			});
 			const result = jsonFromOutput(execution.stdout);
