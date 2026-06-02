@@ -285,6 +285,21 @@ terminal actions for those rows, so the agent can run real WP-CLI commands
 against the disposable WP Codebox runtime while `wp-gym` still captures the
 command output as task evidence.
 
+Design fingerprint probes consume WP Codebox `wordpress-state` observation
+artifacts instead of running a separate WordPress-state PHP wrapper. Codebox owns
+the generic export shape, section artifact paths, and SHA-256 refs; `wp-gym`
+projects the exported `posts` and `templates` sections into eval-only design
+documents and computes the non-reward fingerprint telemetry. Replay/regrade also
+accepts Codebox observation artifact refs (`path` plus `digest.value`) and
+projects Codebox `posts` section artifacts into the local terminal-grader state
+shape for deterministic hidden-grader checks.
+
+Current Codebox `templates` observations expose template and global-style hashes.
+Richer template/global-style body content is tracked upstream in
+[chubes4/wp-codebox#444](https://github.com/chubes4/wp-codebox/issues/444);
+`wp-gym` should consume that generic field once available rather than
+reintroducing custom PHP collection to compensate.
+
 To trigger the first live run:
 
 1. Open **Actions** -> **Data Machine Live Task Run**.

@@ -393,6 +393,60 @@ function runtimeExecutionDuration(execution, fallbackStarted) {
 	return Number.isFinite(started) && Number.isFinite(finished) ? Math.max(0, finished - started) : Date.now() - fallbackStarted;
 }
 
+function wordpressStateSectionDocuments(section, data) {
+	if (section === 'posts' && Array.isArray(data)) {
+		return data.map((post) => ({
+			source: `post:${post.type || post.post_type || 'post'}:${post.slug || post.id || post.ID || 'unknown'}`,
+			content: [post.title || post.post_title || '', post.content || post.post_content || ''].filter(Boolean).join('\n'),
+		}));
+	}
+
+	if (section === 'templates' && data && typeof data === 'object') {
+		const documents = [];
+		for (const [group, items] of Object.entries({ templates: data.templates, templateParts: data.templateParts })) {
+			for (const template of Array.isArray(items) ? items : []) {
+				documents.push({
+					source: `template:${group}:${template.slug || template.id || 'unknown'}`,
+					content: typeof template.content === 'string' ? template.content : JSON.stringify(template),
+				});
+			}
+		}
+		if (data.globalStyles) {
+			documents.push({
+				source: 'global-styles',
+				content: typeof data.globalStyles.stylesheet === 'string' ? data.globalStyles.stylesheet : JSON.stringify(data.globalStyles),
+			});
+		}
+		return documents;
+	}
+
+	return [];
+}
+
+export function wordpressStateDocumentsFromSections(sections = {}) {
+	const documents = [];
+	for (const [section, data] of Object.entries(sections || {})) {
+		documents.push(...wordpressStateSectionDocuments(section, data));
+	}
+	return documents;
+}
+
+function normalizeCodeboxArtifactRef(ref) {
+	if (!ref || typeof ref !== 'object') {
+		return null;
+	}
+	const pathOrUrl = ref.path_or_url || ref.path;
+	if (!pathOrUrl) {
+		return null;
+	}
+	return {
+		kind: ref.kind || null,
+		path_or_url: pathOrUrl,
+		sha256: ref.sha256 || (ref.digest?.algorithm === 'sha256' ? ref.digest.value : null),
+		id: ref.id || null,
+	};
+}
+
 async function loadSchemas(root) {
 	const ajv = new Ajv2020({ allErrors: true, strict: false, validateFormats: false });
 	for (const file of [
@@ -741,16 +795,20 @@ export class WPGymEnvironment {
 		this.episodeId = createEpisodeId(this.scenario.id, this.resetSeed);
 		this.episodeRoot = await mkdtemp(path.join(os.tmpdir(), 'wp-gym-'));
 		this.workspaceRoot = path.join(this.episodeRoot, 'workspace');
+		this.workspaceBaselineRoot = path.join(this.episodeRoot, 'workspace-baseline');
 		this.posts = [];
 		this.nextPostId = 1;
 		this.steps = [];
 		this.lastGrade = null;
 		this.runtimeEpisode = null;
+		this.workspaceArtifacts = null;
 
 		await mkdir(this.workspaceRoot, { recursive: true });
+		await mkdir(this.workspaceBaselineRoot, { recursive: true });
 		const workspaceTemplate = this.scenario.environment?.workspace_template;
 		if (workspaceTemplate) {
 			await cp(path.join(this.root, workspaceTemplate), this.workspaceRoot, { recursive: true });
+			await cp(path.join(this.root, workspaceTemplate), this.workspaceBaselineRoot, { recursive: true });
 		}
 		if (this.usesCodeboxRuntime()) {
 			this.runtimeEpisode = await this.createWpCodeboxEpisode();
@@ -765,7 +823,7 @@ export class WPGymEnvironment {
 				episode_id: this.episodeId,
 				reset_seed: this.resetSeed,
 				post_count: 0,
-				workspace_root: this.workspaceRoot,
+				workspace_root: this.usesCodeboxRuntime() ? '/workspace' : this.workspaceRoot,
 			},
 		};
 		await this.assertObservation(observation, 'reset observation');
@@ -825,12 +883,19 @@ export class WPGymEnvironment {
 		const grade = normalizeTerminalGrade(await this.runPhpGrader());
 		this.lastGrade = grade;
 		const behavioralFingerprints = await this.collectBehavioralFingerprints();
+		const workspaceArtifacts = this.workspaceArtifacts ? {
+			id: this.workspaceArtifacts.id,
+			changed_files: this.workspaceArtifacts.changedFilesPath,
+			patch: this.workspaceArtifacts.patchPath,
+			captured_mounts: this.workspaceArtifacts.capturedMountsPath,
+		} : null;
 
 		return {
 			...grade,
 			telemetry: {
 				runner: this.runnerId(),
 				duration_ms: Date.now() - started,
+				...(workspaceArtifacts ? { workspace_artifacts: workspaceArtifacts } : {}),
 				...(behavioralFingerprints.length > 0 ? { behavioral_fingerprints: behavioralFingerprints } : {}),
 			},
 		};
@@ -860,6 +925,7 @@ export class WPGymEnvironment {
 	async close() {
 		await this.runtimeEpisode?.close();
 		this.runtimeEpisode = null;
+		this.workspaceArtifacts = null;
 		if (this.episodeRoot && existsSync(this.episodeRoot)) {
 			await rm(this.episodeRoot, { recursive: true, force: true });
 		}
@@ -1122,7 +1188,7 @@ export class WPGymEnvironment {
 	}
 
 	async stepFilesystem(action) {
-		if (this.usesCodeboxFilesystemRuntime()) {
+		if (this.usesCodeboxRuntime()) {
 			return await this.stepWithCodeboxRuntimeAction(action);
 		}
 
@@ -1390,6 +1456,23 @@ echo wp_json_encode( array(
 
 	runtimePlan() {
 		this.assertOpen();
+		const mounts = [
+			{
+				source: this.root,
+				target: '/inputs/repo',
+				mode: 'readonly',
+				role: 'scenario_repository',
+			},
+		];
+		if (this.scenario.environment?.uses_workspace) {
+			mounts.push({
+				source: this.workspaceRoot,
+				target: '/workspace',
+				mode: (this.scenario.environment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
+				role: 'scenario_workspace',
+				writable_roots: this.scenario.environment?.writable_roots || [],
+			});
+		}
 
 		return {
 			schema: 'wp-gym/runtime-plan/v1',
@@ -1401,14 +1484,7 @@ echo wp_json_encode( array(
 			limits: {
 				max_steps: this.scenario.episode_contract.max_steps,
 			},
-			mounts: [
-				{
-					source: this.root,
-					target: '/inputs/repo',
-					mode: 'readonly',
-					role: 'scenario_repository',
-				},
-			],
+			mounts,
 			actions: this.steps.map((step) => step.action),
 			grader: {
 				type: 'php',
@@ -1420,7 +1496,7 @@ echo wp_json_encode( array(
 	}
 
 	async runPhpGrader() {
-		if (this.usesWordPressRuntime()) {
+		if (this.usesCodeboxRuntime()) {
 			return await this.runPhpGraderWithCodebox();
 		}
 
@@ -1442,9 +1518,11 @@ echo wp_json_encode( array(
 	}
 
 	async runPhpGraderWithCodebox() {
+		this.workspaceArtifacts = await (await this.wpCodeboxEpisode()).collectArtifacts({ includeLogs: true, includeObservations: true, includePatch: true });
 		const graderPath = `/inputs/repo/${repoRelative(this.root, resolveFrom(this.scenarioFile, this.scenario.grader_file))}`;
 		const wrapperFile = path.join(this.episodeRoot, 'grader-wrapper.php');
 		await writeFile(wrapperFile, `<?php
+putenv('WP_GYM_AGENT_ROOT=/workspace');
 $grader = require ${JSON.stringify(graderPath)};
 $result = is_callable($grader) ? $grader() : $grader;
 echo json_encode($result, JSON_PRETTY_PRINT);
@@ -1470,14 +1548,15 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				continue;
 			}
 
-			const documents = this.usesWordPressRuntime()
+			const collection = this.usesWordPressRuntime()
 				? await this.collectWordPressDesignDocuments()
-				: this.collectLocalDesignDocuments();
+				: { documents: this.collectLocalDesignDocuments(), artifact_refs: [] };
 			fingerprints.push({
 				id: probe.id,
 				type: probe.type,
 				reward_weight: Number(probe.reward_weight || 0),
-				fingerprint: designFingerprintFromDocuments(documents),
+				fingerprint: designFingerprintFromDocuments(collection.documents),
+				...(collection.artifact_refs.length > 0 ? { source_artifacts: collection.artifact_refs } : {}),
 			});
 		}
 
@@ -1492,35 +1571,30 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async collectWordPressDesignDocuments() {
-		const wrapperFile = path.join(this.episodeRoot, 'design-fingerprint-documents.php');
-		await writeFile(wrapperFile, `<?php
-$documents = array();
-$posts = get_posts(array(
-    'post_type' => array('post', 'page', 'wp_template', 'wp_template_part', 'wp_navigation'),
-    'post_status' => array('publish', 'draft', 'auto-draft'),
-    'numberposts' => 200,
-));
-foreach ($posts as $post) {
-    $documents[] = array(
-        'source' => $post->post_type . ':' . $post->post_name,
-        'content' => $post->post_title . "\n" . $post->post_content,
-    );
-}
-if (function_exists('wp_get_global_stylesheet')) {
-    $documents[] = array('source' => 'global-stylesheet', 'content' => wp_get_global_stylesheet());
-}
-if (function_exists('wp_get_global_settings')) {
-    $documents[] = array('source' => 'global-settings', 'content' => wp_json_encode(wp_get_global_settings()));
-}
-echo wp_json_encode(array('documents' => $documents));
-`);
-
-		const { execution } = await (await this.wpCodeboxEpisode()).step({
-			command: 'wordpress.run-php',
-			args: [`code-file=${wrapperFile}`],
+		const observation = await (await this.wpCodeboxEpisode()).observe({
+			type: 'wordpress-state',
+			sections: ['posts', 'templates'],
+			includeContent: true,
 		});
-		const result = jsonFromOutput(execution.stdout);
-		return Array.isArray(result.documents) ? result.documents : [];
+		const sections = {};
+		for (const ref of observation.artifactRefs || []) {
+			if (ref.kind !== 'wordpress-state-section' || !ref.path) {
+				continue;
+			}
+			const artifact = await readJson(path.join(this.wpCodeboxArtifactRoot(), ref.path));
+			if (typeof artifact.section === 'string') {
+				sections[artifact.section] = artifact.data;
+			}
+		}
+
+		return {
+			documents: wordpressStateDocumentsFromSections(sections),
+			artifact_refs: (observation.artifactRefs || []).map(normalizeCodeboxArtifactRef).filter(Boolean),
+		};
+	}
+
+	wpCodeboxArtifactRoot() {
+		return path.join(this.episodeRoot, 'wp-codebox-artifacts');
 	}
 
 	async wpCodeboxEpisode() {
@@ -1536,29 +1610,24 @@ echo wp_json_encode(array('documents' => $documents));
 	}
 
 	usesCodeboxRuntime() {
-		return this.options.runtime !== 'local' && ['wordpress', 'workspace'].includes(this.scenario.environment.action_mode);
-	}
-
-	usesCodeboxFilesystemRuntime() {
-		return this.usesCodeboxRuntime();
-	}
-
-	codeboxWorkspaceMount() {
-		return {
-			type: 'directory',
-			source: this.workspaceRoot,
-			target: '/workspace',
-			mode: 'readwrite',
-		};
+		return ['wordpress', 'workspace'].includes(this.scenario.environment.action_mode) && this.options.runtime !== 'local';
 	}
 
 	codeboxRuntimeActionPolicy() {
 		const writableRoots = Array.isArray(this.scenario.environment?.writable_roots)
 			? this.scenario.environment.writable_roots.map((root) => `/workspace/${root}`.replace(/\/+/g, '/'))
 			: [];
+		const workspaceMount = this.scenario.environment?.uses_workspace
+			? [{
+				type: 'directory',
+				source: this.workspaceRoot,
+				target: '/workspace',
+				mode: writableRoots.length > 0 ? 'readwrite' : 'readonly',
+			}]
+			: [];
 
 		return {
-			mounts: [this.codeboxWorkspaceMount()],
+			mounts: workspaceMount,
 			filesystem: 'readwrite-mounts',
 			writableRoots: writableRoots.length > 0 ? writableRoots : ['/workspace'],
 		};
@@ -1569,6 +1638,28 @@ echo wp_json_encode(array('documents' => $documents));
 	}
 
 	async createWpCodeboxEpisode() {
+		const mounts = [
+			{
+				type: 'directory',
+				source: this.root,
+				target: '/inputs/repo',
+				mode: 'readonly',
+			},
+		];
+		if (this.scenario.environment?.uses_workspace) {
+			mounts.push({
+				type: 'directory',
+				source: this.workspaceRoot,
+				target: '/workspace',
+				mode: (this.scenario.environment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
+				metadata: {
+					role: 'scenario_workspace',
+					writable_roots: this.scenario.environment?.writable_roots || [],
+					baselineSource: this.workspaceBaselineRoot,
+				},
+			});
+		}
+
 		return await createRuntimeEpisode({
 			runtime: {
 				backend: 'wordpress-playground',
@@ -1585,21 +1676,13 @@ echo wp_json_encode(array('documents' => $documents));
 					secrets: 'none',
 					approvals: 'never',
 				},
-				artifactsDirectory: path.join(this.episodeRoot, 'wp-codebox-artifacts'),
+				artifactsDirectory: this.wpCodeboxArtifactRoot(),
 				metadata: {
 					runtime: { caller: 'wp-gym' },
 					task: { kind: 'wp-gym-local', scenario_id: this.scenario.id },
 				},
 			},
-			mounts: [
-				{
-					type: 'directory',
-					source: this.root,
-					target: '/inputs/repo',
-					mode: 'readonly',
-				},
-				this.codeboxWorkspaceMount(),
-			],
+			mounts,
 			resetObservations: [{ type: 'runtime-info' }],
 		}, createPlaygroundRuntimeBackend());
 	}
