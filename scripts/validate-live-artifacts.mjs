@@ -633,13 +633,25 @@ function normalizeArtifactKind(kind) {
 function uniqueReferences(references) {
 	const seen = new Set();
 	return references.filter((reference) => {
-		const key = `${reference?.kind || ''}\n${reference?.path_or_url || ''}\n${reference?.sha256 || ''}`;
+		const normalized = normalizeArtifactReference(reference);
+		const key = `${normalized?.kind || ''}\n${normalized?.path_or_url || ''}\n${normalized?.sha256 || ''}`;
 		if (seen.has(key)) {
 			return false;
 		}
 		seen.add(key);
 		return true;
 	});
+}
+
+function normalizeArtifactReference(reference) {
+	if (!reference || typeof reference !== 'object') {
+		return reference;
+	}
+	return {
+		...reference,
+		path_or_url: reference.path_or_url || reference.path || '',
+		sha256: reference.sha256 || (reference.digest?.algorithm === 'sha256' ? reference.digest.value : null),
+	};
 }
 
 function validateSchema(value) {
@@ -734,7 +746,7 @@ function collectArtifactReferences(evalArtifact) {
 		['runner.surface.reference', evalArtifact.runner?.surface?.reference ? [evalArtifact.runner.surface.reference] : []],
 	]) {
 		for (const reference of refs || []) {
-			references.push({ field, reference });
+			references.push({ field, reference: normalizeArtifactReference(reference) });
 		}
 	}
 	return references;
@@ -814,6 +826,7 @@ function validateVisibleAgentSurfaceSchema(file) {
 }
 
 function validateArtifactReference(reference, baseDir, field, expectedArtifact = null) {
+	reference = normalizeArtifactReference(reference);
 	const gaps = [];
 	const target = reference?.path_or_url || '';
 	const result = {

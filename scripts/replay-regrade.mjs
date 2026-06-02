@@ -81,6 +81,17 @@ function normalizeReferenceList(refs) {
 	return Array.isArray(refs) ? refs : [];
 }
 
+function normalizeArtifactReference(reference) {
+	if (!reference || typeof reference !== 'object') {
+		return reference;
+	}
+	return {
+		...reference,
+		path_or_url: reference.path_or_url || reference.path || null,
+		sha256: reference.sha256 || (reference.digest?.algorithm === 'sha256' ? reference.digest.value : null),
+	};
+}
+
 function collectArtifactReferences(artifact) {
 	const references = [];
 	for (const [sectionName, section] of [
@@ -89,7 +100,7 @@ function collectArtifactReferences(artifact) {
 	]) {
 		for (const [key, value] of Object.entries(section)) {
 			for (const reference of normalizeReferenceList(value)) {
-				references.push({ section: sectionName, key, reference });
+				references.push({ section: sectionName, key, reference: normalizeArtifactReference(reference) });
 			}
 		}
 	}
@@ -101,6 +112,7 @@ function findLocalStateReference(artifact, baseDir) {
 	const candidates = references.filter(({ key, reference }) => {
 		const target = reference?.path_or_url || '';
 		return replayCriticalStateKeys.includes(key)
+			|| (key === 'observations' && /wordpress-state/i.test(reference?.kind || ''))
 			|| /(?:^|[-_/])(wordpress-)?state(?:[-_.]|$)/i.test(target)
 			|| /wordpress_state/i.test(reference?.source_field || '');
 	});
@@ -562,6 +574,41 @@ function runTerminalGrader(scenarioInfo, stateFile, options = {}) {
 	}
 }
 
+function localPostFromCodeboxPost(post) {
+	return {
+		ID: post.ID ?? post.id ?? 0,
+		post_type: post.post_type ?? post.type ?? 'post',
+		post_status: post.post_status ?? post.status ?? 'publish',
+		post_title: post.post_title ?? post.title ?? '',
+		post_content: post.post_content ?? post.content ?? '',
+	};
+}
+
+function projectTerminalGraderState(stateReference) {
+	const state = readJson(stateReference.resolved);
+	if (Array.isArray(state.posts) && state.posts.some((post) => post?.post_content !== undefined || post?.post_title !== undefined)) {
+		return { file: stateReference.resolved, cleanup: null };
+	}
+
+	let posts = null;
+	if (state.schema === 'wp-codebox/wordpress-state-section/v1' && state.section === 'posts' && Array.isArray(state.data)) {
+		posts = state.data;
+	} else if (state.schema === 'wp-codebox/wordpress-state-export/v1' && Array.isArray(state.sections?.posts)) {
+		posts = state.sections.posts;
+	} else if (Array.isArray(state.posts)) {
+		posts = state.posts;
+	}
+
+	if (!posts) {
+		return { file: stateReference.resolved, cleanup: null };
+	}
+
+	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wp-gym-codebox-state-'));
+	const projected = path.join(tempDir, 'terminal-grader-state.json');
+	fs.writeFileSync(projected, `${JSON.stringify({ posts: posts.map(localPostFromCodeboxPost) }, null, 2)}\n`);
+	return { file: projected, cleanup: tempDir };
+}
+
 export async function replayRegradeArtifactFile(file, options = {}) {
 	const value = readJson(file);
 	const baseDir = path.dirname(file);
@@ -637,7 +684,11 @@ export async function replayRegradeArtifactFile(file, options = {}) {
 		}
 	}
 
-	const graderRun = runTerminalGrader(scenarioInfo, stateReference.resolved, options);
+	const terminalState = projectTerminalGraderState(stateReference);
+	const graderRun = runTerminalGrader(scenarioInfo, terminalState.file, options);
+	if (terminalState.cleanup) {
+		fs.rmSync(terminalState.cleanup, { recursive: true, force: true });
+	}
 	if (!graderRun.ok) {
 		compatibilityGaps.push(gap('terminal_grader_failed', 'error', 'grader', graderRun.error));
 		return { file, ok: false, validation, compatibility_gaps: compatibilityGaps, regrade_status: classifyRegrade(artifact, compatibilityGaps, null, graderRun, episodeReplay), replay: null };

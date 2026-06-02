@@ -376,6 +376,60 @@ function browserArtifactRefs(files = {}) {
 		}));
 }
 
+function wordpressStateSectionDocuments(section, data) {
+	if (section === 'posts' && Array.isArray(data)) {
+		return data.map((post) => ({
+			source: `post:${post.type || post.post_type || 'post'}:${post.slug || post.id || post.ID || 'unknown'}`,
+			content: [post.title || post.post_title || '', post.content || post.post_content || ''].filter(Boolean).join('\n'),
+		}));
+	}
+
+	if (section === 'templates' && data && typeof data === 'object') {
+		const documents = [];
+		for (const [group, items] of Object.entries({ templates: data.templates, templateParts: data.templateParts })) {
+			for (const template of Array.isArray(items) ? items : []) {
+				documents.push({
+					source: `template:${group}:${template.slug || template.id || 'unknown'}`,
+					content: typeof template.content === 'string' ? template.content : JSON.stringify(template),
+				});
+			}
+		}
+		if (data.globalStyles) {
+			documents.push({
+				source: 'global-styles',
+				content: typeof data.globalStyles.stylesheet === 'string' ? data.globalStyles.stylesheet : JSON.stringify(data.globalStyles),
+			});
+		}
+		return documents;
+	}
+
+	return [];
+}
+
+export function wordpressStateDocumentsFromSections(sections = {}) {
+	const documents = [];
+	for (const [section, data] of Object.entries(sections || {})) {
+		documents.push(...wordpressStateSectionDocuments(section, data));
+	}
+	return documents;
+}
+
+function normalizeCodeboxArtifactRef(ref) {
+	if (!ref || typeof ref !== 'object') {
+		return null;
+	}
+	const pathOrUrl = ref.path_or_url || ref.path;
+	if (!pathOrUrl) {
+		return null;
+	}
+	return {
+		kind: ref.kind || null,
+		path_or_url: pathOrUrl,
+		sha256: ref.sha256 || (ref.digest?.algorithm === 'sha256' ? ref.digest.value : null),
+		id: ref.id || null,
+	};
+}
+
 async function loadSchemas(root) {
 	const ajv = new Ajv2020({ allErrors: true, strict: false, validateFormats: false });
 	for (const file of [
@@ -1467,14 +1521,15 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				continue;
 			}
 
-			const documents = this.usesWordPressRuntime()
+			const collection = this.usesWordPressRuntime()
 				? await this.collectWordPressDesignDocuments()
-				: this.collectLocalDesignDocuments();
+				: { documents: this.collectLocalDesignDocuments(), artifact_refs: [] };
 			fingerprints.push({
 				id: probe.id,
 				type: probe.type,
 				reward_weight: Number(probe.reward_weight || 0),
-				fingerprint: designFingerprintFromDocuments(documents),
+				fingerprint: designFingerprintFromDocuments(collection.documents),
+				...(collection.artifact_refs.length > 0 ? { source_artifacts: collection.artifact_refs } : {}),
 			});
 		}
 
@@ -1489,35 +1544,30 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async collectWordPressDesignDocuments() {
-		const wrapperFile = path.join(this.episodeRoot, 'design-fingerprint-documents.php');
-		await writeFile(wrapperFile, `<?php
-$documents = array();
-$posts = get_posts(array(
-    'post_type' => array('post', 'page', 'wp_template', 'wp_template_part', 'wp_navigation'),
-    'post_status' => array('publish', 'draft', 'auto-draft'),
-    'numberposts' => 200,
-));
-foreach ($posts as $post) {
-    $documents[] = array(
-        'source' => $post->post_type . ':' . $post->post_name,
-        'content' => $post->post_title . "\n" . $post->post_content,
-    );
-}
-if (function_exists('wp_get_global_stylesheet')) {
-    $documents[] = array('source' => 'global-stylesheet', 'content' => wp_get_global_stylesheet());
-}
-if (function_exists('wp_get_global_settings')) {
-    $documents[] = array('source' => 'global-settings', 'content' => wp_json_encode(wp_get_global_settings()));
-}
-echo wp_json_encode(array('documents' => $documents));
-`);
-
-		const { execution } = await (await this.wpCodeboxEpisode()).step({
-			command: 'wordpress.run-php',
-			args: [`code-file=${wrapperFile}`],
+		const observation = await (await this.wpCodeboxEpisode()).observe({
+			type: 'wordpress-state',
+			sections: ['posts', 'templates'],
+			includeContent: true,
 		});
-		const result = jsonFromOutput(execution.stdout);
-		return Array.isArray(result.documents) ? result.documents : [];
+		const sections = {};
+		for (const ref of observation.artifactRefs || []) {
+			if (ref.kind !== 'wordpress-state-section' || !ref.path) {
+				continue;
+			}
+			const artifact = await readJson(path.join(this.wpCodeboxArtifactRoot(), ref.path));
+			if (typeof artifact.section === 'string') {
+				sections[artifact.section] = artifact.data;
+			}
+		}
+
+		return {
+			documents: wordpressStateDocumentsFromSections(sections),
+			artifact_refs: (observation.artifactRefs || []).map(normalizeCodeboxArtifactRef).filter(Boolean),
+		};
+	}
+
+	wpCodeboxArtifactRoot() {
+		return path.join(this.episodeRoot, 'wp-codebox-artifacts');
 	}
 
 	async wpCodeboxEpisode() {
@@ -1579,7 +1629,7 @@ echo wp_json_encode(array('documents' => $documents));
 					secrets: 'none',
 					approvals: 'never',
 				},
-				artifactsDirectory: path.join(this.episodeRoot, 'wp-codebox-artifacts'),
+				artifactsDirectory: this.wpCodeboxArtifactRoot(),
 				metadata: {
 					runtime: { caller: 'wp-gym' },
 					task: { kind: 'wp-gym-local', scenario_id: this.scenario.id },

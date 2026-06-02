@@ -1,11 +1,16 @@
 {
-  "posts": [
+  "schema": "wp-codebox/wordpress-state-section/v1",
+  "section": "posts",
+  "data": [
     {
-      "ID": 1,
-      "post_type": "page",
-      "post_status": "publish",
-      "post_title": "Neighborhood Cookout Plan",
-      "post_content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n<!-- wp:paragraph -->\n<p>Invite neighbors for a relaxed cookout with clear prep, serving, and cleanup roles.</p>\n<!-- /wp:paragraph -->\n<!-- wp:list -->\n<ul><!-- wp:list-item --><li>Confirm shared tables, coolers, and vegetarian options.</li><!-- /wp:list-item --><!-- wp:list-item --><li>Assign setup, grill, games, and cleanup volunteers.</li><!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button --><div class=\"wp-block-button\"><a class=\"wp-block-button__link\">Share the Plan</a></div><!-- /wp:button --></div>\n<!-- /wp:buttons -->"
+      "id": 1,
+      "type": "page",
+      "slug": "neighborhood-cookout-plan",
+      "status": "publish",
+      "title": "Neighborhood Cookout Plan",
+      "contentHash": "971f920f023f5cceefce59f7e8c75f2a7137c87d3b13bdcb4e4dc2fd57d37782",
+      "modifiedGmt": "2026-05-27 00:00:00",
+      "content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Summer Cookout Plan</h2>\n<!-- /wp:heading -->\n<!-- wp:paragraph -->\n<p>Invite neighbors for a relaxed cookout with clear prep, serving, and cleanup roles.</p>\n<!-- /wp:paragraph -->\n<!-- wp:list -->\n<ul><!-- wp:list-item --><li>Confirm shared tables, coolers, and vegetarian options.</li><!-- /wp:list-item --><!-- wp:list-item --><li>Assign setup, grill, games, and cleanup volunteers.</li><!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n<!-- wp:buttons -->\n<div class=\"wp-block-buttons\"><!-- wp:button --><div class=\"wp-block-button\"><a class=\"wp-block-button__link\">Share the Plan</a></div><!-- /wp:button --></div>\n<!-- /wp:buttons -->"
     }
   ]
 }

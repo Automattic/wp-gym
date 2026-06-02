@@ -325,11 +325,24 @@
     },
     "artifact_reference": {
         "type": "object",
-        "required": ["kind", "path_or_url"],
+        "required": ["kind"],
+        "anyOf": [
+          { "required": ["path_or_url"] },
+          { "required": ["path"] }
+        ],
         "properties": {
-          "kind": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "kind": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
           "path_or_url": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
           "sha256": { "$ref": "#/$defs/sha256_or_null" },
+          "digest": {
+            "type": "object",
+            "properties": {
+              "algorithm": { "const": "sha256" },
+              "value": { "$ref": "#/$defs/sha256_or_null" }
+            },
+            "additionalProperties": true
+          },
           "source_field": { "type": ["string", "null"] },
           "sensitivity": {
             "type": "array",
