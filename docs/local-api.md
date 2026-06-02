@@ -107,14 +107,19 @@ The local adapter is intentionally thin. It currently supports:
 - `browser` `navigate`, `click`, `fill`, `press`, and `capture` actions through
   WP Codebox `wordpress.browser-actions`, including replay steps, HTML,
   screenshot, console, and network artifact references when requested.
-- `editor` action envelopes as audit evidence only. Local execution rejects them
-  until WP Codebox exposes a generic editor replay primitive.
+- `editor` `open_post` and `inspect_state` actions through WP Codebox
+  `wordpress.editor-open`, including editor-state, HTML, screenshot, console,
+  and error artifact references. Editor mutation actions such as block insert,
+  update, select, save, and publish remain evidence-only until WP Codebox exposes
+  generic editor mutation primitives.
 
 Replay/regrade treats replayable browser `navigate`, `click`, `fill`, `press`,
 and `capture` traces as deterministic candidates through the same Codebox browser
-action path. Evidence-only browser traces and editor traces remain audit-only
-unless the local deterministic replay path can reproduce the action and its
-observation artifacts exactly.
+action path. Editor open/state traces can be reproduced through
+`wordpress.editor-open` when they only require generic target opening and state
+capture. Evidence-only browser traces and editor mutation traces remain
+audit-only unless the local deterministic replay path can reproduce the action
+and its observation artifacts exactly.
 
 A Python or Gymnasium wrapper is intentionally deferred. The supported external
 surface for this slice is the Node API plus JSON CLI output; a Python wrapper can

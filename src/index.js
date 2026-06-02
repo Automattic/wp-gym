@@ -16,6 +16,7 @@ const stepResultSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/
 const traceSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/trace.v1.schema.json';
 export const WPGYM_API_VERSION = 'wp-gym/js-env/v1';
 const implementedLocalActionTypes = ['wp_cli', 'filesystem', 'rest', 'browser'];
+const implementedLocalEditorOperations = ['open_post', 'inspect_state'];
 
 async function readJson(file) {
 	return JSON.parse(await readFile(file, 'utf8'));
@@ -96,7 +97,7 @@ function publicApiMetadata() {
 			wp_cli: 'Run WP-CLI commands without the leading wp inside disposable WordPress episodes.',
 			rest: 'Send sandbox-relative WordPress REST requests and observe status, headers, and body.',
 			browser: 'Replay navigate, click, fill, press, and capture browser steps through WP Codebox browser actions while preserving browser_result observations.',
-			editor: 'Preserve block editor action and state evidence for audit-only traces until WP Codebox exposes generic editor replay primitives.',
+			editor: 'Open editors and capture editor state through WP Codebox wordpress.editor-open when an editor action is limited to open/state evidence; mutation actions remain evidence-only until WP Codebox exposes generic editor mutation primitives.',
 			mixed: 'A single episode may combine supported action families when the scenario allows them.',
 		},
 		contracts: {
@@ -156,6 +157,7 @@ function scenarioCapabilities(manifest) {
 		replayable_action_types: replayableActionTypes,
 		evidence_only_action_types: evidenceOnlyActionTypes,
 		implemented_local_action_types: implementedLocalActionTypes,
+		implemented_local_editor_operations: implementedLocalEditorOperations,
 		observation_types: ['command_result', 'files', 'html', 'logs', 'rest_response', 'screenshot', 'wp_state', 'browser_result', 'editor_result'],
 		schemas: schemaReferences(),
 	};
@@ -364,6 +366,39 @@ function browserProbeWaitFor(action) {
 	return 'domcontentloaded';
 }
 
+function editorOpenArgs(action) {
+	const args = ['capture=steps,console,errors,html,screenshot,editor-state'];
+	if (action.post_id) {
+		args.push(`post-id=${action.post_id}`);
+	}
+	if (action.post_type) {
+		args.push(`post-type=${action.post_type}`);
+	}
+	if (!action.post_id && action.operation === 'open_post') {
+		args.push('target=post-new');
+	}
+	if (action.timing?.timeout_ms || action.timeout_ms) {
+		args.push(`wait-timeout=${action.timing?.timeout_ms || action.timeout_ms}ms`);
+	}
+
+	return args;
+}
+
+function editorStateFromEditorOpenResult(action, result) {
+	const editor = result.summary?.editor || {};
+	const target = result.target || {};
+	return {
+		...(action.post_id || target.postId ? { post_id: action.post_id || target.postId } : {}),
+		...(action.post_type || target.postType || editor.postType ? { post_type: action.post_type || target.postType || editor.postType } : {}),
+		...(editor.title ? { title: editor.title } : {}),
+		...(editor.postStatus ? { post_status: editor.postStatus } : {}),
+		...(Number.isInteger(editor.blockCount) ? { block_count: editor.blockCount } : {}),
+		...(typeof editor.dirty === 'boolean' ? { dirty: editor.dirty } : {}),
+		...(typeof editor.mode === 'string' ? { mode: editor.mode } : {}),
+		...(result.finalUrl ? { url: result.finalUrl } : {}),
+	};
+}
+
 function browserArtifactRefs(files = {}) {
 	const mimeTypes = {
 		steps: 'application/x-ndjson',
@@ -372,6 +407,7 @@ function browserArtifactRefs(files = {}) {
 		html: 'text/html; charset=utf-8',
 		network: 'application/x-ndjson',
 		screenshot: 'image/png',
+		editorState: 'application/json',
 		summary: 'application/json',
 	};
 
@@ -937,6 +973,8 @@ export class WPGymEnvironment {
 			observation = await this.stepRest(normalizedAction);
 		} else if (normalizedAction.type === 'browser') {
 			observation = await this.stepBrowser(normalizedAction);
+		} else if (normalizedAction.type === 'editor') {
+			observation = await this.stepEditor(normalizedAction);
 		} else {
 			throw new Error(`Local WPGym does not implement ${normalizedAction.type} actions yet.`);
 		}
@@ -1529,6 +1567,51 @@ echo wp_json_encode( array(
 		};
 	}
 
+	async stepEditor(action) {
+		if (!implementedLocalEditorOperations.includes(action.operation)) {
+			throw new Error(`Local WPGym only maps editor open/state actions through WP Codebox wordpress.editor-open; ${action.operation} remains evidence-only.`);
+		}
+
+		const started = Date.now();
+		try {
+			const { execution, observation } = await (await this.wpCodeboxEpisode()).step({
+				kind: 'browser',
+				command: 'wordpress.editor-open',
+				args: editorOpenArgs(action),
+				operation: action.operation,
+				...(action.post_id ? { postId: action.post_id } : {}),
+				...(action.post_type ? { postType: action.post_type } : {}),
+				...(action.timeout_ms ? { timeoutMs: action.timeout_ms } : {}),
+			});
+			const result = jsonFromOutput(execution.stdout);
+			const artifacts = runtimeArtifactRefs(observation?.artifactRefs).concat(browserArtifactRefs(result.files));
+
+			return {
+				schema_version: 1,
+				type: 'editor_result',
+				action_type: 'editor',
+				operation: action.operation,
+				replayability: action.replayability,
+				state: editorStateFromEditorOpenResult(action, result),
+				artifacts,
+				duration_ms: runtimeExecutionDuration(execution, started),
+				error: execution.exitCode === 0 ? null : { code: 'wp_codebox_editor_open_error', message: String(execution.stderr || 'Editor open action failed.') },
+			};
+		} catch (error) {
+			return {
+				schema_version: 1,
+				type: 'editor_result',
+				action_type: 'editor',
+				operation: action.operation,
+				replayability: action.replayability,
+				state: editorStateFromEditorOpenResult(action, {}),
+				artifacts: [],
+				duration_ms: Date.now() - started,
+				error: { code: 'wp_codebox_editor_open_error', message: error instanceof Error ? error.message : String(error) },
+			};
+		}
+	}
+
 	runtimePlan() {
 		this.assertOpen();
 		const mounts = [
@@ -1747,7 +1830,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				policy: {
 					network: 'deny',
 					filesystem: 'readwrite-mounts',
-					commands: ['wordpress.wp-cli', 'wordpress.run-php', 'wordpress.browser-actions', 'inspect-mounted-inputs'],
+					commands: ['wordpress.wp-cli', 'wordpress.run-php', 'wordpress.browser-actions', 'wordpress.editor-open', 'inspect-mounted-inputs'],
 					secrets: 'none',
 					approvals: 'never',
 				},

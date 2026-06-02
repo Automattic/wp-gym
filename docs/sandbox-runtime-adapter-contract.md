@@ -134,8 +134,9 @@ described in runtime terms, for example:
 - A missing observation channel, such as exported WordPress state.
 - A missing artifact type, such as screenshot capture or normalized log bundles.
 - A missing lifecycle hook, such as snapshot before cleanup.
-- A missing generic editor primitive, such as opening a post, inserting a block,
-  saving, or exporting editor store state.
+- A missing generic editor mutation primitive, such as inserting a block,
+  selecting a block, saving, or publishing. Generic editor opening and state
+  export are covered by WP Codebox `wordpress.editor-open`.
 
 The requested runtime change should stay generic. For example, ask WP Codebox for
 a screenshot artifact, not a visual-grading artifact; ask for a WordPress state
