@@ -344,6 +344,9 @@ function actionReplayability(action) {
 	}
 
 	if (action.type === 'editor') {
+		if (action.replayability === 'replayable' && ['open_post', 'inspect_state'].includes(action.operation)) {
+			return 'replayable';
+		}
 		return 'audit_only';
 	}
 
