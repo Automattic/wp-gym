@@ -113,6 +113,9 @@ try {
 	});
 	assert.equal(step.observation.status, 0);
 	assert.equal(step.done, false);
+	const runtimeTrace = await env.runtimeEpisode.trace();
+	assert(runtimeTrace.steps.some((runtimeStep) => runtimeStep.action.command === 'wordpress.browser-actions'));
+	assert(runtimeTrace.steps.some((runtimeStep) => runtimeStep.action.command === 'wordpress.wp-cli'));
 
 	const grade = await env.grade();
 	assert.equal(grade.success, true);
@@ -146,6 +149,11 @@ try {
 	assert.equal(writeStep.observation.type, 'files');
 	assert.equal(writeStep.observation.action_type, 'filesystem');
 	assert.equal(writeStep.observation.files[0].path, 'plugins/site-summary/site-summary.php');
+	const filesystemRuntimeTrace = await workspaceEnv.runtimeEpisode.trace();
+	const filesystemActions = filesystemRuntimeTrace.steps.filter((runtimeStep) => runtimeStep.action.kind === 'filesystem');
+	assert.equal(filesystemActions.length, 1);
+	assert(filesystemActions.every((runtimeStep) => runtimeStep.action.command === 'inspect-mounted-inputs'));
+	assert(filesystemActions.every((runtimeStep) => runtimeStep.action.path.startsWith('/workspace/plugins')));
 
 	const readStep = await workspaceEnv.step({
 		type: 'filesystem',

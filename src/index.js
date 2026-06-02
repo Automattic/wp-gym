@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { createRuntimeEpisode } from 'wp-codebox-workspace/core';
+import { createRuntimeEpisode, runRuntimeAction } from 'wp-codebox-workspace/core';
 import { createPlaygroundRuntimeBackend } from 'wp-codebox-workspace/playground';
 
 const moduleRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -374,6 +374,23 @@ function browserArtifactRefs(files = {}) {
 			path: filePath,
 			...(mimeTypes[kind] ? { mime_type: mimeTypes[kind] } : {}),
 		}));
+}
+
+function runtimeArtifactRefs(refs = []) {
+	return refs
+		.filter((ref) => ref && typeof ref.path === 'string' && ref.path.length > 0)
+		.map((ref) => ({
+			path: ref.path,
+			...(typeof ref.sha256 === 'string' ? { sha256: ref.sha256 } : {}),
+			...(typeof ref.mime_type === 'string' ? { mime_type: ref.mime_type } : {}),
+			...(typeof ref.contentType === 'string' ? { mime_type: ref.contentType } : {}),
+		}));
+}
+
+function runtimeExecutionDuration(execution, fallbackStarted) {
+	const started = Date.parse(execution?.startedAt || '');
+	const finished = Date.parse(execution?.finishedAt || '');
+	return Number.isFinite(started) && Number.isFinite(finished) ? Math.max(0, finished - started) : Date.now() - fallbackStarted;
 }
 
 function wordpressStateSectionDocuments(section, data) {
@@ -917,7 +934,7 @@ export class WPGymEnvironment {
 
 	async stepWpCli(action) {
 		if (this.usesWordPressRuntime()) {
-			return await this.stepWpCliWithCodebox(action);
+			return await this.stepWithCodeboxRuntimeAction(action);
 		}
 
 		const args = shellSplit(action.command);
@@ -996,16 +1013,147 @@ export class WPGymEnvironment {
 		}
 	}
 
-	async stepWpCliWithCodebox(action) {
+	async stepWithCodeboxRuntimeAction(action) {
 		const started = Date.now();
-		const episode = await this.wpCodeboxEpisode();
-		let execution;
+		const runtimeAction = this.toCodeboxRuntimeAction(action);
+		let runtimeObservation;
 		try {
-			({ execution } = await episode.step({
-				command: 'wordpress.wp-cli',
-				args: [`command=${action.command}`],
-			}));
+			runtimeObservation = await runRuntimeAction(
+				await this.wpCodeboxEpisode(),
+				runtimeAction,
+				this.codeboxRuntimeActionPolicy()
+			);
 		} catch (error) {
+			return this.codeboxRuntimeActionErrorObservation(action, error, Date.now() - started);
+		}
+
+		return this.fromCodeboxRuntimeActionObservation(action, runtimeObservation, started);
+	}
+
+	toCodeboxRuntimeAction(action) {
+		if (action.type === 'wp_cli') {
+			return { type: 'wp_cli', command: action.command, ...(action.timeout_ms ? { timeout_ms: action.timeout_ms } : {}) };
+		}
+
+		if (action.type === 'filesystem') {
+			return {
+				type: 'filesystem',
+				operation: action.operation,
+				path: action.path,
+				...(action.content !== undefined ? { content: action.content } : {}),
+			};
+		}
+
+		if (action.type === 'browser') {
+			return {
+				type: 'browser',
+				operation: action.operation,
+				...(action.url ? { url: action.url } : {}),
+				...(action.selector ? { selector: action.selector } : {}),
+				...(action.operation === 'press' && action.value !== undefined ? { key: String(action.value) } : {}),
+				...(action.operation !== 'press' && action.value !== undefined ? { value: String(action.value) } : {}),
+				...(action.wait_for ? { wait_for: action.wait_for } : {}),
+				...(Array.isArray(action.capture) && action.capture.length > 0 ? { capture: action.capture } : {}),
+				...(action.timeout_ms ? { timeout_ms: action.timeout_ms } : {}),
+			};
+		}
+
+		throw new Error(`Codebox runtime action adapter does not implement ${action.type} actions.`);
+	}
+
+	fromCodeboxRuntimeActionObservation(action, runtimeObservation, started) {
+		if (action.type === 'wp_cli') {
+			const execution = runtimeObservation.step?.execution || {};
+			const status = Number.isInteger(runtimeObservation.data.exitCode) ? runtimeObservation.data.exitCode : execution.exitCode;
+			return {
+				schema_version: 1,
+				type: 'command_result',
+				action_type: 'wp_cli',
+				command: action.command,
+				status,
+				stdout: String(runtimeObservation.data.stdout ?? execution.stdout ?? ''),
+				stderr: String(runtimeObservation.data.stderr ?? execution.stderr ?? ''),
+				timeout_ms: action.timeout_ms,
+				timed_out: false,
+				duration_ms: runtimeExecutionDuration(execution, started),
+				error: status === 0 ? null : { code: 'wp_codebox_wp_cli_error', message: String(runtimeObservation.data.stderr || execution.stderr || 'WP-CLI action failed.') },
+			};
+		}
+
+		if (action.type === 'filesystem') {
+			return this.fromCodeboxFilesystemObservation(action, runtimeObservation);
+		}
+
+		if (action.type === 'browser') {
+			return this.fromCodeboxBrowserObservation(action, runtimeObservation, started);
+		}
+
+		throw new Error(`Codebox runtime action adapter returned unsupported ${action.type} observation.`);
+	}
+
+	fromCodeboxFilesystemObservation(action, runtimeObservation) {
+		if (action.operation === 'list') {
+			const entries = Array.isArray(runtimeObservation.data.entries) ? runtimeObservation.data.entries : [];
+			return {
+				schema_version: 1,
+				type: 'files',
+				action_type: 'filesystem',
+				operation: 'list',
+				files: entries.map((entry) => ({
+					path: path.posix.join(action.path, String(entry.name || '')),
+					kind: entry.type === 'directory' ? 'directory' : entry.type === 'file' ? 'file' : 'unknown',
+				})),
+			};
+		}
+
+		if (action.operation === 'read') {
+			const content = String(runtimeObservation.data.content ?? '');
+			return {
+				schema_version: 1,
+				type: 'files',
+				action_type: 'filesystem',
+				operation: 'read',
+				files: [{ path: action.path, kind: 'file', content, sha256: createHash('sha256').update(content).digest('hex'), size_bytes: Buffer.byteLength(content, 'utf8') }],
+			};
+		}
+
+		if (action.operation === 'write') {
+			const content = String(action.content || '');
+			return {
+				schema_version: 1,
+				type: 'files',
+				action_type: 'filesystem',
+				operation: 'write',
+				files: [{ path: action.path, kind: 'file', sha256: createHash('sha256').update(content).digest('hex'), size_bytes: Buffer.byteLength(content, 'utf8') }],
+			};
+		}
+
+		return { schema_version: 1, type: 'files', action_type: 'filesystem', operation: 'delete', files: [{ path: action.path, kind: 'unknown' }] };
+	}
+
+	fromCodeboxBrowserObservation(action, runtimeObservation, started) {
+		const execution = runtimeObservation.step?.execution || {};
+		const stdout = runtimeObservation.data.stdout && typeof runtimeObservation.data.stdout === 'object' ? runtimeObservation.data.stdout : {};
+		const files = stdout.files && typeof stdout.files === 'object' ? browserArtifactRefs(stdout.files) : [];
+		const artifacts = runtimeArtifactRefs(runtimeObservation.artifactRefs).concat(files);
+		const exitCode = Number.isInteger(runtimeObservation.data.exitCode) ? runtimeObservation.data.exitCode : execution.exitCode;
+		return {
+			schema_version: 1,
+			type: 'browser_result',
+			action_type: 'browser',
+			operation: action.operation,
+			replayability: action.replayability,
+			url: stdout.finalUrl || action.url || '/',
+			...(action.selector ? { selector: action.selector } : {}),
+			artifacts,
+			duration_ms: runtimeExecutionDuration(execution, started),
+			error: exitCode === 0 ? null : { code: 'wp_codebox_browser_error', message: String(runtimeObservation.data.stderr || execution.stderr || 'Browser action failed.') },
+		};
+	}
+
+	codeboxRuntimeActionErrorObservation(action, error, durationMs) {
+		const message = error instanceof Error ? error.message : String(error);
+		if (action.type === 'wp_cli') {
 			return {
 				schema_version: 1,
 				type: 'command_result',
@@ -1013,32 +1161,35 @@ export class WPGymEnvironment {
 				command: action.command,
 				status: 1,
 				stdout: '',
-				stderr: `${error instanceof Error ? error.message : String(error)}\n`,
+				stderr: `${message}\n`,
 				timeout_ms: action.timeout_ms,
 				timed_out: false,
-				duration_ms: Date.now() - started,
-				error: { code: 'wp_codebox_wp_cli_error', message: error instanceof Error ? error.message : String(error) },
+				duration_ms: durationMs,
+				error: { code: 'wp_codebox_wp_cli_error', message },
 			};
 		}
 
-		return {
-			schema_version: 1,
-			type: 'command_result',
-			action_type: 'wp_cli',
-			command: action.command,
-			status: execution.exitCode,
-			stdout: execution.stdout,
-			stderr: execution.stderr,
-			timeout_ms: action.timeout_ms,
-			timed_out: false,
-			duration_ms: Date.parse(execution.finishedAt) - Date.parse(execution.startedAt) || Date.now() - started,
-			error: execution.exitCode === 0 ? null : { code: 'wp_codebox_wp_cli_error', message: execution.stderr || 'WP-CLI action failed.' },
-		};
+		if (action.type === 'browser') {
+			return {
+				schema_version: 1,
+				type: 'browser_result',
+				action_type: 'browser',
+				operation: action.operation,
+				replayability: action.replayability,
+				url: action.url || '/',
+				...(action.selector ? { selector: action.selector } : {}),
+				artifacts: [],
+				duration_ms: durationMs,
+				error: { code: 'wp_codebox_browser_error', message },
+			};
+		}
+
+		throw error;
 	}
 
 	async stepFilesystem(action) {
 		if (this.usesCodeboxRuntime()) {
-			return await this.stepFilesystemWithCodebox(action);
+			return await this.stepWithCodeboxRuntimeAction(action);
 		}
 
 		const target = this.resolveWorkspacePath(action.path);
@@ -1086,134 +1237,6 @@ export class WPGymEnvironment {
 		}
 
 		throw new Error(`Local WPGym does not implement filesystem ${action.operation} yet.`);
-	}
-
-	async stepFilesystemWithCodebox(action) {
-		this.resolveWorkspacePath(action.path);
-		const wrapperFile = path.join(this.episodeRoot, `filesystem-action-${Date.now()}.php`);
-		await writeFile(wrapperFile, `<?php
-$operation = ${JSON.stringify(action.operation)};
-$relative_path = ${JSON.stringify(String(action.path || '').replace(/\\/g, '/').replace(/^\/+/, ''))};
-$content = ${JSON.stringify(String(action.content || ''))};
-$workspace_root = '/workspace';
-$target = $workspace_root . '/' . $relative_path;
-
-function wp_gym_filesystem_observation(array $data): void {
-    echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-}
-
-function wp_gym_remove_path(string $path): void {
-    if (!file_exists($path) && !is_link($path)) {
-        return;
-    }
-    if (is_file($path) || is_link($path)) {
-        unlink($path);
-        return;
-    }
-    $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::CHILD_FIRST
-    );
-    foreach ($iterator as $entry) {
-        $entry->isDir() && !$entry->isLink() ? rmdir($entry->getPathname()) : unlink($entry->getPathname());
-    }
-    rmdir($path);
-}
-
-if ('list' === $operation) {
-    $entries = is_dir($target) ? array_values(array_diff(scandir($target), array('.', '..'))) : array();
-    sort($entries);
-    wp_gym_filesystem_observation(array(
-        'schema_version' => 1,
-        'type' => 'files',
-        'action_type' => 'filesystem',
-        'operation' => 'list',
-        'files' => array_map(static function ($entry) use ($target, $relative_path) {
-            $entry_path = rtrim($target, '/') . '/' . $entry;
-            return array(
-                'path' => trim($relative_path . '/' . $entry, '/'),
-                'kind' => is_dir($entry_path) ? 'directory' : 'file',
-            );
-        }, $entries),
-    ));
-    return;
-}
-
-if ('read' === $operation) {
-    $file_content = file_get_contents($target);
-    if (false === $file_content) {
-        throw new RuntimeException('Unable to read workspace file: ' . $relative_path);
-    }
-    wp_gym_filesystem_observation(array(
-        'schema_version' => 1,
-        'type' => 'files',
-        'action_type' => 'filesystem',
-        'operation' => 'read',
-        'files' => array(array(
-            'path' => $relative_path,
-            'kind' => 'file',
-            'content' => $file_content,
-            'sha256' => hash('sha256', $file_content),
-            'size_bytes' => strlen($file_content),
-        )),
-    ));
-    return;
-}
-
-if ('write' === $operation) {
-    if (!is_dir(dirname($target))) {
-        mkdir(dirname($target), 0777, true);
-    }
-    file_put_contents($target, $content);
-    wp_gym_filesystem_observation(array(
-        'schema_version' => 1,
-        'type' => 'files',
-        'action_type' => 'filesystem',
-        'operation' => 'write',
-        'files' => array(array(
-            'path' => $relative_path,
-            'kind' => 'file',
-            'sha256' => hash('sha256', $content),
-            'size_bytes' => strlen($content),
-        )),
-    ));
-    return;
-}
-
-if ('delete' === $operation) {
-    wp_gym_remove_path($target);
-    wp_gym_filesystem_observation(array(
-        'schema_version' => 1,
-        'type' => 'files',
-        'action_type' => 'filesystem',
-        'operation' => 'delete',
-        'files' => array(array('path' => $relative_path, 'kind' => 'unknown')),
-    ));
-    return;
-}
-
-throw new RuntimeException('Unsupported filesystem operation: ' . $operation);
-`);
-
-		try {
-			const { execution } = await (await this.wpCodeboxEpisode()).step({
-				command: 'wordpress.run-php',
-				args: [`code-file=${wrapperFile}`, 'bootstrap=none'],
-				timeoutMs: action.timeout_ms,
-			});
-			return jsonFromOutput(execution.stdout);
-		} catch (error) {
-			return {
-				schema_version: 1,
-				type: 'files',
-				action_type: 'filesystem',
-				operation: action.operation,
-				files: [],
-				metadata: {
-					error: error instanceof Error ? error.message : String(error),
-				},
-			};
-		}
 	}
 
 	async stepRest(action) {
@@ -1315,6 +1338,10 @@ echo wp_json_encode( array(
 	}
 
 	async stepBrowser(action) {
+		if (this.usesCodeboxRuntime()) {
+			return await this.stepWithCodeboxRuntimeAction(action);
+		}
+
 		const started = Date.now();
 		const targetUrl = action.url || '/';
 		const capture = browserProbeCaptureList(action);
@@ -1586,6 +1613,26 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 		return ['wordpress', 'workspace'].includes(this.scenario.environment.action_mode) && this.options.runtime !== 'local';
 	}
 
+	codeboxRuntimeActionPolicy() {
+		const writableRoots = Array.isArray(this.scenario.environment?.writable_roots)
+			? this.scenario.environment.writable_roots.map((root) => `/workspace/${root}`.replace(/\/+/g, '/'))
+			: [];
+		const workspaceMount = this.scenario.environment?.uses_workspace
+			? [{
+				type: 'directory',
+				source: this.workspaceRoot,
+				target: '/workspace',
+				mode: writableRoots.length > 0 ? 'readwrite' : 'readonly',
+			}]
+			: [];
+
+		return {
+			mounts: workspaceMount,
+			filesystem: 'readwrite-mounts',
+			writableRoots: writableRoots.length > 0 ? writableRoots : ['/workspace'],
+		};
+	}
+
 	runnerId() {
 		return this.usesCodeboxRuntime() ? 'wp-codebox' : 'local-wpgym';
 	}
@@ -1625,7 +1672,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				policy: {
 					network: 'deny',
 					filesystem: 'readwrite-mounts',
-					commands: ['wordpress.wp-cli', 'wordpress.run-php', 'wordpress.browser-probe'],
+					commands: ['wordpress.wp-cli', 'wordpress.run-php', 'wordpress.browser-actions', 'inspect-mounted-inputs'],
 					secrets: 'none',
 					approvals: 'never',
 				},

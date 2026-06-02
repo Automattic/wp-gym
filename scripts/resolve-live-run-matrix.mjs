@@ -554,7 +554,9 @@ function resolveTasks() {
 	}
 
 	const homeboy = readJson('homeboy.json');
-	const scenarioFiles = homeboy.extensions.wordpress.settings.playground_scenario_manifests || [];
+	const scenarioFiles = homeboy.extensions.wordpress.settings.playground_scenario_manifests
+		|| homeboy.extensions.wordpress.settings.wp_codebox_scenario_manifests
+		|| [];
 	const smoke = smokeTask();
 	const tasks = new Map([[smoke.id, smoke]]);
 
