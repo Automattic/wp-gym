@@ -39,6 +39,11 @@ The adapter is therefore one-way in dependency terms: `wp-gym` consumes WP
 Codebox. WP Codebox remains generic and does not validate or emit
 `wp-gym`-specific eval fields.
 
+When `wp-gym` passes caller metadata to WP Codebox, that metadata is opaque
+runtime correlation only. It must not include eval identifiers such as scenario
+ids, task-set ids, grader identity, reward state, or failure-class taxonomy;
+those fields belong in `wp-gym` eval artifacts.
+
 ## Scenario To Runtime Input
 
 The adapter maps a `wp-gym` scenario manifest into WP Codebox setup input:
