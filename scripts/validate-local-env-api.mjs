@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { WPGym } from '../src/index.js';
 
 const scenarioId = 'block-markup-no-fallback-pricing-section';
+const workspaceScenarioId = 'modern-wordpress-api-abilities-site-summary';
 const packageEntrypoint = await import('wp-gym');
 assert.equal(packageEntrypoint.WPGym.apiVersion(), WPGym.apiVersion());
 const actionSchema = await import('wp-gym/schemas/action.v1.schema.json', { with: { type: 'json' } });
@@ -11,6 +12,7 @@ assert.equal(actionSchema.default.title, 'WP Gym Action v1');
 
 const scenarios = await WPGym.listScenarios();
 assert.ok(scenarios.some((scenario) => scenario.id === scenarioId));
+assert.ok(scenarios.some((scenario) => scenario.id === workspaceScenarioId));
 
 const taskSets = await WPGym.listTaskSets();
 assert.ok(taskSets.some((taskSet) => taskSet.id === 'first-live-run'));
@@ -125,6 +127,43 @@ try {
 	assert.deepEqual(trace.metadata.allowed_action_types, ['wp_cli', 'rest', 'browser']);
 } finally {
 	await env.close();
+}
+
+const workspaceEnv = await WPGym.make(workspaceScenarioId);
+try {
+	const reset = await workspaceEnv.reset({ seed: 'workspace-codebox' });
+	assert.equal(reset.state.workspace_root, '/workspace');
+
+	const runtimePlan = workspaceEnv.runtimePlan();
+	assert.ok(runtimePlan.mounts.some((mount) => mount.target === '/workspace' && mount.mode === 'readwrite'));
+
+	const writeStep = await workspaceEnv.step({
+		type: 'filesystem',
+		operation: 'write',
+		path: 'plugins/site-summary/site-summary.php',
+		content: "<?php\n/**\n * Plugin Name: Site Summary Smoke\n */\n",
+	});
+	assert.equal(writeStep.observation.type, 'files');
+	assert.equal(writeStep.observation.action_type, 'filesystem');
+	assert.equal(writeStep.observation.files[0].path, 'plugins/site-summary/site-summary.php');
+
+	const readStep = await workspaceEnv.step({
+		type: 'filesystem',
+		operation: 'read',
+		path: 'plugins/site-summary/site-summary.php',
+	});
+	assert.match(readStep.observation.files[0].content, /Site Summary Smoke/);
+
+	const workspaceFiles = await workspaceEnv.workspaceFiles();
+	assert.ok(workspaceFiles.includes('plugins/site-summary/site-summary.php'));
+
+	const grade = await workspaceEnv.grade();
+	assert.equal(grade.telemetry.runner, 'wp-codebox');
+	assert.ok(grade.telemetry.workspace_artifacts.changed_files.endsWith('/files/changed-files.json'));
+	const changedFiles = JSON.parse(await readFile(grade.telemetry.workspace_artifacts.changed_files, 'utf8'));
+	assert.ok(changedFiles.files.some((file) => file.mountTarget === '/workspace' && file.relativePath === 'plugins/site-summary/site-summary.php'));
+} finally {
+	await workspaceEnv.close();
 }
 
 console.log('Validated local WPGym reset/step/grade API.');

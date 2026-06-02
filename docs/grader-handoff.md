@@ -17,7 +17,9 @@ runner policy layered above the generic runtime substrate.
 1. `wp-gym` resolves a scenario manifest, prompt, private grader file, hidden paths,
    runner workspace policy, and expected artifacts.
 2. The runner starts a WP Codebox runtime episode with only the model-visible
-   prompt, writable roots, allowed tools, and runtime limits.
+   prompt, writable roots, allowed tools, and runtime limits. Workspace-mode
+   starter files are mounted at `/workspace`; the scenario repository remains a
+   private read-only `/inputs/repo` mount for runner/grader code.
 3. WP Codebox executes the agent in an isolated WordPress environment and
    returns task status plus captured runtime state and artifacts.
 4. The runner mounts or references private grader inputs outside the model-visible
@@ -31,7 +33,7 @@ A PHP grader may inspect the final state and artifacts made available by the run
 
 - Final WordPress database and active runtime state.
 - Files in the writable workspace, such as submitted plugin or theme files.
-- Workspace diff and changed-file summaries.
+- Workspace diff and changed-file summaries from the WP Codebox artifact bundle.
 - Runtime logs, transcripts, tool summaries, observations, and screenshots.
 - Runner metadata, including scenario ID, provider/model, prompt fingerprint,
   bundle fingerprint, tool-policy fingerprint, timeout/truncation status, and
@@ -107,11 +109,12 @@ codes, but they should not masquerade as hidden task check failures.
 
 `modern-wordpress-api-abilities-site-summary` uses `action_mode: "workspace"` and
 expects `plugin_files`, `workspace_diff`, and `grader_result` artifacts. The model
-only sees the developer request and editable `plugins/` workspace. After the agent
-stops, the runner restores the final WordPress state, exposes the submitted plugin
-files through the configured workspace root, mounts the private PHP grader from
-`graders/modern-wordpress-api/abilities-site-summary.php`, and executes it against
-WordPress.
+only sees the developer request and editable `plugins/` workspace under
+`/workspace`. Filesystem actions run inside the WP Codebox runtime, and WP Codebox
+captures the final changed-files and patch artifacts. After the agent stops, the
+runner exposes the submitted plugin files to the private PHP grader through the
+stable `WP_GYM_AGENT_ROOT=/workspace` handoff and executes
+`graders/modern-wordpress-api/abilities-site-summary.php` against WordPress.
 
 The grader inspects registered abilities and submitted source, returns the standard
 `success`/`reward`/`grade.checks`/`failure_reasons` shape, and the runner places
