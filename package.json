@@ -61,6 +61,6 @@
   "dependencies": {
     "@wp-playground/cli": "3.1.35",
     "@wp-playground/wordpress-builds": "^0.9.4",
-    "wp-codebox-workspace": "github:chubes4/wp-codebox#main"
+    "wp-codebox-workspace": "github:Automattic/wp-codebox#main"
   }
 }

@@ -296,7 +296,7 @@ shape for deterministic hidden-grader checks.
 
 Current Codebox `templates` observations expose template and global-style hashes.
 Richer template/global-style body content is tracked upstream in
-[chubes4/wp-codebox#444](https://github.com/chubes4/wp-codebox/issues/444);
+[Automattic/wp-codebox#444](https://github.com/Automattic/wp-codebox/issues/444);
 `wp-gym` should consume that generic field once available rather than
 reintroducing custom PHP collection to compensate.
 
