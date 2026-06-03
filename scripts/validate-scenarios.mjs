@@ -24,6 +24,7 @@ const knownTools = new Set([
 	'workspace_apply_patch',
 	'workspace_git_status',
 	'wordpress_runtime_ls',
+	'browser_action',
 	'run_wp_cli',
 ]);
 const knownActionTypes = new Set(['wp_cli', 'filesystem', 'rest', 'browser']);
@@ -39,6 +40,7 @@ const knownPassRateBands = new Set(['uncalibrated', 'too_easy', 'easy', 'target'
 const knownTaskContractLevels = new Set([
 	'wordpress_state_diagnostic',
 	'workspace_diff_diagnostic',
+	'browser_metrics_diagnostic',
 	'benchmark_replay',
 ]);
 const knownTaskSetContractLevels = new Set([
@@ -73,6 +75,7 @@ const knownCapabilityAreas = new Set([
 	'cli_operational_tooling',
 	'theme_site_building',
 	'gutenberg_blocks',
+	'performance_diagnostics',
 	'plugin_quality_wordpress_standards',
 ]);
 const knownSourceInputTypes = new Set([

@@ -143,7 +143,7 @@
         "state": { "$ref": "#/$defs/stateAssertion" },
         "capture": {
           "type": "array",
-          "items": { "enum": ["html", "screenshot", "console", "network"] },
+          "items": { "enum": ["html", "screenshot", "console", "network", "performance", "memory"] },
           "uniqueItems": true
         },
         "timeout_ms": { "type": "integer", "minimum": 1 }

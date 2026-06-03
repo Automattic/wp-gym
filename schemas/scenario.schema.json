@@ -95,6 +95,7 @@
             "cli_operational_tooling",
             "theme_site_building",
             "gutenberg_blocks",
+            "performance_diagnostics",
             "plugin_quality_wordpress_standards"
           ]
         },
@@ -109,6 +110,7 @@
               "cli_operational_tooling",
               "theme_site_building",
               "gutenberg_blocks",
+              "performance_diagnostics",
               "plugin_quality_wordpress_standards"
             ]
           },
@@ -137,6 +139,7 @@
             "cli_operational_tooling",
             "theme_site_building",
             "gutenberg_blocks",
+            "performance_diagnostics",
             "plugin_quality_wordpress_standards"
           ]
         },
@@ -305,9 +308,9 @@
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
         },
-        "task_contract_level": {
-          "enum": ["wordpress_state_diagnostic", "workspace_diff_diagnostic", "benchmark_replay"]
-        },
+		"task_contract_level": {
+		  "enum": ["wordpress_state_diagnostic", "workspace_diff_diagnostic", "browser_metrics_diagnostic", "benchmark_replay"]
+		},
         "benchmark_blockers": {
           "type": "array",
           "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }

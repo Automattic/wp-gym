@@ -106,7 +106,16 @@ function scenarioTokens(scenario) {
 
 function scenarioMatchesArea(scenario, area) {
 	const tokens = scenarioTokens(scenario);
+	if (area.id === 'performance') {
+		return area.matches.some((match) => tokens.has(match)) && scenarioHasBrowserMetricsContract(scenario);
+	}
 	return area.matches.some((match) => tokens.has(match));
+}
+
+function scenarioHasBrowserMetricsContract(scenario) {
+	const expectedArtifacts = new Set(scenario.expected_artifacts || []);
+	const successChecks = new Set(scenario.episode_contract?.success_checks || []);
+	return expectedArtifacts.has('browser_metrics') && successChecks.has('codebox_browser_metrics');
 }
 
 function scenarioHeldOutStatus(scenario, heldOutEntriesByParent) {
@@ -238,6 +247,13 @@ if (process.argv.includes('--json')) {
 	console.log(`Benchmark-candidate held-out gaps: ${report.held_out_gaps.length > 0 ? report.held_out_gaps.join(', ') : 'none'}`);
 }
 
-if (process.argv.includes('--check') && report.held_out_gaps.length > 0) {
-	process.exitCode = 1;
+if (process.argv.includes('--check')) {
+	if (report.remaining_gaps.length > 0) {
+		console.error(`Requested-area coverage gaps remain: ${report.remaining_gaps.join(', ')}`);
+		process.exitCode = 1;
+	}
+	if (report.held_out_gaps.length > 0) {
+		console.error(`Benchmark-candidate held-out gaps remain: ${report.held_out_gaps.join(', ')}`);
+		process.exitCode = 1;
+	}
 }

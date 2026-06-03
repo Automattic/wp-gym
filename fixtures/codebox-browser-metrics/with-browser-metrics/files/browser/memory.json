@@ -1,0 +1,7 @@
+{
+  "schema": "wp-codebox/browser-memory/v1",
+  "peak": {
+    "usedSize": 6400000,
+    "totalSize": 12000000
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "wp-codebox/browser-performance/v1",
+  "peak": {
+    "Documents": 1,
+    "Nodes": 128,
+    "JSHeapUsedSize": 6400000
+  }
+}

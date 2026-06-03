@@ -29,10 +29,12 @@
       "custom_admin_ui",
       "data_interaction_apis",
       "gutenberg_blocks",
+      "performance_diagnostics",
       "plugin_quality_wordpress_standards",
       "theme_site_building"
     ],
     "secondary": [
+      "custom_admin_ui",
       "data_interaction_apis",
       "gutenberg_blocks",
       "plugin_quality_wordpress_standards",
@@ -57,6 +59,7 @@
     "../scenarios/modern-wordpress-api/ai-provider-status.json",
     "../scenarios/modern-wordpress-api/abilities-site-summary.json",
     "../scenarios/modern-wordpress-api/rest-route-status.json",
+    "../scenarios/performance/admin-editor-browser-metrics.json",
     "../scenarios/wordpress-investigation/homepage-source-diagnosis.json"
   ],
   "tasks": [
@@ -71,6 +74,7 @@
     { "scenario_id": "modern-wordpress-api-ai-provider-status", "role": "developer-ai-plugin", "summary": "Expose a dependency-safe AI provider status endpoint for operations dashboards." },
     { "scenario_id": "modern-wordpress-api-abilities-site-summary", "role": "developer-api-tooling", "summary": "Expose a small site summary automation surface through the Abilities API." },
     { "scenario_id": "modern-wordpress-api-rest-route-status", "role": "developer-rest-plugin", "summary": "Expose a public read-only WordPress REST status endpoint from a plugin." },
+    { "scenario_id": "performance-admin-editor-browser-metrics", "role": "performance-diagnostic", "summary": "Diagnose an admin/editor browser surface using Codebox browser metrics artifacts." },
     { "scenario_id": "wordpress-investigation-homepage-source-diagnosis", "role": "wordpress-investigation", "summary": "Diagnose why the homepage content is coming from its current source." }
   ]
 }
