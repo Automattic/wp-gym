@@ -294,17 +294,39 @@ accepts the contract without allowing accidental benchmark promotion.
 Regenerate a tiered report from retained registry entries with:
 
 ```sh
-npm run run-registry:report -- \
+npm run run-registry:large-n-report -- \
   --registry artifacts/<run-id>/wp-gym-run-registry/entries \
-  --json artifacts/<run-id>/wp-gym-report.json \
-  --markdown artifacts/<run-id>/wp-gym-report.md \
-  --scope pilot \
-  --large-n-min-attempts 30
+  --json artifacts/<run-id>/wp-gym-large-n-report.json \
+  --markdown artifacts/<run-id>/wp-gym-large-n-report.md
 ```
 
 Use the generated **Large-N Calibration** section for large-N review. It reports
 row counts, pass@1/pass@n, reward variance, pass-rate confidence intervals, and
 failure-class counts by model tier, task/model tier, and task-family/model tier.
+The live workflow also uploads `large-n-report.json` and `large-n-report.md` from
+the retained run-registry entries whenever `dry_run=false`.
+
+The report is intentionally generated from stored registry rows, not from new
+provider calls. To collect the expensive large-N rows for issue #237 after cost
+approval, dispatch the live workflow with an explicit attempt budget:
+
+```sh
+gh workflow run datamachine-live-run.yml \
+  --repo Automattic/wp-gym \
+  --ref main \
+  -f task_set=benchmark-readiness-pilot \
+  -f task_ids=block-markup-valid-semantic-blocks \
+  -f bundle_ref= \
+  -f dry_run=false \
+  -f attempts_per_model=30 \
+  -f large_n_min_attempts=30
+```
+
+Use narrower `task_ids` first because the matrix includes frontier and cheap-model
+rows, and `attempts_per_model=30` multiplies every selected task/model row. A
+full `benchmark-readiness-pilot` large-N pass is the same command with
+`task_ids=` and should be treated as a separate cost approval.
+
 A pilot task can graduate from calibration evidence to benchmark-ready scoring
 only when the retained registry source rows are durable, each required tier meets
 the declared minimum attempt count, confidence intervals are stable enough for
