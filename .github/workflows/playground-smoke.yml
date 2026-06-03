@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Homeboy Playground smoke task
-        uses: Extra-Chill/homeboy-action@v2
+        uses: Extra-Chill/homeboy-action@ecf759622ccf5bfac9612f6039494812a734f532 # v2.7.6
         env:
           HOMEBOY_PLAYGROUND_RESULTS_ARTIFACT_DIR: homeboy-ci-results
         with:
