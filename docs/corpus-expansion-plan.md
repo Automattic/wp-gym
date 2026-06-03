@@ -45,9 +45,13 @@ marks benchmark-replay families as covered only when they have a sealed held-out
 index entry or a public-safe planned private variant pointer. Demo or diagnostic
 families are reported as `not_applicable` instead of benchmark-candidate rows.
 
-As of this plan, `performance` remains the explicit requested-area gap. Do not
-claim performance coverage until timing/request-count observation artifacts and a
-grader contract exist.
+As of this plan, `performance` remains the explicit requested-area gap. The
+local `wp-gym` observation schema records per-action `duration_ms` for command,
+REST, browser, and editor actions, but there is not yet a stable parent-consumer
+contract for request/resource counts or browser performance metrics. Do not claim
+performance coverage until [Automattic/wp-codebox#481](https://github.com/Automattic/wp-codebox/issues/481)
+or an equivalent runtime primitive exposes those metrics and `wp-gym` has a
+grader contract that consumes them.
 
 ## Task Set Milestones
 
@@ -108,4 +112,4 @@ For the next corpus milestone, aim for small but balanced pilots:
 - Keep `admin-settings` active as the first custom-admin/UI slice and expand it with settings sections, nonce handling, and role/capability variants after baseline rows exist.
 - Add at least one runnable pilot scenario for `wordpress-investigation`, `content-migration`, `site-understanding`, and `visual-builder` before combining them into balanced comparison sets.
 - Keep `ai_features` represented by source-backed public pilots while sealed provider-backed held-out variants are prepared outside the public repo.
-- Treat `admin-editor-performance` as a planned diagnostic family until the required observation artifacts and grading primitives are proven in a pilot.
+- Treat `admin-editor-performance` as a planned diagnostic family until the required request-count/runtime-metrics observation artifacts and grading primitives are proven in a pilot.

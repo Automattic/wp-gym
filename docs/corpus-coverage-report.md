@@ -24,7 +24,7 @@ node scripts/report-corpus-coverage.mjs --json
 | CLI operations | Covered | `wordpress-investigation-homepage-source-diagnosis` | Diagnostic-only, not benchmark-candidate until replayable evidence contracts improve. |
 | Media | Covered | `content-migration-media-attachment-import` | Planned private import-package variant; private media fixtures stay outside this repo. |
 | Permissions/security | Covered | REST permission callbacks, Abilities permission callbacks, admin capability gates, sanitization/escaping checks | Covered through visible rule/criteria metadata; private grader thresholds remain withheld. |
-| Performance | Gap | None | Planned diagnostic family only; no scenario should claim performance coverage until timing/request-count observation artifacts and graders exist. |
+| Performance | Gap | None | Planned diagnostic family only; `duration_ms` exists on action observations, but request-count/runtime-metrics artifacts are blocked on [Automattic/wp-codebox#481](https://github.com/Automattic/wp-codebox/issues/481) or an equivalent runtime primitive before graders can consume them. |
 | AI/tooling surfaces | Covered | `modern-wordpress-api-ai-provider-status`, `modern-wordpress-api-abilities-site-summary` | AI provider public pilot uses a planned sealed provider-fixture variant; provider names, prompts, grader thresholds, and replay artifacts stay private. |
 
 ## Held-Out Eligibility Policy
@@ -41,6 +41,6 @@ gap by `npm run corpus:coverage -- --check`.
 
 ## Remaining Gaps
 
-- Add a performance/admin-editor diagnostic family only after the harness can capture reliable timing, request-count, log, and runtime evidence artifacts.
+- Add a performance/admin-editor diagnostic family only after the harness can capture reliable timing, request-count, log, and runtime evidence artifacts; the current upstream blocker is [Automattic/wp-codebox#481](https://github.com/Automattic/wp-codebox/issues/481).
 - Promote planned private variants to sealed held-out pack entries after the private materials are authored and hash-locked.
 - Collect baseline, cheap-model, repeated-attempt, and reward-shortcut evidence before claiming benchmark readiness for any public pilot family.
