@@ -66,3 +66,15 @@ node scripts/report-api-curriculum-freshness.mjs --json
 
 The report includes `global_capability_coverage`, plus API-curriculum freshness
 for scenarios that also declare `api_provenance`.
+
+Use the corpus coverage report for the broader issue #242 area map and public-safe
+held-out/private status:
+
+```sh
+npm run corpus:coverage
+node scripts/report-corpus-coverage.mjs --json
+```
+
+That report maps requested coverage areas such as media, permissions/security,
+performance, and AI/tooling surfaces onto scenario metadata without exposing
+private held-out contents.

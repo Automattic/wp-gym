@@ -304,6 +304,20 @@ function createSyntheticEvalArtifact(file, row, hashes) {
 			compatibility_group: 'pilot-held-out-private-v1',
 		},
 		held_out: row.held_out_pack,
+		isolation: {
+			hidden_evidence_boundaries: {
+				covered_evidence_kinds: ['hidden_grader', 'held_out_variant', 'private_fixture', 'expected_answer', 'task_policy_internal'],
+				surfaces: [
+					{ name: 'prompt', status: 'pass', findings: [] },
+					{ name: 'tools', status: 'pass', findings: [] },
+					{ name: 'workspace', status: 'pass', findings: [] },
+					{ name: 'artifacts', status: 'pass', findings: [] },
+					{ name: 'report_body', status: 'pass', findings: [] },
+				],
+				benchmark_mode_eligible: true,
+				accepted_exposures: [],
+			},
+		},
 		provenance,
 		grader: graderPayload,
 		reports: {
@@ -322,6 +336,12 @@ function createSyntheticEvalArtifact(file, row, hashes) {
 				events: [eventsReference],
 				replay_bundle: [replayReference],
 			},
+		},
+		eval_artifact: {
+			kind: 'json',
+			path_or_url: `sealed://benchmark-artifacts/${hashes.scenario_manifest}/${row.provider_label}`,
+			sha256: hashes.scenario_manifest,
+			media_type: 'application/json',
 		},
 	});
 }

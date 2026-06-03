@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, readdir, rm, mkdir, writeFile, stat, cp } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
+import { createServer as createNetServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -1151,10 +1152,29 @@ export class WPGymEnvironment {
 				this.codeboxRuntimeActionPolicy()
 			);
 		} catch (error) {
-			return this.codeboxRuntimeActionErrorObservation(action, error, Date.now() - started);
+			if (isCodeboxPreviewPortUnavailable(error)) {
+				await this.resetCodeboxRuntimeEpisode();
+				try {
+					runtimeObservation = await runRuntimeAction(
+						await this.wpCodeboxEpisode(),
+						runtimeAction,
+						this.codeboxRuntimeActionPolicy()
+					);
+				} catch (retryError) {
+					return this.codeboxRuntimeActionErrorObservation(action, retryError, Date.now() - started);
+				}
+			} else {
+				return this.codeboxRuntimeActionErrorObservation(action, error, Date.now() - started);
+			}
 		}
 
 		return this.fromCodeboxRuntimeActionObservation(action, runtimeObservation, started);
+	}
+
+	async resetCodeboxRuntimeEpisode() {
+		await this.runtimeEpisode?.close();
+		this.runtimeEpisode = null;
+		this.workspaceArtifacts = null;
 	}
 
 	toCodeboxRuntimeAction(action) {
@@ -1827,6 +1847,10 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 					version: this.options.wpVersion || '7.0',
 					blueprint: this.wpCodeboxBlueprint(),
 				},
+				preview: {
+					port: await availableLocalPort(),
+					bind: '127.0.0.1',
+				},
 				policy: {
 					network: 'deny',
 					filesystem: 'readwrite-mounts',
@@ -1948,6 +1972,40 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 		}
 
 		return files.map((file) => repoRelative(this.workspaceRoot, file));
+	}
+}
+
+function isCodeboxPreviewPortUnavailable(error) {
+	if (!error || typeof error !== 'object') {
+		return false;
+	}
+	if (error.code === 'wp-codebox-preview-port-in-use' || error.code === 'EADDRINUSE') {
+		return true;
+	}
+	if (error.cause && isCodeboxPreviewPortUnavailable(error.cause)) {
+		return true;
+	}
+	return error instanceof Error && /EADDRINUSE|preview-port .* unavailable/i.test(error.message);
+}
+
+async function availableLocalPort() {
+	const server = createNetServer();
+	try {
+		await new Promise((resolveListen, rejectListen) => {
+			server.once('error', rejectListen);
+			server.listen(0, '127.0.0.1', () => resolveListen());
+		});
+		const address = server.address();
+		if (!address || typeof address === 'string') {
+			throw new Error('Unable to allocate a local preview port.');
+		}
+		return address.port;
+	} finally {
+		if (server.listening) {
+			await new Promise((resolveClose, rejectClose) => {
+				server.close((error) => error ? rejectClose(error) : resolveClose());
+			});
+		}
 	}
 }
 

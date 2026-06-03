@@ -411,19 +411,20 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 	const attempt = attemptMetadata(evalArtifact);
 	const failureClass = evalArtifact.status?.failure_class || (evalArtifact.grader?.success ? 'none' : 'task_failure');
 	const runId = attempt.id || [evalArtifact.runner?.workflow?.run_id, scenario.id, provider, model].filter(Boolean).join('-') || `${scenario.id}-${provider}-${model}`;
-	const evalReference = {
+	const declaredEvalReference = localOrRemoteReference(evalArtifact.eval_artifact, 'json');
+	const evalReference = declaredEvalReference || {
 		kind: 'json',
 		path_or_url: repoRelative(evalArtifactFile),
 		sha256: sha256File(evalArtifactFile),
 		media_type: 'application/json',
 	};
-	const resultReference = sourceFile ? {
+	const resultReference = evalArtifact.held_out ? evalReference : sourceFile ? {
 		kind: 'json',
 		path_or_url: repoRelative(sourceFile),
 		sha256: sha256File(sourceFile),
 		media_type: 'application/json',
 	} : evalReference;
-	const replay = replayReference || localOrRemoteReference(firstReference(evalArtifact, [
+	const replay = evalArtifact.held_out ? evalReference : replayReference || localOrRemoteReference(firstReference(evalArtifact, [
 		(artifact) => artifact.reports?.replay,
 		(artifact) => artifact.runtime?.references?.replay_bundle,
 	]), 'json');
@@ -485,6 +486,7 @@ function buildRegistryEntry({ evalArtifact, evalArtifactFile, sourceFile, replay
 			...releaseIdentity,
 			exclusion_reasons: exclusionReasons,
 		},
+		...(evalArtifact.isolation ? { isolation: evalArtifact.isolation } : {}),
 		provenance: evalArtifact.provenance || null,
 		operations: operationalMetadata(evalArtifact, { startedAt, completedAt, failureClass }),
 		...(scenario.heldOut ? { held_out: scenario.heldOut } : {}),

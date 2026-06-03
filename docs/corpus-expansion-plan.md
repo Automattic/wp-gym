@@ -2,6 +2,8 @@
 
 Issue: [#68](https://github.com/Automattic/wp-gym/issues/68)
 
+Coverage tracker: [#242](https://github.com/Automattic/wp-gym/issues/242)
+
 `wp-gym` should grow by task family, not by one-off prompts. Each family needs a
 repeatable scenario shape, hidden graders that inspect final WordPress state or
 workspace artifacts, and stable task sets that separate experimental scenarios from
@@ -15,6 +17,7 @@ benchmark-ready comparisons.
 | `site-building` | `site-building-community-garden` | Natural site-owner request with homepage, navigation, block-theme, editable content, and rendered-site evidence. | Add more site genres, multi-page requirements, theme constraints, and design fingerprint probes. |
 | `modern-wordpress-api` / plugin API | `modern-wordpress-api-abilities-site-summary`, `modern-wordpress-api-rest-route-status`, `modern-wordpress-api-ai-provider-status` | Workspace-backed plugin tasks covering Abilities API, REST route contracts, and dependency-safe AI provider status detection, with API provenance and freshness metadata. | Add more API surfaces, permission models, activation/lifecycle checks, negative cases, and stale-coverage reporting by capability area. |
 | `admin-settings` / custom admin UI | `admin-settings-notice-settings-page` | Workspace-backed plugin task covering Settings API registration, capability-gated admin menus, sanitized option storage, and escaped frontend rendering. | Add negative fixtures for unsafe sanitization/capability shortcuts and prepare sealed variants before benchmark promotion. |
+| `ai-features` / tooling surfaces | `modern-wordpress-api-ai-provider-status`, `modern-wordpress-api-abilities-site-summary` | Dependency-safe AI provider status detection plus Abilities API automation coverage. | Keep provider-backed held-out fixtures private and collect baseline rows before promotion. |
 | `smoke` | `smoke-homepage` | Minimal automation wiring check. | Keep as infrastructure smoke only; do not use for model quality comparisons. |
 
 ## Planned Families
@@ -26,6 +29,25 @@ benchmark-ready comparisons.
 | `site-understanding` / `entity-relationship` | [#84](https://github.com/Automattic/wp-gym/issues/84) | Evidence-grounded questions over seeded content, taxonomies, menus, metadata, blocks, and optional custom post types. | Structured expected entities/relationships, evidence requirements, hallucination detection, missing-evidence failures, and source object references. |
 | `visual-builder` / `elementor` | [#85](https://github.com/Automattic/wp-gym/issues/85) | Optional/plugin-specific visual-builder tasks that modify existing builder-managed pages without replacing them with raw HTML. | Builder-state checks, rendered screenshot/DOM evidence, preservation of builder metadata, bypass detection, and documented Playground/licensing limits. |
 | `admin-editor-performance` / diagnosis | [#68](https://github.com/Automattic/wp-gym/issues/68) | Admin/editor diagnosis tasks that explain slow or broken WordPress behavior from runtime evidence. | Timings, request counts, logs, WP state, reproducible observation artifacts, and separation of diagnosis quality from infrastructure failure. |
+
+## Public Coverage Report
+
+Use the issue #242 corpus report to audit requested-area coverage and public-safe
+held-out status:
+
+```sh
+npm run corpus:coverage
+node scripts/report-corpus-coverage.mjs --json
+```
+
+The report intentionally keeps private variant details out of public output. It
+marks benchmark-replay families as covered only when they have a sealed held-out
+index entry or a public-safe planned private variant pointer. Demo or diagnostic
+families are reported as `not_applicable` instead of benchmark-candidate rows.
+
+As of this plan, `performance` remains the explicit requested-area gap. Do not
+claim performance coverage until timing/request-count observation artifacts and a
+grader contract exist.
 
 ## Task Set Milestones
 
