@@ -94,3 +94,41 @@ For local fixture coverage, run:
 ```sh
 npm run replay-regrade:test
 ```
+
+## Retained Live-Row Scale Report
+
+After downloading or retaining a live `wp-gym-run-registry-<run-id>` artifact, the
+registry report can replay/regrade every retained row from the artifact files:
+
+```sh
+npm run run-registry:report -- \
+  --registry artifacts/wp-gym-run-registry/entries \
+  --regrade \
+  --json artifacts/wp-gym-run-registry/report.json \
+  --markdown artifacts/wp-gym-run-registry/report.md \
+  --scope pilot
+```
+
+The `replay_regrade` section reports attempted rows, deterministic rows, success
+rate, drift rate, failure classes, gap codes, and fail-closed counts for rows that
+are incomplete or nondeterministic. Rows with missing local evidence, stale hashes,
+incompatible traces, grader failures, or grade drift are rejected instead of being
+silently included in the accepted report rows.
+
+To collect fresh retained live evidence without launching it implicitly, dispatch
+the live workflow explicitly:
+
+```sh
+gh workflow run datamachine-live-run.yml \
+  --repo Automattic/wp-gym \
+  --ref feat/issue-254-live-replay-scale \
+  -f task_set=benchmark-readiness-pilot \
+  -f task_ids='' \
+  -f bundle_ref='' \
+  -f dry_run=false \
+  -f attempts_per_model=30
+```
+
+The workflow now emits `report.json` and `report.md` with `--regrade`, so the
+uploaded run-registry artifact carries the scale replay/regrade summary alongside
+the retained replay bundles.
