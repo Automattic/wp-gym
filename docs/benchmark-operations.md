@@ -1,6 +1,6 @@
 # Benchmark Artifact Operations
 
-Issues: [#244](https://github.com/Automattic/wp-gym/issues/244), [#258](https://github.com/Automattic/wp-gym/issues/258), [#262](https://github.com/Automattic/wp-gym/issues/262)
+Issues: [#244](https://github.com/Automattic/wp-gym/issues/244), [#258](https://github.com/Automattic/wp-gym/issues/258), [#262](https://github.com/Automattic/wp-gym/issues/262), [#284](https://github.com/Automattic/wp-gym/issues/284)
 
 Benchmark consumers need retained artifacts, reproducible registry reports, and a
 small operational check that catches missing evidence before a run is cited.
@@ -16,6 +16,30 @@ small operational check that catches missing evidence before a run is cited.
 Keep private held-out packs and private artifacts in their owning private lab or
 artifact store. Public reports should include sealed hashes, aggregate outcomes,
 and durable references, not private task contents.
+
+## Generated Branch Retention
+
+Generated evidence branches are transport surfaces, not durable artifact stores.
+Branches under `agent-runs/*`, `agent-artifacts/*`, and `evidence/*` may be
+deleted only after the run has a durable reviewer-facing record in one of these
+locations:
+
+- A GitHub Actions run with named artifacts that are still inside the configured
+  retention window.
+- A committed report, release asset, PR comment, or issue comment that records
+  the run IDs, artifact names, provider/model rows, and final outcome.
+- A registry row and replay bundle that pass `npm run artifact-retention:test` or
+  the equivalent scheduled Benchmark Artifact Ops validation.
+
+Do not delete generated branches that are the only known pointer to a run,
+artifact bundle, or benchmark/evidence matrix. Retain ambiguous generated
+branches until the owning tracker records the durable evidence location or an
+explicit maintainer decision to discard the run.
+
+Human-authored feature, fix, and verification branches should not use generated
+branch retention as a parking lot. Delete them after their PR is merged, or after
+an unmerged branch is explicitly mapped to a tracker, superseded by merged work,
+or intentionally retained with an owner decision.
 
 ## Registry Report Regeneration
 
@@ -67,7 +91,8 @@ paths.
 - The scheduled Benchmark Artifact Ops workflow runs registry, emitter, and remote archive checks.
 - Stability Budget fixtures classify infra/provider/artifact/runner/task/grader failures.
 - Historical retained-run fixtures validate missing, stale, and unhashable artifacts and regenerate reports.
-- These operations docs remain tied to issues #244, #258, and #262.
+- Generated branch cleanup follows the explicit evidence-archival policy above.
+- These operations docs remain tied to issues #244, #258, #262, and #284.
 
 The `Benchmark Artifact Ops` workflow runs on pull requests, manual dispatch, and
 a weekly schedule. It validates configuration and fixture-backed report paths; it
