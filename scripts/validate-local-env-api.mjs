@@ -6,6 +6,7 @@ import { WPGym } from '../src/index.js';
 
 const scenarioId = 'block-markup-no-fallback-pricing-section';
 const workspaceScenarioId = 'modern-wordpress-api-abilities-site-summary';
+const contentMigrationWorkspaceScenarioId = 'content-migration-media-attachment-import';
 const codeboxEvalMetadataKeys = new Set(['scenario_id', 'task_set', 'task_set_id', 'task-set', 'grader', 'reward', 'failure_class', 'failure-class']);
 
 function assertNoCodeboxEvalMetadata(value, label, trail = []) {
@@ -37,6 +38,7 @@ assert.equal(actionSchema.default.title, 'WP Gym Action v1');
 const scenarios = await WPGym.listScenarios();
 assert.ok(scenarios.some((scenario) => scenario.id === scenarioId));
 assert.ok(scenarios.some((scenario) => scenario.id === workspaceScenarioId));
+assert.ok(scenarios.some((scenario) => scenario.id === contentMigrationWorkspaceScenarioId));
 
 const taskSets = await WPGym.listTaskSets();
 assert.ok(taskSets.some((taskSet) => taskSet.id === 'first-live-run'));
@@ -245,6 +247,31 @@ try {
 	assert.ok(changedFiles.files.some((file) => file.mountTarget === '/workspace' && file.relativePath === 'plugins/site-summary/site-summary.php'));
 } finally {
 	await workspaceEnv.close();
+}
+
+const contentMigrationWorkspaceEnv = await WPGym.make(contentMigrationWorkspaceScenarioId);
+try {
+	const reset = await contentMigrationWorkspaceEnv.reset({ seed: 'content-migration-codebox' });
+	assert.equal(reset.state.workspace_root, '/workspace');
+
+	await contentMigrationWorkspaceEnv.step({
+		type: 'filesystem',
+		operation: 'write',
+		path: 'plugins/importer/importer.php',
+		content: "<?php\n/**\n * Plugin Name: Importer Smoke\n */\n",
+	});
+
+	const workspaceFiles = await contentMigrationWorkspaceEnv.workspaceFiles();
+	assert.ok(workspaceFiles.includes('plugins/importer/importer.php'));
+
+	const grade = await contentMigrationWorkspaceEnv.grade();
+	assert.equal(grade.telemetry.runner, 'wp-codebox');
+	assert.ok(grade.telemetry.workspace_artifacts.changed_files.endsWith('/files/changed-files.json'));
+	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'content migration workspace');
+	const changedFiles = JSON.parse(await readFile(grade.telemetry.workspace_artifacts.changed_files, 'utf8'));
+	assert.ok(changedFiles.files.some((file) => file.mountTarget === '/workspace' && file.relativePath === 'plugins/importer/importer.php'));
+} finally {
+	await contentMigrationWorkspaceEnv.close();
 }
 
 console.log('Validated local WPGym reset/step/grade API.');
