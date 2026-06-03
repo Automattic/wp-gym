@@ -13,7 +13,6 @@
     "wp-gym": "./bin/wp-gym.mjs"
   },
   "scripts": {
-    "postinstall": "node scripts/ensure-playground-sqlite-alias.mjs",
 		"lint": "node --check scripts/hidden-evidence-boundaries.mjs && node --check scripts/validate-scenarios.mjs && node --check scripts/resolve-live-run-matrix.mjs && node --check scripts/resolve-held-out-pack.mjs && node --check scripts/validate-held-out-private-flow.mjs && node --check scripts/validate-reward-fixtures.mjs && node --check scripts/report-reward-robustness.mjs && node --check scripts/validate-reward-soundness-reviews.mjs && node --check scripts/report-review-corpus-agreement.mjs && node --check scripts/validate-calibration-results.mjs && node --check scripts/run-local-calibration-baseline.mjs && node --check scripts/validate-episode-schemas.mjs && node --check scripts/validate-local-env-api.mjs && node --check scripts/validate-external-consumer-proof.mjs && node --check scripts/validate-runtime-plan.mjs && node --check scripts/validate-live-artifacts.mjs && node --check scripts/validate-live-artifact-validator.mjs && node --check scripts/validate-runner-surface-audit.mjs && node --check scripts/validate-held-out-packs.mjs && node --check scripts/validate-run-registry.mjs && node --check scripts/emit-run-registry.mjs && node --check scripts/validate-run-registry-emitter.mjs && node --check scripts/aggregate-run-registry.mjs && node --check scripts/validate-run-registry-report.mjs && node --check scripts/validate-artifact-retention.mjs && node --check scripts/stability-budget.mjs && node --check scripts/replay-regrade.mjs && node --check scripts/benchmark-promotion.mjs && node --check scripts/benchmark-release.mjs && node --check scripts/validate-benchmark-promotion-fixtures.mjs && node --check scripts/validate-stability-budget-fixtures.mjs && node --check scripts/validate-replay-regrade-fixtures.mjs && node --check scripts/triage-remote-archive.mjs && node --check scripts/validate-remote-archive-triage-fixtures.mjs && node --check scripts/report-api-curriculum-freshness.mjs && node --check scripts/validate-benchmark-ops.mjs && node --check src/index.js && node --check bin/wp-gym.mjs && node --check examples/no-model-episode.mjs && node --check examples/scripted-loop.mjs && node --check examples/model-agent-loop.mjs",
     "matrix:live-run": "node scripts/resolve-live-run-matrix.mjs",
     "matrix:check": "TASK_SET=first-live-run node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=benchmark-readiness-pilot node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=visual-builder node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=smoke node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=wordpress-investigation node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=admin-settings node scripts/resolve-live-run-matrix.mjs --check && TASK_SET=all node scripts/resolve-live-run-matrix.mjs --check",
@@ -59,8 +58,6 @@
     "ajv": "^8.20.0"
   },
   "dependencies": {
-    "@wp-playground/cli": "3.1.35",
-    "@wp-playground/wordpress-builds": "^0.9.4",
     "wp-codebox-workspace": "github:Automattic/wp-codebox#main"
   }
 }
