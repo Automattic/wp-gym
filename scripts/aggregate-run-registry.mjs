@@ -139,10 +139,13 @@ function replayRegradeSummary() {
 		attempted: 0,
 		deterministic: 0,
 		failed: 0,
+		fail_closed: 0,
 		success_rate: 0,
 		drift: 0,
 		drift_rate: 0,
 		missing_artifacts: 0,
+		incomplete_rows: 0,
+		nondeterministic_rows: 0,
 		failure_classes: {},
 		gap_codes: {},
 	};
@@ -179,11 +182,14 @@ function addReplayRegradeResult(summary, validation) {
 	}
 
 	summary.failed += 1;
+	summary.fail_closed += 1;
 	if (errorCodes.some((code) => /drift|mismatch/i.test(code))) {
 		summary.drift += 1;
+		summary.nondeterministic_rows += 1;
 	}
 	if (errorCodes.some((code) => /missing.*artifact|missing.*evidence|missing_local_artifact|missing_wordpress_state|missing_replay_trace/i.test(code))) {
 		summary.missing_artifacts += 1;
+		summary.incomplete_rows += 1;
 	}
 	for (const code of errorCodes) {
 		addCount(summary.gap_codes, code);
@@ -195,6 +201,14 @@ function finalizeReplayRegradeSummary(summary) {
 	summary.success_rate = summary.attempted > 0 ? Number((summary.deterministic / summary.attempted).toFixed(4)) : 0;
 	summary.drift_rate = summary.attempted > 0 ? Number((summary.drift / summary.attempted).toFixed(4)) : 0;
 	return summary;
+}
+
+function summarizeReplayRegradeValidations(validations) {
+	const summary = replayRegradeSummary();
+	for (const validation of validations) {
+		addReplayRegradeResult(summary, validation);
+	}
+	return finalizeReplayRegradeSummary(summary);
 }
 
 function addEntry(summary, row) {
@@ -500,15 +514,20 @@ function renderMarkdown(report) {
 		'',
 		'## Replay / Regrade',
 		'',
-		renderTable(['Enabled', 'Attempted', 'Deterministic', 'Failed', 'Success rate', 'Drift rate', 'Missing artifacts'], [[
+		renderTable(['Enabled', 'Attempted', 'Deterministic', 'Failed', 'Fail-closed', 'Success rate', 'Drift rate', 'Incomplete rows', 'Nondeterministic rows'], [[
 			report.replay_regrade.enabled ? 'yes' : 'no',
 			String(report.replay_regrade.attempted),
 			String(report.replay_regrade.deterministic),
 			String(report.replay_regrade.failed),
+			String(report.replay_regrade.fail_closed),
 			percent(report.replay_regrade.success_rate),
 			percent(report.replay_regrade.drift_rate),
-			String(report.replay_regrade.missing_artifacts),
+			String(report.replay_regrade.incomplete_rows),
+			String(report.replay_regrade.nondeterministic_rows),
 		]]),
+		'',
+		`- **Failure classes:** ${formatCounts(report.replay_regrade.failure_classes)}`,
+		`- **Gap codes:** ${formatCounts(report.replay_regrade.gap_codes)}`,
 		'',
 		'## Overall',
 		'',
@@ -684,4 +703,4 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	await main();
 }
 
-export { aggregate, renderMarkdown };
+export { aggregate, renderMarkdown, summarizeReplayRegradeValidations };

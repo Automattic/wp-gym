@@ -6,6 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { replayRegradeArtifactFile } from './replay-regrade.mjs';
+import { summarizeReplayRegradeValidations } from './aggregate-run-registry.mjs';
 import { wordpressStateDocumentsFromSections } from '../src/index.js';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -193,9 +194,30 @@ try {
 	assert.equal(aggregateOutput.replay_regrade.enabled, true);
 	assert.equal(aggregateOutput.replay_regrade.attempted, 1);
 	assert.equal(aggregateOutput.replay_regrade.deterministic, 1);
+	assert.equal(aggregateOutput.replay_regrade.fail_closed, 0);
 	assert.equal(aggregateOutput.replay_regrade.success_rate, 1);
 	assert.equal(aggregateOutput.replay_regrade.drift_rate, 0);
+	assert.equal(aggregateOutput.replay_regrade.incomplete_rows, 0);
+	assert.equal(aggregateOutput.replay_regrade.nondeterministic_rows, 0);
 	assert.equal(aggregateOutput.replay_regrade.failure_classes.none, 1);
+
+	const scaleReport = { replay_regrade: summarizeReplayRegradeValidations([
+		{ ok: true, compatibility_gaps: [] },
+		{ ok: false, compatibility_gaps: [{ code: 'missing_local_artifact', severity: 'error' }] },
+		{ ok: false, compatibility_gaps: [{ code: 'replay_regrade_drift', severity: 'error' }] },
+	]) };
+	assert.equal(scaleReport.replay_regrade.attempted, 3);
+	assert.equal(scaleReport.replay_regrade.deterministic, 1);
+	assert.equal(scaleReport.replay_regrade.failed, 2);
+	assert.equal(scaleReport.replay_regrade.fail_closed, 2);
+	assert.equal(scaleReport.replay_regrade.incomplete_rows, 1);
+	assert.equal(scaleReport.replay_regrade.nondeterministic_rows, 1);
+	assert.equal(scaleReport.replay_regrade.missing_artifacts, 1);
+	assert.equal(scaleReport.replay_regrade.drift, 1);
+	assert.equal(scaleReport.replay_regrade.failure_classes.missing_artifacts, 1);
+	assert.equal(scaleReport.replay_regrade.failure_classes.drift, 1);
+	assert.equal(scaleReport.replay_regrade.gap_codes.missing_local_artifact, 1);
+	assert.equal(scaleReport.replay_regrade.gap_codes.replay_regrade_drift, 1);
 } finally {
 	await rm(temp, { recursive: true, force: true });
 }

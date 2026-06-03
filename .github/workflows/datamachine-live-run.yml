@@ -164,6 +164,7 @@ jobs:
             --regrade
           npm run run-registry:report -- \
             --registry artifacts/wp-gym-run-registry/entries \
+            --regrade \
             --json artifacts/wp-gym-run-registry/report.json \
             --markdown artifacts/wp-gym-run-registry/report.md \
             --scope pilot \
