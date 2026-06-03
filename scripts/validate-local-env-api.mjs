@@ -1,10 +1,34 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { WPGym } from '../src/index.js';
 
 const scenarioId = 'block-markup-no-fallback-pricing-section';
 const workspaceScenarioId = 'modern-wordpress-api-abilities-site-summary';
+const codeboxEvalMetadataKeys = new Set(['scenario_id', 'task_set', 'task_set_id', 'task-set', 'grader', 'reward', 'failure_class', 'failure-class']);
+
+function assertNoCodeboxEvalMetadata(value, label, trail = []) {
+	if (!value || typeof value !== 'object') {
+		return;
+	}
+
+	for (const [key, child] of Object.entries(value)) {
+		const currentTrail = [...trail, key];
+		assert(!codeboxEvalMetadataKeys.has(key), `${label} contains eval metadata key ${currentTrail.join('.')}`);
+		assertNoCodeboxEvalMetadata(child, label, currentTrail);
+	}
+}
+
+async function assertCodeboxArtifactMetadataBoundary(workspaceArtifacts, label) {
+	const artifactDirectory = path.dirname(path.dirname(workspaceArtifacts.changed_files));
+	const metadata = JSON.parse(await readFile(path.join(artifactDirectory, 'metadata.json'), 'utf8'));
+	const runtimeTrace = JSON.parse(await readFile(path.join(artifactDirectory, 'files/runtime-episode-trace.json'), 'utf8'));
+
+	assertNoCodeboxEvalMetadata(metadata, `${label} artifact metadata`);
+	assertNoCodeboxEvalMetadata(runtimeTrace, `${label} runtime episode trace`);
+}
+
 const packageEntrypoint = await import('wp-gym');
 assert.equal(packageEntrypoint.WPGym.apiVersion(), WPGym.apiVersion());
 const actionSchema = await import('wp-gym/schemas/action.v1.schema.json', { with: { type: 'json' } });
@@ -159,6 +183,7 @@ try {
 	assert.equal(step.observation.status, 0);
 	assert.equal(step.done, false);
 	const runtimeTrace = await env.runtimeEpisode.trace();
+	assertNoCodeboxEvalMetadata(runtimeTrace, 'wp_cli/browser runtime episode trace');
 	assert(runtimeTrace.steps.some((runtimeStep) => runtimeStep.action.command === 'wordpress.browser-actions'));
 	assert(runtimeTrace.steps.some((runtimeStep) => runtimeStep.action.command === 'wordpress.wp-cli'));
 
@@ -166,6 +191,7 @@ try {
 	assert.equal(grade.success, true);
 	assert.equal(grade.reward, 1);
 	assert.deepEqual(grade.failure_reasons, []);
+	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'wp_cli/browser');
 
 	const trace = await env.trace();
 	assert.equal(trace.scenario_id, scenarioId);
@@ -195,6 +221,7 @@ try {
 	assert.equal(writeStep.observation.action_type, 'filesystem');
 	assert.equal(writeStep.observation.files[0].path, 'plugins/site-summary/site-summary.php');
 	const filesystemRuntimeTrace = await workspaceEnv.runtimeEpisode.trace();
+	assertNoCodeboxEvalMetadata(filesystemRuntimeTrace, 'workspace runtime episode trace');
 	const filesystemActions = filesystemRuntimeTrace.steps.filter((runtimeStep) => runtimeStep.action.kind === 'filesystem');
 	assert.equal(filesystemActions.length, 1);
 	assert(filesystemActions.every((runtimeStep) => runtimeStep.action.command === 'inspect-mounted-inputs'));
@@ -213,6 +240,7 @@ try {
 	const grade = await workspaceEnv.grade();
 	assert.equal(grade.telemetry.runner, 'wp-codebox');
 	assert.ok(grade.telemetry.workspace_artifacts.changed_files.endsWith('/files/changed-files.json'));
+	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'workspace');
 	const changedFiles = JSON.parse(await readFile(grade.telemetry.workspace_artifacts.changed_files, 'utf8'));
 	assert.ok(changedFiles.files.some((file) => file.mountTarget === '/workspace' && file.relativePath === 'plugins/site-summary/site-summary.php'));
 } finally {

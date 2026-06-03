@@ -1811,7 +1811,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				target: '/workspace',
 				mode: (this.scenario.environment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
 				metadata: {
-					role: 'scenario_workspace',
+					role: 'workspace',
 					writable_roots: this.scenario.environment?.writable_roots || [],
 					baselineSource: this.workspaceBaselineRoot,
 				},
@@ -1823,7 +1823,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				backend: 'wordpress-playground',
 				environment: {
 					kind: 'wordpress',
-					name: `wp-gym-${this.scenario.id}`,
+					name: 'wp-gym-runtime',
 					version: this.options.wpVersion || '7.0',
 					blueprint: this.wpCodeboxBlueprint(),
 				},
@@ -1837,7 +1837,6 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				artifactsDirectory: this.wpCodeboxArtifactRoot(),
 				metadata: {
 					runtime: { caller: 'wp-gym' },
-					task: { kind: 'wp-gym-local', scenario_id: this.scenario.id },
 				},
 			},
 			mounts,
