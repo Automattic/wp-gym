@@ -14,6 +14,7 @@ const capabilityAreas = [
 	'cli_operational_tooling',
 	'theme_site_building',
 	'gutenberg_blocks',
+	'performance_diagnostics',
 	'plugin_quality_wordpress_standards',
 ];
 

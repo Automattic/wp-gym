@@ -1,0 +1,36 @@
+{
+  "schema": "wp-codebox/browser-probe/v1",
+  "requestedUrl": "http://127.0.0.1:9400/wp-admin/",
+  "finalUrl": "http://127.0.0.1:9400/wp-admin/",
+  "waitFor": "domcontentloaded",
+  "durationMs": 123,
+  "capture": [
+    "memory",
+    "network",
+    "performance"
+  ],
+  "files": {
+    "memory": "files/browser/memory.json",
+    "network": "files/browser/network.jsonl",
+    "performance": "files/browser/performance.json",
+    "summary": "files/browser/summary.json"
+  },
+  "summary": {
+    "consoleMessages": 0,
+    "errors": 0,
+    "finalUrl": "http://127.0.0.1:9400/wp-admin/",
+    "metrics": {
+      "browser_peak_used_js_heap_bytes": 6400000,
+      "browser_final_used_js_heap_bytes": 5000000,
+      "browser_checkpoint_count": 2,
+      "browser_dom_node_count": 128,
+      "browser_iframe_count": 1,
+      "browser_resource_count": 12,
+      "browser_transfer_size_bytes": 24576,
+      "browser_long_task_count": 0,
+      "browser_long_task_total_ms": 0
+    },
+    "networkEvents": 12,
+    "replayability": "replayable"
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "id": "performance-admin-editor-browser-metrics",
+  "label": "Diagnose admin/editor browser performance from Codebox metrics",
+  "issue": "https://github.com/Automattic/wp-gym/issues/242",
+  "split": {
+    "membership": "public",
+    "variant_family": "admin-editor-browser-metrics",
+    "variant_seed": "admin-editor-browser-metrics-public-v1",
+    "parent_scenario_id": null,
+    "held_out_private_variant": {
+      "status": "planned",
+      "reference": "held-out-pack:wordpress-capability-breadth-performance-v1/admin-editor-browser-metrics-held-out-v1",
+      "notes": "Private variants should change the target admin/editor surface and expected metric thresholds while preserving the Codebox browser metrics evidence contract."
+    },
+    "artifact_policy": {
+      "public_artifacts": [
+        "prompt",
+        "scenario_manifest",
+        "grader"
+      ],
+      "private_artifacts": [
+        "held_out_prompt",
+        "held_out_manifest",
+        "held_out_grader",
+        "held_out_fixture"
+      ],
+      "grader_exposure": "full_public"
+    }
+  },
+  "prompt_file": "../../prompts/performance/admin-editor-browser-metrics.md",
+  "grader_file": "../../graders/performance/admin-editor-browser-metrics.php",
+  "tags": [
+    "wordpress",
+    "performance",
+    "admin-editor-performance",
+    "browser-metrics"
+  ],
+  "capabilities": {
+    "schema_version": 1,
+    "primary": "performance_diagnostics",
+    "secondary": [
+      "custom_admin_ui"
+    ],
+    "criteria": [
+      "codebox_browser_metrics",
+      "request_counts",
+      "runtime_metrics",
+      "evidence_backed_answer"
+    ]
+  },
+  "api_provenance": {
+    "capability_area": "performance_diagnostics",
+    "api_surface": "WP Codebox browser metrics artifact envelope",
+    "source_inputs": [
+      {
+        "id": "wp-codebox-browser-metrics-pr-484",
+        "type": "canonical_plugin_source",
+        "url": "https://github.com/Automattic/wp-codebox/pull/484",
+        "ref": "main",
+        "checked_at": "2026-06-03",
+        "evidence": "PR #484 introduced the browserArtifactMetrics() helper and CLI browser-metrics command that return wp-codebox/browser-metrics/v1 with hasBrowserMetrics, metrics, and artifact references."
+      },
+      {
+        "id": "wp-codebox-check-suite-pr-543",
+        "type": "canonical_plugin_source",
+        "url": "https://github.com/Automattic/wp-codebox/pull/543",
+        "ref": "main",
+        "checked_at": "2026-06-03",
+        "evidence": "PR #543 fixed the related check-suite smoke expectation after the browser operation success envelope landed."
+      }
+    ],
+    "freshness": {
+      "status": "fresh",
+      "last_reviewed": "2026-06-03",
+      "next_review_due": "2026-07-03",
+      "cadence_days": 30
+    },
+    "curriculum": {
+      "lifecycle_status": "pilot",
+      "candidate_from_source_change": "Codebox now exposes a stable parent-consumer browser metrics envelope, unblocking real performance diagnostics without duration-only guesses.",
+      "promotion_next_step": "Collect repeated baseline rows, add sealed held-out variants, and calibrate metric thresholds before benchmark promotion."
+    }
+  },
+  "rules": {
+    "general": [
+      "evidence_backed_wordpress_answer"
+    ],
+    "task_specific": [
+      "codebox_browser_metrics",
+      "no_duration_only_performance_claims"
+    ]
+  },
+  "limits": {
+    "max_turns": 8,
+    "step_budget": 8,
+    "time_budget_ms": 420000
+  },
+  "environment": {
+    "action_mode": "wordpress",
+    "uses_workspace": false,
+    "reset_fixture": "wordpress-playground-clean-site",
+    "observation_channels": [
+      "prompt",
+      "wordpress_runtime",
+      "browser_metrics"
+    ],
+    "allowed_tools": [
+      "browser_action",
+      "run_wp_cli"
+    ],
+    "writable_roots": [],
+    "hidden_paths": [
+      "graders/",
+      "scenarios/",
+      "checks/",
+      "task-sets/",
+      "docs/",
+      "scripts/"
+    ],
+    "workspace_template": null,
+    "completion_policy": {
+      "type": "agent_final_response"
+    },
+    "termination_policy": {
+      "type": "terminal_grader"
+    },
+    "truncation_policy": {
+      "type": "budget",
+      "max_turns": 8,
+      "step_budget": 8,
+      "time_budget_ms": 420000
+    }
+  },
+  "reward_spec": {
+    "type": "terminal_php_grader",
+    "success_threshold": 1,
+    "reward_range": [
+      0,
+      1
+    ]
+  },
+  "calibration": {
+    "status": "pilot",
+    "benchmark_scope": "pilot",
+    "difficulty_band": "uncalibrated",
+    "headline_score_eligible": false,
+    "baseline_result_sets": [],
+    "known_shortcuts": [
+      "duration_only_performance_claim",
+      "metrics_without_browser_artifacts"
+    ],
+    "task_contract_level": "browser_metrics_diagnostic",
+    "benchmark_blockers": [
+      "diagnostic_contract_only",
+      "missing_baseline_results",
+      "held_out_private_variant_planned"
+    ]
+  },
+  "expected_artifacts": [
+    "browser_metrics",
+    "tool_summary",
+    "final_response",
+    "grader_result"
+  ],
+  "expected": {
+    "metric_schema": "wp-codebox/browser-metrics/v1",
+    "required_metrics": [
+      "browser_resource_count",
+      "browser_transfer_size_bytes",
+      "browser_dom_node_count",
+      "browser_peak_used_js_heap_bytes"
+    ]
+  },
+  "episode_contract": {
+    "schema_version": 1,
+    "allowed_action_types": [
+      "browser",
+      "wp_cli"
+    ],
+    "max_steps": 8,
+    "setup": [
+      "wordpress-playground-clean-site"
+    ],
+    "success_checks": [
+      "codebox_browser_metrics",
+      "no_duration_only_performance_claims",
+      "evidence_backed_answer"
+    ]
+  }
+}

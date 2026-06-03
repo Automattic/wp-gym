@@ -67,6 +67,31 @@
       },
       "additionalProperties": false
     },
+    "browserMetrics": {
+      "type": "object",
+      "required": ["schema", "hasBrowserMetrics", "metrics", "artifacts"],
+      "properties": {
+        "schema": { "const": "wp-codebox/browser-metrics/v1" },
+        "hasBrowserMetrics": { "type": "boolean" },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["path", "kind"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "kind": { "enum": ["json", "jsonl"] }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "commandResultObservation": {
       "type": "object",
       "required": ["schema_version", "type", "action_type", "command", "status", "stdout", "stderr", "timed_out", "error"],
@@ -224,6 +249,7 @@
           "type": "array",
           "items": { "$ref": "#/$defs/artifactRef" }
         },
+        "browser_metrics": { "$ref": "#/$defs/browserMetrics" },
         "duration_ms": { "type": "integer", "minimum": 0 },
         "error": { "$ref": "#/$defs/error" }
       },

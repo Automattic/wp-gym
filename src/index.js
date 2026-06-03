@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { createRuntimeEpisode, runRuntimeAction } from 'wp-codebox-workspace/core';
-import { createPlaygroundRuntimeBackend } from 'wp-codebox-workspace/playground';
+import { browserArtifactMetrics, createPlaygroundRuntimeBackend } from 'wp-codebox-workspace/playground';
 
 const moduleRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const actionSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/action.v1.schema.json';
@@ -343,12 +343,12 @@ function headerRecord(headers) {
 
 function browserProbeCaptureList(action) {
 	const requested = Array.isArray(action.capture) ? action.capture : [];
-	const mapped = requested.map((item) => item === 'screenshot' ? 'screenshot' : item).filter((item) => ['console', 'html', 'network', 'screenshot'].includes(item));
-	return mapped.length > 0 ? mapped : ['console', 'errors', 'html', 'network', 'screenshot'];
+	const mapped = requested.map((item) => item === 'screenshot' ? 'screenshot' : item).filter((item) => ['console', 'errors', 'html', 'memory', 'network', 'performance', 'screenshot'].includes(item));
+	return mapped.length > 0 ? mapped : ['console', 'errors', 'html', 'memory', 'network', 'performance', 'screenshot'];
 }
 
 function browserActionsCaptureList(action) {
-	const capture = new Set(browserProbeCaptureList(action));
+	const capture = new Set(browserProbeCaptureList(action).filter((item) => ['console', 'errors', 'html', 'network', 'screenshot'].includes(item)));
 	capture.add('steps');
 	return [...capture];
 }
@@ -402,7 +402,9 @@ function browserArtifactRefs(files = {}) {
 		console: 'application/x-ndjson',
 		errors: 'application/x-ndjson',
 		html: 'text/html; charset=utf-8',
+		memory: 'application/json',
 		network: 'application/x-ndjson',
+		performance: 'application/json',
 		screenshot: 'image/png',
 		editorState: 'application/json',
 		summary: 'application/json',
@@ -1138,6 +1140,10 @@ export class WPGymEnvironment {
 	}
 
 	async stepWithCodeboxRuntimeAction(action) {
+		if (action.type === 'browser' && ['navigate', 'capture'].includes(action.operation)) {
+			return await this.stepBrowserProbeWithCodebox(action);
+		}
+
 		const started = Date.now();
 		const runtimeAction = this.toCodeboxRuntimeAction(action);
 		let runtimeObservation;
@@ -1164,7 +1170,7 @@ export class WPGymEnvironment {
 			}
 		}
 
-		return this.fromCodeboxRuntimeActionObservation(action, runtimeObservation, started);
+		return await this.fromCodeboxRuntimeActionObservation(action, runtimeObservation, started);
 	}
 
 	async resetCodeboxRuntimeEpisode() {
@@ -1217,7 +1223,7 @@ export class WPGymEnvironment {
 		throw new Error(`Codebox runtime action adapter does not implement ${action.type} actions.`);
 	}
 
-	fromCodeboxRuntimeActionObservation(action, runtimeObservation, started) {
+	async fromCodeboxRuntimeActionObservation(action, runtimeObservation, started) {
 		if (action.type === 'wp_cli') {
 			const execution = runtimeObservation.step?.execution || {};
 			const status = Number.isInteger(runtimeObservation.data.exitCode) ? runtimeObservation.data.exitCode : execution.exitCode;
@@ -1263,7 +1269,7 @@ export class WPGymEnvironment {
 		}
 
 		if (action.type === 'browser') {
-			return this.fromCodeboxBrowserObservation(action, runtimeObservation, started);
+			return await this.fromCodeboxBrowserObservation(action, runtimeObservation, started);
 		}
 
 		throw new Error(`Codebox runtime action adapter returned unsupported ${action.type} observation.`);
@@ -1309,12 +1315,13 @@ export class WPGymEnvironment {
 		return { schema_version: 1, type: 'files', action_type: 'filesystem', operation: 'delete', files: [{ path: action.path, kind: 'unknown' }] };
 	}
 
-	fromCodeboxBrowserObservation(action, runtimeObservation, started) {
+	async fromCodeboxBrowserObservation(action, runtimeObservation, started) {
 		const execution = runtimeObservation.step?.execution || {};
 		const stdout = runtimeObservation.data.stdout && typeof runtimeObservation.data.stdout === 'object' ? runtimeObservation.data.stdout : {};
 		const files = stdout.files && typeof stdout.files === 'object' ? browserArtifactRefs(stdout.files) : [];
 		const artifacts = runtimeArtifactRefs(runtimeObservation.artifactRefs).concat(files);
 		const exitCode = Number.isInteger(runtimeObservation.data.exitCode) ? runtimeObservation.data.exitCode : execution.exitCode;
+		const browserMetrics = await this.codeboxBrowserMetrics();
 		return {
 			schema_version: 1,
 			type: 'browser_result',
@@ -1324,8 +1331,55 @@ export class WPGymEnvironment {
 			url: stdout.finalUrl || action.url || '/',
 			...(action.selector ? { selector: action.selector } : {}),
 			artifacts,
+			browser_metrics: browserMetrics,
 			duration_ms: runtimeExecutionDuration(execution, started),
 			error: exitCode === 0 ? null : { code: 'wp_codebox_browser_error', message: String(runtimeObservation.data.stderr || execution.stderr || 'Browser action failed.') },
+		};
+	}
+
+	async stepBrowserProbeWithCodebox(action) {
+		const started = Date.now();
+		const targetUrl = action.url || '/';
+		const capture = browserProbeCaptureList(action);
+		const { execution } = await (await this.wpCodeboxEpisode()).step({
+			kind: 'browser',
+			command: 'wordpress.browser-probe',
+			args: [
+				`url=${targetUrl}`,
+				`wait-for=${browserProbeWaitFor(action)}`,
+				`capture=${capture.join(',')}`,
+			],
+			operation: action.operation,
+			...(action.selector ? { selector: action.selector } : {}),
+			...(action.url ? { url: action.url } : {}),
+			timeoutMs: action.timeout_ms,
+		}, { type: 'browser-result' });
+		const result = jsonFromOutput(execution.stdout);
+		const browserMetrics = await this.codeboxBrowserMetrics();
+		return {
+			schema_version: 1,
+			type: 'browser_result',
+			action_type: 'browser',
+			operation: action.operation,
+			replayability: action.replayability,
+			url: result.finalUrl || targetUrl,
+			...(action.selector ? { selector: action.selector } : {}),
+			artifacts: browserArtifactRefs(result.files),
+			browser_metrics: browserMetrics,
+			duration_ms: runtimeExecutionDuration(execution, started),
+			error: execution.exitCode === 0 ? null : { code: 'wp_codebox_browser_error', message: String(execution.stderr || 'Browser probe failed.') },
+		};
+	}
+
+	async codeboxBrowserMetrics() {
+		const episode = await this.wpCodeboxEpisode();
+		const bundleDirectory = typeof episode.runtime?.artifactRoot === 'string' ? episode.runtime.artifactRoot : this.wpCodeboxArtifactRoot();
+		const result = await browserArtifactMetrics(bundleDirectory);
+		return {
+			schema: result.schema,
+			hasBrowserMetrics: result.hasBrowserMetrics,
+			metrics: result.metrics,
+			artifacts: result.artifacts,
 		};
 	}
 
@@ -1808,7 +1862,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				policy: {
 					network: 'deny',
 					filesystem: 'readwrite-mounts',
-					commands: ['wordpress.wp-cli', 'wordpress.rest-request', 'wordpress.run-php', 'wordpress.browser-actions', 'wordpress.editor-open', 'inspect-mounted-inputs'],
+					commands: ['wordpress.wp-cli', 'wordpress.rest-request', 'wordpress.run-php', 'wordpress.browser-probe', 'wordpress.browser-actions', 'wordpress.editor-open', 'inspect-mounted-inputs'],
 					secrets: 'none',
 					approvals: 'never',
 				},

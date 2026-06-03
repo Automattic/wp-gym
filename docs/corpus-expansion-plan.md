@@ -17,6 +17,7 @@ benchmark-ready comparisons.
 | `site-building` | `site-building-community-garden` | Natural site-owner request with homepage, navigation, block-theme, editable content, and rendered-site evidence. | Add more site genres, multi-page requirements, theme constraints, and design fingerprint probes. |
 | `modern-wordpress-api` / plugin API | `modern-wordpress-api-abilities-site-summary`, `modern-wordpress-api-rest-route-status`, `modern-wordpress-api-ai-provider-status` | Workspace-backed plugin tasks covering Abilities API, REST route contracts, and dependency-safe AI provider status detection, with API provenance and freshness metadata. | Add more API surfaces, permission models, activation/lifecycle checks, negative cases, and stale-coverage reporting by capability area. |
 | `admin-settings` / custom admin UI | `admin-settings-notice-settings-page` | Workspace-backed plugin task covering Settings API registration, capability-gated admin menus, sanitized option storage, and escaped frontend rendering. | Add negative fixtures for unsafe sanitization/capability shortcuts and prepare sealed variants before benchmark promotion. |
+| `admin-editor-performance` / diagnosis | `performance-admin-editor-browser-metrics` | Browser-metrics diagnostic task that consumes the upstream Codebox `wp-codebox/browser-metrics/v1` artifact envelope for resource count, transfer size, DOM nodes, heap, iframe, and long-task metrics. | Collect baseline rows, add held-out variants, and calibrate thresholds before benchmark promotion. |
 | `ai-features` / tooling surfaces | `modern-wordpress-api-ai-provider-status`, `modern-wordpress-api-abilities-site-summary` | Dependency-safe AI provider status detection plus Abilities API automation coverage. | Keep provider-backed held-out fixtures private and collect baseline rows before promotion. |
 | `smoke` | `smoke-homepage` | Minimal automation wiring check. | Keep as infrastructure smoke only; do not use for model quality comparisons. |
 
@@ -28,7 +29,7 @@ benchmark-ready comparisons.
 | `content-migration` / `media-import` | [#83](https://github.com/Automattic/wp-gym/issues/83) | Import/export tasks with posts, pages, attachments, featured images, inline image blocks, and stale remote URL traps. | Independent checks for content records, attachment posts, physical files, featured image meta, local media URLs, and allowed import surfaces. |
 | `site-understanding` / `entity-relationship` | [#84](https://github.com/Automattic/wp-gym/issues/84) | Evidence-grounded questions over seeded content, taxonomies, menus, metadata, blocks, and optional custom post types. | Structured expected entities/relationships, evidence requirements, hallucination detection, missing-evidence failures, and source object references. |
 | `visual-builder` / `elementor` | [#85](https://github.com/Automattic/wp-gym/issues/85) | Optional/plugin-specific visual-builder tasks that modify existing builder-managed pages without replacing them with raw HTML. | Builder-state checks, rendered screenshot/DOM evidence, preservation of builder metadata, bypass detection, and documented Playground/licensing limits. |
-| `admin-editor-performance` / diagnosis | [#68](https://github.com/Automattic/wp-gym/issues/68) | Admin/editor diagnosis tasks that explain slow or broken WordPress behavior from runtime evidence. | Timings, request counts, logs, WP state, reproducible observation artifacts, and separation of diagnosis quality from infrastructure failure. |
+| `admin-editor-performance` / diagnosis | [#68](https://github.com/Automattic/wp-gym/issues/68) | Additional admin/editor diagnosis tasks that explain slow or broken WordPress behavior from runtime evidence. | More target surfaces, calibrated metric thresholds, logs/WP state correlation, and separation of diagnosis quality from infrastructure failure. |
 
 ## Public Coverage Report
 
@@ -45,13 +46,13 @@ marks benchmark-replay families as covered only when they have a sealed held-out
 index entry or a public-safe planned private variant pointer. Demo or diagnostic
 families are reported as `not_applicable` instead of benchmark-candidate rows.
 
-As of this plan, `performance` remains the explicit requested-area gap. The
-local `wp-gym` observation schema records per-action `duration_ms` for command,
-REST, browser, and editor actions, but there is not yet a stable parent-consumer
-contract for request/resource counts or browser performance metrics. Do not claim
-performance coverage until [Automattic/wp-codebox#481](https://github.com/Automattic/wp-codebox/issues/481)
-or an equivalent runtime primitive exposes those metrics and `wp-gym` has a
-grader contract that consumes them.
+As of this plan, `performance` is covered by the public
+`performance-admin-editor-browser-metrics` pilot. The scenario depends on the
+upstream Codebox browser metrics surface from [Automattic/wp-codebox#484](https://github.com/Automattic/wp-codebox/pull/484)
+and the check-suite follow-up in [Automattic/wp-codebox#543](https://github.com/Automattic/wp-codebox/pull/543).
+The coverage reporter only counts performance when a scenario declares
+`browser_metrics` artifacts and the `codebox_browser_metrics` success check, so
+duration-only observations cannot fake performance coverage.
 
 ## Task Set Milestones
 
@@ -112,4 +113,4 @@ For the next corpus milestone, aim for small but balanced pilots:
 - Keep `admin-settings` active as the first custom-admin/UI slice and expand it with settings sections, nonce handling, and role/capability variants after baseline rows exist.
 - Add at least one runnable pilot scenario for `wordpress-investigation`, `content-migration`, `site-understanding`, and `visual-builder` before combining them into balanced comparison sets.
 - Keep `ai_features` represented by source-backed public pilots while sealed provider-backed held-out variants are prepared outside the public repo.
-- Treat `admin-editor-performance` as a planned diagnostic family until the required request-count/runtime-metrics observation artifacts and grading primitives are proven in a pilot.
+- Keep `admin-editor-performance` as a pilot diagnostic family until repeated baselines, held-out variants, and calibrated metric thresholds are ready for benchmark promotion.
