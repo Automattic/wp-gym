@@ -1885,6 +1885,13 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async workspaceFiles() {
+		if (this.usesCodeboxRuntime()) {
+			const artifactFiles = await this.codeboxWorkspaceFiles();
+			if (artifactFiles.length > 0) {
+				return artifactFiles;
+			}
+		}
+
 		const files = [];
 		async function walk(dir) {
 			for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -1902,6 +1909,27 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 		}
 
 		return files.map((file) => repoRelative(this.workspaceRoot, file));
+	}
+
+	async codeboxWorkspaceFiles() {
+		this.workspaceArtifacts ??= await (await this.wpCodeboxEpisode()).collectArtifacts({ includeLogs: true, includeObservations: true, includePatch: true });
+		const candidates = [];
+
+		for (const artifactPath of [this.workspaceArtifacts.capturedMountsPath, this.workspaceArtifacts.changedFilesPath]) {
+			if (!artifactPath || !existsSync(artifactPath)) {
+				continue;
+			}
+
+			const artifact = await readJson(artifactPath);
+			const files = Array.isArray(artifact.files) ? artifact.files : [];
+			for (const file of files) {
+				if (file?.mountTarget === '/workspace' && typeof file.relativePath === 'string' && file.relativePath !== '') {
+					candidates.push(file.relativePath.replace(/^\/+/, ''));
+				}
+			}
+		}
+
+		return [...new Set(candidates)].sort();
 	}
 }
 
