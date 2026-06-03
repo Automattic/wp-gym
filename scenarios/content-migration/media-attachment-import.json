@@ -8,6 +8,11 @@
     "variant_family": "content-migration-media-import",
     "variant_seed": "media-attachment-import-public-v1",
     "parent_scenario_id": null,
+    "held_out_private_variant": {
+      "status": "planned",
+      "reference": "private:content-migration-media-import/held-out-v1",
+      "notes": "Held-out variant should use a sealed import package with different media filenames, content titles, stale remote hosts, and grader assertions while publishing only aggregate/hash evidence."
+    },
     "artifact_policy": {
       "public_artifacts": [
         "prompt",

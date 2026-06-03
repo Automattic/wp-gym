@@ -8,6 +8,11 @@
     "variant_family": "block-markup-service-overview",
     "variant_seed": "two-service-overview-public-v1",
     "parent_scenario_id": null,
+    "held_out_private_variant": {
+      "status": "planned",
+      "reference": "private:block-markup-service-overview/held-out-v1",
+      "notes": "Held-out variant should preserve nested editable block layout requirements while changing the service domain, required copy, block mix thresholds, and expected assertions outside this public repository."
+    },
     "artifact_policy": {
       "public_artifacts": [
         "prompt",
