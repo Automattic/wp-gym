@@ -336,10 +336,6 @@ function normalizeRestBodyForObservation(body, headers = {}) {
 	return body;
 }
 
-function normalizeRestRoute(pathname) {
-	return String(pathname || '/').replace(/^\/wp-json\/?/, '/') || '/';
-}
-
 function headerRecord(headers) {
 	return Object.fromEntries(Object.entries(headers || {}).map(([key, value]) => [key, String(value)]));
 }
@@ -1171,6 +1167,19 @@ export class WPGymEnvironment {
 			};
 		}
 
+		if (action.type === 'rest') {
+			const body = normalizeRestBodyForRequest(action.body);
+			return {
+				type: 'rest_request',
+				method: action.method,
+				path: action.path,
+				...(action.headers ? { headers: headerRecord(action.headers) } : {}),
+				...(typeof action.body === 'string' ? { body } : {}),
+				...(action.body !== undefined && typeof action.body !== 'string' ? { body_json: action.body } : {}),
+				...(action.timeout_ms ? { timeout_ms: action.timeout_ms } : {}),
+			};
+		}
+
 		if (action.type === 'browser') {
 			return {
 				type: 'browser',
@@ -1209,6 +1218,28 @@ export class WPGymEnvironment {
 
 		if (action.type === 'filesystem') {
 			return this.fromCodeboxFilesystemObservation(action, runtimeObservation);
+		}
+
+		if (action.type === 'rest') {
+			const data = runtimeObservation.data && typeof runtimeObservation.data === 'object' ? runtimeObservation.data : {};
+			const diagnostics = data.diagnostics && typeof data.diagnostics === 'object' ? data.diagnostics : {};
+			const timing = data.timing && typeof data.timing === 'object' ? data.timing : {};
+			const status = Number.isInteger(data.status) ? data.status : null;
+			const responseHeaders = headerRecord(data.headers || {});
+			return {
+				schema_version: 1,
+				type: 'rest_response',
+				action_type: 'rest',
+				method: String(data.method || action.method),
+				path: action.path,
+				status,
+				headers: responseHeaders,
+				body: normalizeRestBodyForObservation(data.body, responseHeaders),
+				timeout_ms: action.timeout_ms,
+				timed_out: false,
+				duration_ms: Number.isFinite(timing.durationMs) ? timing.durationMs : runtimeExecutionDuration(runtimeObservation.step?.execution || {}, started),
+				error: diagnostics.exitCode === 0 && status !== null ? null : { code: 'wp_codebox_rest_error', message: String(diagnostics.stderr || 'REST action failed.') },
+			};
 		}
 
 		if (action.type === 'browser') {
@@ -1311,6 +1342,23 @@ export class WPGymEnvironment {
 			};
 		}
 
+		if (action.type === 'rest') {
+			return {
+				schema_version: 1,
+				type: 'rest_response',
+				action_type: 'rest',
+				method: action.method,
+				path: action.path,
+				status: null,
+				headers: {},
+				body: null,
+				timeout_ms: action.timeout_ms,
+				timed_out: false,
+				duration_ms: durationMs,
+				error: { code: 'wp_codebox_rest_error', message },
+			};
+		}
+
 		throw error;
 	}
 
@@ -1367,101 +1415,7 @@ export class WPGymEnvironment {
 	}
 
 	async stepRest(action) {
-		const started = Date.now();
-		const requestHeaders = headerRecord(action.headers || {});
-		const requestBody = normalizeRestBodyForRequest(action.body);
-
-		try {
-			const observation = await (await this.wpCodeboxEpisode()).observe({
-				type: 'http-response',
-				path: action.path,
-				method: action.method,
-				headers: requestHeaders,
-				...(requestBody !== undefined ? { body: requestBody } : {}),
-				includeBody: true,
-			});
-			const data = observation.data && typeof observation.data === 'object' ? observation.data : {};
-			if (!Number.isInteger(data.status)) {
-				return await this.stepRestWithCodeboxPhp(action, started, requestHeaders, requestBody);
-			}
-			const responseHeaders = headerRecord(data.headers || {});
-
-			return {
-				schema_version: 1,
-				type: 'rest_response',
-				action_type: 'rest',
-				method: action.method,
-				path: action.path,
-				status: Number.isInteger(data.status) ? data.status : null,
-				headers: responseHeaders,
-				body: normalizeRestBodyForObservation(data.body, responseHeaders),
-				timeout_ms: action.timeout_ms,
-				timed_out: false,
-				duration_ms: Date.now() - started,
-				error: null,
-			};
-		} catch (error) {
-			try {
-				return await this.stepRestWithCodeboxPhp(action, started, requestHeaders, requestBody);
-			} catch (fallbackError) {
-				return {
-					schema_version: 1,
-					type: 'rest_response',
-					action_type: 'rest',
-					method: action.method,
-					path: action.path,
-					status: null,
-					headers: {},
-					body: null,
-					timeout_ms: action.timeout_ms,
-					timed_out: false,
-					duration_ms: Date.now() - started,
-					error: { code: 'wp_codebox_rest_error', message: fallbackError instanceof Error ? fallbackError.message : String(fallbackError) },
-				};
-			}
-		}
-	}
-
-	async stepRestWithCodeboxPhp(action, started, requestHeaders, requestBody) {
-		const wrapperFile = path.join(this.episodeRoot, `rest-action-${Date.now()}.php`);
-		await writeFile(wrapperFile, `<?php
-$request = new WP_REST_Request( ${JSON.stringify(action.method)}, ${JSON.stringify(normalizeRestRoute(action.path))} );
-foreach ( json_decode( ${JSON.stringify(JSON.stringify(requestHeaders))}, true ) as $name => $value ) {
-    $request->set_header( $name, $value );
-}
-$body = json_decode( ${JSON.stringify(JSON.stringify(requestBody ?? null))}, true );
-if ( null !== $body ) {
-    $request->set_body( is_string( $body ) ? $body : wp_json_encode( $body ) );
-}
-$response = rest_do_request( $request );
-$server = rest_get_server();
-echo wp_json_encode( array(
-    'status' => $response->get_status(),
-    'headers' => $response->get_headers(),
-    'body' => $server->response_to_data( $response, false ),
-), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
-`);
-
-		const { execution } = await (await this.wpCodeboxEpisode()).step({
-			command: 'wordpress.run-php',
-			args: [`code-file=${wrapperFile}`],
-		});
-		const result = jsonFromOutput(execution.stdout);
-
-		return {
-			schema_version: 1,
-			type: 'rest_response',
-			action_type: 'rest',
-			method: action.method,
-			path: action.path,
-			status: Number.isInteger(result.status) ? result.status : null,
-			headers: headerRecord(result.headers || {}),
-			body: result.body ?? null,
-			timeout_ms: action.timeout_ms,
-			timed_out: false,
-			duration_ms: Date.now() - started,
-			error: null,
-		};
+		return await this.stepWithCodeboxRuntimeAction(action);
 	}
 
 	async stepBrowser(action) {
@@ -1830,7 +1784,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 				policy: {
 					network: 'deny',
 					filesystem: 'readwrite-mounts',
-					commands: ['wordpress.wp-cli', 'wordpress.run-php', 'wordpress.browser-actions', 'wordpress.editor-open', 'inspect-mounted-inputs'],
+					commands: ['wordpress.wp-cli', 'wordpress.rest-request', 'wordpress.run-php', 'wordpress.browser-actions', 'wordpress.editor-open', 'inspect-mounted-inputs'],
 					secrets: 'none',
 					approvals: 'never',
 				},
