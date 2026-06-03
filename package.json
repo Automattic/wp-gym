@@ -39,6 +39,7 @@
     "run-registry:emit:test": "node scripts/validate-run-registry-emitter.mjs",
     "run-registry:validate": "node scripts/validate-run-registry.mjs --benchmark-mode",
     "run-registry:report": "node scripts/aggregate-run-registry.mjs",
+    "run-registry:large-n-report": "node scripts/aggregate-run-registry.mjs --scope all --large-n-min-attempts 30",
     "stability-budget:report": "node scripts/stability-budget.mjs",
     "stability-budget:test": "node scripts/validate-stability-budget-fixtures.mjs",
     "artifact-retention:test": "node scripts/validate-artifact-retention.mjs",

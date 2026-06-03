@@ -160,6 +160,27 @@ npm run run-registry:report -- \
   --scope pilot
 ```
 
+For large-N calibration review, use the all-scope wrapper so control rows,
+cheap-model rows, frontier rows, repeated attempts, and human/reference rows stay
+visible together while headline benchmark rows remain separate:
+
+```bash
+npm run run-registry:large-n-report -- \
+  --registry artifacts/<workflow-run-id>/wp-gym-run-registry/entries \
+  --json artifacts/<workflow-run-id>/wp-gym-large-n-report.json \
+  --markdown artifacts/<workflow-run-id>/wp-gym-large-n-report.md
+```
+
+Override the default threshold when a task family declares a different minimum:
+
+```bash
+npm run run-registry:large-n-report -- \
+  --registry artifacts/<workflow-run-id>/wp-gym-run-registry/entries \
+  --json artifacts/<workflow-run-id>/wp-gym-large-n-report.json \
+  --markdown artifacts/<workflow-run-id>/wp-gym-large-n-report.md \
+  --large-n-min-attempts 50
+```
+
 Add `--regrade` when the artifact bundle is retained locally and the report must
 prove deterministic replay/regrade at corpus scale:
 

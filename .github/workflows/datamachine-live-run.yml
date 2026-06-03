@@ -34,6 +34,11 @@ on:
         required: true
         default: 1
         type: number
+      large_n_min_attempts:
+        description: Minimum retained attempts per model tier before the large-N report can mark the threshold met.
+        required: true
+        default: 30
+        type: number
 permissions:
   actions: read
   contents: write
@@ -161,7 +166,14 @@ jobs:
             --registry artifacts/wp-gym-run-registry/entries \
             --json artifacts/wp-gym-run-registry/report.json \
             --markdown artifacts/wp-gym-run-registry/report.md \
-            --scope pilot
+            --scope pilot \
+            --large-n-min-attempts "${{ inputs.large_n_min_attempts }}"
+          npm run run-registry:report -- \
+            --registry artifacts/wp-gym-run-registry/entries \
+            --json artifacts/wp-gym-run-registry/large-n-report.json \
+            --markdown artifacts/wp-gym-run-registry/large-n-report.md \
+            --scope all \
+            --large-n-min-attempts "${{ inputs.large_n_min_attempts }}"
 
       - name: Upload run registry artifact
         uses: actions/upload-artifact@v4
