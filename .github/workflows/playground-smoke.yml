@@ -11,7 +11,7 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
       - name: Run Homeboy Playground smoke task
         uses: Extra-Chill/homeboy-action@ecf759622ccf5bfac9612f6039494812a734f532 # v2.7.6
@@ -27,7 +27,7 @@ jobs:
 
       - name: Upload task artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wp-gym-smoke-task
           path: |
