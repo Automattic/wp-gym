@@ -25,6 +25,10 @@ function readJson(file) {
 	return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
+function sha256File(file) {
+	return createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+}
+
 function listJsonFiles(dir) {
 	const files = [];
 	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -77,6 +81,53 @@ function pass(code, message, evidence = []) {
 
 function hasVersionIdentity(metadata) {
 	return Boolean(metadata?.version_identity) && hashFields.every((field) => hashPattern.test(metadata.version_identity[field] || ''));
+}
+
+function loadBenchmarkReleases(root) {
+	const releases = [];
+	const releaseRoot = path.join(root, 'benchmark-releases');
+	if (!fs.existsSync(releaseRoot)) {
+		return releases;
+	}
+
+	for (const file of listJsonFiles(releaseRoot)) {
+		const artifact = readJson(file);
+		const taskSetManifest = artifact.release?.task_set_manifest;
+		if (!taskSetManifest) {
+			continue;
+		}
+		const taskSetFile = path.join(root, taskSetManifest);
+		if (!fs.existsSync(taskSetFile) || artifact.release.task_set_manifest_sha256 !== sha256File(taskSetFile)) {
+			continue;
+		}
+		releases.push({ file, artifact });
+	}
+	return releases;
+}
+
+function releaseVersionIdentityForScenario(manifest, context) {
+	const metadata = manifest.calibration?.benchmark_metadata || {};
+	for (const release of context.benchmarkReleases || []) {
+		if (release.artifact.release?.task_set_id !== context.taskSetId && context.taskSetId) {
+			continue;
+		}
+		if (metadata.benchmark_version && release.artifact.release?.benchmark_version !== metadata.benchmark_version) {
+			continue;
+		}
+		const scenario = (release.artifact.scenarios || []).find((entry) => entry.scenario_id === manifest.id);
+		if (!scenario || !hasVersionIdentity({ version_identity: scenario.version_identity })) {
+			continue;
+		}
+		const scenarioFile = path.join(context.root, scenario.manifest || '');
+		if (!fs.existsSync(scenarioFile) || scenario.manifest_sha256 !== sha256File(scenarioFile)) {
+			continue;
+		}
+		return {
+			identity: scenario.version_identity,
+			evidence: [repoRelative(context.root, release.file)],
+		};
+	}
+	return null;
 }
 
 function hasReviewedRewardSoundness(review) {
@@ -259,6 +310,7 @@ function evaluateScenario(scenario, context = {}) {
 	const manifest = scenario.manifest;
 	const calibration = manifest.calibration || {};
 	const split = manifest.split || {};
+	const releaseIdentity = releaseVersionIdentityForScenario(manifest, context);
 	const coverage = context.shortcutCoverage?.get(manifest.id) || { negative: new Map(), positive: new Map() };
 	const robustness = context.rewardRobustnessByScenario?.get(manifest.id);
 	const gates = [];
@@ -372,8 +424,8 @@ function evaluateScenario(scenario, context = {}) {
 		? pass('hidden_evidence_boundaries_clean', 'Scenario hides grader, private fixture, held-out, expected answer, and task-policy evidence from visible benchmark surfaces.', manifest.environment?.hidden_paths || [])
 		: fail('hidden_evidence_boundaries_clean', 'Benchmark scenarios must not expose hidden grader, private fixture, held-out, expected answer, or task-policy internals.', hiddenEvidenceBlockers, manifest.environment?.hidden_paths || []));
 
-	gates.push(hasVersionIdentity(calibration.benchmark_metadata)
-		? pass('version_identity_present', 'Scenario benchmark metadata includes version identity hashes.')
+	gates.push(hasVersionIdentity(calibration.benchmark_metadata) || releaseIdentity
+		? pass('version_identity_present', releaseIdentity ? 'Scenario version identity is declared in a fresh benchmark release artifact.' : 'Scenario benchmark metadata includes version identity hashes.', releaseIdentity?.evidence || [])
 		: fail('version_identity_present', 'Scenario benchmark metadata must include all version identity hashes.', ['missing_version_identity']));
 
 	gates.push(Array.isArray(calibration.benchmark_blockers) && calibration.benchmark_blockers.length === 0
@@ -525,6 +577,7 @@ function buildContext(root) {
 		shortcutCoverage: loadShortcutCoverage(root),
 		calibrationResultsById: loadCalibrationResults(root),
 		rewardSoundnessReviewsByPath: loadRewardSoundnessReviews(root),
+		benchmarkReleases: loadBenchmarkReleases(root),
 		rewardRobustness,
 		rewardRobustnessByScenario: new Map(rewardRobustness.scenarios.map((scenario) => [scenario.scenario_id, scenario])),
 		rewardRobustnessByFamily: new Map(rewardRobustness.task_families.map((family) => [family.family, family])),
@@ -546,7 +599,7 @@ function evaluatePromotionTarget({ root = moduleRoot, scenarioId = null, taskSet
 			throw new Error(`Unknown task set: ${taskSetId}`);
 		}
 		const relativeScenarios = new Map([...context.scenariosById].map(([id, scenario]) => [id, { ...scenario, file: repoRelative(root, scenario.file), type: 'scenario' }]));
-		return evaluateTaskSet({ ...taskSet, file: repoRelative(root, taskSet.file), type: 'task_set' }, { ...context, scenariosById: relativeScenarios });
+		return evaluateTaskSet({ ...taskSet, file: repoRelative(root, taskSet.file), type: 'task_set' }, { ...context, scenariosById: relativeScenarios, taskSetId });
 	}
 	throw new Error('Expected --scenario <id> or --task-set <id>.');
 }
