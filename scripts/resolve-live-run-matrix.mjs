@@ -430,54 +430,22 @@ function artifactExportConfig(task, provider, metadata) {
 		pr_body_template: [
 			'## wp-gym Live Run',
 			'- **Task ID:** `{task_id}`',
-			'- **Provider:** `{provider}`',
-			'- **Model:** `{model}`',
-			'- **Calibration row type:** `{calibration_row_type}`',
 			'- **Workflow:** {workflow_run_url}',
-			'- **Success:** `{success}`',
-			'- **Reward:** `{reward}`',
-			'- **Score:** `{grade_score}` / `{grade_max_score}`',
-			'- **Task set:** `{task_set_id}`',
-			'- **Score scope:** `{score_scope}`',
-			'- **Benchmark eligible:** `{benchmark_eligible}`',
-			'- **Matrix attempt:** `{attempt_id}` (`{attempt_index}` / `{attempt_count}`)',
-			'- **Result set:** `{result_set_id}`',
-			'- **Blockers:** `{benchmark_blockers}`',
-			'',
-			'{result_table}',
-			'',
-			'{checks_table}',
 			'',
 			'{links_table}',
 		].join('\n'),
 		pr_template_values: {
 			task_id: task.id,
-			task_label: task.label,
 			provider: provider.provider,
 			model: provider.model,
-			model_label: `${provider.provider}/${provider.model}`,
 			calibration_row_type: provider.calibrationRowType || 'frontier_model',
 			task_set_id: metadata.taskSet.id,
-			task_set_benchmark_status: metadata.taskSet.benchmark_status,
-			task_set_benchmark_version: metadata.taskSet.benchmark_metadata?.benchmark_version || 'unversioned',
-			task_set_compatibility_group: metadata.taskSet.benchmark_metadata?.compatibility_group || 'unversioned',
-			scenario_benchmark_version: task.calibration.benchmark_metadata?.benchmark_version || 'unversioned',
-			scenario_compatibility_group: task.calibration.benchmark_metadata?.compatibility_group || 'unversioned',
 			score_scope: metadata.taskSet.score_scope,
 			benchmark_eligible: metadata.benchmarkEligible,
-			aggregate_score: metadata.taskSet.aggregate_score,
-			task_contract_level: task.calibration.task_contract_level || 'unknown',
-			split_membership: task.split?.membership || 'unknown',
-			variant_family: task.split?.variant_family || '',
-			variant_seed: task.split?.variant_seed || '',
-			run_id: metadata.runId,
-			run_attempt: metadata.runAttempt,
 			attempt_id: metadata.attemptId,
 			attempt_index: metadata.attemptIndex,
 			attempt_count: metadata.attemptCount,
 			result_set_id: metadata.resultSetId,
-			seed: metadata.seed,
-			temperature: metadata.temperature || 'provider_default',
 			benchmark_blockers: metadata.benchmarkRejectReasons.join(', ') || 'none',
 		},
 		pr_template_paths: {
@@ -925,13 +893,42 @@ function assertLiveRunMatrix(matrix) {
 	}
 }
 
+function runtimeMatrix(matrix) {
+	const runtimeFields = [
+		'prompt',
+		'provider',
+		'model',
+		'provider_plugin',
+		'success_requires_pr',
+		'runner_workspace',
+		'pipeline_step_patches',
+		'flow_step_patches',
+		'enable_terminal_actions',
+		'wp_cli_tool_name',
+		'artifact_export_config',
+		'rules',
+		'general_rules',
+		'task_rules',
+		'probes',
+		'max_turns',
+		'step_budget',
+		'time_budget_ms',
+		'workload_run_after',
+		'artifact_suffix',
+	];
+
+	return {
+		include: matrix.include.map((row) => Object.fromEntries(runtimeFields.map((field) => [field, row[field]]))),
+	};
+}
+
 const matrix = resolveMatrix();
 
 if (checkOnly) {
 	assertLiveRunMatrix(matrix);
 	console.log(`Resolved and checked ${matrix.include.length} live-run matrix entries.`);
 } else if (process.env.GITHUB_OUTPUT) {
-	fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify(matrix)}\n`);
+	fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify(runtimeMatrix(matrix))}\n`);
 } else {
 	console.log(JSON.stringify(matrix, null, 2));
 }
