@@ -16,7 +16,7 @@ function workflowBlocks(yaml) {
 	const lines = yaml.split('\n');
 	const blocks = [];
 	for (const [index, line] of lines.entries()) {
-		if (!line.includes('actions/upload-artifact@v4')) {
+		if (!line.includes('actions/upload-artifact@')) {
 			continue;
 		}
 		blocks.push(lines.slice(index, index + 24).join('\n'));
