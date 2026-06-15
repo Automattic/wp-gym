@@ -55,9 +55,9 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -135,9 +135,9 @@ jobs:
     if: ${{ always() && ! inputs.dry_run && needs.live-run.result != 'skipped' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -146,7 +146,7 @@ jobs:
         run: npm ci
 
       - name: Download live replay artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: wp-gym-replay-*
           path: artifacts/live-replay-bundles
@@ -176,7 +176,7 @@ jobs:
             --large-n-min-attempts "${{ inputs.large_n_min_attempts }}"
 
       - name: Upload run registry artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wp-gym-run-registry-${{ github.run_id }}
           path: |
