@@ -330,7 +330,7 @@ function replayReference(entry) {
 	return artifactEntries(entry).find((artifact) => artifact.category === 'replay' || artifact.name === 'replay_bundle') || null;
 }
 
-async function validateReplayRegrade(entry, baseDir) {
+async function validateReplayRegrade(entry, baseDir, replayValidationCache = null) {
 	const reference = replayReference(entry);
 	if (!reference) {
 		return [];
@@ -340,17 +340,23 @@ async function validateReplayRegrade(entry, baseDir) {
 	if (!replayFile || !fs.existsSync(replayFile) || !fs.statSync(replayFile).isFile()) {
 		return [];
 	}
+	const cacheKey = `${replayFile}:${reference.sha256 || ''}`;
+	if (replayValidationCache?.has(cacheKey)) {
+		return replayValidationCache.get(cacheKey).map((item) => ({ ...item }));
+	}
 
 	let result;
 	try {
 		result = await replayRegradeInput(replayFile, { benchmarkMode: true, regrade: true });
 	} catch (error) {
-		return [gap(
+		const gaps = [gap(
 			'replay_regrade_failed',
 			'error',
 			'artifact_index.entries.replay',
 			`Replay/regrade failed for ${reference.path_or_url}: ${error instanceof Error ? error.message : String(error)}.`
 		)];
+		replayValidationCache?.set(cacheKey, gaps);
+		return gaps.map((item) => ({ ...item }));
 	}
 
 	const gaps = [];
@@ -374,7 +380,8 @@ async function validateReplayRegrade(entry, baseDir) {
 			`Replay/regrade failed for ${reference.path_or_url}: ${status.failure_reason || status.compatibility_error_codes?.join(', ') || 'sealed artifact was not reproducible'}.`
 		));
 	}
-	return gaps;
+	replayValidationCache?.set(cacheKey, gaps);
+	return gaps.map((item) => ({ ...item }));
 }
 
 async function validateRunRegistryEntry(entry, options = {}) {
@@ -471,7 +478,7 @@ async function validateRunRegistryEntry(entry, options = {}) {
 	}
 
 	if (options.regrade && !gaps.some((item) => item.severity === 'error')) {
-		gaps.push(...await validateReplayRegrade(entry, baseDir));
+		gaps.push(...await validateReplayRegrade(entry, baseDir, options.replayValidationCache));
 	}
 
 	return {

@@ -213,9 +213,10 @@ try {
 	assert.equal(scaleReport.replay_regrade.incomplete_rows, 1);
 	assert.equal(scaleReport.replay_regrade.nondeterministic_rows, 1);
 	assert.equal(scaleReport.replay_regrade.missing_artifacts, 1);
+	assert.equal(scaleReport.replay_regrade.grader_mismatches, 1);
 	assert.equal(scaleReport.replay_regrade.drift, 1);
 	assert.equal(scaleReport.replay_regrade.failure_classes.missing_artifacts, 1);
-	assert.equal(scaleReport.replay_regrade.failure_classes.drift, 1);
+	assert.equal(scaleReport.replay_regrade.failure_classes.grader_mismatch, 1);
 	assert.equal(scaleReport.replay_regrade.gap_codes.missing_local_artifact, 1);
 	assert.equal(scaleReport.replay_regrade.gap_codes.replay_regrade_drift, 1);
 } finally {

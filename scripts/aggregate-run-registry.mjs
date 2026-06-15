@@ -144,6 +144,7 @@ function replayRegradeSummary() {
 		drift: 0,
 		drift_rate: 0,
 		missing_artifacts: 0,
+		grader_mismatches: 0,
 		incomplete_rows: 0,
 		nondeterministic_rows: 0,
 		failure_classes: {},
@@ -152,6 +153,9 @@ function replayRegradeSummary() {
 }
 
 function replayGapClass(code) {
+	if (/grade.*mismatch|grader.*mismatch|replay_regrade_drift/i.test(code)) {
+		return 'grader_mismatch';
+	}
 	if (/drift|mismatch/i.test(code)) {
 		return 'drift';
 	}
@@ -186,6 +190,9 @@ function addReplayRegradeResult(summary, validation) {
 	if (errorCodes.some((code) => /drift|mismatch/i.test(code))) {
 		summary.drift += 1;
 		summary.nondeterministic_rows += 1;
+	}
+	if (errorCodes.some((code) => /grade.*mismatch|grader.*mismatch|replay_regrade_drift/i.test(code))) {
+		summary.grader_mismatches += 1;
 	}
 	if (errorCodes.some((code) => /missing.*artifact|missing.*evidence|missing_local_artifact|missing_wordpress_state|missing_replay_trace/i.test(code))) {
 		summary.missing_artifacts += 1;
@@ -346,9 +353,10 @@ async function aggregate(entries, options) {
 	const rows = [];
 	const rejected = [];
 	const replayRegrade = replayRegradeSummary();
+	const replayValidationCache = options.regrade ? new Map() : null;
 	for (const file of entries) {
 		const row = readJson(file);
-		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, regrade: options.regrade, baseDir: options.baseDir || root });
+		const validation = await validateRunRegistryEntry(row, { benchmarkMode: options.benchmarkMode, regrade: options.regrade, baseDir: options.baseDir || root, replayValidationCache });
 		const rowSummary = { file: repoRelative(file), ok: validation.ok, compatibility_gaps: validation.compatibility_gaps };
 		if (options.regrade) {
 			addReplayRegradeResult(replayRegrade, validation);
@@ -514,7 +522,7 @@ function renderMarkdown(report) {
 		'',
 		'## Replay / Regrade',
 		'',
-		renderTable(['Enabled', 'Attempted', 'Deterministic', 'Failed', 'Fail-closed', 'Success rate', 'Drift rate', 'Incomplete rows', 'Nondeterministic rows'], [[
+		renderTable(['Enabled', 'Attempted', 'Deterministic', 'Failed', 'Fail-closed', 'Success rate', 'Drift rate', 'Missing artifacts', 'Grader mismatches', 'Incomplete rows', 'Nondeterministic rows'], [[
 			report.replay_regrade.enabled ? 'yes' : 'no',
 			String(report.replay_regrade.attempted),
 			String(report.replay_regrade.deterministic),
@@ -522,6 +530,8 @@ function renderMarkdown(report) {
 			String(report.replay_regrade.fail_closed),
 			percent(report.replay_regrade.success_rate),
 			percent(report.replay_regrade.drift_rate),
+			String(report.replay_regrade.missing_artifacts),
+			String(report.replay_regrade.grader_mismatches),
 			String(report.replay_regrade.incomplete_rows),
 			String(report.replay_regrade.nondeterministic_rows),
 		]]),
