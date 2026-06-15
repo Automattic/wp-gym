@@ -79,7 +79,6 @@ jobs:
 
   live-run:
     needs: resolve-matrix
-    continue-on-error: ${{ ! inputs.dry_run }}
     strategy:
       fail-fast: false
       max-parallel: 2

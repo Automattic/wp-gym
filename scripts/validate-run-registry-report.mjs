@@ -102,8 +102,12 @@ try {
 	assert(report.large_n_calibration.by_model_tier.cheap_model.threshold_met === true, 'Expected cheap-model tier to meet threshold.');
 	assert(report.large_n_calibration.by_model_tier.no_op.threshold_met === false, 'Expected no-op tier to miss threshold.');
 	assert(report.large_n_calibration.by_model_tier.cheap_model.failure_classes.agent_failure === 1, 'Expected cheap-model failure-class count.');
+	assert(report.large_n_calibration.by_model_tier.cheap_model.operations.estimated_cost_usd > 0, 'Expected large-N model-tier cost totals.');
+	assert(report.large_n_calibration.by_model_tier.cheap_model.operations.tokens_per_run > 0, 'Expected large-N model-tier token averages.');
 	assert(report.large_n_calibration.by_task_model_tier['block-markup-valid-semantic-blocks:frontier_model'].row_count === 3, 'Expected task/model-tier distribution.');
 	assert(markdown.includes('## Large-N Calibration'), 'Expected Markdown large-N section.');
+	assert(markdown.includes('Est. cost USD'), 'Expected Markdown large-N cost column.');
+	assert(markdown.includes('Runs/wall hour'), 'Expected Markdown large-N timing column.');
 	assert(markdown.includes('Failure classes'), 'Expected Markdown failure-class column.');
 	assert(markdown.includes('agent_failure: 1'), 'Expected Markdown failure-class counts.');
 

@@ -197,6 +197,14 @@ The replay/regrade section reports attempted rows, deterministic rows, success
 rate, drift rate, missing artifact count, failure classes, and raw gap codes so
 maintainers can separate nondeterministic rows from incomplete retained evidence.
 
+The dedicated large-N section reports model-tier, task/model-tier, and
+task-family/model-tier distributions with row counts, threshold status, pass@1,
+pass@n, pass confidence intervals, reward mean/variance, cost totals, token
+totals, wall-clock throughput, retry counts, and failure classes. Treat
+`large_n_calibration.benchmark_ready_threshold_met` as a distribution coverage
+gate only; it does not make a task benchmark-ready without the scenario
+calibration, held-out, reward-soundness, and promotion gates also passing.
+
 Supported scopes:
 
 - `pilot`: diagnostic rows and non-headline evidence.
