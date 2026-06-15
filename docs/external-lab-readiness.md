@@ -1,6 +1,7 @@
 # External Lab Readiness
 
-Issue: [#217](https://github.com/Automattic/wp-gym/issues/217)
+Issues: [#217](https://github.com/Automattic/wp-gym/issues/217),
+[#263](https://github.com/Automattic/wp-gym/issues/263)
 
 `wp-gym` is ready for external RL/eval consumers to inspect and run a pilot
 WordPress environment. It is not ready for headline benchmark claims until the
@@ -292,11 +293,20 @@ until the open #127 child gates are resolved.
 Use these checks before sharing a refreshed readiness package:
 
 ```sh
+npm run external-lab:proof -- --output-dir artifacts/external-lab-readiness-proof
 npm run validate
 npm run run-registry:validate
 npm run replay-regrade:test
 npm run benchmark-promotion:test
 ```
+
+The proof command writes `report.json` and `report.md` when `--output-dir` is
+provided. It ties together task discovery, benchmark-readiness matrix resolution,
+local API validation, external consumer installation, registry emission and
+validation, provenance checks, registry report regeneration, replay/regrade,
+artifact retention, benchmark operations checks, and the current benchmark
+promotion blockers. The benchmark-promotion step is expected to report blockers
+until the open calibration gates above are closed.
 
 Use the full repo check before promoting implementation changes:
 
