@@ -4,7 +4,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { hiddenEvidenceTextFindings, validateHiddenEvidenceBoundary } from './hidden-evidence-boundaries.mjs';
-import { replayRegradeInput } from './replay-regrade.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const schemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/run-registry-entry.v1.schema.json';
@@ -347,6 +346,7 @@ async function validateReplayRegrade(entry, baseDir, replayValidationCache = nul
 
 	let result;
 	try {
+		const { replayRegradeInput } = await import('./replay-regrade.mjs');
 		result = await replayRegradeInput(replayFile, { benchmarkMode: true, regrade: true });
 	} catch (error) {
 		const gaps = [gap(
