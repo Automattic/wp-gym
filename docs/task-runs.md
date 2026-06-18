@@ -161,7 +161,7 @@ Use the reusable workflow with the bundle slugs from `bundle-validator.json`:
 ```yaml
 jobs:
   run-wp-gym-task:
-    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@main
+    uses: Extra-Chill/homeboy-extensions/.github/workflows/datamachine-agent-ci.yml@5affdf7ef2399c727dd66ad6406c48233687fe9b # main
     with:
       bundle_path: bundles/datamachine-task-runner
       bundle_validator_spec: bundle-validator.json

@@ -396,12 +396,18 @@ async function main() {
 			throw new Error(`Live held-out matrix expected ${pilotFamilies.length * 2} rows, got ${matrix.include.length}.`);
 		}
 		const row = matrix.include.find((item) => item.provider === 'openai');
-		if (!row || !row.prompt.includes(secretNeedle) || row.workload_run_after === '[redacted-held-out-private-grader]' || matrix.include.some((item) => !item.benchmark_eligible)) {
+		if (!row || !row.prompt.includes(secretNeedle) || row.workload_run_after === '[redacted-held-out-private-grader]') {
 			throw new Error('Live held-out matrix did not resolve private runner inputs through GITHUB_OUTPUT.');
+		}
+		const fullMatrix = JSON.parse(run('node', ['scripts/resolve-live-run-matrix.mjs'], {
+			env: { WP_GYM_HELD_OUT_PACK: manifestFile, ANTHROPIC_PROVIDER_SHA: 'a'.repeat(40), WP_GYM_PRINT_PRIVATE_HELD_OUT: 'true' },
+		}).stdout);
+		if (fullMatrix.include.length !== pilotFamilies.length * 2 || fullMatrix.include.some((item) => !item.benchmark_eligible)) {
+			throw new Error('Full held-out matrix did not preserve benchmark-ready metadata.');
 		}
 
 		const evalDir = path.join(temp, 'eval-artifacts');
-		for (const matrixRow of matrix.include) {
+		for (const matrixRow of fullMatrix.include) {
 			const hashes = hashesByEntry.get(matrixRow.held_out_pack.entry_id);
 			if (!hashes) {
 				throw new Error(`Missing hashes for ${matrixRow.held_out_pack.entry_id}.`);
