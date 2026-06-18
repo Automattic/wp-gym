@@ -4,7 +4,7 @@
   "extensions": {
     "wordpress": {
       "settings": {
-        "wp_codebox_wordpress_version": "6.9",
+        "wordpress_runtime_version": "6.9",
         "wp_codebox_blueprint": {
           "$schema": "https://playground.wordpress.net/blueprint-schema.json",
           "preferredVersions": {
