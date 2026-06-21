@@ -72,7 +72,7 @@ requests against the WordPress runtime:
 ```
 
 `browser` actions declare replayability explicitly. `navigate`, `click`, `fill`,
-`press`, and `capture` map to WP Codebox `wordpress.browser-actions` so local
+`press`, and `capture` map to the runtime browser-action adapter so local
 episodes and replay/regrade can drive the same generic browser interaction
 contract. Use `evidence_only` when the runner captures browser evidence that is
 useful for audit but should not be treated as deterministic replay input:
@@ -92,10 +92,10 @@ useful for audit but should not be treated as deterministic replay input:
 ```
 
 `editor` actions preserve block-editor intent and state without inventing a
-wp-gym-specific runtime primitive. `open_post` and `inspect_state` can map to WP
-Codebox `wordpress.editor-open` for generic target opening and editor-state
-capture. Mutation operations remain evidence-only until WP Codebox exposes
-generic editor mutation primitives:
+wp-gym-specific runtime primitive. `open_post` and `inspect_state` can map to the
+runtime editor-state adapter for generic target opening and editor-state capture.
+Mutation operations remain evidence-only until generic editor mutation primitives
+are available:
 
 ```json
 {
@@ -349,9 +349,9 @@ Deterministic replay is allowed only when the local replay harness has a generic
 runtime primitive for the action and all required reset/state evidence is local
 and hash-verified. Current benchmark replay supports deterministic `wp_cli`,
 `filesystem`, and replayable browser `navigate`/`click`/`fill`/`press`/`capture`
-traces through WP Codebox browser actions. Editor open/state capture uses WP
-Codebox `wordpress.editor-open`; editor mutation actions remain audit-only until
-WP Codebox exposes generic mutation primitives.
+traces through runtime browser actions. Editor open/state capture uses the
+runtime editor-state adapter; editor mutation actions remain audit-only until
+generic mutation primitives are available.
 
 Audit-only browser/editor traces remain useful: `wp-gym replay --regrade`
 validates the action and observation envelopes, reports audit-only warnings for

@@ -141,7 +141,7 @@ described in runtime terms, for example:
 - A missing lifecycle hook, such as snapshot before cleanup.
 - A missing generic editor mutation primitive, such as inserting a block,
   selecting a block, saving, or publishing. Generic editor opening and state
-  export are covered by WP Codebox `wordpress.editor-open`.
+  export are covered by the runtime editor-state adapter.
 
 The requested runtime change should stay generic. For example, ask WP Codebox for
 a screenshot artifact, not a visual-grading artifact; ask for a WordPress state
