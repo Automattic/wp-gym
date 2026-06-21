@@ -15,7 +15,7 @@ import {
 	runCodeboxRuntimeAction,
 } from './codebox-public-runtime.js';
 
-export const WORDPRESS_RUNTIME_COMMANDS = {
+const codeboxWordPressCommands = {
 	wpCli: 'wordpress.wp-cli',
 	restRequest: 'wordpress.rest-request',
 	runPhp: 'wordpress.run-php',
@@ -24,6 +24,63 @@ export const WORDPRESS_RUNTIME_COMMANDS = {
 	editorOpen: 'wordpress.editor-open',
 	inspectMountedInputs: 'inspect-mounted-inputs',
 };
+
+function codeboxWordPressAllowedCommands() {
+	return Object.values(codeboxWordPressCommands);
+}
+
+function codeboxBrowserActionsStep({ steps, capture, operation, selector, url, timeoutMs }) {
+	return {
+		kind: 'browser',
+		command: codeboxWordPressCommands.browserActions,
+		args: [
+			`steps-json=${JSON.stringify(steps)}`,
+			`capture=${(capture || []).join(',')}`,
+		],
+		...(operation ? { operation } : {}),
+		...(selector ? { selector } : {}),
+		...(url ? { url } : {}),
+		...(timeoutMs ? { timeoutMs } : {}),
+	};
+}
+
+function codeboxRunPhpStep({ codeFile, operation, selector, timeoutMs } = {}) {
+	return {
+		command: codeboxWordPressCommands.runPhp,
+		args: [`code-file=${codeFile}`],
+		...(operation ? { operation } : {}),
+		...(selector ? { selector } : {}),
+		...(timeoutMs ? { timeoutMs } : {}),
+	};
+}
+
+function codeboxBrowserProbeStep({ url, waitFor, capture, operation, selector, timeoutMs } = {}) {
+	return {
+		kind: 'browser',
+		command: codeboxWordPressCommands.browserProbe,
+		args: [
+			`url=${url || '/'}`,
+			`wait-for=${waitFor || 'load'}`,
+			`capture=${(capture || []).join(',')}`,
+		],
+		...(operation ? { operation } : {}),
+		...(selector ? { selector } : {}),
+		...(url ? { url } : {}),
+		...(timeoutMs ? { timeoutMs } : {}),
+	};
+}
+
+function codeboxEditorOpenStep(action) {
+	return {
+		kind: 'browser',
+		command: codeboxWordPressCommands.editorOpen,
+		args: action.args || [],
+		operation: action.operation,
+		...(action.postId ? { postId: action.postId } : {}),
+		...(action.postType ? { postType: action.postType } : {}),
+		...(action.timeoutMs ? { timeoutMs: action.timeoutMs } : {}),
+	};
+}
 
 export const WORDPRESS_RUNTIME_WORKSPACE_ROOT = CODEBOX_WORKSPACE_MOUNT_TARGET;
 export const WORDPRESS_RUNTIME_REPOSITORY_ROOT = CODEBOX_REPOSITORY_MOUNT_TARGET;
@@ -229,7 +286,7 @@ export async function createWordPressRuntimeEpisode({
 			policy: {
 				network: 'deny',
 				filesystem: 'readwrite-mounts',
-				commands: Object.values(WORDPRESS_RUNTIME_COMMANDS),
+				commands: codeboxWordPressAllowedCommands(),
 				secrets: 'none',
 				approvals: 'never',
 			},
@@ -280,18 +337,7 @@ class WordPressSandboxAdapter {
 
 	async browserActions(action, policy) {
 		if (Array.isArray(action?.steps)) {
-			return await this.episode.step({
-				kind: 'browser',
-				command: WORDPRESS_RUNTIME_COMMANDS.browserActions,
-				args: [
-					`steps-json=${JSON.stringify(action.steps)}`,
-					`capture=${(action.capture || []).join(',')}`,
-				],
-				...(action.operation ? { operation: action.operation } : {}),
-				...(action.selector ? { selector: action.selector } : {}),
-				...(action.url ? { url: action.url } : {}),
-				...(action.timeoutMs ? { timeoutMs: action.timeoutMs } : {}),
-			});
+			return await this.episode.step(codeboxBrowserActionsStep(action));
 		}
 
 		return await this.runAction(action, policy);
@@ -302,41 +348,15 @@ class WordPressSandboxAdapter {
 	}
 
 	async runPhp({ codeFile, operation, selector, timeoutMs } = {}) {
-		return await this.episode.step({
-			command: WORDPRESS_RUNTIME_COMMANDS.runPhp,
-			args: [`code-file=${codeFile}`],
-			...(operation ? { operation } : {}),
-			...(selector ? { selector } : {}),
-			...(timeoutMs ? { timeoutMs } : {}),
-		});
+		return await this.episode.step(codeboxRunPhpStep({ codeFile, operation, selector, timeoutMs }));
 	}
 
 	async browserProbe({ url, waitFor, capture, operation, selector, timeoutMs } = {}) {
-		return await this.episode.step({
-			kind: 'browser',
-			command: WORDPRESS_RUNTIME_COMMANDS.browserProbe,
-			args: [
-				`url=${url || '/'}`,
-				`wait-for=${waitFor || 'load'}`,
-				`capture=${(capture || []).join(',')}`,
-			],
-			...(operation ? { operation } : {}),
-			...(selector ? { selector } : {}),
-			...(url ? { url } : {}),
-			...(timeoutMs ? { timeoutMs } : {}),
-		}, { type: 'browser-result' });
+		return await this.episode.step(codeboxBrowserProbeStep({ url, waitFor, capture, operation, selector, timeoutMs }), { type: 'browser-result' });
 	}
 
 	async editorOpen(action) {
-		return await this.episode.step({
-			kind: 'browser',
-			command: WORDPRESS_RUNTIME_COMMANDS.editorOpen,
-			args: action.args || [],
-			operation: action.operation,
-			...(action.postId ? { postId: action.postId } : {}),
-			...(action.postType ? { postType: action.postType } : {}),
-			...(action.timeoutMs ? { timeoutMs: action.timeoutMs } : {}),
-		});
+		return await this.episode.step(codeboxEditorOpenStep(action));
 	}
 
 	async observeWordPressState(options = {}) {
