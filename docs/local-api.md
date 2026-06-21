@@ -96,30 +96,29 @@ console.assert(trace.metadata.reset_seed === '1234');
 
 The local adapter is intentionally thin. It currently supports:
 
-- `wp_cli` actions for WordPress scenarios by replaying them through WP Codebox
-  recipes against a disposable WordPress runtime.
+- `wp_cli` actions for WordPress scenarios by replaying them through a
+  disposable WordPress runtime.
 - `filesystem` actions inside scenario `environment.writable_roots` for workspace
-  scenarios. Workspace-mode starter files are mounted into WP Codebox at
-  `/workspace`, filesystem actions execute inside the Codebox runtime, and final
-  changed-file and patch artifacts come from the Codebox artifact bundle.
-- `rest` actions against the disposable WordPress runtime through WP Codebox HTTP
-  response observation.
+  scenarios. Workspace-mode starter files are mounted at `/workspace`,
+  filesystem actions execute inside the runtime, and final changed-file and patch
+  artifacts come from the runtime artifact bundle.
+- `rest` actions against the disposable WordPress runtime through HTTP response
+  observation.
 - `browser` `navigate`, `click`, `fill`, `press`, and `capture` actions through
-  WP Codebox `wordpress.browser-actions`, including replay steps, HTML,
-  screenshot, console, and network artifact references when requested.
-- `editor` `open_post` and `inspect_state` actions through WP Codebox
-  `wordpress.editor-open`, including editor-state, HTML, screenshot, console,
-  and error artifact references. Editor mutation actions such as block insert,
-  update, select, save, and publish remain evidence-only until WP Codebox exposes
-  generic editor mutation primitives.
+  the runtime browser-action adapter, including replay steps, HTML, screenshot,
+  console, and network artifact references when requested.
+- `editor` `open_post` and `inspect_state` actions through the runtime editor
+  state adapter, including editor-state, HTML, screenshot, console, and error
+  artifact references. Editor mutation actions such as block insert, update,
+  select, save, and publish remain evidence-only until generic editor mutation
+  primitives are available.
 
 Replay/regrade treats replayable browser `navigate`, `click`, `fill`, `press`,
-and `capture` traces as deterministic candidates through the same Codebox browser
-action path. Editor open/state traces can be reproduced through
-`wordpress.editor-open` when they only require generic target opening and state
-capture. Evidence-only browser traces and editor mutation traces remain
-audit-only unless the local deterministic replay path can reproduce the action
-and its observation artifacts exactly.
+and `capture` traces as deterministic candidates through the same runtime browser
+action path. Editor open/state traces can be reproduced when they only require
+generic target opening and state capture. Evidence-only browser traces and editor
+mutation traces remain audit-only unless the local deterministic replay path can
+reproduce the action and its observation artifacts exactly.
 
 A Python or Gymnasium wrapper is intentionally deferred. The supported external
 surface for this slice is the Node API plus JSON CLI output; a Python wrapper can
@@ -129,9 +128,9 @@ be a thin consumer later once the JSON contract settles.
 and debugging. Workspace scenarios include a model-visible `/workspace` mount
 whose mode is derived from `environment.writable_roots`; hidden graders, prompts,
 scenario manifests, checks, task sets, scripts, and docs remain outside that
-starter workspace. Normal local execution uses WP Codebox's native runtime
-episode API directly; CI orchestration can call the same `wp-gym` API or CLI
-without becoming part of the library contract.
+starter workspace. Normal local execution uses the public runtime episode API;
+CI orchestration can call the same `wp-gym` API or CLI without becoming part of
+the library contract.
 
 ## Demo Command
 
