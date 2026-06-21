@@ -123,7 +123,7 @@ function publicApiMetadata() {
 		contracts: {
 			reset: 'Returns an observation.v1 record with scenario_id, episode_id, reset_seed, and workspace_root state.',
 			step: 'Accepts one action.v1 record and returns one step-result.v1 record.',
-			grade: 'Returns the terminal hidden grader result with success, reward, checks, failure_reasons, and telemetry.',
+			grade: 'Returns the terminal grading result with success, reward, checks, failure_reasons, and telemetry.',
 			trace: 'Returns a trace.v1 replay record for the reset seed and accepted steps.',
 		},
 		schemas: schemaReferences(),
@@ -131,7 +131,7 @@ function publicApiMetadata() {
 			current: WPGYM_API_VERSION,
 			compatibility: 'Public v1 records remain additive-compatible within v1; consumers should ignore unknown telemetry and metadata keys.',
 			breaking_changes: 'Breaking action, observation, step result, trace, or method-shape changes require a new API version string and schema filenames.',
-			governance_boundary: 'Training-loop APIs are versioned separately from benchmark promotion, run registry, and reporting internals.',
+			governance_boundary: 'Training-loop APIs use the js-env/v1 contract for environment methods and schemas. Benchmark promotion, run registry, and reporting use their own versioned records.',
 		},
 	};
 }

@@ -27,7 +27,7 @@ function assertWordPressRuntimeAdapter(adapter, label) {
 	}
 }
 
-async function assertCodeboxArtifactMetadataBoundary(workspaceArtifacts, label) {
+async function assertCodeboxRuntimeArtifactMetadata(workspaceArtifacts, label) {
 	const artifactDirectory = path.dirname(path.dirname(workspaceArtifacts.changed_files));
 	const metadata = JSON.parse(await readFile(path.join(artifactDirectory, 'metadata.json'), 'utf8'));
 	const runtimeTrace = JSON.parse(await readFile(path.join(artifactDirectory, 'files/runtime-episode-trace.json'), 'utf8'));
@@ -68,7 +68,7 @@ assert.deepEqual(description.capabilities.schemas, {
 const api = WPGym.api();
 assert.equal(WPGym.apiVersion(), 'wp-gym/js-env/v1');
 assert.equal(api.api_version, WPGym.apiVersion());
-assert.equal(api.versioning_policy.governance_boundary, 'Training-loop APIs are versioned separately from benchmark promotion, run registry, and reporting internals.');
+assert.equal(api.versioning_policy.governance_boundary, 'Training-loop APIs use the js-env/v1 contract for environment methods and schemas. Benchmark promotion, run registry, and reporting use their own versioned records.');
 
 const capabilities = await WPGym.capabilities(scenarioId);
 assert.deepEqual(capabilities.allowed_action_types, ['wp_cli', 'rest', 'browser']);
@@ -198,7 +198,7 @@ try {
 	assert.equal(grade.success, true);
 	assert.equal(grade.reward, 1);
 	assert.deepEqual(grade.failure_reasons, []);
-	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'wp_cli/browser');
+	await assertCodeboxRuntimeArtifactMetadata(grade.telemetry.workspace_artifacts, 'wp_cli/browser');
 
 	const trace = await env.trace();
 	assert.equal(trace.scenario_id, scenarioId);
@@ -244,7 +244,7 @@ try {
 	const grade = await workspaceEnv.grade();
 	assert.equal(grade.telemetry.runner, 'wordpress-runtime');
 	assert.ok(grade.telemetry.workspace_artifacts.changed_files.endsWith('/files/changed-files.json'));
-	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'workspace');
+	await assertCodeboxRuntimeArtifactMetadata(grade.telemetry.workspace_artifacts, 'workspace');
 	const changedFiles = JSON.parse(await readFile(grade.telemetry.workspace_artifacts.changed_files, 'utf8'));
 	assert.ok(changedFiles.files.some((file) => file.mountTarget === '/workspace' && file.relativePath === 'plugins/site-summary/site-summary.php'));
 } finally {
@@ -269,7 +269,7 @@ try {
 	const grade = await contentMigrationWorkspaceEnv.grade();
 	assert.equal(grade.telemetry.runner, 'wordpress-runtime');
 	assert.ok(grade.telemetry.workspace_artifacts.changed_files.endsWith('/files/changed-files.json'));
-	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'content migration workspace');
+	await assertCodeboxRuntimeArtifactMetadata(grade.telemetry.workspace_artifacts, 'content migration workspace');
 	const changedFiles = JSON.parse(await readFile(grade.telemetry.workspace_artifacts.changed_files, 'utf8'));
 	assert.ok(changedFiles.files.some((file) => file.mountTarget === '/workspace' && file.relativePath === 'plugins/importer/importer.php'));
 } finally {
