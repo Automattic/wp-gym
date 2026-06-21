@@ -2,18 +2,24 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, readdir, rm, mkdir, writeFile, stat, cp } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
-import { createServer as createNetServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import {
+	WORDPRESS_RUNTIME_WORKSPACE_ROOT,
+	allocateWordPressRuntimePreviewPort,
 	browserArtifactRefs,
 	createWordPressSandbox,
+	isWordPressRuntimePreviewPortUnavailable,
 	normalizeRuntimeArtifactRefs,
 	runtimeArtifactRefs,
 	runtimeTraceRefs,
+	wordpressRuntimeActionPolicy,
 	wordpressRuntimeArtifactRoot,
+	wordpressRuntimeMountPlan,
+	wordpressRuntimeRepositoryPath,
+	wordpressRuntimeWorkspaceEnv,
 	wordpressRuntimeWorkspaceArtifactSummary,
 } from './wordpress-runtime-adapter.js';
 
@@ -911,7 +917,7 @@ export class WPGymEnvironment {
 				episode_id: this.episodeId,
 				reset_seed: this.resetSeed,
 				post_count: 0,
-				workspace_root: this.usesWordPressRuntimeBackend() ? '/workspace' : this.workspaceRoot,
+				workspace_root: this.usesWordPressRuntimeBackend() ? WORDPRESS_RUNTIME_WORKSPACE_ROOT : this.workspaceRoot,
 			},
 		};
 		await this.assertObservation(observation, 'reset observation');
@@ -1591,23 +1597,11 @@ echo wp_json_encode( array(
 
 	runtimePlan() {
 		this.assertOpen();
-		const mounts = [
-			{
-				source: this.root,
-				target: '/inputs/repo',
-				mode: 'readonly',
-				role: 'scenario_repository',
-			},
-		];
-		if (this.scenario.environment?.uses_workspace) {
-			mounts.push({
-				source: this.workspaceRoot,
-				target: '/workspace',
-				mode: (this.scenario.environment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
-				role: 'scenario_workspace',
-				writable_roots: this.scenario.environment?.writable_roots || [],
-			});
-		}
+		const mounts = wordpressRuntimeMountPlan({
+			repositoryRoot: this.root,
+			workspaceRoot: this.workspaceRoot,
+			scenarioEnvironment: this.scenario.environment,
+		});
 
 		return {
 			schema: 'wp-gym/runtime-plan/v1',
@@ -1654,10 +1648,10 @@ echo wp_json_encode( array(
 
 	async runPhpGraderWithWordPressRuntime() {
 		this.workspaceArtifacts = await (await this.wordpressRuntimeEpisode()).collectArtifacts();
-		const graderPath = `/inputs/repo/${repoRelative(this.root, resolveFrom(this.scenarioFile, this.scenario.grader_file))}`;
+		const graderPath = wordpressRuntimeRepositoryPath(repoRelative(this.root, resolveFrom(this.scenarioFile, this.scenario.grader_file)));
 		const wrapperFile = path.join(this.episodeRoot, 'grader-wrapper.php');
 		await writeFile(wrapperFile, `<?php
-putenv('WP_GYM_AGENT_ROOT=/workspace');
+putenv(${JSON.stringify(wordpressRuntimeWorkspaceEnv('WP_GYM_AGENT_ROOT'))});
 $grader = require ${JSON.stringify(graderPath)};
 $result = is_callable($grader) ? $grader() : $grader;
 echo json_encode($result, JSON_PRETTY_PRINT);
@@ -1751,23 +1745,10 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	wordpressRuntimeActionPolicy() {
-		const writableRoots = Array.isArray(this.scenario.environment?.writable_roots)
-			? this.scenario.environment.writable_roots.map((root) => `/workspace/${root}`.replace(/\/+/g, '/'))
-			: [];
-		const workspaceMount = this.scenario.environment?.uses_workspace
-			? [{
-				type: 'directory',
-				source: this.workspaceRoot,
-				target: '/workspace',
-				mode: writableRoots.length > 0 ? 'readwrite' : 'readonly',
-			}]
-			: [];
-
-		return {
-			mounts: workspaceMount,
-			filesystem: 'readwrite-mounts',
-			writableRoots: writableRoots.length > 0 ? writableRoots : ['/workspace'],
-		};
+		return wordpressRuntimeActionPolicy({
+			workspaceRoot: this.workspaceRoot,
+			scenarioEnvironment: this.scenario.environment,
+		});
 	}
 
 	runnerId() {
@@ -1783,7 +1764,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 			scenarioEnvironment: this.scenario.environment,
 			options: this.options,
 			blueprint: this.wordpressRuntimeBlueprint(),
-			previewPort: await availableLocalPort(),
+			previewPort: await allocateWordPressRuntimePreviewPort(),
 			artifactsDirectory: this.wordpressRuntimeArtifactRoot(),
 		});
 	}
@@ -1905,40 +1886,6 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 		const result = await (await this.wordpressRuntimeEpisode()).collectWorkspaceFiles();
 		this.workspaceArtifacts = result.workspaceArtifacts;
 		return result.files;
-	}
-}
-
-function isWordPressRuntimePreviewPortUnavailable(error) {
-	if (!error || typeof error !== 'object') {
-		return false;
-	}
-	if (error.code === 'wp-codebox-preview-port-in-use' || error.code === 'EADDRINUSE') {
-		return true;
-	}
-	if (error.cause && isWordPressRuntimePreviewPortUnavailable(error.cause)) {
-		return true;
-	}
-	return error instanceof Error && /EADDRINUSE|preview-port .* unavailable/i.test(error.message);
-}
-
-async function availableLocalPort() {
-	const server = createNetServer();
-	try {
-		await new Promise((resolveListen, rejectListen) => {
-			server.once('error', rejectListen);
-			server.listen(0, '127.0.0.1', () => resolveListen());
-		});
-		const address = server.address();
-		if (!address || typeof address === 'string') {
-			throw new Error('Unable to allocate a local preview port.');
-		}
-		return address.port;
-	} finally {
-		if (server.listening) {
-			await new Promise((resolveClose, rejectClose) => {
-				server.close((error) => error ? rejectClose(error) : resolveClose());
-			});
-		}
 	}
 }
 
