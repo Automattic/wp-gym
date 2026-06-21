@@ -1,21 +1,32 @@
 import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { createRuntimeEpisode, normalizeObservationArtifactRefs, runRuntimeAction } from 'wp-codebox-workspace/core';
-import { browserArtifactMetrics, createPlaygroundRuntimeBackend } from 'wp-codebox-workspace/playground';
+import { commandRegistry, createRuntimeEpisode, normalizeObservationArtifactRefs, runRuntimeAction } from '@automattic/wp-codebox-core';
+import { browserArtifactMetrics, createPlaygroundRuntimeBackend, playgroundRuntimeCommandIds } from '@automattic/wp-codebox-playground';
 
+// TODO: Switch backend, mount, and artifact path constants to WP Codebox public exports when the Codebox PR lands.
 export const CODEBOX_WORDPRESS_BACKEND_ID = 'wordpress-playground';
 export const CODEBOX_WORKSPACE_MOUNT_TARGET = '/workspace';
 export const CODEBOX_REPOSITORY_MOUNT_TARGET = '/inputs/repo';
 
+const playgroundCommandIdSet = new Set(playgroundRuntimeCommandIds());
+
+function playgroundCommandId(method) {
+	const definition = commandRegistry.find((command) => command?.handler?.kind === 'playground' && command.handler.method === method);
+	if (!definition || !playgroundCommandIdSet.has(definition.id)) {
+		throw new Error(`WP Codebox Playground command is not registered: ${method}`);
+	}
+	return definition.id;
+}
+
 export const WP_CODEBOX_COMMANDS = {
-	wpCli: 'wordpress.wp-cli',
-	restRequest: 'wordpress.rest-request',
-	runPhp: 'wordpress.run-php',
-	browserProbe: 'wordpress.browser-probe',
-	browserActions: 'wordpress.browser-actions',
-	editorOpen: 'wordpress.editor-open',
-	inspectMountedInputs: 'inspect-mounted-inputs',
+	wpCli: playgroundCommandId('runWpCli'),
+	restRequest: playgroundCommandId('runRestRequest'),
+	runPhp: playgroundCommandId('runPhp'),
+	browserProbe: playgroundCommandId('runBrowserProbe'),
+	browserActions: playgroundCommandId('runBrowserActions'),
+	editorOpen: playgroundCommandId('runEditorOpen'),
+	inspectMountedInputs: playgroundCommandId('inspectMountedInputs'),
 };
 
 async function readJson(file) {
@@ -24,6 +35,25 @@ async function readJson(file) {
 
 export function codeboxArtifactRoot(episodeRoot) {
 	return path.join(episodeRoot, 'wp-codebox-artifacts');
+}
+
+export function codeboxRepositoryMount(source) {
+	return {
+		type: 'directory',
+		source,
+		target: CODEBOX_REPOSITORY_MOUNT_TARGET,
+		mode: 'readonly',
+	};
+}
+
+export function codeboxWorkspaceMount(source, { mode = 'readonly', metadata } = {}) {
+	return {
+		type: 'directory',
+		source,
+		target: CODEBOX_WORKSPACE_MOUNT_TARGET,
+		mode,
+		...(metadata ? { metadata } : {}),
+	};
 }
 
 export function normalizeCodeboxArtifactRefs(refs = []) {

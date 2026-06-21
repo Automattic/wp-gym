@@ -8,6 +8,8 @@ import {
 	codeboxArtifactRoot,
 	codeboxArtifactTraceRefs,
 	codeboxBrowserArtifactMetrics,
+	codeboxRepositoryMount,
+	codeboxWorkspaceMount,
 	codeboxWorkspaceArtifactSummary,
 	collectCodeboxWorkspaceArtifacts,
 	createCodeboxWordPressEpisode,
@@ -185,26 +187,18 @@ export async function createWordPressRuntimeEpisode({
 	artifactsDirectory,
 }) {
 	const mounts = [
-		{
-			type: 'directory',
-			source: repositoryRoot,
-			target: CODEBOX_REPOSITORY_MOUNT_TARGET,
-			mode: 'readonly',
-		},
+		codeboxRepositoryMount(repositoryRoot),
 	];
 
 	if (scenarioEnvironment?.uses_workspace) {
-		mounts.push({
-			type: 'directory',
-			source: workspaceRoot,
-			target: CODEBOX_WORKSPACE_MOUNT_TARGET,
+		mounts.push(codeboxWorkspaceMount(workspaceRoot, {
 			mode: (scenarioEnvironment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
 			metadata: {
 				role: 'workspace',
 				writable_roots: scenarioEnvironment?.writable_roots || [],
 				baselineSource: workspaceBaselineRoot,
 			},
-		});
+		}));
 	}
 
 	return await createCodeboxWordPressEpisode({
