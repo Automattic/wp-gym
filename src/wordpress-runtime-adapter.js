@@ -18,7 +18,6 @@ import {
 	readCodeboxArtifactJson,
 	runCodeboxRuntimeAction,
 } from './runtime/wp-codebox-adapter.js';
-
 export const WORDPRESS_RUNTIME_COMMANDS = WP_CODEBOX_COMMANDS;
 
 export const WORDPRESS_RUNTIME_WORKSPACE_ROOT = CODEBOX_WORKSPACE_MOUNT_TARGET;
