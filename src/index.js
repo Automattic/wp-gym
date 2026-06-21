@@ -9,16 +9,11 @@ import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import {
 	browserArtifactRefs,
-	collectWordPressRuntimeWorkspaceFiles,
-	createWordPressRuntimeEpisode as createAdaptedWordPressRuntimeEpisode,
+	createWordPressSandbox,
 	normalizeRuntimeArtifactRefs,
-	readWordPressRuntimeArtifactJson as readAdaptedWordPressRuntimeArtifactJson,
-	runWordPressRuntimeAction,
 	runtimeArtifactRefs,
 	runtimeTraceRefs,
-	WORDPRESS_RUNTIME_COMMANDS,
 	wordpressRuntimeArtifactRoot,
-	wordpressRuntimeBrowserMetrics,
 	wordpressRuntimeWorkspaceArtifactSummary,
 } from './wordpress-runtime-adapter.js';
 
@@ -1112,20 +1107,12 @@ export class WPGymEnvironment {
 		const runtimeAction = this.toWordPressRuntimeAction(action);
 		let runtimeObservation;
 		try {
-			runtimeObservation = await runWordPressRuntimeAction(
-				await this.wordpressRuntimeEpisode(),
-				runtimeAction,
-				this.wordpressRuntimeActionPolicy()
-			);
+			runtimeObservation = await this.runWordPressRuntimeAction(runtimeAction);
 		} catch (error) {
 			if (isWordPressRuntimePreviewPortUnavailable(error)) {
 				await this.resetWordPressRuntimeEpisode();
 				try {
-					runtimeObservation = await runWordPressRuntimeAction(
-						await this.wordpressRuntimeEpisode(),
-						runtimeAction,
-						this.wordpressRuntimeActionPolicy()
-					);
+					runtimeObservation = await this.runWordPressRuntimeAction(runtimeAction);
 				} catch (retryError) {
 					return this.wordpressRuntimeActionErrorObservation(action, retryError, Date.now() - started);
 				}
@@ -1135,6 +1122,24 @@ export class WPGymEnvironment {
 		}
 
 		return await this.fromWordPressRuntimeActionObservation(action, runtimeObservation, started);
+	}
+
+	async runWordPressRuntimeAction(runtimeAction) {
+		const sandbox = await this.wordpressRuntimeEpisode();
+		const policy = this.wordpressRuntimeActionPolicy();
+		if (runtimeAction.type === 'wp_cli') {
+			return await sandbox.wpCli(runtimeAction, policy);
+		}
+		if (runtimeAction.type === 'rest_request') {
+			return await sandbox.restRequest(runtimeAction, policy);
+		}
+		if (runtimeAction.type === 'filesystem') {
+			return await sandbox.filesystem(runtimeAction, policy);
+		}
+		if (runtimeAction.type === 'browser') {
+			return await sandbox.browserActions(runtimeAction, policy);
+		}
+		return await sandbox.runAction(runtimeAction, policy);
 	}
 
 	async resetWordPressRuntimeEpisode() {
@@ -1305,19 +1310,14 @@ export class WPGymEnvironment {
 		const started = Date.now();
 		const targetUrl = action.url || '/';
 		const capture = browserProbeCaptureList(action);
-		const { execution } = await (await this.wordpressRuntimeEpisode()).step({
-			kind: 'browser',
-			command: WORDPRESS_RUNTIME_COMMANDS.browserProbe,
-			args: [
-				`url=${targetUrl}`,
-				`wait-for=${browserProbeWaitFor(action)}`,
-				`capture=${capture.join(',')}`,
-			],
+		const { execution } = await (await this.wordpressRuntimeEpisode()).browserProbe({
+			url: targetUrl,
+			waitFor: browserProbeWaitFor(action),
+			capture,
 			operation: action.operation,
 			...(action.selector ? { selector: action.selector } : {}),
-			...(action.url ? { url: action.url } : {}),
 			timeoutMs: action.timeout_ms,
-		}, { type: 'browser-result' });
+		});
 		const result = jsonFromOutput(execution.stdout);
 		const browserMetrics = await this.wordpressRuntimeBrowserMetrics();
 		return {
@@ -1336,7 +1336,7 @@ export class WPGymEnvironment {
 	}
 
 	async wordpressRuntimeBrowserMetrics() {
-		return await wordpressRuntimeBrowserMetrics(this.episodeRoot);
+		return await (await this.wordpressRuntimeEpisode()).browserMetrics();
 	}
 
 	wordpressRuntimeActionErrorObservation(action, error, durationMs) {
@@ -1459,13 +1459,9 @@ export class WPGymEnvironment {
 		const steps = browserActionsSteps(action, targetUrl);
 
 		try {
-			const { execution } = await (await this.wordpressRuntimeEpisode()).step({
-				kind: 'browser',
-				command: WORDPRESS_RUNTIME_COMMANDS.browserActions,
-				args: [
-					`steps-json=${JSON.stringify(steps)}`,
-					`capture=${capture.join(',')}`,
-				],
+			const { execution } = await (await this.wordpressRuntimeEpisode()).browserActions({
+				steps,
+				capture,
 				operation: action.operation,
 				...(action.selector ? { selector: action.selector } : {}),
 				...(action.url ? { url: action.url } : {}),
@@ -1519,9 +1515,8 @@ echo wp_json_encode( array(
 ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
 `);
 
-		const { execution } = await (await this.wordpressRuntimeEpisode()).step({
-			command: WORDPRESS_RUNTIME_COMMANDS.runPhp,
-			args: [`code-file=${wrapperFile}`],
+		const { execution } = await (await this.wordpressRuntimeEpisode()).runPhp({
+			codeFile: wrapperFile,
 			operation: action.operation,
 			...(action.selector ? { selector: action.selector } : {}),
 			timeoutMs: action.timeout_ms,
@@ -1558,9 +1553,7 @@ echo wp_json_encode( array(
 
 		const started = Date.now();
 		try {
-			const { execution, observation } = await (await this.wordpressRuntimeEpisode()).step({
-				kind: 'browser',
-				command: WORDPRESS_RUNTIME_COMMANDS.editorOpen,
+			const { execution, observation } = await (await this.wordpressRuntimeEpisode()).editorOpen({
 				args: editorOpenArgs(action),
 				operation: action.operation,
 				...(action.post_id ? { postId: action.post_id } : {}),
@@ -1660,7 +1653,7 @@ echo wp_json_encode( array(
 	}
 
 	async runPhpGraderWithWordPressRuntime() {
-		this.workspaceArtifacts = await (await this.wordpressRuntimeEpisode()).collectArtifacts({ includeLogs: true, includeObservations: true, includePatch: true });
+		this.workspaceArtifacts = await (await this.wordpressRuntimeEpisode()).collectArtifacts();
 		const graderPath = `/inputs/repo/${repoRelative(this.root, resolveFrom(this.scenarioFile, this.scenario.grader_file))}`;
 		const wrapperFile = path.join(this.episodeRoot, 'grader-wrapper.php');
 		await writeFile(wrapperFile, `<?php
@@ -1670,9 +1663,8 @@ $result = is_callable($grader) ? $grader() : $grader;
 echo json_encode($result, JSON_PRETTY_PRINT);
 `);
 
-		const { execution } = await (await this.wordpressRuntimeEpisode()).step({
-			command: WORDPRESS_RUNTIME_COMMANDS.runPhp,
-			args: [`code-file=${wrapperFile}`],
+		const { execution } = await (await this.wordpressRuntimeEpisode()).runPhp({
+			codeFile: wrapperFile,
 		});
 
 		return jsonFromOutput(execution.stdout);
@@ -1713,8 +1705,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async collectWordPressDesignDocuments() {
-		const observation = await (await this.wordpressRuntimeEpisode()).observe({
-			type: 'wordpress-state',
+		const observation = await (await this.wordpressRuntimeEpisode()).observeWordPressState({
 			sections: ['posts', 'templates'],
 			includeContent: true,
 		});
@@ -1740,7 +1731,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async readWordPressRuntimeArtifactJson(ref) {
-		return await readAdaptedWordPressRuntimeArtifactJson(this.episodeRoot, ref);
+		return await (await this.wordpressRuntimeEpisode()).readArtifactJson(ref);
 	}
 
 	async wordpressRuntimeEpisode() {
@@ -1784,7 +1775,8 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async createWordPressRuntimeEpisode() {
-		return await createAdaptedWordPressRuntimeEpisode({
+		return await createWordPressSandbox({
+			episodeRoot: this.episodeRoot,
 			repositoryRoot: this.root,
 			workspaceRoot: this.workspaceRoot,
 			workspaceBaselineRoot: this.workspaceBaselineRoot,
@@ -1910,7 +1902,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async wordpressRuntimeWorkspaceFiles() {
-		const result = await collectWordPressRuntimeWorkspaceFiles(await this.wordpressRuntimeEpisode());
+		const result = await (await this.wordpressRuntimeEpisode()).collectWorkspaceFiles();
 		this.workspaceArtifacts = result.workspaceArtifacts;
 		return result.files;
 	}
