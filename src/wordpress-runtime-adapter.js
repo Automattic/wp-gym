@@ -3,6 +3,7 @@ import {
 	CODEBOX_REPOSITORY_MOUNT_TARGET,
 	CODEBOX_WORDPRESS_BACKEND_ID,
 	CODEBOX_WORKSPACE_MOUNT_TARGET,
+	WP_CODEBOX_COMMANDS,
 	codeboxArtifactEvidenceRefs,
 	codeboxArtifactRoot,
 	codeboxArtifactTraceRefs,
@@ -10,20 +11,13 @@ import {
 	codeboxWorkspaceArtifactSummary,
 	collectCodeboxWorkspaceArtifacts,
 	createCodeboxWordPressEpisode,
+	createWpCodeboxSandbox,
 	normalizeCodeboxArtifactRefs,
 	readCodeboxArtifactJson,
 	runCodeboxRuntimeAction,
-} from './codebox-public-runtime.js';
+} from './runtime/wp-codebox-adapter.js';
 
-export const WORDPRESS_RUNTIME_COMMANDS = {
-	wpCli: 'wordpress.wp-cli',
-	restRequest: 'wordpress.rest-request',
-	runPhp: 'wordpress.run-php',
-	browserProbe: 'wordpress.browser-probe',
-	browserActions: 'wordpress.browser-actions',
-	editorOpen: 'wordpress.editor-open',
-	inspectMountedInputs: 'inspect-mounted-inputs',
-};
+export const WORDPRESS_RUNTIME_COMMANDS = WP_CODEBOX_COMMANDS;
 
 export const WORDPRESS_RUNTIME_WORKSPACE_ROOT = CODEBOX_WORKSPACE_MOUNT_TARGET;
 export const WORDPRESS_RUNTIME_REPOSITORY_ROOT = CODEBOX_REPOSITORY_MOUNT_TARGET;
@@ -245,125 +239,5 @@ export async function createWordPressRuntimeEpisode({
 
 export async function createWordPressSandbox(input) {
 	const episode = await createWordPressRuntimeEpisode(input);
-	return new WordPressSandboxAdapter({ episode, episodeRoot: input.episodeRoot });
-}
-
-class WordPressSandboxAdapter {
-	constructor({ episode, episodeRoot }) {
-		this.episode = episode;
-		this.episodeRoot = episodeRoot;
-	}
-
-	artifactRoot() {
-		return wordpressRuntimeArtifactRoot(this.episodeRoot);
-	}
-
-	async readArtifactJson(ref) {
-		return await readWordPressRuntimeArtifactJson(this.episodeRoot, ref);
-	}
-
-	async browserMetrics() {
-		return await wordpressRuntimeBrowserMetrics(this.episodeRoot);
-	}
-
-	async wpCli(action, policy) {
-		return await this.runAction(action, policy);
-	}
-
-	async restRequest(action, policy) {
-		return await this.runAction(action, policy);
-	}
-
-	async filesystem(action, policy) {
-		return await this.runAction(action, policy);
-	}
-
-	async browserActions(action, policy) {
-		if (Array.isArray(action?.steps)) {
-			return await this.episode.step({
-				kind: 'browser',
-				command: WORDPRESS_RUNTIME_COMMANDS.browserActions,
-				args: [
-					`steps-json=${JSON.stringify(action.steps)}`,
-					`capture=${(action.capture || []).join(',')}`,
-				],
-				...(action.operation ? { operation: action.operation } : {}),
-				...(action.selector ? { selector: action.selector } : {}),
-				...(action.url ? { url: action.url } : {}),
-				...(action.timeoutMs ? { timeoutMs: action.timeoutMs } : {}),
-			});
-		}
-
-		return await this.runAction(action, policy);
-	}
-
-	async runAction(action, policy) {
-		return await runWordPressRuntimeAction(this.episode, action, policy);
-	}
-
-	async runPhp({ codeFile, operation, selector, timeoutMs } = {}) {
-		return await this.episode.step({
-			command: WORDPRESS_RUNTIME_COMMANDS.runPhp,
-			args: [`code-file=${codeFile}`],
-			...(operation ? { operation } : {}),
-			...(selector ? { selector } : {}),
-			...(timeoutMs ? { timeoutMs } : {}),
-		});
-	}
-
-	async browserProbe({ url, waitFor, capture, operation, selector, timeoutMs } = {}) {
-		return await this.episode.step({
-			kind: 'browser',
-			command: WORDPRESS_RUNTIME_COMMANDS.browserProbe,
-			args: [
-				`url=${url || '/'}`,
-				`wait-for=${waitFor || 'load'}`,
-				`capture=${(capture || []).join(',')}`,
-			],
-			...(operation ? { operation } : {}),
-			...(selector ? { selector } : {}),
-			...(url ? { url } : {}),
-			...(timeoutMs ? { timeoutMs } : {}),
-		}, { type: 'browser-result' });
-	}
-
-	async editorOpen(action) {
-		return await this.episode.step({
-			kind: 'browser',
-			command: WORDPRESS_RUNTIME_COMMANDS.editorOpen,
-			args: action.args || [],
-			operation: action.operation,
-			...(action.postId ? { postId: action.postId } : {}),
-			...(action.postType ? { postType: action.postType } : {}),
-			...(action.timeoutMs ? { timeoutMs: action.timeoutMs } : {}),
-		});
-	}
-
-	async observeWordPressState(options = {}) {
-		return await this.episode.observe({
-			type: 'wordpress-state',
-			...options,
-		});
-	}
-
-	async collectArtifacts(options = {}) {
-		return await this.episode.collectArtifacts({
-			includeLogs: true,
-			includeObservations: true,
-			includePatch: true,
-			...options,
-		});
-	}
-
-	async collectWorkspaceFiles() {
-		return await collectWordPressRuntimeWorkspaceFiles(this.episode);
-	}
-
-	async trace() {
-		return await this.episode.trace();
-	}
-
-	async close() {
-		await this.episode.close();
-	}
+	return createWpCodeboxSandbox({ episode, episodeRoot: input.episodeRoot });
 }
