@@ -7,8 +7,19 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { createRuntimeEpisode, normalizeObservationArtifactRefs, runRuntimeAction } from 'wp-codebox-workspace/core';
-import { browserArtifactMetrics, createPlaygroundRuntimeBackend } from 'wp-codebox-workspace/playground';
+import {
+	browserArtifactRefs,
+	collectWordPressRuntimeWorkspaceFiles,
+	createWordPressRuntimeEpisode as createAdaptedWordPressRuntimeEpisode,
+	normalizeRuntimeArtifactRefs,
+	runWordPressRuntimeAction,
+	runtimeArtifactRefs,
+	runtimeTraceRefs,
+	WORDPRESS_RUNTIME_COMMANDS,
+	wordpressRuntimeArtifactRoot,
+	wordpressRuntimeBrowserMetrics,
+	wordpressRuntimeWorkspaceArtifactSummary,
+} from './wordpress-runtime-adapter.js';
 
 const moduleRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const actionSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/schemas/action.v1.schema.json';
@@ -18,15 +29,6 @@ const traceSchemaId = 'https://raw.githubusercontent.com/Automattic/wp-gym/main/
 export const WPGYM_API_VERSION = 'wp-gym/js-env/v1';
 const implementedLocalActionTypes = ['wp_cli', 'filesystem', 'rest', 'browser'];
 const implementedLocalEditorOperations = ['open_post', 'inspect_state'];
-const WORDPRESS_RUNTIME_COMMANDS = {
-	wpCli: 'wordpress.wp-cli',
-	restRequest: 'wordpress.rest-request',
-	runPhp: 'wordpress.run-php',
-	browserProbe: 'wordpress.browser-probe',
-	browserActions: 'wordpress.browser-actions',
-	editorOpen: 'wordpress.editor-open',
-	inspectMountedInputs: 'inspect-mounted-inputs',
-};
 const WORDPRESS_RUNTIME_ERROR_CODES = {
 	wpCli: 'wordpress_runtime_wp_cli_error',
 	rest: 'wordpress_runtime_rest_error',
@@ -409,46 +411,6 @@ function editorStateFromEditorOpenResult(action, result) {
 		...(typeof editor.mode === 'string' ? { mode: editor.mode } : {}),
 		...(result.finalUrl ? { url: result.finalUrl } : {}),
 	};
-}
-
-function browserArtifactRefs(files = {}) {
-	const mimeTypes = {
-		steps: 'application/x-ndjson',
-		console: 'application/x-ndjson',
-		errors: 'application/x-ndjson',
-		html: 'text/html; charset=utf-8',
-		memory: 'application/json',
-		network: 'application/x-ndjson',
-		performance: 'application/json',
-		screenshot: 'image/png',
-		editorState: 'application/json',
-		summary: 'application/json',
-	};
-
-	return Object.entries(files)
-		.filter(([, filePath]) => typeof filePath === 'string' && filePath.length > 0)
-		.map(([kind, filePath]) => ({
-			path: filePath,
-			...(mimeTypes[kind] ? { mime_type: mimeTypes[kind] } : {}),
-		}));
-}
-
-function runtimeArtifactRefs(refs = []) {
-	return normalizeObservationArtifactRefs(refs)
-		.map((ref) => ({
-			path: ref.path,
-			...(ref.digest?.algorithm === 'sha256' ? { sha256: ref.digest.value } : {}),
-		}));
-}
-
-function runtimeTraceRefs(refs = []) {
-	return normalizeObservationArtifactRefs(refs)
-		.map((ref) => ({
-			kind: ref.kind || null,
-			path_or_url: ref.path,
-			sha256: ref.digest?.algorithm === 'sha256' ? ref.digest.value : null,
-			id: ref.id || null,
-		}));
 }
 
 function runtimeExecutionDuration(execution, fallbackStarted) {
@@ -1015,12 +977,7 @@ export class WPGymEnvironment {
 		const grade = normalizeTerminalGrade(await this.runPhpGrader());
 		this.lastGrade = grade;
 		const behavioralFingerprints = await this.collectBehavioralFingerprints();
-		const workspaceArtifacts = this.workspaceArtifacts ? {
-			id: this.workspaceArtifacts.id,
-			changed_files: this.workspaceArtifacts.changedFilesPath,
-			patch: this.workspaceArtifacts.patchPath,
-			captured_mounts: this.workspaceArtifacts.capturedMountsPath,
-		} : null;
+		const workspaceArtifacts = wordpressRuntimeWorkspaceArtifactSummary(this.workspaceArtifacts);
 
 		return {
 			...grade,
@@ -1154,7 +1111,7 @@ export class WPGymEnvironment {
 		const runtimeAction = this.toWordPressRuntimeAction(action);
 		let runtimeObservation;
 		try {
-			runtimeObservation = await runRuntimeAction(
+			runtimeObservation = await runWordPressRuntimeAction(
 				await this.wordpressRuntimeEpisode(),
 				runtimeAction,
 				this.wordpressRuntimeActionPolicy()
@@ -1163,7 +1120,7 @@ export class WPGymEnvironment {
 			if (isWordPressRuntimePreviewPortUnavailable(error)) {
 				await this.resetWordPressRuntimeEpisode();
 				try {
-					runtimeObservation = await runRuntimeAction(
+					runtimeObservation = await runWordPressRuntimeAction(
 						await this.wordpressRuntimeEpisode(),
 						runtimeAction,
 						this.wordpressRuntimeActionPolicy()
@@ -1378,14 +1335,7 @@ export class WPGymEnvironment {
 	}
 
 	async wordpressRuntimeBrowserMetrics() {
-		const bundleDirectory = this.wordpressRuntimeArtifactRoot();
-		const result = await browserArtifactMetrics(bundleDirectory);
-		return {
-			schema: result.schema,
-			hasBrowserMetrics: result.hasBrowserMetrics,
-			metrics: result.metrics,
-			artifacts: result.artifacts,
-		};
+		return await wordpressRuntimeBrowserMetrics(this.episodeRoot);
 	}
 
 	wordpressRuntimeActionErrorObservation(action, error, durationMs) {
@@ -1768,7 +1718,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 			includeContent: true,
 		});
 		const sections = {};
-		for (const ref of normalizeObservationArtifactRefs(observation.artifactRefs || [])) {
+		for (const ref of normalizeRuntimeArtifactRefs(observation.artifactRefs || [])) {
 			if (ref.kind !== 'wordpress-state-section' || !ref.path) {
 				continue;
 			}
@@ -1785,7 +1735,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	wordpressRuntimeArtifactRoot() {
-		return path.join(this.episodeRoot, 'wp-codebox-artifacts');
+		return wordpressRuntimeArtifactRoot(this.episodeRoot);
 	}
 
 	async readWordPressRuntimeArtifactJson(ref) {
@@ -1833,56 +1783,16 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async createWordPressRuntimeEpisode() {
-		const mounts = [
-			{
-				type: 'directory',
-				source: this.root,
-				target: '/inputs/repo',
-				mode: 'readonly',
-			},
-		];
-		if (this.scenario.environment?.uses_workspace) {
-			mounts.push({
-				type: 'directory',
-				source: this.workspaceRoot,
-				target: '/workspace',
-				mode: (this.scenario.environment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
-				metadata: {
-					role: 'workspace',
-					writable_roots: this.scenario.environment?.writable_roots || [],
-					baselineSource: this.workspaceBaselineRoot,
-				},
-			});
-		}
-
-		return await createRuntimeEpisode({
-			runtime: {
-				backend: 'wordpress-playground',
-				environment: {
-					kind: 'wordpress',
-					name: 'wp-gym-runtime',
-					version: this.options.wpVersion || '7.0',
-					blueprint: this.wordpressRuntimeBlueprint(),
-				},
-				preview: {
-					port: await availableLocalPort(),
-					bind: '127.0.0.1',
-				},
-				policy: {
-					network: 'deny',
-					filesystem: 'readwrite-mounts',
-					commands: Object.values(WORDPRESS_RUNTIME_COMMANDS),
-					secrets: 'none',
-					approvals: 'never',
-				},
-				artifactsDirectory: this.wordpressRuntimeArtifactRoot(),
-				metadata: {
-					runtime: { caller: 'wp-gym' },
-				},
-			},
-			mounts,
-			resetObservations: [{ type: 'runtime-info' }],
-		}, createPlaygroundRuntimeBackend());
+		return await createAdaptedWordPressRuntimeEpisode({
+			repositoryRoot: this.root,
+			workspaceRoot: this.workspaceRoot,
+			workspaceBaselineRoot: this.workspaceBaselineRoot,
+			scenarioEnvironment: this.scenario.environment,
+			options: this.options,
+			blueprint: this.wordpressRuntimeBlueprint(),
+			previewPort: await availableLocalPort(),
+			artifactsDirectory: this.wordpressRuntimeArtifactRoot(),
+		});
 	}
 
 	wordpressRuntimeBlueprint() {
@@ -1999,24 +1909,9 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async wordpressRuntimeWorkspaceFiles() {
-		this.workspaceArtifacts ??= await (await this.wordpressRuntimeEpisode()).collectArtifacts({ includeLogs: true, includeObservations: true, includePatch: true });
-		const candidates = [];
-
-		for (const artifactPath of [this.workspaceArtifacts.capturedMountsPath, this.workspaceArtifacts.changedFilesPath]) {
-			if (!artifactPath || !existsSync(artifactPath)) {
-				continue;
-			}
-
-			const artifact = await readJson(artifactPath);
-			const files = Array.isArray(artifact.files) ? artifact.files : [];
-			for (const file of files) {
-				if (file?.mountTarget === '/workspace' && typeof file.relativePath === 'string' && file.relativePath !== '') {
-					candidates.push(file.relativePath.replace(/^\/+/, ''));
-				}
-			}
-		}
-
-		return [...new Set(candidates)].sort();
+		const result = await collectWordPressRuntimeWorkspaceFiles(await this.wordpressRuntimeEpisode());
+		this.workspaceArtifacts = result.workspaceArtifacts;
+		return result.files;
 	}
 }
 
