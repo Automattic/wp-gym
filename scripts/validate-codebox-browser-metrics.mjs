@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { browserArtifactMetrics } from 'wp-codebox-workspace/playground';
+import { codeboxBrowserArtifactMetrics } from '../src/codebox-public-runtime.js';
 
 const root = process.cwd();
 const fixtureRoot = path.join(root, 'fixtures', 'codebox-browser-metrics');
 
-const withMetrics = await browserArtifactMetrics(path.join(fixtureRoot, 'with-browser-metrics'));
+const withMetrics = await codeboxBrowserArtifactMetrics(path.join(fixtureRoot, 'with-browser-metrics'));
 assert.equal(withMetrics.schema, 'wp-codebox/browser-metrics/v1');
 assert.equal(withMetrics.hasBrowserMetrics, true);
 assert.equal(withMetrics.metrics.browser_resource_count, 12);
@@ -16,7 +16,7 @@ assert.equal(withMetrics.artifacts.summary.path, 'files/browser/summary.json');
 assert.equal(withMetrics.artifacts.memory.path, 'files/browser/memory.json');
 assert.equal(withMetrics.artifacts.performance.path, 'files/browser/performance.json');
 
-const withoutMetrics = await browserArtifactMetrics(path.join(fixtureRoot, 'without-browser-metrics'));
+const withoutMetrics = await codeboxBrowserArtifactMetrics(path.join(fixtureRoot, 'without-browser-metrics'));
 assert.equal(withoutMetrics.schema, 'wp-codebox/browser-metrics/v1');
 assert.equal(withoutMetrics.hasBrowserMetrics, false);
 assert.deepEqual(withoutMetrics.metrics, {});

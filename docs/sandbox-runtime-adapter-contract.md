@@ -131,6 +131,12 @@ should preserve enough provenance for `wp-gym` to classify references as
 
 ## Compatibility Gaps
 
+The current npm dependency still resolves through `wp-codebox-workspace` package
+exports, and the lockfile records the underlying workspace packages as
+`@chubes4/wp-codebox-*`. Until WP Codebox publishes the replacement public package
+exports, `wp-gym` keeps those imports isolated in `src/codebox-public-runtime.js`
+instead of spreading package-specific names through the eval layer.
+
 The adapter should record a compatibility gap when a scenario needs a runtime
 primitive that WP Codebox does not yet expose generically. The gap should be
 described in runtime terms, for example:

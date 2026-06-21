@@ -12,6 +12,7 @@ import {
 	collectWordPressRuntimeWorkspaceFiles,
 	createWordPressRuntimeEpisode as createAdaptedWordPressRuntimeEpisode,
 	normalizeRuntimeArtifactRefs,
+	readWordPressRuntimeArtifactJson as readAdaptedWordPressRuntimeArtifactJson,
 	runWordPressRuntimeAction,
 	runtimeArtifactRefs,
 	runtimeTraceRefs,
@@ -1739,7 +1740,7 @@ echo json_encode($result, JSON_PRETTY_PRINT);
 	}
 
 	async readWordPressRuntimeArtifactJson(ref) {
-		return await readJson(path.join(this.wordpressRuntimeArtifactRoot(), ref.path));
+		return await readAdaptedWordPressRuntimeArtifactJson(this.episodeRoot, ref);
 	}
 
 	async wordpressRuntimeEpisode() {

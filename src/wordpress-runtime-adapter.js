@@ -1,8 +1,18 @@
-import path from 'node:path';
-import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
-import { createRuntimeEpisode, normalizeObservationArtifactRefs, runRuntimeAction } from 'wp-codebox-workspace/core';
-import { browserArtifactMetrics, createPlaygroundRuntimeBackend } from 'wp-codebox-workspace/playground';
+import {
+	CODEBOX_REPOSITORY_MOUNT_TARGET,
+	CODEBOX_WORDPRESS_BACKEND_ID,
+	CODEBOX_WORKSPACE_MOUNT_TARGET,
+	codeboxArtifactEvidenceRefs,
+	codeboxArtifactRoot,
+	codeboxArtifactTraceRefs,
+	codeboxBrowserArtifactMetrics,
+	codeboxWorkspaceArtifactSummary,
+	collectCodeboxWorkspaceArtifacts,
+	createCodeboxWordPressEpisode,
+	normalizeCodeboxArtifactRefs,
+	readCodeboxArtifactJson,
+	runCodeboxRuntimeAction,
+} from './codebox-public-runtime.js';
 
 export const WORDPRESS_RUNTIME_COMMANDS = {
 	wpCli: 'wordpress.wp-cli',
@@ -27,12 +37,8 @@ const browserArtifactMimeTypes = {
 	summary: 'application/json',
 };
 
-async function readJson(file) {
-	return JSON.parse(await readFile(file, 'utf8'));
-}
-
 export function wordpressRuntimeArtifactRoot(episodeRoot) {
-	return path.join(episodeRoot, 'wp-codebox-artifacts');
+	return codeboxArtifactRoot(episodeRoot);
 }
 
 export function browserArtifactRefs(files = {}) {
@@ -45,63 +51,31 @@ export function browserArtifactRefs(files = {}) {
 }
 
 export function runtimeArtifactRefs(refs = []) {
-	return normalizeObservationArtifactRefs(refs)
-		.map((ref) => ({
-			path: ref.path,
-			...(ref.digest?.algorithm === 'sha256' ? { sha256: ref.digest.value } : {}),
-		}));
+	return codeboxArtifactEvidenceRefs(refs);
 }
 
 export function runtimeTraceRefs(refs = []) {
-	return normalizeObservationArtifactRefs(refs)
-		.map((ref) => ({
-			kind: ref.kind || null,
-			path_or_url: ref.path,
-			sha256: ref.digest?.algorithm === 'sha256' ? ref.digest.value : null,
-			id: ref.id || null,
-		}));
+	return codeboxArtifactTraceRefs(refs);
 }
 
 export function normalizeRuntimeArtifactRefs(refs = []) {
-	return normalizeObservationArtifactRefs(refs);
+	return normalizeCodeboxArtifactRefs(refs);
 }
 
 export async function wordpressRuntimeBrowserMetrics(episodeRoot) {
-	const result = await browserArtifactMetrics(wordpressRuntimeArtifactRoot(episodeRoot));
-	return {
-		schema: result.schema,
-		hasBrowserMetrics: result.hasBrowserMetrics,
-		metrics: result.metrics,
-		artifacts: result.artifacts,
-	};
+	return await codeboxBrowserArtifactMetrics(wordpressRuntimeArtifactRoot(episodeRoot));
+}
+
+export async function readWordPressRuntimeArtifactJson(episodeRoot, ref) {
+	return await readCodeboxArtifactJson(wordpressRuntimeArtifactRoot(episodeRoot), ref);
 }
 
 export async function runWordPressRuntimeAction(episode, action, policy) {
-	return await runRuntimeAction(episode, action, policy);
+	return await runCodeboxRuntimeAction(episode, action, policy);
 }
 
 export async function collectWordPressRuntimeWorkspaceFiles(episode) {
-	const workspaceArtifacts = await episode.collectArtifacts({ includeLogs: true, includeObservations: true, includePatch: true });
-	const candidates = [];
-
-	for (const artifactPath of [workspaceArtifacts.capturedMountsPath, workspaceArtifacts.changedFilesPath]) {
-		if (!artifactPath || !existsSync(artifactPath)) {
-			continue;
-		}
-
-		const artifact = await readJson(artifactPath);
-		const files = Array.isArray(artifact.files) ? artifact.files : [];
-		for (const file of files) {
-			if (file?.mountTarget === '/workspace' && typeof file.relativePath === 'string' && file.relativePath !== '') {
-				candidates.push(file.relativePath.replace(/^\/+/, ''));
-			}
-		}
-	}
-
-	return {
-		workspaceArtifacts,
-		files: [...new Set(candidates)].sort(),
-	};
+	return await collectCodeboxWorkspaceArtifacts(episode);
 }
 
 export function wordpressRuntimeWorkspaceArtifactSummary(workspaceArtifacts) {
@@ -109,12 +83,7 @@ export function wordpressRuntimeWorkspaceArtifactSummary(workspaceArtifacts) {
 		return null;
 	}
 
-	return {
-		id: workspaceArtifacts.id,
-		changed_files: workspaceArtifacts.changedFilesPath,
-		patch: workspaceArtifacts.patchPath,
-		captured_mounts: workspaceArtifacts.capturedMountsPath,
-	};
+	return codeboxWorkspaceArtifactSummary(workspaceArtifacts);
 }
 
 export async function createWordPressRuntimeEpisode({
@@ -131,7 +100,7 @@ export async function createWordPressRuntimeEpisode({
 		{
 			type: 'directory',
 			source: repositoryRoot,
-			target: '/inputs/repo',
+			target: CODEBOX_REPOSITORY_MOUNT_TARGET,
 			mode: 'readonly',
 		},
 	];
@@ -140,7 +109,7 @@ export async function createWordPressRuntimeEpisode({
 		mounts.push({
 			type: 'directory',
 			source: workspaceRoot,
-			target: '/workspace',
+			target: CODEBOX_WORKSPACE_MOUNT_TARGET,
 			mode: (scenarioEnvironment?.writable_roots || []).length > 0 ? 'readwrite' : 'readonly',
 			metadata: {
 				role: 'workspace',
@@ -150,9 +119,9 @@ export async function createWordPressRuntimeEpisode({
 		});
 	}
 
-	return await createRuntimeEpisode({
+	return await createCodeboxWordPressEpisode({
 		runtime: {
-			backend: 'wordpress-playground',
+			backend: CODEBOX_WORDPRESS_BACKEND_ID,
 			environment: {
 				kind: 'wordpress',
 				name: 'wp-gym-runtime',
@@ -177,5 +146,5 @@ export async function createWordPressRuntimeEpisode({
 		},
 		mounts,
 		resetObservations: [{ type: 'runtime-info' }],
-	}, createPlaygroundRuntimeBackend());
+	});
 }
