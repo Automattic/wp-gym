@@ -58,11 +58,11 @@ warnings until the local replay harness supports them.
 Browser/editor traces use the same rule. Their actions and observations validate
 against `schemas/action.v1.schema.json`, `schemas/observation.v1.schema.json`,
 and `schemas/trace.v1.schema.json`. Replayable browser `navigate`, `click`,
-`fill`, `press`, and `capture` actions run through WP Codebox
-`wordpress.browser-actions`; evidence-only browser traces and editor traces are
-classified as audit-only. Audit-only traces still verify retained state evidence
-and rerun the terminal grader; they do not attempt to synthesize UI state that WP
-Codebox cannot replay.
+`fill`, `press`, and `capture` actions run through the runtime browser-action
+adapter; evidence-only browser traces and editor traces are classified as
+audit-only. Audit-only traces still verify retained state evidence and rerun the
+terminal grader; they do not attempt to synthesize UI state that the runtime
+cannot replay.
 
 The replay metadata envelope defines the required browser/editor conditions:
 

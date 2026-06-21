@@ -240,7 +240,7 @@ try {
 	assert.ok(workspaceFiles.includes('plugins/site-summary/site-summary.php'));
 
 	const grade = await workspaceEnv.grade();
-	assert.equal(grade.telemetry.runner, 'wp-codebox');
+	assert.equal(grade.telemetry.runner, 'wordpress-runtime');
 	assert.ok(grade.telemetry.workspace_artifacts.changed_files.endsWith('/files/changed-files.json'));
 	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'workspace');
 	const changedFiles = JSON.parse(await readFile(grade.telemetry.workspace_artifacts.changed_files, 'utf8'));
@@ -265,7 +265,7 @@ try {
 	assert.ok(workspaceFiles.includes('plugins/importer/importer.php'));
 
 	const grade = await contentMigrationWorkspaceEnv.grade();
-	assert.equal(grade.telemetry.runner, 'wp-codebox');
+	assert.equal(grade.telemetry.runner, 'wordpress-runtime');
 	assert.ok(grade.telemetry.workspace_artifacts.changed_files.endsWith('/files/changed-files.json'));
 	await assertCodeboxArtifactMetadataBoundary(grade.telemetry.workspace_artifacts, 'content migration workspace');
 	const changedFiles = JSON.parse(await readFile(grade.telemetry.workspace_artifacts.changed_files, 'utf8'));
