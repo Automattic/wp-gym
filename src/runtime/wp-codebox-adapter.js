@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { commandRegistry, createRuntimeEpisode, normalizeObservationArtifactRefs, runRuntimeAction } from 'wp-codebox-workspace/core';
-import { browserArtifactMetrics, createPlaygroundRuntimeBackend, playgroundRuntimeCommandIds } from 'wp-codebox-workspace/playground';
+import { commandRegistry, createRuntimeEpisode, normalizeObservationArtifactRefs, runRuntimeAction } from '@automattic/wp-codebox-core';
+import { browserArtifactMetrics, createPlaygroundRuntimeBackend, playgroundRuntimeCommandIds } from '@automattic/wp-codebox-playground';
 
 // TODO: Switch backend, mount, and artifact path constants to WP Codebox public exports when the Codebox PR lands.
 export const CODEBOX_WORDPRESS_BACKEND_ID = 'wordpress-playground';

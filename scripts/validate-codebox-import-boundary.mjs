@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const scannedDirs = ['src', 'scripts', 'bin'];
+const adapterBoundary = path.join(root, 'src/runtime/wp-codebox-adapter.js');
 const sourceExtensions = new Set(['.js', '.mjs', '.ts', '.tsx', '.jsx']);
 const forbiddenPattern = /(?:from\s+['"]|import\s*\(\s*['"])(@automattic\/wp-codebox-(?:core|playground))/g;
 
@@ -25,6 +26,9 @@ const violations = [];
 
 for (const dir of scannedDirs) {
 	for (const file of await sourceFiles(path.join(root, dir))) {
+		if (file === adapterBoundary) {
+			continue;
+		}
 		const source = await readFile(file, 'utf8');
 		for (const match of source.matchAll(forbiddenPattern)) {
 			violations.push(`${path.relative(root, file)} imports ${match[1]}`);
