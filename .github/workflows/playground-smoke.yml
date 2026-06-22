@@ -11,10 +11,10 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
 
       - name: Run Homeboy Playground smoke task
-        uses: Extra-Chill/homeboy-action@ecf759622ccf5bfac9612f6039494812a734f532 # v2.7.6
+        uses: Extra-Chill/homeboy-action@7fb3d0c715e26e8aa90ff80e7aae088efccc4364 # v2.7.11
         env:
           HOMEBOY_PLAYGROUND_RESULTS_ARTIFACT_DIR: homeboy-ci-results
         with:
