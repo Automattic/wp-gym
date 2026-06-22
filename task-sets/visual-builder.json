@@ -38,6 +38,6 @@
     }
   ],
   "notes": [
-    "This first scenario validates Elementor-compatible post metadata and rendered WordPress state without requiring Elementor to run in Playground."
+    "This first scenario validates Elementor-compatible post metadata and rendered WordPress state without requiring Elementor to run in the WordPress runtime."
   ]
 }

@@ -9,24 +9,24 @@ export const CODEBOX_WORDPRESS_BACKEND_ID = 'wordpress-playground';
 export const CODEBOX_WORKSPACE_MOUNT_TARGET = '/workspace';
 export const CODEBOX_REPOSITORY_MOUNT_TARGET = '/inputs/repo';
 
-const playgroundCommandIdSet = new Set(playgroundRuntimeCommandIds());
+const codeboxWordPressCommandIdSet = new Set(playgroundRuntimeCommandIds());
 
-function playgroundCommandId(method) {
+function codeboxWordPressCommandId(method) {
 	const definition = commandRegistry.find((command) => command?.handler?.kind === 'playground' && command.handler.method === method);
-	if (!definition || !playgroundCommandIdSet.has(definition.id)) {
-		throw new Error(`WP Codebox Playground command is not registered: ${method}`);
+	if (!definition || !codeboxWordPressCommandIdSet.has(definition.id)) {
+		throw new Error(`WP Codebox WordPress runtime command is not registered: ${method}`);
 	}
 	return definition.id;
 }
 
 export const WP_CODEBOX_COMMANDS = {
-	wpCli: playgroundCommandId('runWpCli'),
-	restRequest: playgroundCommandId('runRestRequest'),
-	runPhp: playgroundCommandId('runPhp'),
-	browserProbe: playgroundCommandId('runBrowserProbe'),
-	browserActions: playgroundCommandId('runBrowserActions'),
-	editorOpen: playgroundCommandId('runEditorOpen'),
-	inspectMountedInputs: playgroundCommandId('inspectMountedInputs'),
+	wpCli: codeboxWordPressCommandId('runWpCli'),
+	restRequest: codeboxWordPressCommandId('runRestRequest'),
+	runPhp: codeboxWordPressCommandId('runPhp'),
+	browserProbe: codeboxWordPressCommandId('runBrowserProbe'),
+	browserActions: codeboxWordPressCommandId('runBrowserActions'),
+	editorOpen: codeboxWordPressCommandId('runEditorOpen'),
+	inspectMountedInputs: codeboxWordPressCommandId('inspectMountedInputs'),
 };
 
 async function readJson(file) {
